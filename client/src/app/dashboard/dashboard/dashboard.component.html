@@ -1,0 +1,30 @@
+<div class="main">
+
+  <div class="container">
+    <h2>Dashboard</h2>
+    <a routerLink="/{{lang}}/dashboard/orders" class="waves-effect waves-light btn-large orders-button">ORDERS</a>
+    <a routerLink="/{{lang}}/dashboard/translations" class="waves-effect waves-light btn-large orders-button">Translations</a>
+    <div class="product-actions-wrap">
+      <div class="product-actions">
+        <a (click)="changeAction('add')" class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">add</i></a>
+         Add product
+      </div>
+
+      <div class="product-actions">
+        <a (click)="changeAction('edit')" class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">mode_edit</i></a>
+        Edit product
+      </div>
+
+      <div class="product-actions">
+        <a (click)="changeAction('remove')" class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">clear</i></a>
+         Remove product
+      </div>
+    </div>
+
+    <app-products-edit *ngIf="productAction === 'add'" [action]="'add'"></app-products-edit>
+    <app-products-edit *ngIf="productAction === 'edit'" [action]="'edit'"></app-products-edit>
+    <app-products-edit *ngIf="productAction === 'remove'"  [action]="'remove'"></app-products-edit>
+
+  </div>
+
+</div>

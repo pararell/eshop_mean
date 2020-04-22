@@ -1,0 +1,54 @@
+:host {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+
+  .container {
+    @media screen and (max-width: 600px) {
+      padding: 0 !important;
+    }
+  }
+
+  .card-content {
+    &.top-content {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .cart-img {
+      max-width: 100px;
+    }
+
+    h4 {
+      font-size: 20px;
+      line-height: 22px;
+      padding-right: 10px;
+    }
+
+    .product-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 20px 0;
+
+      .stock {
+        font-size: 16px;
+        color: #1de9b6;
+      }
+
+      .price {
+        padding: 0 100px;
+        font-size: 25px;
+        font-weight: 500;
+      }
+    }
+
+    .tags {
+      display: flex;
+      justify-content: flex-start;
+      padding-right: 10px;
+      margin: 20px 0;
+      font-size: 16px;
+    }
+  }
+}

@@ -1,0 +1,49 @@
+<div class="collection with-header">
+    <div class="collection-header">
+        <h4>{{ 'Categories' | translate | async }}</h4>
+    </div>
+    <a
+        [routerLink]="[productsUrl]"
+        class="collection-item"
+        [class.active]="!activeCategory">
+        {{ 'All' | translate | async }} {{ 'products' | translate | async }}
+    </a>
+    <a
+        *ngFor="let category of categories"
+        (click)="changeCategory.emit(category.titleUrl)"
+        [routerLink]="[categoryUrl + '/' + category.titleUrl]"
+        class="collection-item"
+        [class.active]="activeCategory == (category.titleUrl)">
+        {{category.title}}
+    </a>
+    <div class="sort-wrap">
+        <div class="collection-header">
+            <h4>{{ 'Sorting' | translate | async }}</h4>
+        </div>
+        <select
+            class="browser-default"
+            aria-label="Sort"
+            [ngModel]="choosenSort || 'newest'"
+            (ngModelChange)="onInputChange($event)">
+            <option
+                *ngFor="let option of sortOptions;"
+                [value]="option.id">
+                {{ option.name | translate | async }}
+            </option>
+        </select>
+    </div>
+    <div class="collection-header">
+        <h4>{{ 'PriceRange' | translate | async }}</h4>
+    </div>
+    <input
+        class="blue darken-4"
+        type="range"
+        name="range"
+        aria-label="Range"
+        max="{{maxPrice}}"
+        min="{{minPrice}}"
+        value="{{ (maxPrice < price) ? maxPrice : price }}"
+        #ref
+        (change)="changePrice.emit(ref.value)">
+    {{ 'Price' | translate | async }} {{ 'to' | translate | async }}: {{ (ref.value * (convertVal || 1)) | priceFormat }}{{ currency }}
+</div>

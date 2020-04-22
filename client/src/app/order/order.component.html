@@ -1,0 +1,72 @@
+<div class="main">
+  <div class="container">
+
+    <div (click)="goBack()">
+      <a class="waves-effect waves-light btn"><i class="material-icons left">arrow_back</i>{{ 'Back' | translate | async }}</a>
+    </div>
+
+    <div class="progress" *ngIf="!(order$ | async)">
+      <div class="indeterminate"></div>
+    </div>
+
+    <ng-container *ngIf="(order$ | async) as order">
+      <div class="card">
+        <div class="card-content top-content">
+          <div>
+            <h4>{{ order?.orderId }}</h4>
+            <div class="product-info">
+              <div class="stock"> Status: {{ order?.status }} </div>
+              <div class="price">Amount: {{ order?.amount }}</div>
+            </div>
+            <div class="tags">
+              <div class="chip">
+                  Customer: {{ order?.customerEmail }}
+              </div>
+            </div>
+          </div>
+          <div>
+              <p>Desc: {{ order?.description }}</p>
+              <p>Customer: {{ order?.customerEmail }}</p>
+              <p>Created: {{ order.dateAdded | date:'dd-MM-yy' }}</p>
+              <p>Paid: {{ order?.outcome?.seller_message }}</p>
+              <p>Total Price: {{ order?.cart?.totalPrice }}</p>
+              <p>Total Quantity: {{ order?.cart?.totalQty }}</p>
+          </div>
+        </div>
+        <div class="card-content grey lighten-4">
+            <br/>
+
+            <p>Customer data:</p>
+            <p>CITY: {{ order?.source?.address_city }}</p>
+            <p>COUNTRY: {{ order?.source?.address_country }}</p>
+            <p>ADRESS: {{ order?.source?.address_line1 }}</p>
+            <p>ZIP: {{ order?.source?.address_zip }}</p>
+            <p>CardType: {{ order?.source?.brand }}</p>
+            <p>Customer Name : {{ order?.source?.name }}</p>
+            <br/>
+
+            <p>Cart:</p>
+            <ul class="collection">
+                <li class="collection-item cart-items" *ngFor="let cartItem of order?.cart?.items">
+                  <div class="cart-image">
+                    <a routerLink="/{{translate.lang}}/product/{{cartItem?.item?.titleUrl}}">
+                    <img class="cart-img" src="{{cartItem?.item?.mainImage?.url}}">
+                    </a>
+                    <div class="cart-title">
+                      {{cartItem?.item.title}}
+                    </div>
+                  </div>
+                  <div>
+                    {{cartItem.qty}} ks
+                  </div>
+                  <div>
+                    {{cartItem.price}} €
+                  </div>
+                </li>
+              </ul>
+        </div>
+      </div>
+    </ng-container>
+
+  </div>
+</div>

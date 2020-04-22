@@ -1,0 +1,59 @@
+body {
+  overflow: hidden;
+}
+
+.full-width {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.main-scroll-wrapp {
+  position: absolute;
+  scroll-behavior: smooth;
+  top: 50px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: auto;
+}
+
+@mixin stripes($color1: #000460, $color2: transparent, $angle: 0deg, $stripe1-width: 25px, $stripe2-width: null) {
+  @if ($stripe2-width == null) {
+    $stripe2-width: $stripe1-width;
+  }
+
+  $tile-size: ($stripe1-width + $stripe2-width) * 2;
+  $stripe2-start: ($stripe1-width / $tile-size) * 100%;
+  $stripe3-start: $stripe2-start + (($stripe2-width / $tile-size) * 100%);
+  $stripe4-start: $stripe3-start + (($stripe1-width / $tile-size) * 100%);
+
+  background-size: $tile-size $tile-size;
+  background-image: linear-gradient($angle, $color1, $color1 $stripe2-start, $color2 $stripe2-start, $color2 $stripe3-start, $color1 $stripe3-start, $color1 $stripe4-start, $color2 $stripe4-start, $color2);
+  background-repeat: repeat;
+}
+
+.main {
+  flex: 1 0 auto;
+
+  @include stripes(#000460, #fff, 45deg, 1px, 80px);
+}
+
+.container {
+  width: 100% !important;
+  padding: 20px;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+.btn {
+  background-color: #004e92 !important;
+}

@@ -1,0 +1,62 @@
+:host {
+  display: block;
+
+  .contact-form-wrap {
+    margin-top: 25px;
+
+    h1 {
+      margin-bottom: 40px;
+    }
+  }
+
+  .submit-order-button {
+    margin-top: 25px;
+    width: 100%;
+  }
+
+  input:focus + label {
+    -webkit-transform: translateY(-14px) scale(0.8);
+    transform: translateY(-14px) scale(0.8);
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+  }
+
+  input {
+    &.ng-valid + label {
+      -webkit-transform: translateY(-14px) scale(0.8);
+      transform: translateY(-14px) scale(0.8);
+      -webkit-transform-origin: 0 0;
+      transform-origin: 0 0;
+    }
+  }
+
+  textarea:focus + label {
+    -webkit-transform: translateY(-14px) scale(0.8);
+    transform: translateY(-14px) scale(0.8);
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+  }
+
+  textarea {
+    &.ng-valid + label {
+      -webkit-transform: translateY(-14px) scale(0.8);
+      transform: translateY(-14px) scale(0.8);
+      -webkit-transform-origin: 0 0;
+      transform-origin: 0 0;
+    }
+  }
+
+  .textarea-wrapp {
+    margin: 20px 0;
+
+    textarea {
+      min-height: 100px;
+    }
+  }
+
+  .textarea-label {
+    font-size: 0.8rem;
+    color: #9e9e9e;
+    text-align: left;
+  }
+}

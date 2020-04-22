@@ -1,0 +1,20 @@
+:host {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+
+  .translation-textarea {
+    min-height: 400px;
+  }
+
+  .translations-edit-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+
+    .card {
+      flex-basis: 30%;
+      margin-right: 3%;
+      overflow: hidden;
+    }
+  }
+}

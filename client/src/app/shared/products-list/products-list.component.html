@@ -1,0 +1,29 @@
+<ng-container *ngFor="let product of products; trackBy: trackById;">
+  <div class="card">
+    <div>
+      <div class="price-card">
+          <h2> {{product?.title}} </h2>
+          <div class="detail-link-wrapp"> <a routerLink="{{productUrl}}/{{product?.titleUrl}}">Detail</a></div>
+          <!-- <app-card [price]="product?.salePrice"> </app-card> -->
+      </div>
+      <div class="info-wrapp">
+        <p>{{product?.description}}</p>
+      </div>
+    </div>
+    <a routerLink="{{productUrl}}/{{product?.titleUrl}}" class="card-image" [attr.aria-labelledby]="product?.titleUrl"
+    lazySrc [lazyBackground]="'url(' + product.mainImage.url + ')'"  lazySrcVisible="visible">
+      <!-- <img src="{{product?.mainImage?.url}}"> -->
+    </a>
+    <div class="card-action">
+      <div class="action-wrap">
+        <div class="price-info">{{ (product?.salePrice * (convertVal || 1)) | priceFormat }}{{ currency }}</div>
+        <p>{{ product?.stock | translate | async }}</p>
+        <app-cart-show
+          [items]="cartIds[product?._id]"
+          (add)="onAddProduct(product?._id)"
+          (remove)="onRemoveProduct(product?._id)">
+        </app-cart-show>
+      </div>
+    </div>
+  </div>
+</ng-container>

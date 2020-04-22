@@ -1,0 +1,13 @@
+:host {
+  display: flex;
+
+  .cart-icon {
+    cursor: pointer;
+    color: #fff;
+    font-size: 25px;
+  }
+
+  .cart-quantity {
+    color: #fff;
+  }
+}

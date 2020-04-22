@@ -1,0 +1,21 @@
+<ul class="pagination" *ngIf="pagination && pagination.pages > 1">
+  <ng-container *ngIf="page">
+    <li [class.disabled]="page == 1">
+        <a class="clickable" (click)="changePage.emit(page - 1)"><i class="material-icons">chevron_left</i></a>
+    </li>
+  </ng-container>
+  <ng-container *ngIf="!page">
+    <li class="disabled"><a><i class="material-icons">chevron_left</i></a></li>
+  </ng-container>
+  <li class="waves-effect" *ngFor="let page of pagination.range"
+      [class.active]="pagination.page === page"><a (click)="changePage.emit(page)">{{ page }}</a>
+  </li>
+  <li class="clickable" [class.disabled]="page == pagination.pages">
+    <ng-container *ngIf="page">
+        <a (click)="changePage.emit(page + 1)"><i class="material-icons">chevron_right</i></a>
+    </ng-container>
+    <ng-container *ngIf="!page">
+        <a (click)="changePage.emit(2)"><i class="material-icons">chevron_right</i></a>
+    </ng-container>
+  </li>
+</ul>

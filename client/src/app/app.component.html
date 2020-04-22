@@ -1,0 +1,8 @@
+<app-header></app-header>
+<div class="main-scroll-wrapp" (scroll)="onScrolling($event)">
+  <router-outlet
+    (activate)="onActivate($event)"
+    (deactivate)="onDeactivate($event)">
+  </router-outlet>
+  <app-footer> </app-footer>
+</div>

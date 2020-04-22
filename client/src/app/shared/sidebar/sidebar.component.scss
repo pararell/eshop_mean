@@ -1,0 +1,30 @@
+.collection {
+  padding: 5px;
+  background: #fff;
+
+  h4 {
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .input-field > select {
+    width: 100%;
+    pointer-events: initial;
+    height: initial;
+    opacity: 1;
+    cursor: pointer;
+  }
+
+  .sort-wrap {
+    height: 120px;
+  }
+
+  .collection-item {
+    color: #064887;
+
+    &.active {
+      background-color: #064887;
+      color: #fff;
+    }
+  }
+}

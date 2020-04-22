@@ -1,0 +1,105 @@
+<div class="main">
+
+  <div class="progress" *ngIf="!(cart$ | async)">
+    <div class="indeterminate"></div>
+  </div>
+
+  <div class="container">
+
+    <ng-container *ngIf="(cart$ | async) as cart">
+      <div (click)="goBack()">
+        <a class="waves-effect waves-light btn"><i class="material-icons left">arrow_back</i>{{ 'Back' | translate | async }}</a>
+      </div>
+
+      <ul class="collection">
+        <li class="collection-item cart-items" *ngFor="let cartItem of cart?.items">
+          <div class="cart-image">
+            <a routerLink="{{productUrl}}/{{cartItem?.item?.titleUrl}}">
+            <img src="{{cartItem?.item?.mainImage?.url}}">
+            </a>
+            <div class="cart-title">
+              {{cartItem?.item.title}}
+            </div>
+          </div>
+          <div>
+            {{cartItem.qty}} ks
+          </div>
+          <div>
+            {{ (cartItem.price * ((convertVal$ | async) || 1)) | priceFormat }} {{ currency$ | async }}
+          </div>
+          <div class="remove-from-cart" (click)="removeFromCart(cartItem?.item?._id)">
+            <i class="material-icons cart-icon">remove</i>
+          </div>
+        </li>
+        <li class="collection-item cart-items">
+          <div class="cart-image">
+            <b>{{ 'Summary' | translate | async }}</b>
+          </div>
+          <div>
+            <b> {{cart?.totalQty}} ks </b>
+          </div>
+          <div>
+            <b> {{ (cart?.totalPrice * ((convertVal$ | async) || 1)) | priceFormat }} {{ currency$ | async }} </b>
+          </div>
+        </li>
+      </ul>
+
+      <div class="pay-wrapp" *ngIf="!!cart?.items?.length">
+
+        <a (click)="onToggleForm()" class="waves-effect green lighten-1 btn-large delivery-button">
+            <i class="material-icons left">email</i>{{ 'Payment' | translate | async }} {{ 'on' | translate | async }} {{ 'delivery' | translate | async }}
+        </a>
+
+        <app-card [price]="(cart?.totalPrice * ((convertVal$ | async) || 1) | priceFormat)" [currency]="currency$ | async" (click)="closeToggleForm()"> </app-card>
+
+      </div>
+
+    <div class="order-form-wrap z-depth-2" *ngIf="toggleOrderForm && !!cart?.items?.length">
+        <form [formGroup]="orderForm">
+            <div class="full-input input-field">
+                <input class="form-control" type="text" name="name" formControlName="name">
+                <label for="name">{{'Firstname' | translate | async }} {{ 'and' | translate | async }} {{ 'Surname' | translate | async }}</label>
+            </div>
+            <div class="full-input input-field">
+                <input class="form-control" type="email" name="email" formControlName="email">
+                <label for="email">Email</label>
+            </div>
+            <div class="full-input input-field">
+                <input class="form-control" type="text" name="adress" formControlName="adress">
+                <label for="adress">{{ 'Adress' | translate | async }}</label>
+            </div>
+            <div class="full-input input-field">
+                <input class="form-control" type="text" name="city" formControlName="city">
+                <label for="city">{{ 'City' | translate | async }}</label>
+            </div>
+            <div class="full-input input-field">
+                <input class="form-control" type="text" name="zip" formControlName="zip">
+                <label for="zip">{{ 'ZIP' | translate | async }} </label>
+            </div>
+            <div class="full-input input-field">
+                <input class="form-control" type="text" name="country" formControlName="country">
+                <label for="zip">{{ 'Country' | translate | async }}</label>
+            </div>
+            <div class="textarea-wrapp input-field">
+                <textarea class="form-control materialize-textarea" rows="20" cols="60" name="lang" formControlName="notes">
+                  </textarea>
+                  <label class="textarea-label">Notes</label>
+            </div>
+            <button type="submit" class="btn waves-effect waves-light submit-order-button" [disabled]="orderForm.invalid"
+              (click)="submit()"> {{ 'MakeOrder' | translate | async }} </button>
+        </form>
+    </div>
+  </ng-container>
+
+    <ng-container *ngIf="(order$ | async) as order">
+      <div class="pay-success" *ngIf="order.type == 'authorized' && order.seller_message == 'Payment complete.'">
+        {{ 'SuccessPayment' | translate | async }}
+      </div>
+      <div class="pay-success" *ngIf="order.seller_message == 'Payment on delivery'">
+        {{ 'SuccessOrder' | translate | async }}
+      </div>
+    </ng-container>
+
+  </div>
+
+</div>

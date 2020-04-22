@@ -1,0 +1,16 @@
+:host {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+
+  .orders-edit-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+
+    .card {
+      flex-basis: 30%;
+      margin-right: 3%;
+      overflow: hidden;
+    }
+  }
+}

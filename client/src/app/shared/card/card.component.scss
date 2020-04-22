@@ -1,0 +1,23 @@
+:host {
+  display: block;
+
+  .cart-items {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .cart-title {
+      padding: 0 10px;
+    }
+
+    .cart-image {
+      display: flex;
+      align-items: center;
+      width: 50%;
+
+      img {
+        height: 70px;
+      }
+    }
+  }
+}

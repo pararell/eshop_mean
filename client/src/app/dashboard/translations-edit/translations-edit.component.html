@@ -1,0 +1,26 @@
+<div class="main">
+
+  <div class="container">
+
+    <div class="translations-edit-wrapper">
+
+        <div class="card scale-transition" *ngFor="let translation of translations$ | async">
+            <div class="card-action">
+              <div class="action-wrap">
+                <a (click)="showLanguageEdit(translation.lang)">{{ translation.lang }}</a>
+              </div>
+           </div>
+        </div>
+
+    <div *ngIf="editLang">
+        <form [formGroup]="languageForm">
+            <textarea class="translation-textarea" rows="20" cols="60" name="lang" formControlName="lang"></textarea>
+            <button type="submit" class="btn waves-effect waves-light"
+            [disabled]="languageForm.invalid" (click)="submit()"> OK
+          </button>
+        </form>
+    </div>
+
+    </div>
+  </div>
+</div>

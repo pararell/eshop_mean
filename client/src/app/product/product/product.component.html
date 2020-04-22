@@ -1,0 +1,64 @@
+<div class="main">
+  <div class="container">
+
+    <div>
+      <a (click)="goBack()" class="waves-effect waves-light btn"><i class="material-icons left">arrow_back</i>{{ 'Back' | translate | async }}</a>
+    </div>
+
+    <div class="progress" *ngIf="!(items$ | async)?.product || (productLoading$ | async)">
+      <div class="indeterminate"></div>
+    </div>
+
+    <ng-container *ngIf="(items$ | async) as items">
+      <div class="card" *ngIf="!(productLoading$ | async)">
+        <div class="card-content">
+          <div>
+            <h3>{{ items?.product?.title }}</h3>
+            <h4>{{ items?.product?.description }}</h4>
+            <div class="product-info">
+              <div class="stock">{{ items?.product?.stock | translate | async }}</div>
+              <div class="price">{{ (items?.product?.salePrice * ((convertVal$ | async) || 1)) | priceFormat }}{{ currency$ | async }}</div>
+              <div class="cart-wrap waves-effect waves-light btn">
+                <app-cart-show
+                  [items]="items?.cartIds[items?.product?._id]"
+                  (add)="addToCart(items?.product?._id)"
+                  (remove)="removeFromCart(items?.product?._id)">
+                </app-cart-show>
+              </div>
+            </div>
+            <div class="tags">
+              <div class="chip" *ngFor="let tag of items?.product?.tags">
+                {{ tag }}
+              </div>
+            </div>
+          </div>
+          <div class='image-wrap' [ngStyle]="{'background': 'url(' + items?.product?.mainImage?.url + ') no-repeat'}"></div>
+        </div>
+        <div class="card-tabs">
+          <ul class="tabs tabs-fixed-width">
+            <li class="tab"><a (click)="activeTab = 'first'" [class.active]="activeTab == 'first'">{{ 'Description' | translate | async }}</a></li>
+            <li class="tab"><a (click)="activeTab = 'second'" [class.active]="activeTab == 'second'">{{ 'Images' | translate | async }}</a></li>
+          </ul>
+        </div>
+        <div class="card-content grey lighten-4">
+          <div *ngIf="activeTab == 'first'" [innerHTML]="items?.product?.descriptionFull"></div>
+          <div class="images-wrapp-content" *ngIf="activeTab == 'second'">
+            <div class="images-wrapp-content-img"
+              *ngFor="let imageSrc of items?.product?.images; let i = index; let f = first; let l = last;"
+              (click)="toggleModalImg(i)"
+              [class.modal]="openImages[i]">
+              <a class="waves-effect waves-light btn prev-btn" *ngIf="!f && openImages[i]" (click)="prevImg($event, i)">
+                <i class="material-icons left">arrow_back</i>{{ 'Prev' | translate | async }}
+              </a>
+              <a class="waves-effect waves-light btn next-btn" *ngIf="!l && openImages[i]"  (click)="nextImg($event, i)">
+                <i class="material-icons right">arrow_forward</i>{{ 'Next' | translate | async }}
+              </a>
+              <img [lazySrc]="imageSrc" lazySrcVisible="visible">
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+  </div>
+</div>

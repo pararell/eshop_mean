@@ -1,0 +1,97 @@
+:host {
+  display: block;
+
+  .main-nav-header {
+    padding: 0 15px;
+    height: 50px;
+    line-height: 50px;
+    background: linear-gradient(to right, #000460, #004e92);
+
+    select.lang-select {
+      background: #004e92;
+      border: none;
+      color: #fff;
+    }
+
+    .cart-wrap {
+      display: flex;
+
+      i {
+        height: 50px;
+        line-height: 50px;
+      }
+    }
+
+    .brand-logo {
+      text-overflow: ellipsis;
+      max-width: 40%;
+
+      @media screen and (max-width: 700px) {
+        max-width: 30%;
+        overflow: hidden;
+        max-height: 55px;
+      }
+
+      @media screen and (max-width: 600px) {
+        max-width: 10%;
+        overflow: hidden;
+        max-height: 55px;
+      }
+    }
+
+    .search-icon-position {
+      top: -15px;
+    }
+
+    .fake-form {
+      height: 100%;
+      width: 30%;
+      display: inline-block;
+
+      @media screen and (max-width: 600px) {
+        width: 50%;
+      }
+
+      .input-field {
+        z-index: 20;
+
+        .autocomplete-content {
+          max-height: 200px;
+          display: block;
+          opacity: 1;
+          top: initial;
+        }
+      }
+    }
+  }
+
+  .mobile-nav-menu {
+    display: none;
+
+    &.active {
+      display: block;
+      position: fixed;
+      top: 50px;
+      width: 100%;
+      left: 0;
+      padding: 5px;
+      background: linear-gradient(to right, #000460, #004e92);
+    }
+  }
+
+  .mobile-nav-menu-icon {
+    display: none;
+
+    @media screen and (max-width: 600px) {
+      display: block;
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    padding: 0;
+
+    .nav-menu-right-side {
+      display: none;
+    }
+  }
+}

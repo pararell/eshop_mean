@@ -1,0 +1,36 @@
+<div class="main">
+  <div class="container">
+    <div class="sign-form-wrap">
+      <h1>SignUp</h1>
+            <form [formGroup]="signUpForm">
+              <div class="full-input input-field">
+                  <input class="form-control validate"
+                    id="name"
+                    type="text"
+                    name="name"
+                  formControlName="name">
+                  <label for="contantName">Name</label>
+              </div>
+                <div class="full-input input-field">
+                    <input class="form-control validate"
+                      id="email"
+                      type="email"
+                      name="email"
+                     formControlName="name">
+                    <label for="contantName"> Email</label>
+                </div>
+                <div class="full-input input-field">
+                    <input class="form-control validate" 
+                      type="text" 
+                      name="password" 
+                      formControlName="password">
+                    <label for="email">Password</label>
+                </div>
+
+                <button type="submit" class="btn waves-effect waves-light submit-contact-button" [disabled]="signUpForm.invalid"
+                  (click)="submit()"> {{ 'SignUp' | translate | async }} </button>
+            </form>
+    </div>
+    <a routerLink="/{{lang}}/authorize/signin" class="waves-effect waves-light btn-large">SignIn</a>
+  </div>
+</div>

@@ -1,0 +1,115 @@
+:host {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+
+  .pay-wrapp {
+    padding: 10px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .delivery-button {
+    margin-right: 15px;
+  }
+
+  .cart-items {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .cart-title {
+      padding: 0 10px;
+    }
+
+    .cart-image {
+      display: flex;
+      align-items: center;
+      width: 50%;
+
+      img {
+        height: 70px;
+      }
+    }
+  }
+
+  .collection {
+    box-shadow: 0 0 0 1px #000460 !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: none !important;
+  }
+
+  .remove-from-cart {
+    color: red;
+    cursor: pointer;
+  }
+
+  .pay-success {
+    color: #76ff03;
+  }
+
+  .order-form-wrap {
+    background: #fff;
+    margin-top: 25px;
+    padding: 25px;
+    box-shadow: 0 0 0 1px #000460 !important;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+
+    @media (max-width: 650px) {
+      width: 100%;
+    }
+  }
+
+  .submit-order-button {
+    margin-top: 25px;
+    width: 100%;
+  }
+
+  input:focus + label {
+    -webkit-transform: translateY(-14px) scale(0.8);
+    transform: translateY(-14px) scale(0.8);
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+  }
+
+  input {
+    &.ng-valid + label {
+      -webkit-transform: translateY(-14px) scale(0.8);
+      transform: translateY(-14px) scale(0.8);
+      -webkit-transform-origin: 0 0;
+      transform-origin: 0 0;
+    }
+  }
+
+  textarea:focus + label {
+    -webkit-transform: translateY(-14px) scale(0.8);
+    transform: translateY(-14px) scale(0.8);
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+  }
+
+  textarea {
+    &.ng-valid + label {
+      -webkit-transform: translateY(-14px) scale(0.8);
+      transform: translateY(-14px) scale(0.8);
+      -webkit-transform-origin: 0 0;
+      transform-origin: 0 0;
+    }
+  }
+
+  .textarea-wrapp {
+    margin: 20px 0;
+
+    textarea {
+      min-height: 100px;
+    }
+  }
+
+  .textarea-label {
+    font-size: 0.8rem;
+    color: #9e9e9e;
+    text-align: left;
+  }
+}

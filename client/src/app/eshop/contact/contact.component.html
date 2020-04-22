@@ -1,0 +1,30 @@
+
+<div class="main">
+  <div class="container">
+    <div class="contact-form-wrap">
+      <h1>Contact</h1>
+            <form [formGroup]="contactForm">
+                <div class="full-input input-field">
+                    <input class="form-control validate"
+                      id="contantName"
+                      type="text"
+                      name="contantName"
+                     formControlName="name">
+                    <label for="contantName">{{'Firstname' | translate | async }} {{ 'and' | translate | async }} {{ 'Surname' | translate | async }}</label>
+                </div>
+                <div class="full-input input-field">
+                    <input class="form-control validate" type="email" name="email" formControlName="email">
+                    <label for="email">Email</label>
+                </div>
+            <div class="textarea-wrapp input-field">
+                <textarea class="form-control materialize-textarea" rows="20" cols="60" name="lang" formControlName="notes">
+                  </textarea>
+                  <label class="textarea-label">Notes</label>
+            </div>
+
+                <button type="submit" class="btn waves-effect waves-light submit-contact-button" [disabled]="contactForm.invalid"
+                  (click)="submit()"> {{ 'SendContact' | translate | async }} </button>
+            </form>
+    </div>
+  </div>
+</div>

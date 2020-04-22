@@ -1,0 +1,77 @@
+:host {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+
+  .main {
+    // background: #efefef;
+  }
+
+  .container {
+    padding: 15px;
+  }
+
+  .top-primary-header {
+    background: linear-gradient(to left, #000460, #004e92);
+
+    h1 {
+      font-weight: 600;
+      margin: 0;
+      padding: 0;
+      font-size: 22px;
+      color: #fff;
+      text-align: center;
+    }
+  }
+
+  .card-button-wrapper {
+    display: flex;
+    padding: 20px 0;
+    justify-content: center;
+  }
+
+  .products-wrapp {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .wrapper {
+    display: grid;
+    display: -ms-grid;
+    grid-template-areas: "sidebar main";
+    grid-template-columns: 200px 1fr;
+    -ms-grid-columns: 200px 1fr;
+    grid-column-gap: 15px;
+
+    .main-wrap {
+      grid-area: main;
+
+      .category-title {
+        margin: 0;
+      }
+    }
+
+    .sidebar-wrap {
+      grid-area: sidebar;
+    }
+
+    @media screen and (max-width: 600px) {
+      grid-template-areas: "sidebar" "main";
+      grid-template-columns: auto;
+
+      .main-wrap {
+        grid-area: main;
+      }
+
+      .sidebar-wrap {
+        grid-area: sidebar;
+      }
+    }
+
+    .disabled {
+      cursor: not-allowed !important;
+      pointer-events: none !important;
+    }
+  }
+}

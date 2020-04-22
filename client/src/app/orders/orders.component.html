@@ -1,0 +1,23 @@
+<div class="main">
+
+    <div class="container">
+
+      <div class="orders-edit-wrapper">
+          <div class="card scale-transition" *ngFor="let order of orders$ | async">
+              <div class="card-action">
+                <p> {{ order?.orderId }} </p>
+                <div class="action-wrap">
+                  <a routerLink="{{ordersUrl}}/{{order?.orderId}}">Detail</a>
+                  <p>Status: {{ order?.status }}</p>
+                </div>
+                <div class="price-card">Amount: {{ order?.amount }}</div>
+                <p>Desc: {{ order?.description }}</p>
+                <p>Customer: {{ order?.customerEmail }}</p>
+                <p>Created: {{ order.dateAdded | date:'dd-MM-yy' }}</p>
+                <p>Paid: {{ order?.outcome?.seller_message }}</p>
+              </div>
+            </div>
+      </div>
+
+    </div>
+  </div>
