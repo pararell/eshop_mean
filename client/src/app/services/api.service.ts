@@ -175,10 +175,10 @@ export class ApiService {
     return this.http.get(getImages);
   }
 
-  addProductImagesUrl({imageUrl, titleUrl}) {
+  addProductImagesUrl({image, titleUrl}) {
     const titleUrlQuery = titleUrl ? '?titleUrl=' + titleUrl : '';
     const addImageUrl = this.baseUrl + '/api/admin/images/add' + titleUrlQuery;
-    return this.http.post(addImageUrl, { imageUrl });
+    return this.http.post(addImageUrl, { image });
   }
 
   removeImage({image, titleUrl}) {

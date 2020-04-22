@@ -15,30 +15,31 @@ export class AdminService {
         return await images || new Images([]);
       }
 
-      async addImage(images: Images, {imageUrl}, getImageDto: GetImageDto):Promise<Images | Product> {
+      async addImage(images: Images, {image}, getImageDto: GetImageDto):Promise<Images | Product> {
         const {titleUrl} = getImageDto;
-        console.log(imageUrl, 'imageurl')
         const existImages = await new Images(images || []);
         const product = titleUrl
-          ? await this.productModel.findOneAndUpdate({ titleUrl: titleUrl}, { $push: { images: imageUrl } })
+          ? await this.productModel
+            .findOneAndUpdate({ titleUrl }, { $push: { images: image } }, { new: true })
           : null;
 
         if (!product) {
-          existImages.add(imageUrl);
+          existImages.add(image);
         }
 
         return product || existImages;
       }
 
-      async removeImage(images: Images, {imageUrl}, getImageDto: GetImageDto):Promise<Images | Product> {
+      async removeImage(images: Images, {image}, getImageDto: GetImageDto):Promise<Images | Product> {
         const {titleUrl} = getImageDto;
         const existImages = await new Images(images || []);
         const product = titleUrl
-          ? await this.productModel.findOneAndUpdate({ titleUrl }, { $pull: { images: imageUrl } })
+          ? await this.productModel
+            .findOneAndUpdate({ titleUrl }, { $pull: { images: image } }, { new: true })
           : null;
 
         if (!product) {
-          existImages.remove(imageUrl);
+          existImages.remove(image);
         }
 
         return product || existImages;

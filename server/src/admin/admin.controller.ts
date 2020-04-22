@@ -30,7 +30,7 @@ import { GetImageDto } from './dto/get-image.dto';
     @Post('/images/add')
     async addImage(
         @Session() session, 
-        @Body() image: {imageUrl: string},
+        @Body() image: {image: string},
         @Query(ValidationPipe) getImageDto: GetImageDto): Promise<Images | Product> {
         const result = await this.adminService.addImage(session.images, image, getImageDto);
         if (!(result as Product).titleUrl) {
@@ -43,7 +43,7 @@ import { GetImageDto } from './dto/get-image.dto';
     @Post('/images/remove')
     async removeImage(
         @Session() session, 
-        @Body() image: {imageUrl: string},
+        @Body() image: {image: string},
         @Query(ValidationPipe) getImageDto: GetImageDto ): Promise<Images | Product> {
         const result = await this.adminService.removeImage(session.images, image, getImageDto);
         if (!(result as Product).titleUrl) {

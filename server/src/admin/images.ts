@@ -7,7 +7,6 @@ export class Images {
   }
 
   add = function(newImage) {
-      console.log(newImage, 'newImage',  this.all)
       const found = !!this.all.filter(image => image === newImage).length;
       if (!found) {
         this.all.push(newImage);

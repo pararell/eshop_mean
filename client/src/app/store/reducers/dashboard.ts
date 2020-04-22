@@ -35,6 +35,18 @@ export function dashboardReducer(state = initialState, action): State {
         return { ...state, productImages: action.payload.all }
       }
 
+    case actions.ADD_PRODUCT_IMAGES_URL_SUCCESS: {
+      return { ...state, productImages: action.payload.all };
+    }
+
+    case actions.REMOVE_PRODUCT_IMAGE_SUCCESS: {
+      return { ...state, productImages: action.payload.all };
+    }
+
+    case actions.ADD_PRODUCT_IMAGE: {
+      return {...state, productImages: action.payload.all };
+    }
+
     case actions.GET_ALL_TRANSLATIONS_SUCCESS: {
       return { ...state, translations: action.payload } }
 

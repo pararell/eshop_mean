@@ -102,13 +102,23 @@ export class AppEffects {
   @Effect() addProductImagesUrl$: Observable<Action> = this._actions.pipe(
    ofType(actions.ADD_PRODUCT_IMAGES_URL),
       switchMap((action: actions.AddProductImagesUrl) => this.apiService.addProductImagesUrl(action.payload)),
-      map(res => new actions.AddProductImagesUrlSuccess(res))
+      map((res : any) => {
+        if (res && res.titleUrl) {
+          return new actions.GetProductSuccess(res);
+        }
+        return new actions.AddProductImagesUrlSuccess(res);
+      })
   );
 
   @Effect() removeImage$: Observable<Action> = this._actions.pipe(
     ofType(actions.REMOVE_PRODUCT_IMAGE),
       switchMap((action: actions.RemoveProductImage) => this.apiService.removeImage(action.payload)),
-      map(res => new actions.RemoveProductImageSuccess(res))
+      map((res: any) => {
+        if (res && res.titleUrl) {
+          return new actions.GetProductSuccess(res);
+        }
+        return new actions.RemoveProductImageSuccess(res);
+      })
   );
 
   @Effect() loadOrders$: Observable<Action> = this._actions.pipe(

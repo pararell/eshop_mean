@@ -1,96 +1,65 @@
 import {Action} from '@ngrx/store';
 
-export const LOAD_USER_ACTION = 'LOAD_USER__ACTION';
-export const STORE_USER_ACTION = 'STORE_USER_ACTION';
-
-export const STORE_ACTION = 'STORE_ACTION';
-
-export const LOAD_PAYMENT = 'LOAD_PAYMENT';
-export const LOAD_PAYMENT_SUCCESS = 'LOAD_PAYMENT Sucess';
-export const LOAD_PAYMENT_FAIL = 'LOAD_PAYMENT Fail';
-
-export const MAKE_ORDER = 'Make Order';
-export const MAKE_ORDER_SUCCESS = 'Make Order Success';
-export const MAKE_ORDER_FAIL = 'Make Order Fail';
-
-export const LOAD_PRODUCT = 'LOAD Product';
-export const LOAD_PRODUCT_SUCESS = 'LOAD Product Sucess';
-
-export const LOAD_PRODUCTS = 'LOAD Products';
-export const LOAD_PRODUCTS_SUCESS = 'LOAD Products Sucess';
-
-export const LOAD_CATEGORY_PRODUCTS = 'LOAD Category Products';
-export const LOAD_CATEGORY_PRODUCTS_SUCESS = 'LOAD Category Products Sucess';
-
-export const LOAD_CATEGORIES = 'LOAD Categories';
-export const LOAD_CATEGORIES_SUCESS = 'LOAD Categories Sucess';
-
-export const LOAD_PRODUCTS_SEARCH = 'LOAD Products Search';
-export const LOAD_PRODUCTS_SEARCH_SUCESS = 'LOAD Products Search Sucess';
-
-export const GET_PRODUCT = 'GET Product';
-export const GET_PRODUCT_SUCESS = 'GET Product Sucess';
-
-export const ADD_TO_CART = 'ADD to Cart';
-export const ADD_TO_CART_SUCCESS = 'ADD to Cart Success';
-
-export const GET_CART = 'Get Cart';
-export const GET_CART_SUCCESS = 'Get Cart Success'
-
-export const REMOVE_FROM_CART = 'Remove from Cart';
-
+export const ADD_PRODUCT = 'Add Product';
 export const ADD_PRODUCT_IMAGE = 'Add Product Image';
-export const REMOVE_PRODUCT_IMAGE = 'Remove Product Image';
-export const REMOVE_PRODUCT_IMAGE_SUCCESS = 'Remove Product Image Success';
 export const ADD_PRODUCT_IMAGES_URL = 'Add Product Images Url';
 export const ADD_PRODUCT_IMAGES_URL_SUCCESS = 'Add Product Images Url Success';
-
-export const GET_IMAGES = 'Get Images';
-
-export const GET_IMAGES_SUCCESS = 'Get Images Success';
-
-export const GET_ALL_TRANSLATIONS = 'Get All Translations';
-export const GET_ALL_TRANSLATIONS_SUCCESS = 'Get All Translations Success';
-
-export const EDIT_TRANSLATION = 'Edit Translation';
-export const EDIT_TRANSLATION_SUCCESS = 'Edit Translation Success';
-
-
+export const ADD_PRODUCT_SUCCESS = 'Add Product Success';
+export const ADD_TO_CART = 'ADD to Cart';
+export const ADD_TO_CART_SUCCESS = 'ADD to Cart Success';
 export const CHANGE_LANG = 'Change Lang';
 export const CHANGE_LANG_SUCCESS = 'Change Lang Success';
-
-export const ADD_PRODUCT = 'Add Product';
-export const ADD_PRODUCT_SUCCESS = 'Add Product Success';
-
-export const REMOVE_PRODUCT = 'Remove Product';
-export const REMOVE_PRODUCT_SUCCESS = 'Remove Product Success';
-
 export const EDIT_PRODUCT = 'Edit Product';
 export const EDIT_PRODUCT_SUCCESS = 'Edit Product Success';
-
+export const EDIT_TRANSLATION = 'Edit Translation';
+export const EDIT_TRANSLATION_SUCCESS = 'Edit Translation Success';
 export const FILTER_PRICE = 'Filter Price';
-
-export const UPDATE_POSITION = 'Update Position';
-
-export const LOAD_ORDERS = 'Load Orders';
-export const LOAD_ORDERS_SUCCESS = 'Load Orders Success';
-
+export const GET_ALL_TRANSLATIONS = 'Get All Translations';
+export const GET_ALL_TRANSLATIONS_SUCCESS = 'Get All Translations Success';
+export const GET_CART = 'Get Cart';
+export const GET_CART_SUCCESS = 'Get Cart Success'
+export const GET_IMAGES = 'Get Images';
+export const GET_IMAGES_SUCCESS = 'Get Images Success';
+export const GET_PRODUCT = 'GET Product';
+export const GET_PRODUCT_SUCESS = 'GET Product Sucess';
+export const LOAD_CATEGORIES = 'LOAD Categories';
+export const LOAD_CATEGORIES_SUCESS = 'LOAD Categories Sucess';
+export const LOAD_CATEGORY_PRODUCTS = 'LOAD Category Products';
+export const LOAD_CATEGORY_PRODUCTS_SUCESS = 'LOAD Category Products Sucess';
 export const LOAD_ORDER = 'Load Order';
 export const LOAD_ORDER_SUCCESS = 'Load Order Success';
-
+export const LOAD_ORDERS = 'Load Orders';
+export const LOAD_ORDERS_SUCCESS = 'Load Orders Success';
+export const LOAD_PAYMENT = 'LOAD_PAYMENT';
+export const LOAD_PAYMENT_FAIL = 'LOAD_PAYMENT Fail';
+export const LOAD_PAYMENT_SUCCESS = 'LOAD_PAYMENT Sucess';
+export const LOAD_PRODUCT = 'LOAD Product';
+export const LOAD_PRODUCT_SUCESS = 'LOAD Product Sucess';
+export const LOAD_PRODUCTS = 'LOAD Products';
+export const LOAD_PRODUCTS_SEARCH = 'LOAD Products Search';
+export const LOAD_PRODUCTS_SEARCH_SUCESS = 'LOAD Products Search Sucess';
+export const LOAD_PRODUCTS_SUCESS = 'LOAD Products Sucess';
+export const LOAD_USER_ACTION = 'LOAD_USER__ACTION';
 export const LOAD_USER_ORDERS = 'Load User Orders';
 export const LOAD_USER_ORDERS_SUCCESS = 'Load User Orders Success';
-
-export const UPDATE_ORDER = 'Update Order';
-
+export const MAKE_ORDER = 'Make Order';
+export const MAKE_ORDER_FAIL = 'Make Order Fail';
+export const MAKE_ORDER_SUCCESS = 'Make Order Success';
+export const REMOVE_FROM_CART = 'Remove from Cart';
+export const REMOVE_PRODUCT = 'Remove Product';
+export const REMOVE_PRODUCT_IMAGE = 'Remove Product Image';
+export const REMOVE_PRODUCT_IMAGE_SUCCESS = 'Remove Product Image Success';
+export const REMOVE_PRODUCT_SUCCESS = 'Remove Product Success';
 export const SEND_CONTACT = 'Send Contact';
 export const SEND_CONTACT_SUCCESS = 'Send Contact Success';
-
 export const SIGN_IN = 'SignIn';
 export const SIGN_IN_SUCCESS = 'SignIn Success';
-
 export const SIGN_UP = 'SignUp';
 export const SIGN_UP_SUCCESS = 'SignUp Success';
+export const STORE_ACTION = 'STORE_ACTION';
+export const STORE_USER_ACTION = 'STORE_USER_ACTION';
+export const UPDATE_ORDER = 'Update Order';
+export const UPDATE_POSITION = 'Update Position';
 
 
 export class ChangeLang implements Action {
