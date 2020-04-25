@@ -8,6 +8,7 @@ import { Observable, Subscription, BehaviorSubject, from } from 'rxjs';
 import * as fromRoot from '../../store/reducers';
 import { Store } from '@ngrx/store';
 import * as actions from './../../store/actions'
+import { ApiService } from '../../services/api.service';
 
 
 @Component({
@@ -28,7 +29,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
   languageOptions     = ['en', 'sk', 'cs'];
   choosenLanguageSub$ :  BehaviorSubject<string> = new BehaviorSubject('en');
 
-  constructor(private fb: FormBuilder, private store: Store<fromRoot.State> ) {
+  constructor(private fb: FormBuilder, private store: Store<fromRoot.State>, private apiService: ApiService ) {
      this.createForm();
      this.product$ = this.store.select(fromRoot.getProduct);
     }
@@ -38,20 +39,37 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
     this.images$ = this.store.select(fromRoot.getProductImages).pipe(
       filter(Boolean));
 
-    this.uploader = new FileUploader({
-      url: '/admin/addimage',
-      headers: [{name: 'Accept', value: 'application/json'}],
+    const uploaderOptions = {
       itemAlias: 'file',
-      autoUpload: true,
-  });
-    this.uploader.onErrorItem = (item, response, status, headers) => this.onErrorItem(item, response, status, headers);
-    this.uploader.onSuccessItem = (item, response, status, headers) => this.onSuccessItem(item, response, status, headers);
+      autoUpload: true
+    }
+
+    this.store.dispatch(new actions.SetUploader({options: uploaderOptions}))
+    this.apiService.getUploader().subscribe(uploader => {
+      this.uploader = uploader;
+      this.uploader.onErrorItem = (item, response, status, headers) => this.onErrorItem(item, response, status, headers);
+      this.uploader.onSuccessItem = (item, response, status, headers) => this.onSuccessItem(item, response, status, headers);
+    })
+
  }
 
  ngOnDestroy() {
   if (this.productSub) {
     this.productSub.unsubscribe();
   }
+ }
+
+ onSuccessItem(item: FileItem, response: string, status: number, headers: ParsedResponseHeaders): any {
+  const parseResponse =  JSON.parse(response);
+  if (parseResponse && parseResponse.titleUrl) {
+    this.store.dispatch(new actions.GetProductSuccess(parseResponse));
+  } else if(parseResponse && parseResponse.all) {
+    this.store.dispatch(new actions.AddProductImagesUrlSuccess(parseResponse));
+  }
+ }
+
+ onErrorItem(item: FileItem, response: string, status: number, headers: ParsedResponseHeaders): any {
+   console.log( JSON.parse(response) );
  }
 
  onEditorChange(value) {
@@ -76,17 +94,13 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
   });
  }
 
-  onSuccessItem(item: FileItem, response: string, status: number, headers: ParsedResponseHeaders): any {
-   const parseResponse =  JSON.parse(response);
-   this.store.dispatch(new actions.AddProductImage(parseResponse));
-  }
 
-  onErrorItem(item: FileItem, response: string, status: number, headers: ParsedResponseHeaders): any {
-    console.log( JSON.parse(response) );
-  }
-
-  onRemoveImage(image: string) {
-    this.store.dispatch(new actions.RemoveProductImage({image: image, titleUrl: this.productEditForm.get('titleUrl').value} ));
+  onRemoveImage(image: string, type: string) {
+    const titleUrl = type === 'product'
+      ? { titleUrl: this.productEditForm.get('titleUrl').value }
+      : {};
+  
+    this.store.dispatch(new actions.RemoveProductImage({image: image, ...titleUrl} ));
   }
 
   setLang(lang: string) {
@@ -109,7 +123,6 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
  }
 
  onSubmit() {
-
 
    switch (this.action) {
      case 'add':
@@ -158,7 +171,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
  }
 
  addImageUrl() {
-  this.store.dispatch(new actions.AddProductImagesUrl( { imageUrl: this.productEditForm.get('imageUrl').value, titleUrl: this.productEditForm.get('titleUrl').value }));
+  this.store.dispatch(new actions.AddProductImagesUrl( { image: this.productEditForm.get('imageUrl').value, titleUrl: this.productEditForm.get('titleUrl').value }));
  }
 
  openForm() {
@@ -186,12 +199,12 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
         ...this.prepareLangEditForm(this.languageOptions, product)
       };
 
-      this.uploader = new FileUploader({
-        url: '/admin/addimage/' + product.titleUrl,
-        headers: [{name: 'Accept', value: 'application/json'}],
+      const uploaderOptions = {
         itemAlias: 'file',
-        autoUpload: true,
-    });
+        autoUpload: true
+      }
+
+      this.store.dispatch(new actions.SetUploader({options: uploaderOptions, titleUrl: product.titleUrl}))
 
     const prepareDescFull = this.languageOptions
       .map(lang => ({

@@ -52,6 +52,9 @@ export const REMOVE_PRODUCT_IMAGE_SUCCESS = 'Remove Product Image Success';
 export const REMOVE_PRODUCT_SUCCESS = 'Remove Product Success';
 export const SEND_CONTACT = 'Send Contact';
 export const SEND_CONTACT_SUCCESS = 'Send Contact Success';
+export const SET_UPLOADER = 'Set Uploader';
+export const SET_UPLOADER_SUCCESS = 'Set Uploader Success';
+export const SET_UPLOADER_ERROR = 'Set Uploader Error';
 export const SIGN_IN = 'SignIn';
 export const SIGN_IN_SUCCESS = 'SignIn Success';
 export const SIGN_UP = 'SignUp';
@@ -179,7 +182,24 @@ export class AddProductImagesUrlSuccess implements Action {
   }
 }
 
+export class SetUploader implements Action {
+  readonly type = SET_UPLOADER;
+  constructor(public payload: any) {
+  }
+}
 
+export class SetUploaderSuccess implements Action {
+  readonly type = SET_UPLOADER_SUCCESS;
+  constructor(public payload: any) {
+  }
+}
+
+
+export class SetUploaderError implements Action {
+  readonly type = SET_UPLOADER_ERROR;
+  constructor(public payload: any) {
+  }
+}
 
 export class RemoveProductImage implements Action {
     readonly type = REMOVE_PRODUCT_IMAGE;

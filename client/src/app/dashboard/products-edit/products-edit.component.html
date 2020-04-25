@@ -116,26 +116,29 @@
       <div class="images-wrapp" *ngIf="!!(images$ | async)?.length && !(product$ | async)?.images?.length">
         <div class="image-dash-wrap" *ngFor="let image of (images$ | async)">
           <img src="{{image}}">
-          <div class="remove-image" (click)="onRemoveImage(image)">X</div>
+          <div class="remove-image" (click)="onRemoveImage(image, 'image')">X</div>
         </div>
       </div>
 
       <div class="images-wrapp" *ngIf="!!(product$ | async)?.images?.length">
         <div class="image-dash-wrap" *ngFor="let image of (product$ | async)?.images">
           <img src="{{image}}">
-          <div class="remove-image" (click)="onRemoveImage(image)">X</div>
+          <div class="remove-image" (click)="onRemoveImage(image, 'product')">X</div>
         </div>
       </div>
 
-      <div ng2FileDrop [uploader]="uploader" class="add-images">
-        <div class="file-field input-field">
-          <div class="btn">
-            <span>File</span>
-            <input type="file" ng2FileSelect [uploader]="uploader" multiple />
+      <ng-container *ngIf="uploader">
+        <div ng2FileDrop [uploader]="uploader" class="add-images">
+          <div class="file-field input-field">
+            <div class="btn">
+              <span>File</span>
+              <input type="file" ng2FileSelect [uploader]="uploader" multiple />
+            </div>
           </div>
+          <div class="check-title">Images</div>
         </div>
-        <div class="check-title">Images</div>
-      </div>
+      </ng-container>
+
 
       <div class="full-input">
         <input class="form-control" formControlName="imageUrl">

@@ -7,15 +7,22 @@ import {
     Query,
     Body,
     ValidationPipe,
+    UseInterceptors,
+    UploadedFile,
   } from '@nestjs/common';
   import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { AdminService } from './admin.service';
 import { Images } from './images';
 import { Product } from '../products/models/product.model';
-import { GetImageDto } from './dto/get-image.dto';
+import { AddProductImageDto } from './dto/add-image.dto';
+import { ImageDto } from './dto/image.dto';
+import * as multer from 'multer';
+import { FileInterceptor } from '@nestjs/platform-express';
+const storage = multer.memoryStorage();
+const upload  = multer({ storage });
 
-  
+
   @Controller('api/admin')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   export class AdminController {
@@ -25,14 +32,28 @@ import { GetImageDto } from './dto/get-image.dto';
     getImages(@Session() session): Promise<Images> {
        return this.adminService.getImages(session.images);
     }
-    
+  
 
     @Post('/images/add')
     async addImage(
         @Session() session, 
-        @Body() image: {image: string},
-        @Query(ValidationPipe) getImageDto: GetImageDto): Promise<Images | Product> {
-        const result = await this.adminService.addImage(session.images, image, getImageDto);
+        @Body() imageDto: ImageDto,
+        @Query(ValidationPipe) addImageDto: AddProductImageDto): Promise<Images | Product> {
+        const result = await this.adminService.addImage(session.images, imageDto, addImageDto);
+        if (!(result as Product).titleUrl) {
+          session.images = result;
+        }
+
+        return result;
+    }
+
+    @Post('/images/upload')
+    @UseInterceptors(FileInterceptor('file', upload.single('file')))
+    async uploadImage(
+        @Session() session, 
+        @UploadedFile() file,
+        @Query(ValidationPipe) addImageDto: AddProductImageDto): Promise<Images | Product> {
+        const result = await this.adminService.uploadImage(session.images, file, addImageDto);
         if (!(result as Product).titleUrl) {
           session.images = result;
         }
@@ -43,9 +64,9 @@ import { GetImageDto } from './dto/get-image.dto';
     @Post('/images/remove')
     async removeImage(
         @Session() session, 
-        @Body() image: {image: string},
-        @Query(ValidationPipe) getImageDto: GetImageDto ): Promise<Images | Product> {
-        const result = await this.adminService.removeImage(session.images, image, getImageDto);
+        @Body() imageDto: ImageDto,
+        @Query(ValidationPipe) addImageDto: AddProductImageDto ): Promise<Images | Product> {
+        const result = await this.adminService.removeImage(session.images, imageDto, addImageDto);
         if (!(result as Product).titleUrl) {
           session.images = result;
         }

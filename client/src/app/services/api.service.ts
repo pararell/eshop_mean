@@ -4,6 +4,8 @@ import { Inject, Injectable, Injector, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { REQUEST } from '@nguniversal/express-engine/tokens';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
+import { FileUploader } from 'ng2-file-upload';
+import { Observable, of, BehaviorSubject} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +13,7 @@ import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 export class ApiService {
 
   baseUrl = 'http://localhost:4000';
+  uploaderSub : BehaviorSubject<FileUploader> = new BehaviorSubject(null);
 
   constructor(
       private readonly http     : HttpClient,
@@ -187,6 +190,23 @@ export class ApiService {
     return this.http.post(removeImage, { image });
   }
 
+  getUploader() {
+    return this.uploaderSub.asObservable();
+  }
+
+  setUploader({options, titleUrl}): Observable<any> {
+    const titleUrlQuery = titleUrl ? '?titleUrl=' + titleUrl : '';
+    const accessToken = localStorage.getItem('accessToken');
+    const authorizationHeader = accessToken ? {name: 'Authorization', value: 'Bearer ' + accessToken } : {};
+
+    this.uploaderSub.next(new FileUploader({
+      url: this.baseUrl + '/api/admin/images/upload' + titleUrlQuery,
+      headers: [{name: 'Accept', value: 'application/json', ...authorizationHeader}],
+      ...options
+   }));
+
+   return this.uploaderSub.asObservable();
+  }
 
   getLocation$() {
     const locationFindUrl = 'https://ipinfo.io';

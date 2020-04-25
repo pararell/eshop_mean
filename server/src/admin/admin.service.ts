@@ -2,8 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ProductModel, Product } from '../products/models/product.model';
 import { Images } from './images';
-import { GetImageDto } from './dto/get-image.dto';
+import { AddProductImageDto } from './dto/add-image.dto';
+import { ImageDto } from './dto/image.dto';
+import * as cloudinary from 'cloudinary';
+import * as streamifier from 'streamifier';
 
+
+cloudinary.v2.config({
+  cloud_name  : process.env.CLOUDINARY_NAME,
+  api_key     : process.env.CLOUDINARY_KEY,
+  api_secret  : process.env.CLOUDINARY_SECRET
+})
 
 @Injectable()
 export class AdminService {
@@ -15,8 +24,9 @@ export class AdminService {
         return await images || new Images([]);
       }
 
-      async addImage(images: Images, {image}, getImageDto: GetImageDto):Promise<Images | Product> {
-        const {titleUrl} = getImageDto;
+      async addImage(images: Images, imageDto : ImageDto, addImageDto: AddProductImageDto):Promise<Images | Product> {
+        const {image} = imageDto;
+        const {titleUrl} = addImageDto;
         const existImages = await new Images(images || []);
         const product = titleUrl
           ? await this.productModel
@@ -30,8 +40,37 @@ export class AdminService {
         return product || existImages;
       }
 
-      async removeImage(images: Images, {image}, getImageDto: GetImageDto):Promise<Images | Product> {
-        const {titleUrl} = getImageDto;
+      async uploadImage(images: Images, file, addImageDto: AddProductImageDto):Promise<Images | Product> {
+        const {titleUrl} = addImageDto;
+        const existImages = await new Images(images || []);
+
+        console.log(file, 'file')
+
+        // const uploadedImage = await cloudinary.v2.uploader
+        // .upload(file.buffer, { resource_type: 'auto', use_filename: true })
+
+        const uploadedImage = await this.uploadToCloudinary(file);
+
+        const image = uploadedImage.secure_url;
+
+
+    
+        const product = titleUrl
+          ? await this.productModel
+            .findOneAndUpdate({ titleUrl }, { $push: { images: image } }, { new: true })
+          : null;
+
+        if (!product) {
+          existImages.add(image);
+        }
+
+        return product || existImages;
+      }
+
+
+      async removeImage(images: Images, imageDto : ImageDto, addImageDto: AddProductImageDto):Promise<Images | Product> {
+        const {image} = imageDto;
+        const {titleUrl} = addImageDto;
         const existImages = await new Images(images || []);
         const product = titleUrl
           ? await this.productModel
@@ -43,6 +82,29 @@ export class AdminService {
         }
 
         return product || existImages;
+      }
+
+
+
+      private async uploadToCloudinary(file): Promise<any> {
+          return new Promise((resolve, reject) => {
+       
+            let cld_upload_stream = cloudinary.v2.uploader.upload_stream(
+             {
+              resource_type: 'auto', use_filename: true 
+             },
+             (error: any, result: any) => {
+       
+               if (result) {
+                 resolve(result);
+               } else {
+                 reject(error);
+                }
+              }
+            );
+       
+            streamifier.createReadStream(file.buffer).pipe(cld_upload_stream)
+          });
       }
 
 }

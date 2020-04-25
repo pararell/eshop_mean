@@ -121,6 +121,13 @@ export class AppEffects {
       })
   );
 
+
+  @Effect({dispatch: false}) setuploder$: Observable<void> = this._actions.pipe(
+    ofType(actions.SET_UPLOADER),
+      switchMap((action: actions.SetUploader) => this.apiService.setUploader(action.payload)),
+      map((uploader: any) => console.log('Uploader init'))
+  );
+
   @Effect() loadOrders$: Observable<Action> = this._actions.pipe(
     ofType(actions.LOAD_ORDERS),
       switchMap((action: actions.LoadOrders) => this.apiService.getOrders()),

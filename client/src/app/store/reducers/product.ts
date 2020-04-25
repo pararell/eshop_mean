@@ -121,25 +121,6 @@ export function productReducer(state = initialState, action): State {
       return { ...state, position: action.payload } }
 
 
-    case actions.ADD_PRODUCT_IMAGE: {
-      return { ...state, product: state.product
-        ? {...state.product, images: [...state.product.images, ...action.payload ]
-          .filter((v, i, a) => i === a.indexOf(v)) }
-        : null }
-    }
-
-    case actions.ADD_PRODUCT_IMAGES_URL_SUCCESS: {
-      return { ...state, product: state.product
-        ? {...state.product, images: [...state.product.images, ...action.payload ]
-          .filter((v, i, a) => i === a.indexOf(v)) }
-        : null }
-    }
-
-    case actions.REMOVE_PRODUCT_IMAGE_SUCCESS: {
-      return { ...state, product: action.payload.admin ? state.product : action.payload};
-      }
-
-
 
     default: {
       return state;
