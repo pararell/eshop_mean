@@ -3,6 +3,8 @@ import { IsString, MaxLength, MinLength, Matches } from 'class-validator';
 export class AuthCredentialDto {
   name?: string;
 
+  googleId? : string;
+
   @IsString()
   @MinLength(4)
   @MaxLength(50)

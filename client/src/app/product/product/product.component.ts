@@ -32,7 +32,8 @@ export class ProductComponent {
     private _title  : Title) {
     this.lang$ = this.store.select(fromRoot.getLang).pipe(filter(Boolean));
 
-    combineLatest(this.lang$, this._route.params.pipe(map(params => params['id'])), (lang, id) => ({ lang, id })).subscribe(({ lang, id }) => this.store.dispatch(new actions.GetProduct(id + '?lang=' + lang)));
+    combineLatest(this.lang$, this._route.params.pipe(map(params => params['id'])), (lang, id) => ({ lang, id }))
+      .subscribe(({ lang, id }) => this.store.dispatch(new actions.GetProduct(id + '?lang=' + lang)));
 
     this.store
       .select(fromRoot.getProduct)

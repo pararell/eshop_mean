@@ -19,7 +19,7 @@ const staticFile = existsSync(join(process.cwd(), 'dist/eshop/browser'))
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRoot(process.env.MONGO_URI),
     ProductsModule,
     CartModule,

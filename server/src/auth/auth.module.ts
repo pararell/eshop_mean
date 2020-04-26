@@ -8,7 +8,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import UserSchema from './user.schema';
 import { SessionSerializer } from './session.serializer';
 import { ConfigModule } from '@nestjs/config';
-
+import { GoogleStrategy } from './google.strategy';
 
 @Module({
   imports: [
@@ -23,7 +23,7 @@ import { ConfigModule } from '@nestjs/config';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, SessionSerializer],
+  providers: [AuthService, JwtStrategy, GoogleStrategy, SessionSerializer],
   exports: [JwtStrategy, PassportModule],
 })
 export class AuthModule {}

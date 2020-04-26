@@ -3,7 +3,7 @@
     <a href="" class="left brand-logo">Bluetooth eshop</a>
     <ul class="right nav-menu-right-side">
       <li *ngIf="!(user$ | async)">
-        <a href="/auth/google">{{ 'Login' | translate | async }} {{ 'with' | translate | async }} Google</a>
+        <a href="http://localhost:4000/api/auth/google">{{ 'Login' | translate | async }} {{ 'with' | translate | async }} Google</a>
         <a [routerLink]="[signInUrl]">{{ 'Login' | translate | async }}</a>
       </li>
       <li>
@@ -23,7 +23,7 @@
           <a [routerLink]="[ordersUrl]">  {{'Orders' | translate | async}}</a>
       </li>
       <li *ngIf="(user$ | async)">
-        <a href="/auth/logout" (click)="onLogout()"> {{'Logout' | translate | async}}</a>
+        <a (click)="onLogout()"> {{'Logout' | translate | async}}</a>
       </li>
       <li>
           <select class="browser-default lang-select" aria-label="Language" [ngModel]="choosenLanguage" (ngModelChange)="setLang($event)">
@@ -37,7 +37,7 @@
     <div class="mobile-nav-menu" [class.active]="showMobileNav">
         <ul class="">
             <li *ngIf="!(user$ | async)?._id">
-              <a href="/auth/google">{{ 'Login' | translate | async }} {{ 'with' | translate | async }} Google</a>
+              <a href="http://localhost:4000/auth/google">{{ 'Login' | translate | async }} {{ 'with' | translate | async }} Google</a>
             </li>
             <li>
               <ng-container *ngIf="(cart$ | async) as cart">

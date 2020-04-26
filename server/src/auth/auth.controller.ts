@@ -1,11 +1,12 @@
-import { Controller, Post, Body, ValidationPipe, UseGuards, Get } from '@nestjs/common';
+import { Controller, Post, Body, ValidationPipe, UseGuards, Get, Req, Res } from '@nestjs/common';
 import { AuthCredentialDto } from './dto/auth-credential.dto';
 import { AuthService } from './auth.service';
 import { User } from './user.model';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from './get-user.decorator';
 
-@Controller('auth')
+
+@Controller('api/auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
@@ -27,5 +28,19 @@ export class AuthController {
     @Body(ValidationPipe) authCredentialsDto: AuthCredentialDto,
   ): Promise<{ accessToken: string; email: string }> {
     return this.authService.signIn(authCredentialsDto);
+  }
+
+  @Get('/google')
+  @UseGuards(AuthGuard('google'))
+  googleLogin() {}
+  
+
+
+  @Get('/google/callback')
+  @UseGuards(AuthGuard('google'))
+  async googleLoginCallback(@Req() req, @Res() res) {
+    const accessToken = await this.authService.signInGoogle(req.user);
+    const tokenUrl = process.env.ORIGIN + '/jwtToken/' + accessToken;
+    res.redirect(tokenUrl);
   }
 }

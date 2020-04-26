@@ -3,6 +3,7 @@ import { AuthGuardAdmin } from './services/auth-admin.guard';
 import { AuthGuard } from './services/auth.guard';
 import { OrdersComponent } from './orders/orders.component';
 import { ProductsComponent } from './products/products.component';
+import { JwtTokenComponent } from './auth/jwtToken/jwtToken.component';
 
 export const routesAll = [
   { path: '', component: ProductsComponent, pathMatch: 'full' },
@@ -15,6 +16,7 @@ export const routesAll = [
   { path: 'en/order/:id', component: OrderComponent, pathMatch: 'full' },
   { path: 'en/eshop', loadChildren: () => import('./eshop/eshop.module').then(m => m.EshopModule) },
   { path: 'en/authorize', loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule) },
+  { path: 'jwtToken/:accessToken', component: JwtTokenComponent },
 
   { path: 'sk/produkty', component: ProductsComponent  },
   { path: 'sk/produkt', loadChildren: () => import('./product/product.module').then(m => m.ProductModule) },
@@ -25,6 +27,7 @@ export const routesAll = [
   { path: 'sk/objednavka/:id', component: OrderComponent, pathMatch: 'full' },
   { path: 'sk/eshop', loadChildren: () => import('./eshop/eshop.module').then(m => m.EshopModule) },
   { path: 'sk/authorize', loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule) },
+  { path: 'jwtToken/:accessToken', component: JwtTokenComponent },
 
   { path: 'cs/produkty', component: ProductsComponent  },
   { path: 'cs/produkt', loadChildren: () => import('./product/product.module').then(m => m.ProductModule) },
@@ -35,6 +38,7 @@ export const routesAll = [
   { path: 'cs/objednavka/:id', component: OrderComponent, pathMatch: 'full' },
   { path: 'cs/eshop', loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule) },
   { path: 'cs/authorize', loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule) },
+  { path: 'jwtToken/:accessToken', component: JwtTokenComponent },
 
   { path: '**', redirectTo: '' }
 ];

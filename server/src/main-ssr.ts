@@ -47,13 +47,6 @@ async function bootstrap() {
   app.use(passport.session());
 
 
-  app.use((req, res, next) => {
-    res.locals.login = req.isAuthenticated();
-    res.locals.session = req.session;
-    next();
-  });
-
-
   const port = process.env.SERVER_PORT;
   await app.listen(port);
   logger.log('App listening on port ' + port);

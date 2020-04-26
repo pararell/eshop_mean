@@ -67,6 +67,7 @@
     "ng2-file-upload": "^1.4.0",
     "ngx-cookie-service": "^3.0.4",
     "passport": "^0.4.1",
+    "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.0",
     "reflect-metadata": "^0.1.13",
     "reselect": "^4.0.0",

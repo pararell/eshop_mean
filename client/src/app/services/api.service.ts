@@ -35,7 +35,7 @@ export class ApiService {
 
   // auth
   getUser() {
-    const userUrl = this.baseUrl + '/auth';
+    const userUrl = this.baseUrl + '/api/auth';
     return this.http.get(userUrl);
   }
 
@@ -56,12 +56,12 @@ export class ApiService {
   }
 
   signIn(req) {
-    const sendContact = this.baseUrl + '/auth/signin';
+    const sendContact = this.baseUrl + '/api/auth/signin';
     return this.http.post(sendContact, req);
   }
 
   signUp(req) {
-    const sendContact = this.baseUrl + '/auth/signup';
+    const sendContact = this.baseUrl + '/api/auth/signup';
     return this.http.post(sendContact, req);
   }
 

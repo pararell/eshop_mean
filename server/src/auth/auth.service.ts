@@ -56,6 +56,30 @@ export class AuthService {
     return { accessToken, id: user._id, email };
   }
 
+  async signInGoogle(authInfo) {
+    const {email, profile} = authInfo;
+    const user = await this.userModel.findOne({email});
+
+    if (!user) {
+      const googleUser = await new this.userModel({email, googleId: profile.id});
+      googleUser.save();
+    }
+
+    const payload: JwtPayload = { email };
+    const accessToken = await this.jwtService.sign(payload);
+
+    return accessToken;
+  }
+
+
+  async getGoogleUser(email, profile) {      
+    const user = this.userModel.findOne({ email });
+
+    const googleUser = user || await new this.userModel({email, googleId: profile.id});
+
+    return googleUser;
+  }
+
   private async hashPassword(password: string, salt: string): Promise<string> {
     return bcrypt.hash(password, salt);
   }
