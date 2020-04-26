@@ -3,6 +3,7 @@ const { Schema } = mongoose;
 
 const OrderSchema = new Schema({
     orderId                 : String,
+    cardId                  : String,
     amount                  : Number,
     amount_refunded         : Number,
     description             : String,

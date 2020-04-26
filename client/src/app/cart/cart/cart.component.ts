@@ -79,12 +79,31 @@ export class CartComponent {
     this.toggleOrderForm = false;
   }
 
-  submit() {
-    combineLatest(this.cart$.pipe(take(1)), this.currency$.pipe(take(1)), (cart, currency) => ({ cart, currency })).subscribe(({ cart, currency }) => {
-      const order = { ...this.orderForm.value, amount: cart.totalPrice, currency };
+  payWithCard(payment){
+    const addresses = [{
+      name                : this.orderForm.value.name,
+      address_city        : this.orderForm.value.city,
+      address_country     : this.orderForm.value.country,
+      address_line1       : this.orderForm.value.adress,
+      address_line2       : '',
+      address_zip         : this.orderForm.value.zip,
+    }]
+    const paymentRequest = {...payment, ...this.orderForm.value, addresses};
+    this.store.dispatch(new actions.LoadPayment(paymentRequest));
+  }
 
-      this.store.dispatch(new actions.MakeOrder(order));
+  submit() {
+      const addresses = [{
+        name                : this.orderForm.value.name,
+        address_city        : this.orderForm.value.city,
+        address_country     : this.orderForm.value.country,
+        address_line1       : this.orderForm.value.adress,
+        address_line2       : '',
+        address_zip         : this.orderForm.value.zip,
+      }];
+
+      const orderRequest = {...this.orderForm.value, addresses};
+      this.store.dispatch(new actions.MakeOrder(orderRequest));
       this.toggleOrderForm = false;
-    });
   }
 }

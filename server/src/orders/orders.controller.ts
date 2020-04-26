@@ -33,6 +33,12 @@ import { RolesGuard } from 'src/auth/roles.guard';
       return this.ordersService.addOrder(orderDto, session.cart);
     }
 
+
+    @Post('/stripe')
+    orderWithStripe(@Body() body, @Session() session): Promise<any> {
+      return this.ordersService.orderWithStripe(body, session.cart);
+    }
+
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Get('/all')
     getAllOrders() {

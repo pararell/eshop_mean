@@ -41,7 +41,7 @@ export class ApiService {
 
   // orders
   handleToken(token) {
-    const tokenUrl = this.baseUrl + '/api/stripe';
+    const tokenUrl = this.baseUrl + '/api/orders/stripe';
     return this.http.post(tokenUrl, token);
   };
 
@@ -137,6 +137,11 @@ export class ApiService {
   updateOrder(req) {
     const orderUpdateUrl = this.baseUrl + '/api/orders';
     return this.http.patch(orderUpdateUrl, req);
+  }
+
+  getStripeSession(req) {
+    const stripeSessionUrl = this.baseUrl + '/api/orders/stripe/session';
+    return this.http.post(stripeSessionUrl, req);
   }
 
   // cart

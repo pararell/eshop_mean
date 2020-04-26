@@ -6,6 +6,7 @@ import { CartModule } from './cart/cart.module';
 import { OrdersModule } from './orders/orders.module';
 import { TranslationsModule } from './translations/translations.module';
 import { AdminModule } from './admin/admin.module';
+import { EshopModule } from './eshop/eshop.module';
 import { ConfigModule } from '@nestjs/config';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -26,6 +27,7 @@ const staticFile = existsSync(join(process.cwd(), 'dist/eshop/browser'))
     TranslationsModule,
     AuthModule,
     AdminModule,
+    EshopModule,
     ServeStaticModule.forRoot({
       rootPath: staticFile,
       exclude: ['/api', '/auth']

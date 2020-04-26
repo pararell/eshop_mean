@@ -1,31 +1,22 @@
 import {
     Controller,
-    Get,
-    Post,
-    Request,
     Body,
-    Param,
-    Delete,
-    Patch,
-    Query,
-    UsePipes,
-    ValidationPipe,
-    ParseIntPipe,
-    UseGuards,
     Session,
+    Post,
   } from '@nestjs/common';
+import { EshopService } from './eshop.service';
+import { ContactDto } from './dto/contact.dto';
 
 
 
   @Controller('api/eshop')
   export class EshopController {
-    constructor() {}
+    constructor(private eshopService: EshopService) {}
   
-    @Get('/contact')
-    getCart(@Body() contact: any): any {
-       return {};
+    @Post('/contact')
+    sendContact(@Body() contactDto: ContactDto, @Session() session): void {
+       this.eshopService.sendContact(contactDto, session.cart);
     }
 
 
   }
-  

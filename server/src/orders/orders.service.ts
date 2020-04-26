@@ -5,7 +5,10 @@ import { Model } from 'mongoose';
 import { User } from '../auth/user.model';
 import { OrderDto } from './dto/order.dto';
 import Mailer from '../shared/utils/mailer';
+import Stripe from "stripe";
 
+const secret = process.env.STRIPE_SECRETKEY;
+export const stripe = new Stripe(secret, {apiVersion: "2020-03-02"});
 
 @Injectable()
 export class OrdersService {
@@ -21,7 +24,16 @@ export class OrdersService {
     const newOrder = await new this.orderModel(this.createOrder(orderDto, cart));
     newOrder.save();
     try {
-    this.sendmail(newOrder, cart);
+    this.sendmail(newOrder.customerEmail, newOrder, cart);
+
+    if (process.env.ADMIN_EMAILS) {
+      process.env.ADMIN_EMAILS
+        .split(',')
+        .filter(Boolean)
+        .forEach(email => {
+          this.sendmail(email, newOrder, cart);
+        });
+    }
     } catch {
       console.log('Email send error')
     }
@@ -32,6 +44,39 @@ export class OrdersService {
   async getAllOrders(): Promise<Order[]> {
     const orders = await this.orderModel.find({ });
     return orders;
+  }
+
+
+  async orderWithStripe(body, cart) {
+    const charge = await stripe.charges.create({
+      amount        : cart.totalPrice * 100,
+      currency      : 'eur',
+      description   : 'Credit Card Payment',
+      source        : body.token.id,
+      capture       : false
+    });
+      const requestOrder = {...body, cardId: charge.id};
+      const newOrder = await new this.orderModel(this.createOrder(requestOrder, cart));
+
+      if (charge && newOrder) {
+        try {
+          const capturePayment = await stripe.charges.capture(charge.id);
+          this.sendmail(newOrder.customerEmail, newOrder, cart);
+
+          if (process.env.ADMIN_EMAILS) {
+            process.env.ADMIN_EMAILS
+              .split(',')
+              .filter(Boolean)
+              .forEach(email => {
+                this.sendmail(email, newOrder, cart);
+              });
+          }
+          return newOrder;
+        } catch {
+          return {newOrder, status: 'UNPAID'};
+        }
+      }
+      return;
   }
 
 
@@ -47,11 +92,13 @@ export class OrdersService {
 
 
   private createOrder = (orderDto, cart) => {
-    const { addresses, currency, email, userId } = orderDto;
+    console.log(orderDto, 'orderDto')
+    const { addresses, currency, email, userId, cardId } = orderDto;
     const orderId = 'order' + new Date().getTime() + 't' + Math.floor(Math.random() * 1000 + 1);
     const date = Date.now();
     const deliveryAdress = addresses[0];
     const addUser = userId ? {_user: userId} : {};
+    const addCard = cardId ? {cardId} : {};
 
     return {
         orderId,
@@ -75,12 +122,13 @@ export class OrdersService {
             object              : 'deliver'
         },
         addresses,
-        ...addUser
+        ...addUser,
+        ...addCard
     }
   }
 
 
-  private sendmail = (order, cart) => {
+  private sendmail = (email, order, cart) => {
       const emailType = {
         subject: 'Order',
         cart,
@@ -91,7 +139,7 @@ export class OrdersService {
         date      : new Date()
       };
     
-      const mailer = new Mailer(order.customerEmail, emailType);
+      const mailer = new Mailer(email, emailType);
     
       mailer.send();
   }

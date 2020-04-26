@@ -11,11 +11,12 @@ import { join } from 'path';
 import { AppServerModule } from '../../client/main.server';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { AdminModule } from './admin/admin.module';
+import { EshopModule } from './eshop/eshop.module';
 
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot(),
     MongooseModule.forRoot(process.env.MONGO_URI),
     ProductsModule,
     CartModule,
@@ -23,6 +24,7 @@ import { AdminModule } from './admin/admin.module';
     TranslationsModule,
     AuthModule,
     AdminModule,
+    EshopModule,
     AngularUniversalModule.forRoot({
       bootstrap: AppServerModule,
       viewsPath : join(process.cwd(), 'dist/eshop/browser'),

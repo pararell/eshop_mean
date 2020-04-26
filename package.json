@@ -74,6 +74,7 @@
     "rxjs": "^6.5.5",
     "sendgrid": "^5.2.3",
     "streamifier": "^0.1.1",
+    "stripe": "^8.47.0",
     "zone.js": "~0.10.3"
   },
   "devDependencies": {

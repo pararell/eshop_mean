@@ -43,18 +43,9 @@ export class AdminService {
       async uploadImage(images: Images, file, addImageDto: AddProductImageDto):Promise<Images | Product> {
         const {titleUrl} = addImageDto;
         const existImages = await new Images(images || []);
-
-        console.log(file, 'file')
-
-        // const uploadedImage = await cloudinary.v2.uploader
-        // .upload(file.buffer, { resource_type: 'auto', use_filename: true })
-
         const uploadedImage = await this.uploadToCloudinary(file);
-
         const image = uploadedImage.secure_url;
 
-
-    
         const product = titleUrl
           ? await this.productModel
             .findOneAndUpdate({ titleUrl }, { $push: { images: image } }, { new: true })

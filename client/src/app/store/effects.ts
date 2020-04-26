@@ -128,6 +128,13 @@ export class AppEffects {
       map((uploader: any) => console.log('Uploader init'))
   );
 
+  @Effect() stripeSession$: Observable<Action> = this._actions.pipe(
+    ofType(actions.STRIPE_SESSION),
+      switchMap((action: actions.StripeSession) => this.apiService.getStripeSession(action.payload)),
+      map(res => new actions.StripeSessionSuccess(res))
+  );
+  
+
   @Effect() loadOrders$: Observable<Action> = this._actions.pipe(
     ofType(actions.LOAD_ORDERS),
       switchMap((action: actions.LoadOrders) => this.apiService.getOrders()),

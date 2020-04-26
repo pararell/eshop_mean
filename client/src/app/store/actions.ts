@@ -55,6 +55,9 @@ export const SEND_CONTACT_SUCCESS = 'Send Contact Success';
 export const SET_UPLOADER = 'Set Uploader';
 export const SET_UPLOADER_SUCCESS = 'Set Uploader Success';
 export const SET_UPLOADER_ERROR = 'Set Uploader Error';
+export const STRIPE_SESSION = 'Stripe Session';
+export const STRIPE_SESSION_SUCCESS = 'Stripe Session Success';
+export const STRIPE_SESSION_ERROR = 'Stripe Session Error';
 export const SIGN_IN = 'SignIn';
 export const SIGN_IN_SUCCESS = 'SignIn Success';
 export const SIGN_UP = 'SignUp';
@@ -302,6 +305,24 @@ export class MakeOrder implements Action {
 export class MakeOrderSuccess implements Action {
   readonly type = MAKE_ORDER_SUCCESS;
     constructor(public payload: any ) {
+  }
+}
+
+export class StripeSession implements Action {
+  readonly type = STRIPE_SESSION;
+   constructor(public payload: any ) {
+  }
+}
+
+export class StripeSessionSuccess implements Action {
+  readonly type = STRIPE_SESSION_SUCCESS;
+    constructor(public payload: any ) {
+  }
+}
+
+export class StripeSessionError implements Action {
+  readonly type = STRIPE_SESSION_ERROR;
+   constructor(public payload: any ) {
   }
 }
 

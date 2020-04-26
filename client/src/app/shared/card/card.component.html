@@ -1,3 +1,18 @@
-<a (click)="onClickBuy()" class="waves-effect lime accent-3 btn-large">
+<!-- <a (click)="onClickBuy()" class="waves-effect lime accent-3 btn-large">
   <i class="material-icons left">credit_card</i>{{ 'Pay' | translate | async }} {{price}} {{ currency }}
-</a>
+</a> -->
+
+<div>
+  <form (submit)="handleForm($event)" class="checkout">
+    <label for="card-info">Card Info</label>
+  <div id="form-field">
+        <div id="card-info" #cardElement></div>
+        <button id="submit-button" type="submit">
+            Pay {{price}} {{ currency }}
+        </button>
+        <div id="card-errors" role="alert" *ngIf="cardError">
+            &nbsp;{{ cardError }}
+        </div>
+    </div>
+  </form>
+</div>

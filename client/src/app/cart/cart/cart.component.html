@@ -50,8 +50,7 @@
             <i class="material-icons left">email</i>{{ 'Payment' | translate | async }} {{ 'on' | translate | async }} {{ 'delivery' | translate | async }}
         </a>
 
-        <app-card [price]="(cart?.totalPrice * ((convertVal$ | async) || 1) | priceFormat)" [currency]="currency$ | async" (click)="closeToggleForm()"> </app-card>
-
+   
       </div>
 
     <div class="order-form-wrap z-depth-2" *ngIf="toggleOrderForm && !!cart?.items?.length">
@@ -89,6 +88,12 @@
               (click)="submit()"> {{ 'MakeOrder' | translate | async }} </button>
         </form>
     </div>
+    <app-card 
+      [price]="(cart?.totalPrice * ((convertVal$ | async) || 1) | priceFormat)" 
+      [currency]="currency$ | async" (click)="closeToggleForm()"
+      (payWithCardEmit)="payWithCard($event)"> 
+    </app-card>
+
   </ng-container>
 
     <ng-container *ngIf="(order$ | async) as order">
