@@ -15,7 +15,7 @@
     "start:prod": "node dist/main",
     "lint": "eslint \"{server,apps,libs,test}/**/*.ts\" --fix",
     "ng": "ng ",
-    "start:client": "ng serve --port 3000",
+    "start:client": "ng serve",
     "build:client": "ng build",
     "test:client": "ng test",
     "lint:client": "ng lint",

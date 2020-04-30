@@ -27,11 +27,11 @@
                 "input": "client/src/assets",
                 "output": "assets"
               },
-              {"glob": "favicon.ico", 
+              {"glob": "favicon.ico",
                 "input": "client/src",
                 "output": "."
               },
-              {"glob": "manifest.json", 
+              {"glob": "manifest.json",
                 "input": "client/src",
                 "output": "."
               }
@@ -71,7 +71,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "eshop:build"
+            "browserTarget": "eshop:build",
+            "port": 3000
           },
           "configurations": {
             "production": {

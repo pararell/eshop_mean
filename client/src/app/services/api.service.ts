@@ -5,14 +5,16 @@ import { HttpClient } from '@angular/common/http';
 import { REQUEST } from '@nguniversal/express-engine/tokens';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { FileUploader } from 'ng2-file-upload';
-import { Observable, of, BehaviorSubject} from 'rxjs';
+import { Observable, BehaviorSubject} from 'rxjs';
+import { environment } from '../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
 
-  baseUrl = 'http://localhost:4000';
+  apiUrl = environment.apiUrl;
   uploaderSub : BehaviorSubject<FileUploader> = new BehaviorSubject(null);
 
   constructor(
@@ -23,54 +25,56 @@ export class ApiService {
       private _platformId       : Object
       ) {
 
-      // if (isPlatformServer(this._platformId)) {
-      //   const serverRequest = REQUEST ? this._injector.get(REQUEST) : '';
-      //   this.baseUrl = serverRequest ? `${serverRequest.protocol}://${serverRequest.get('Host')}` : '';
-      // }
+    if (environment.production) {
+      if (isPlatformServer(this._platformId)) {
+        const serverRequest = REQUEST ? this._injector.get(REQUEST) : '';
+        this.apiUrl = serverRequest ? `${serverRequest.protocol}://${serverRequest.get('Host')}` : '';
+      }
 
-      // if (isPlatformBrowser(this._platformId)) {
-      //   this.baseUrl = this._window.location.origin || '';
-      // }
+      if (isPlatformBrowser(this._platformId)) {
+        this.apiUrl = this._window.location.origin || '';
+      }
+    }
   }
 
   // auth
   getUser() {
-    const userUrl = this.baseUrl + '/api/auth';
+    const userUrl = this.apiUrl + '/api/auth';
     return this.http.get(userUrl);
   }
 
   // orders
   handleToken(token) {
-    const tokenUrl = this.baseUrl + '/api/orders/stripe';
+    const tokenUrl = this.apiUrl + '/api/orders/stripe';
     return this.http.post(tokenUrl, token);
   };
 
   makeOrder(req) {
-    const addOrder = this.baseUrl + '/api/orders/add';
+    const addOrder = this.apiUrl + '/api/orders/add';
     return this.http.post(addOrder, req);
   }
 
   sendContact(req) {
-    const sendContact = this.baseUrl + '/api/eshop/contact';
+    const sendContact = this.apiUrl + '/api/eshop/contact';
     return this.http.post(sendContact, req);
   }
 
   signIn(req) {
-    const sendContact = this.baseUrl + '/api/auth/signin';
+    const sendContact = this.apiUrl + '/api/auth/signin';
     return this.http.post(sendContact, req);
   }
 
   signUp(req) {
-    const sendContact = this.baseUrl + '/api/auth/signup';
+    const sendContact = this.apiUrl + '/api/auth/signup';
     return this.http.post(sendContact, req);
   }
 
 
   loadProducts(req) {
-    const {lang, page, sort, category} = req; 
+    const {lang, page, sort, category} = req;
     const addCategory = category ? {category} : {};
     const categoryQuery = category ? '&category=' + category : '';
-    const productsUrl = this.baseUrl + '/api/products?lang=' + lang + '&page=' + page + '&sort=' + sort + categoryQuery;
+    const productsUrl = this.apiUrl + '/api/products?lang=' + lang + '&page=' + page + '&sort=' + sort + categoryQuery;
     return this.http.get(productsUrl).pipe(map((data: any) => ({
         products : data.all
           .map(product => ({...product,
@@ -89,109 +93,109 @@ export class ApiService {
 
 
   loadCategories(payload) {
-    const categoriesUrl = this.baseUrl + '/api/products/categories?lang=' + payload.lang;
+    const categoriesUrl = this.apiUrl + '/api/products/categories?lang=' + payload.lang;
     return this.http.get(categoriesUrl)
   }
 
   loadProductsSearch(query: string) {
-    const productUrl = this.baseUrl + '/api/products/search?query=' + query;
+    const productUrl = this.apiUrl + '/api/products/search?query=' + query;
     return this.http.get(productUrl);
   }
 
   getProduct(params) {
-    const productUrl = this.baseUrl + '/api/products/' + params;
+    const productUrl = this.apiUrl + '/api/products/' + params;
     return this.http.get(productUrl);
   }
 
   addProduct(product) {
-    const addProduct = this.baseUrl + '/api/products/add';
+    const addProduct = this.apiUrl + '/api/products/add';
     return this.http.post(addProduct, product);
   }
 
   editProduct(product) {
-    const eidtProduct = this.baseUrl + '/api/products/edit';
+    const eidtProduct = this.apiUrl + '/api/products/edit';
     return this.http.patch(eidtProduct, product);
   }
 
   removeProduct(name: string) {
-    const removeProduct = this.baseUrl + '/api/products/' + name;
+    const removeProduct = this.apiUrl + '/api/products/' + name;
     return this.http.delete(removeProduct);
   }
 
 
   getUserOrders(req) {
-    const userOrderUrl = this.baseUrl + '/api/orders';
+    const userOrderUrl = this.apiUrl + '/api/orders';
     return this.http.post(userOrderUrl, req);
   }
 
   getOrders() {
-    const ordersUrl = this.baseUrl + '/api/orders/all';
+    const ordersUrl = this.apiUrl + '/api/orders/all';
     return this.http.get(ordersUrl);
   }
 
   getOrder(id: string) {
-    const orderUrl = this.baseUrl + '/api/orders/' + id;
+    const orderUrl = this.apiUrl + '/api/orders/' + id;
     return this.http.get(orderUrl);
   }
 
   updateOrder(req) {
-    const orderUpdateUrl = this.baseUrl + '/api/orders';
+    const orderUpdateUrl = this.apiUrl + '/api/orders';
     return this.http.patch(orderUpdateUrl, req);
   }
 
   getStripeSession(req) {
-    const stripeSessionUrl = this.baseUrl + '/api/orders/stripe/session';
+    const stripeSessionUrl = this.apiUrl + '/api/orders/stripe/session';
     return this.http.post(stripeSessionUrl, req);
   }
 
   // cart
   getCart() {
-    const cartUrl = this.baseUrl + '/api/cart/';
+    const cartUrl = this.apiUrl + '/api/cart/';
     return this.http.get(cartUrl);
   }
 
   addToCart(params: string) {
-    const addToCartUrl = this.baseUrl + '/api/cart/add' + params;
+    const addToCartUrl = this.apiUrl + '/api/cart/add' + params;
     return this.http.get(addToCartUrl);
   }
 
   removeFromCart(params: string) {
-    const removeFromCartUrl = this.baseUrl + '/api/cart/remove' + params;
+    const removeFromCartUrl = this.apiUrl + '/api/cart/remove' + params;
     return this.http.get(removeFromCartUrl);
   }
 
 
   getLangTranslations(lang) {
-    const translationsUrl = this.baseUrl + '/api/translations?lang=' + lang;
+    const translationsUrl = this.apiUrl + '/api/translations?lang=' + lang;
     return this.http.get(translationsUrl);
   }
 
   getAllTranslations() {
-    const translationsUrl = this.baseUrl + '/api/translations/all';
+    const translationsUrl = this.apiUrl + '/api/translations/all';
     return this.http.get(translationsUrl);
   }
 
   editTranslation({lang, keys}) {
-    const translationsUpdateUrl = this.baseUrl + '/api/translations?lang=' + lang;
+    const translationsUpdateUrl = this.apiUrl + '/api/translations?lang=' + lang;
     return this.http.patch(translationsUpdateUrl, { keys : keys });
   }
 
 
 
   getImages() {
-    const getImages = this.baseUrl + '/api/admin/images';
+    const getImages = this.apiUrl + '/api/admin/images';
     return this.http.get(getImages);
   }
 
   addProductImagesUrl({image, titleUrl}) {
     const titleUrlQuery = titleUrl ? '?titleUrl=' + titleUrl : '';
-    const addImageUrl = this.baseUrl + '/api/admin/images/add' + titleUrlQuery;
+    const addImageUrl = this.apiUrl + '/api/admin/images/add' + titleUrlQuery;
     return this.http.post(addImageUrl, { image });
   }
 
   removeImage({image, titleUrl}) {
     const titleUrlQuery = titleUrl ? '?titleUrl=' + titleUrl : '';
-    const removeImage = this.baseUrl + '/api/admin/images/remove' + titleUrlQuery;
+    const removeImage = this.apiUrl + '/api/admin/images/remove' + titleUrlQuery;
     return this.http.post(removeImage, { image });
   }
 
@@ -205,7 +209,7 @@ export class ApiService {
     const authorizationHeader = accessToken ? {name: 'Authorization', value: 'Bearer ' + accessToken } : {};
 
     this.uploaderSub.next(new FileUploader({
-      url: this.baseUrl + '/api/admin/images/upload' + titleUrlQuery,
+      url: this.apiUrl + '/api/admin/images/upload' + titleUrlQuery,
       headers: [{name: 'Accept', value: 'application/json', ...authorizationHeader}],
       ...options
    }));
