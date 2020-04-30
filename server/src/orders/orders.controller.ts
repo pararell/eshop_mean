@@ -15,13 +15,13 @@ import { GetUser } from '../auth/get-user.decorator';
 import { User } from '../auth/user.model';
 import { OrderDto } from './dto/order.dto';
 import { Order } from './order.model';
-import { RolesGuard } from 'src/auth/roles.guard';
+import { RolesGuard } from '../auth/roles.guard';
 
-  
+
   @Controller('api/orders')
   export class OrdersController {
     constructor(private ordersService : OrdersService) {}
-  
+
     @UseGuards(AuthGuard('jwt'))
     @Get()
     getOrders(@GetUser() user: User) {
@@ -58,4 +58,3 @@ import { RolesGuard } from 'src/auth/roles.guard';
     }
 
   }
-  

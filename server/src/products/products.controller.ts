@@ -16,15 +16,15 @@ import { ProductsWithPagination, Product } from './models/product.model';
 import { GetProductDto } from './dto/get-product';
 import { Category } from './models/category.model';
 import { AuthGuard } from '@nestjs/passport';
-import { RolesGuard } from 'src/auth/roles.guard';
-import { GetUser } from 'src/auth/get-user.decorator';
-import { User } from 'src/auth/user.model';
+import { RolesGuard } from '../auth/roles.guard';
+import { GetUser } from '../auth/get-user.decorator';
+import { User } from '../auth/user.model';
 
-  
+
   @Controller('api/products')
   export class ProductsController {
     constructor(private productService: ProductsService) {}
-  
+
     @Get()
     getProducts(
       @Query(ValidationPipe) GetProductsDto: GetProductsDto): Promise<ProductsWithPagination> {
@@ -40,7 +40,7 @@ import { User } from 'src/auth/user.model';
     getproductsTtitles(@Query('query') query: string): Promise<String[]> {
       return this.productService.getProductsTitles(query);
     }
-  
+
     @Get('/:name')
     getProductByName(
       @Query() getProductDto: GetProductDto,
@@ -72,4 +72,3 @@ import { User } from 'src/auth/user.model';
     }
 
   }
-  
