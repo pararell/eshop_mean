@@ -10,7 +10,9 @@ export interface Order extends Document {
     cart                : any;
     outcome?            : any;
     source?             : any;
-    addresses?          : any;
+    addresses?          : any[];
+    currency?           : string;
+    notes?              : string;
     _user               : any;
     dateAdded           : Date;
 }

@@ -8,10 +8,10 @@ export class RolesGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
-    if(!!user.roles.filter(role => this.roles.includes(role)).length) {
+    if (!!user.roles.filter(role => this.roles.includes(role)).length) {
         return true;
     }
-    
+
     throw new UnauthorizedException();
   }
 }

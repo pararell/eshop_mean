@@ -1,9 +1,10 @@
 import { Controller, Post, Body, ValidationPipe, UseGuards, Get, Req, Res } from '@nestjs/common';
 import { AuthCredentialDto } from './dto/auth-credential.dto';
 import { AuthService } from './auth.service';
-import { User } from './user.model';
+import { User } from './models/user.model';
 import { AuthGuard } from '@nestjs/passport';
-import { GetUser } from './get-user.decorator';
+import { GetUser } from './utils/get-user.decorator';
+import { GoogleUserDto } from './dto/google-user.dto';
 
 
 @Controller('api/auth')
@@ -33,13 +34,13 @@ export class AuthController {
   @Get('/google')
   @UseGuards(AuthGuard('google'))
   googleLogin() {}
-  
 
 
   @Get('/google/callback')
   @UseGuards(AuthGuard('google'))
   async googleLoginCallback(@Req() req, @Res() res) {
-    const accessToken = await this.authService.signInGoogle(req.user);
+    const googleUserDto: GoogleUserDto = req.user;
+    const accessToken = await this.authService.signInGoogle(googleUserDto);
     const tokenUrl = process.env.ORIGIN + '/jwtToken/' + accessToken;
     res.redirect(tokenUrl);
   }

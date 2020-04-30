@@ -10,15 +10,18 @@ import {
     UseInterceptors,
     UploadedFile,
   } from '@nestjs/common';
-  import { AuthGuard } from '@nestjs/passport';
+import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
+import * as multer from 'multer';
+
 import { RolesGuard } from '../auth/roles.guard';
 import { AdminService } from './admin.service';
-import { Images } from './images';
+import { Images } from './utils/images';
 import { Product } from '../products/models/product.model';
 import { AddProductImageDto } from './dto/add-image.dto';
 import { ImageDto } from './dto/image.dto';
-import * as multer from 'multer';
-import { FileInterceptor } from '@nestjs/platform-express';
+
+
 const storage = multer.memoryStorage();
 const upload  = multer({ storage });
 
@@ -32,11 +35,11 @@ const upload  = multer({ storage });
     getImages(@Session() session): Promise<Images> {
        return this.adminService.getImages(session.images);
     }
-  
+
 
     @Post('/images/add')
     async addImage(
-        @Session() session, 
+        @Session() session,
         @Body() imageDto: ImageDto,
         @Query(ValidationPipe) addImageDto: AddProductImageDto): Promise<Images | Product> {
         const result = await this.adminService.addImage(session.images, imageDto, addImageDto);
@@ -50,7 +53,7 @@ const upload  = multer({ storage });
     @Post('/images/upload')
     @UseInterceptors(FileInterceptor('file', upload.single('file')))
     async uploadImage(
-        @Session() session, 
+        @Session() session,
         @UploadedFile() file,
         @Query(ValidationPipe) addImageDto: AddProductImageDto): Promise<Images | Product> {
         const result = await this.adminService.uploadImage(session.images, file, addImageDto);
@@ -63,7 +66,7 @@ const upload  = multer({ storage });
 
     @Post('/images/remove')
     async removeImage(
-        @Session() session, 
+        @Session() session,
         @Body() imageDto: ImageDto,
         @Query(ValidationPipe) addImageDto: AddProductImageDto ): Promise<Images | Product> {
         const result = await this.adminService.removeImage(session.images, imageDto, addImageDto);
@@ -73,7 +76,6 @@ const upload  = multer({ storage });
 
         return result;
     }
-  
+
 
   }
-  

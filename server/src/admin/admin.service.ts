@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { ProductModel, Product } from '../products/models/product.model';
-import { Images } from './images';
-import { AddProductImageDto } from './dto/add-image.dto';
-import { ImageDto } from './dto/image.dto';
 import * as cloudinary from 'cloudinary';
 import * as streamifier from 'streamifier';
+
+import { ProductModel, Product } from '../products/models/product.model';
+import { Images } from './utils/images';
+import { AddProductImageDto } from './dto/add-image.dto';
+import { ImageDto } from './dto/image.dto';
+
 
 
 cloudinary.v2.config({
@@ -79,13 +81,13 @@ export class AdminService {
 
       private async uploadToCloudinary(file): Promise<any> {
           return new Promise((resolve, reject) => {
-       
+
             let cld_upload_stream = cloudinary.v2.uploader.upload_stream(
              {
-              resource_type: 'auto', use_filename: true 
+              resource_type: 'auto', use_filename: true
              },
              (error: any, result: any) => {
-       
+
                if (result) {
                  resolve(result);
                } else {
@@ -93,7 +95,7 @@ export class AdminService {
                 }
               }
             );
-       
+
             streamifier.createReadStream(file.buffer).pipe(cld_upload_stream)
           });
       }

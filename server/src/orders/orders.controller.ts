@@ -11,10 +11,10 @@ import {
 
 import { AuthGuard } from '@nestjs/passport';
 import { OrdersService } from './orders.service';
-import { GetUser } from '../auth/get-user.decorator';
-import { User } from '../auth/user.model';
+import { GetUser } from '../auth/utils/get-user.decorator';
+import { User } from '../auth/models/user.model';
 import { OrderDto } from './dto/order.dto';
-import { Order } from './order.model';
+import { Order } from './models/order.model';
 import { RolesGuard } from '../auth/roles.guard';
 
 

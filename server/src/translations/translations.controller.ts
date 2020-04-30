@@ -16,7 +16,7 @@ import { RolesGuard } from '../auth/roles.guard';
   @Controller('api/translations')
   export class TranslationsController {
     constructor(@InjectModel('Translation') private translationModel: Model<Translation>) {}
-  
+
     @Get()
     async getTranslations(@Query('lang') lang: string): Promise<Translation> {
       return await this.translationModel.findOne({ lang });
@@ -35,4 +35,3 @@ import { RolesGuard } from '../auth/roles.guard';
     }
 
   }
-  

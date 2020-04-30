@@ -13,10 +13,10 @@ class Mailer extends sendgrid.mail.Mail {
 
     this.sgApi = sendgrid(process.env.SENDGRID_KEY);
 
-    this.from_email = new sendgrid.mail.Email("no-reply@bluetooh-eshop.com");
+    this.from_email = new sendgrid.mail.Email('no-reply@bluetooh-eshop.com');
     this.subject = emailType.subject;
 
-    this.body = new sendgrid.mail.Content("text/html", getContent(emailType));
+    this.body = new sendgrid.mail.Content('text/html', getContent(emailType));
 
     this.email = new sendgrid.mail.Email(reqEmail);
     const personalize = new sendgrid.mail.Personalization();
@@ -28,8 +28,8 @@ class Mailer extends sendgrid.mail.Mail {
 
   async send() {
     const request = this.sgApi.emptyRequest({
-      method: "POST",
-      path: "/v3/mail/send",
+      method: 'POST',
+      path: '/v3/mail/send',
       body: this.toJSON()
     });
 
@@ -41,15 +41,15 @@ class Mailer extends sendgrid.mail.Mail {
 export default Mailer;
 
 function getContent(emailType) {
-  if (emailType.subject === "Order") {
+  if (emailType.subject === 'Order') {
     const cart = emailType.cart;
 
     return emailTemplates(cart, emailType);
 
-  } else if (emailType.subject === "Contact") {
+  } else if (emailType.subject === 'Contact') {
         return `<html>
             <body>
-            <div style="text-align:center;">
+            <div style='text-align:center;'>
             <h3> Thank you for contact us! </h3>
             <p> We will let you know soon about your requirement</p>
             <p>Your requirement:</p>
@@ -60,15 +60,15 @@ function getContent(emailType) {
             </div>
             <div>
             </div>
-            <a href="https://angular-un-ngrx-node-eshop.herokuapp.com> Bluetooth Eshop </a>
+            <a href='https://angular-un-ngrx-node-eshop.herokuapp.com> Bluetooth Eshop </a>
             </div>
             </body>
             </html>
         `;
-  } else if (emailType.subject === "Contact-From-Customer") {
+  } else if (emailType.subject === 'Contact-From-Customer') {
         return `<html>
             <body>
-            <div style="text-align:center;">
+            <div style='text-align:center;'>
             <h3> Contact from customer</h3>
             <p> Name: ${emailType.contact.name} </p>
             <p> Email: ${emailType.contact.email} </p>
@@ -77,7 +77,7 @@ function getContent(emailType) {
             </div>
             <div>
             </div>
-            <a href="https://angular-un-ngrx-node-eshop.herokuapp.com> Bluetooth Eshop </a>
+            <a href='https://angular-un-ngrx-node-eshop.herokuapp.com> Bluetooth Eshop </a>
             </div>
             </body>
             </html>

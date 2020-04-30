@@ -10,8 +10,8 @@ import { Category } from './models/category.model';
 export class ProductsService {
   constructor(@InjectModel('Product') private productModel: ProductModel) {}
 
-  async getProducts(GetProductsDto: GetProductsDto): Promise<ProductsWithPagination> {
-    const { lang, page, sort, category, search } = GetProductsDto;
+  async getProducts(getProductsDto: GetProductsDto): Promise<ProductsWithPagination> {
+    const { lang, page, sort, category, search } = getProductsDto;
     const searchQuery = search      ? { titleUrl:  new RegExp(search, 'i') }                : {};
     const categoryQuery = category  ? { [`${lang}.categories`] : new RegExp(category, 'i' ) } : {};
 
@@ -24,9 +24,9 @@ export class ProductsService {
 
     const productsWithPagination = await this.productModel.paginate(query, options);
 
-    return { 
-        ...productsWithPagination, 
-        all: productsWithPagination.all.map(product => this.prepareProduct(product, lang)) 
+    return {
+        ...productsWithPagination,
+        all: productsWithPagination.all.map(product => this.prepareProduct(product, lang))
       }
   }
 
@@ -49,7 +49,7 @@ export class ProductsService {
       throw new NotFoundException(`Product with title ${name} not found`);
     }
 
-    return lang 
+    return lang
       ? this.prepareProduct(found, lang)
       : found;
   }
@@ -73,7 +73,7 @@ export class ProductsService {
   async editProduct(productReq): Promise<void> {
     const {titleUrl} = productReq;
     const found = await this.productModel.findOneAndUpdate({ titleUrl }, productReq, {upsert: true});
-    
+
     if (!found) {
       throw new NotFoundException(`Product with title ${name} not found`);
     }
@@ -123,11 +123,11 @@ export class ProductsService {
     return products
       .reduce((catSet, product) => catSet.concat(product[lang].categories) , [])
       .filter((cat, i, arr) => arr.indexOf(cat) === i)
-      .map(category => ({ 
-          title: category , 
-          titleUrl: category.replace(/ /g, '_').toLowerCase() 
+      .map(category => ({
+          title: category ,
+          titleUrl: category.replace(/ /g, '_').toLowerCase()
         })
       );
   };
-  
+
 }

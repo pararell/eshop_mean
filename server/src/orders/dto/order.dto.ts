@@ -10,6 +10,7 @@ export class OrderDto {
   cart      : any;
   userId?   : string;
   notes?    : string;
+  cardId?   : string;
 
   @IsNotEmpty()
   amount    : number;

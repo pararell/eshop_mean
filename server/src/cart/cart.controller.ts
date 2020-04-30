@@ -7,13 +7,13 @@ import {
   } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { GetCartChangeDto } from './dto/cart-change.dto';
-import { Cart } from './cart';
+import { Cart } from './utils/cart';
 
 
   @Controller('api/cart')
   export class CartController {
     constructor(private cartService: CartService) {}
-  
+
     @Get()
     getCart(@Session() session): Promise<Cart> {
        return this.cartService.getCart(session.cart);
@@ -30,7 +30,7 @@ import { Cart } from './cart';
 
     @Get('/remove')
     async removeFromCart(
-        @Session() session, 
+        @Session() session,
         @Query(ValidationPipe) getCartChangeDto : GetCartChangeDto): Promise<Cart> {
         const newCart = await this.cartService.removeFromCart(session.cart, getCartChangeDto);
         session.cart = newCart;
@@ -39,4 +39,3 @@ import { Cart } from './cart';
 
 
   }
-  

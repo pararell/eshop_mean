@@ -1,14 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Order } from './order.model';
 import { Model } from 'mongoose';
-import { User } from '../auth/user.model';
+import Stripe from 'stripe';
+
+import { Order } from './models/order.model';
+import { User } from '../auth/models/user.model';
 import { OrderDto } from './dto/order.dto';
 import Mailer from '../shared/utils/mailer';
-import Stripe from "stripe";
+import { Cart } from '../cart/utils/cart';
+
 
 const secret = process.env.STRIPE_SECRETKEY;
-export const stripe = new Stripe(secret, {apiVersion: "2020-03-02"});
+export const stripe = new Stripe(secret, {apiVersion: '2020-03-02'});
 
 @Injectable()
 export class OrdersService {
@@ -19,25 +22,25 @@ export class OrdersService {
     const orders = await this.orderModel.find({ _user: user._id });
     return orders;
   }
-  
-  async addOrder(orderDto: OrderDto, cart): Promise<Order> {
+
+  async addOrder(orderDto: OrderDto, cart: Cart): Promise<Order> {
     const newOrder = await new this.orderModel(this.createOrder(orderDto, cart));
     newOrder.save();
     try {
     this.sendmail(newOrder.customerEmail, newOrder, cart);
 
-    if (process.env.ADMIN_EMAILS) {
-      process.env.ADMIN_EMAILS
-        .split(',')
-        .filter(Boolean)
-        .forEach(email => {
-          this.sendmail(email, newOrder, cart);
-        });
-    }
+      if (process.env.ADMIN_EMAILS) {
+        process.env.ADMIN_EMAILS
+          .split(',')
+          .filter(Boolean)
+          .forEach(email => {
+            this.sendmail(email, newOrder, cart);
+          });
+      }
     } catch {
       console.log('Email send error')
     }
-  
+
     return newOrder;
   }
 
@@ -47,7 +50,7 @@ export class OrdersService {
   }
 
 
-  async orderWithStripe(body, cart) {
+  async orderWithStripe(body, cart: Cart) {
     const charge = await stripe.charges.create({
       amount        : cart.totalPrice * 100,
       currency      : 'eur',
@@ -91,8 +94,7 @@ export class OrdersService {
   }
 
 
-  private createOrder = (orderDto, cart) => {
-    console.log(orderDto, 'orderDto')
+  private createOrder = (orderDto: OrderDto, cart: Cart) => {
     const { addresses, currency, email, userId, cardId } = orderDto;
     const orderId = 'order' + new Date().getTime() + 't' + Math.floor(Math.random() * 1000 + 1);
     const date = Date.now();
@@ -128,7 +130,7 @@ export class OrdersService {
   }
 
 
-  private sendmail = (email, order, cart) => {
+  private sendmail = (email: string, order: Order, cart: Cart) => {
       const emailType = {
         subject: 'Order',
         cart,
@@ -138,11 +140,11 @@ export class OrdersService {
         notes     : order.notes,
         date      : new Date()
       };
-    
+
       const mailer = new Mailer(email, emailType);
-    
+
       mailer.send();
   }
 
-  
+
 }

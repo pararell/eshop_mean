@@ -1,15 +1,16 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthCredentialDto } from './dto/auth-credential.dto';
 import { JwtService } from '@nestjs/jwt';
-import { JwtPayload } from './jwt-payload.interface';
+import { JwtPayload } from './models/jwt-payload.interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User } from './user.model';
+import { User } from './models/user.model';
 import * as bcrypt from 'bcryptjs';
 import {
   ConflictException,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { GoogleUserDto } from './dto/google-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -56,8 +57,8 @@ export class AuthService {
     return { accessToken, id: user._id, email };
   }
 
-  async signInGoogle(authInfo) {
-    const {email, profile} = authInfo;
+  async signInGoogle(googleUserDto: GoogleUserDto) {
+    const {email, profile} = googleUserDto;
     const user = await this.userModel.findOne({email});
 
     if (!user) {
@@ -66,13 +67,13 @@ export class AuthService {
     }
 
     const payload: JwtPayload = { email };
-    const accessToken = await this.jwtService.sign(payload);
+    const accessToken: string = await this.jwtService.sign(payload);
 
     return accessToken;
   }
 
 
-  async getGoogleUser(email, profile) {      
+  async getGoogleUser(email: string, profile: any) {
     const user = this.userModel.findOne({ email });
 
     const googleUser = user || await new this.userModel({email, googleId: profile.id});

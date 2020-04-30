@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import Mailer from '../shared/utils/mailer';
 import { ContactDto } from './dto/contact.dto';
+import { Cart } from '../cart/utils/cart';
 
 
 @Injectable()
 export class EshopService {
   constructor() {}
 
-  async sendContact(contactDto: ContactDto, cart): Promise<void> {
-      console.log(contactDto, 'contact')
+  async sendContact(contactDto: ContactDto, cart: Cart): Promise<void> {
     try {
     this.sendmail(contactDto.email, contactDto, cart);
 
@@ -25,18 +25,17 @@ export class EshopService {
     }
   }
 
-  private sendmail = (email, contactDto: ContactDto, cart) => {
+  private sendmail = (email: string, contactDto: ContactDto, cart: Cart) => {
       const emailType = {
         subject: 'Contact',
         cart,
         contact: contactDto,
         date   : new Date()
       };
-    
+
       const mailer = new Mailer(email, emailType);
-    
       mailer.send();
   }
 
-  
+
 }

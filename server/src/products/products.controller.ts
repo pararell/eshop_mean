@@ -1,3 +1,4 @@
+import { AuthGuard } from '@nestjs/passport';
 import {
     Controller,
     Get,
@@ -15,10 +16,9 @@ import { GetProductsDto } from './dto/get-products';
 import { ProductsWithPagination, Product } from './models/product.model';
 import { GetProductDto } from './dto/get-product';
 import { Category } from './models/category.model';
-import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
-import { GetUser } from '../auth/get-user.decorator';
-import { User } from '../auth/user.model';
+import { GetUser } from '../auth/utils/get-user.decorator';
+import { User } from '../auth/models/user.model';
 
 
   @Controller('api/products')
@@ -27,8 +27,8 @@ import { User } from '../auth/user.model';
 
     @Get()
     getProducts(
-      @Query(ValidationPipe) GetProductsDto: GetProductsDto): Promise<ProductsWithPagination> {
-      return this.productService.getProducts(GetProductsDto);
+      @Query(ValidationPipe) getProductsDto: GetProductsDto): Promise<ProductsWithPagination> {
+      return this.productService.getProducts(getProductsDto);
     }
 
     @Get('/categories')

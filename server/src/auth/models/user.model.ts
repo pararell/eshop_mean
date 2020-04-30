@@ -1,5 +1,5 @@
-import { Document } from "mongoose";
-import { Product } from "../products/models/product.model";
+import { Document } from 'mongoose';
+import { Product } from '../../products/models/product.model';
 
 export interface User extends Document {
     _id                 : string;

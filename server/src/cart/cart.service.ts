@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Cart } from './cart';
-import { GetCartChangeDto } from './dto/cart-change.dto';
-import { ProductModel } from '../products/models/product.model';
 import { InjectModel } from '@nestjs/mongoose';
+
+import { Cart } from './utils/cart';
+import { GetCartChangeDto } from './dto/cart-change.dto';
+import { Product, ProductModel } from '../products/models/product.model';
+
 
 
 
@@ -10,11 +12,11 @@ import { InjectModel } from '@nestjs/mongoose';
 export class CartService {
   constructor(@InjectModel('Product') private productModel: ProductModel) {}
 
-  async getCart(cart) {
+  async getCart(cart: Cart) {
     return cart || new Cart({});
   }
 
-  async addToCart(cart, getCartChangeDto: GetCartChangeDto) {
+  async addToCart(cart: Cart, getCartChangeDto: GetCartChangeDto) {
     const {id, lang} = getCartChangeDto;
     const storeCart = new Cart(cart || {});
     try {
@@ -27,7 +29,7 @@ export class CartService {
     }
   }
 
-  async removeFromCart(cart, getCartChangeDto: GetCartChangeDto) {
+  async removeFromCart(cart: Cart, getCartChangeDto: GetCartChangeDto) {
     const {id, lang} = getCartChangeDto;
     const storeCart = new Cart(cart || {});
     try {
@@ -41,7 +43,7 @@ export class CartService {
   }
 
 
-  private prepareProduct = (product, lang: string) => ({
+  private prepareProduct = (product, lang: string): Product => ({
       _id       : product._id,
       titleUrl  : product.titleUrl,
       mainImage : product.mainImage,
@@ -55,5 +57,5 @@ export class CartService {
       ...product[lang]
   });
 
-  
+
 }
