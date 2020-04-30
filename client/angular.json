@@ -4,41 +4,41 @@
   "newProjectRoot": "projects",
   "projects": {
     "eshop": {
-      "root": "client",
+      "root": "",
       "sourceRoot": "src",
       "projectType": "application",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "./dist/client",
-            "index": "client/src/index.html",
-            "main": "client/main.ts",
-            "tsConfig": "client/tsconfig.app.json",
-            "polyfills": "client/polyfills.ts",
+            "outputPath": "../dist/client",
+            "index": "src/index.html",
+            "main": "main.ts",
+            "tsConfig": "tsconfig.app.json",
+            "polyfills": "polyfills.ts",
             "aot": true,
             "stylePreprocessorOptions": {
               "includePaths": [
-                "client/src/styles"
+                "src/styles"
               ]
             },
             "assets": [
               { "glob": "**/*",
-                "input": "client/src/assets",
+                "input": "src/assets",
                 "output": "assets"
               },
               {"glob": "favicon.ico",
-                "input": "client/src",
+                "input": "src",
                 "output": "."
               },
               {"glob": "manifest.json",
-                "input": "client/src",
+                "input": "src",
                 "output": "."
               }
             ],
             "styles": [
-              "client/src/assets/fonts/material-icons/material-icons.css",
-              "client/src/styles/index.scss"
+              "src/assets/fonts/material-icons/material-icons.css",
+              "src/styles/index.scss"
             ],
             "scripts": []
           },
@@ -61,8 +61,8 @@
               "serviceWorker": true,
               "fileReplacements": [
                 {
-                  "replace": "client/src/environments/environment.ts",
-                  "with": "client/src/environments/environment.prod.ts"
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
                 }
               ]
             }
@@ -90,7 +90,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "client/tsconfig.app.json"
+              "tsconfig.app.json"
             ],
             "exclude": []
           }
@@ -99,8 +99,8 @@
           "builder": "@angular-devkit/build-angular:server",
           "options": {
             "outputPath": "./dist/eshop/server",
-            "main": "./server-ssr.ts",
-            "tsConfig": "client/tsconfig.server.json",
+            "main": "../server-ssr.ts",
+            "tsConfig": "tsconfig.server.json",
             "externalDependencies": [
               "@nestjs/microservices",
               "@nestjs/microservices/microservices-module",
@@ -114,8 +114,8 @@
               "outputHashing": "media",
               "fileReplacements": [
                 {
-                  "replace": "client/src/environments/environment.ts",
-                  "with": "client/src/environments/environment.prod.ts"
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
                 }
               ],
               "sourceMap": false,
