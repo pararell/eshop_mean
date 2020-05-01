@@ -1,5 +1,5 @@
 
-import * as actions from './../actions';
+import * as actions from '../../store/actions';
 
 
 export interface State {
@@ -49,9 +49,9 @@ export function dashboardReducer(state = initialState, action): State {
 
     case actions.EDIT_TRANSLATION_SUCCESS: {
       return { ...state, translations: state.translations
-          .map(trans => trans._id === action.payload._id ? action.payload : trans)} 
+          .map(trans => trans._id === action.payload._id ? action.payload : trans)}
         }
-  
+
 
     default: {
       return state;

@@ -1,8 +1,7 @@
 import { WindowService } from './window.service';
 import { map } from 'rxjs/operators';
-import { Inject, Injectable, Injector, PLATFORM_ID } from '@angular/core';
+import { Inject, Injectable, Optional, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { REQUEST } from '@nguniversal/express-engine/tokens';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { FileUploader } from 'ng2-file-upload';
 import { Observable, BehaviorSubject} from 'rxjs';
@@ -19,16 +18,16 @@ export class ApiService {
 
   constructor(
       private readonly http     : HttpClient,
-      private readonly _injector: Injector,
       private readonly _window  : WindowService,
+      @Optional() @Inject('serverUrl') protected serverUrl: string,
       @Inject(PLATFORM_ID)
-      private _platformId       : Object
+      private _platformId: Object
       ) {
 
     if (environment.production) {
       if (isPlatformServer(this._platformId)) {
-        const serverRequest = REQUEST ? this._injector.get(REQUEST) : '';
-        this.apiUrl = serverRequest ? `${serverRequest.protocol}://${serverRequest.get('Host')}` : '';
+        console.log(this.serverUrl, 'this.serverUrl')
+        this.apiUrl = this.serverUrl || '';
       }
 
       if (isPlatformBrowser(this._platformId)) {

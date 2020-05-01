@@ -1,5 +1,5 @@
-import { PipeModule } from './../pipes/pipe.module';
-import { LazyModule } from './../utils/lazyLoadImg/lazy.module';
+import { PipeModule } from '../pipes/pipe.module';
+import { LazyModule } from '../utils/lazyLoadImg/lazy.module';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';

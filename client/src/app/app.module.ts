@@ -1,7 +1,5 @@
-import { OrderComponent } from './order/order.component';
-import { routesAll } from './app.routes';
-import { Routes } from '@angular/router';
 // angular
+import { Routes } from '@angular/router';
 import { BrowserModule, BrowserTransferStateModule } from '@angular/platform-browser';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { RouterModule } from '@angular/router';
@@ -14,15 +12,16 @@ import { TransferHttpCacheModule } from '@nguniversal/common';
 
 // app imports
 import { AppComponent } from './app.component';
-import { ProductsComponent } from './products/products.component';
-import { OrdersComponent } from './orders/orders.component';
+import { ProductsComponent } from './components/products/products.component';
+import { OrdersComponent } from './components/orders/orders.component';
 import { SharedModule } from './shared/shared.module';
 import { PipeModule } from './pipes/pipe.module';
 import { reducers } from './store/reducers/index';
 import { AppEffects } from './store/effects';
-import { HeaderComponent } from './header/header.component';
-import { FooterComponent } from './footer/footer.component';
-
+import { HeaderComponent } from './components/header/header.component';
+import { FooterComponent } from './components/footer/footer.component';
+import { OrderComponent } from './components/order/order.component';
+import { routesAll } from './app.routes';
 
 // external
 import { StoreModule } from '@ngrx/store';
@@ -61,7 +60,7 @@ const routes: Routes = routesAll;
     EffectsModule.forRoot([ AppEffects ]),
     RouterModule.forRoot(routes, { initialNavigation: 'enabled' }),
     environment.production ? ServiceWorkerModule.register('ngsw-worker.js') : [],
-    StoreDevtoolsModule.instrument()
+    !environment.production ? StoreDevtoolsModule.instrument() : []
   ],
   providers: [
     CookieService,

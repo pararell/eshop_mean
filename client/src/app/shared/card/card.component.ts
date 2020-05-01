@@ -3,7 +3,7 @@ declare const Stripe: any;
 import { Component, Input, EventEmitter, Inject, PLATFORM_ID, ViewChild, ElementRef, OnInit, Output  } from '@angular/core';
 import { isPlatformServer, DOCUMENT } from '@angular/common';
 import { Store } from '@ngrx/store';
-import * as actions from './../../store/actions'
+import * as actions from '../../store/actions'
 import * as fromRoot from '../../store/reducers';
 
 import { keys } from './../../../config/keys';

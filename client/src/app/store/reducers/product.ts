@@ -1,5 +1,5 @@
 
-import * as actions from './../actions';
+import * as actions from '../../store/actions';
 
 
 export interface State {

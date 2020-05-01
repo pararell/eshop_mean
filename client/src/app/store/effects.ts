@@ -4,10 +4,10 @@ import {Actions, Effect, ofType} from '@ngrx/effects';
 
 import {Observable} from 'rxjs';
 
-import { ApiService } from './../services/api.service';
+import { ApiService } from '../services/api.service';
 
 import {Action} from '@ngrx/store';
-import * as actions from './actions';
+import * as actions from '../store/actions';
 
 
 @Injectable()
@@ -133,7 +133,7 @@ export class AppEffects {
       switchMap((action: actions.StripeSession) => this.apiService.getStripeSession(action.payload)),
       map(res => new actions.StripeSessionSuccess(res))
   );
-  
+
 
   @Effect() loadOrders$: Observable<Action> = this._actions.pipe(
     ofType(actions.LOAD_ORDERS),
@@ -177,14 +177,14 @@ export class AppEffects {
       map(res => new actions.SendContactSuccess(res))
   );
 
-  
+
   @Effect() signIn$: Observable<Action> = this._actions.pipe(
     ofType(actions.SIGN_IN),
       switchMap((action: actions.SignIn) => this.apiService.signIn(action.payload)),
       map(res => new actions.SignInSuccess(res))
   );
 
-  
+
   @Effect() signUp$: Observable<Action> = this._actions.pipe(
     ofType(actions.SIGN_UP),
       switchMap((action: actions.SignUp) => this.apiService.signUp(action.payload)),

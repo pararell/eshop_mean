@@ -1,5 +1,5 @@
 import { filter } from 'rxjs/operators';
-import { TranslateService } from './../../services/translate.service';
+import { TranslateService } from '../../services/translate.service';
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
