@@ -26,7 +26,6 @@ export class ApiService {
 
     if (environment.production) {
       if (isPlatformServer(this._platformId)) {
-        console.log(this.serverUrl, 'this.serverUrl')
         this.apiUrl = this.serverUrl || '';
       }
 
@@ -36,13 +35,11 @@ export class ApiService {
     }
   }
 
-  // auth
   getUser() {
     const userUrl = this.apiUrl + '/api/auth';
     return this.http.get(userUrl);
   }
 
-  // orders
   handleToken(token) {
     const tokenUrl = this.apiUrl + '/api/orders/stripe';
     return this.http.post(tokenUrl, token);
@@ -68,7 +65,6 @@ export class ApiService {
     return this.http.post(sendContact, req);
   }
 
-
   loadProducts(req) {
     const {lang, page, sort, category} = req;
     const addCategory = category ? {category} : {};
@@ -89,7 +85,6 @@ export class ApiService {
         ...addCategory
     })))
   }
-
 
   loadCategories(payload) {
     const categoriesUrl = this.apiUrl + '/api/products/categories?lang=' + payload.lang;
@@ -121,7 +116,6 @@ export class ApiService {
     return this.http.delete(removeProduct);
   }
 
-
   getUserOrders(req) {
     const userOrderUrl = this.apiUrl + '/api/orders';
     return this.http.post(userOrderUrl, req);
@@ -147,7 +141,6 @@ export class ApiService {
     return this.http.post(stripeSessionUrl, req);
   }
 
-  // cart
   getCart() {
     const cartUrl = this.apiUrl + '/api/cart/';
     return this.http.get(cartUrl);
@@ -163,7 +156,6 @@ export class ApiService {
     return this.http.get(removeFromCartUrl);
   }
 
-
   getLangTranslations(lang) {
     const translationsUrl = this.apiUrl + '/api/translations?lang=' + lang;
     return this.http.get(translationsUrl);
@@ -178,8 +170,6 @@ export class ApiService {
     const translationsUpdateUrl = this.apiUrl + '/api/translations?lang=' + lang;
     return this.http.patch(translationsUpdateUrl, { keys : keys });
   }
-
-
 
   getImages() {
     const getImages = this.apiUrl + '/api/admin/images';
