@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AngularUniversalModule } from '@nestjs/ng-universal';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { AppServerModule } from '../../client/main.server';
+import { AppServerModule } from '../../client/src/main.server';
 import { AppModule } from './app.module';
 import * as domino from 'domino';
 import { readFileSync } from 'fs';
@@ -19,10 +18,6 @@ global['document'] = window.document;
       bootstrap: AppServerModule,
       viewsPath : join(process.cwd(), 'dist/eshop/browser')
     })
-    // ServeStaticModule.forRoot({
-    //   rootPath: join(process.cwd(), 'dist/eshop/browser'),
-    //   exclude: ['/api', '/auth']
-    // })
   ]
 })
 export class AppSSRModule {}

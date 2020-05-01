@@ -13,9 +13,9 @@
           "options": {
             "outputPath": "dist/eshop/browser",
             "index": "client/src/index.html",
-            "main": "client/main.ts",
+            "main": "client/src/main.ts",
             "tsConfig": "client/tsconfig.app.json",
-            "polyfills": "client/polyfills.ts",
+            "polyfills": "client/src/polyfills.ts",
             "aot": true,
             "stylePreprocessorOptions": {
               "includePaths": [
