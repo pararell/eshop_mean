@@ -14,12 +14,7 @@ export class ServerHttpInterceptor implements HttpInterceptor {
     private _transferState: TransferState) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const serverReq = !this.serverUrl
-    ? request
-    : request.clone({
-        url: `${this.serverUrl}${request.url}`
-      });
-    return next.handle(serverReq).pipe(tap(event => {
+    return next.handle(request).pipe(tap(event => {
     if (event instanceof HttpResponse && (request.method === 'GET' && !request.url.includes('api/cart') && !request.url.includes('api/auth'))) {
       this.key = makeStateKey<HttpResponse<object>>(request.url);
       this._transferState.set(this.key, event.body);

@@ -40,7 +40,7 @@ export class HeaderComponent implements OnInit {
     this.store
       .select(fromRoot.getLang)
       .pipe(filter(Boolean))
-      .subscribe((lang:string) => {
+      .subscribe((lang: string) => {
         this.choosenLanguage = lang;
         translate.use(this.choosenLanguage);
       });
@@ -72,13 +72,13 @@ export class HeaderComponent implements OnInit {
 
     this.user$
       .pipe(
-        filter(user => user && user._id),
+        filter(user => user && user.accessToken),
       )
       .subscribe(user => {
         if (isPlatformBrowser(this._platformId)) {
           localStorage.setItem('accessToken', user.accessToken);
         }
-        this.store.dispatch(new actions.LoadUserOrders({ token: user._id }));
+        this.store.dispatch(new actions.LoadUserOrders({ token: user.accessToken }));
       });
 
     this.cart$.pipe(filter(() => isPlatformBrowser(this._platformId)), take(1)).subscribe(cart => {
