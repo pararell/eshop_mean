@@ -12,8 +12,8 @@ import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { existsSync } from 'fs';
 
-const staticFile = existsSync(join(process.cwd(), '../dist/client'))
-    ? join(process.cwd(), '../dist/client')
+const staticFile = existsSync(join(process.cwd(), '../dist/eshop/browser'))
+    ? join(process.cwd(), '../dist/eshop/browser')
     : join(process.cwd(), 'public');
 
 

@@ -1,9 +1,10 @@
 import { TranslateService } from './services/translate.service';
-import { filter, take } from 'rxjs/operators';
+import { filter, take, delay } from 'rxjs/operators';
 import { Component, ElementRef, Renderer2 } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import * as fromRoot from './store/reducers';
 import * as actions from './store/actions';
+import { of } from 'rxjs';
 
 @Component({
   selector    : 'app-root',
@@ -49,9 +50,9 @@ export class AppComponent {
       ? this.rememberScroll[currentComponent]
       : 0;
 
-    setTimeout(() =>
+    of('activate_event').pipe(delay(5), take(1)).subscribe(() => {
       this.renderer.setProperty(this.elRef.nativeElement.querySelector('.main-scroll-wrapp'), 'scrollTop', position)
-    , 0)
+    })
 }
 
   onDeactivate(component: string) {

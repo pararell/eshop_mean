@@ -18,7 +18,6 @@ import { ProductsComponent } from './products/products.component';
 import { OrdersComponent } from './orders/orders.component';
 import { SharedModule } from './shared/shared.module';
 import { PipeModule } from './pipes/pipe.module';
-import { LazyModule } from './utils/lazyLoadImg/lazy.module';
 import { reducers } from './store/reducers/index';
 import { AppEffects } from './store/effects';
 import { HeaderComponent } from './header/header.component';
@@ -32,10 +31,6 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from '../environments/environment';
 import { TranslateService } from './services/translate.service';
 import { CookieService } from 'ngx-cookie-service';
-
-export function WindowFactory() {
-  return typeof window !== 'undefined' ? window : {};
-}
 
 export function setupTranslateFactory(
   translateService: TranslateService) {
@@ -60,7 +55,6 @@ const routes: Routes = routesAll;
     HttpClientModule,
     SharedModule,
     PipeModule,
-    LazyModule,
     ReactiveFormsModule,
     FormsModule,
     TransferHttpCacheModule,

@@ -25,7 +25,6 @@ export function appReducer(state = initialState, action): State {
     }
 
     case actions.SIGN_IN_SUCCESS: {
-      localStorage.setItem('accessToken', action.payload.accessToken);
       return { ...state, user: action.payload };
     }
 

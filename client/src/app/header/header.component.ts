@@ -1,8 +1,8 @@
-import { debounceTime, first, filter, take } from 'rxjs/operators';
+import { debounceTime, filter, take, delay } from 'rxjs/operators';
 import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, of } from 'rxjs';
 
 import * as fromRoot from '../store/reducers';
 import { Store } from '@ngrx/store';
@@ -73,9 +73,11 @@ export class HeaderComponent implements OnInit {
     this.user$
       .pipe(
         filter(user => user && user._id),
-        take(1)
       )
       .subscribe(user => {
+        if (isPlatformBrowser(this._platformId)) {
+          localStorage.setItem('accessToken', user.accessToken);
+        }
         this.store.dispatch(new actions.LoadUserOrders({ token: user._id }));
       });
 
@@ -91,7 +93,9 @@ export class HeaderComponent implements OnInit {
   }
 
   onBlur() {
-    setTimeout(() => this.showAutocomplete$.next(false), 300);
+    of('blur_event').pipe(delay(300), take(1)).subscribe(() => {
+      this.showAutocomplete$.next(false);
+    })
   }
 
   onTitleLink(productUrl) {
@@ -99,7 +103,10 @@ export class HeaderComponent implements OnInit {
   }
 
   onLogout(): void {
-    localStorage.removeItem('accessToken');
+    if (isPlatformBrowser(this._platformId)) {
+      localStorage.removeItem('accessToken');
+    }
+    this.store.dispatch(new actions.StoreUserAction(null));
   }
 
   setLang(lang: string) {

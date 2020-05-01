@@ -5,6 +5,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { WindowService } from './services/window.service';
 import { BrowserHttpInterceptor } from './services/browser-http-interceptor';
+import { LazyModule } from './utils/lazyLoadImg/lazy.module';
 
 
 export function WindowFactory() {
@@ -13,7 +14,8 @@ export function WindowFactory() {
 
 @NgModule({
   imports: [
-    AppModule
+    AppModule,
+    LazyModule
   ],
   providers: [
     {

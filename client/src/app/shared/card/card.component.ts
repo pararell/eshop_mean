@@ -69,14 +69,14 @@ export class CardComponent implements OnInit{
     });
   }
 
-  
+
   private stripeTokenHandler(token) {
     const payment = { token: token, amount: this.price, currency: this.currency};
     this.payWithCardEmit.emit(payment);
   }
 
   private _setHandler() {
-    
+
     this.stripe = Stripe(keys.stripePublishableKey);
     const elements = this.stripe.elements();
 

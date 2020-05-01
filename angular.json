@@ -11,7 +11,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "./dist/client",
+            "outputPath": "dist/eshop/browser",
             "index": "client/src/index.html",
             "main": "client/main.ts",
             "tsConfig": "client/tsconfig.app.json",
@@ -98,8 +98,8 @@
         "server": {
           "builder": "@angular-devkit/build-angular:server",
           "options": {
-            "outputPath": "./dist/eshop/server",
-            "main": "./server-ssr.ts",
+            "outputPath": "dist/eshop/server",
+            "main": "server-ssr.ts",
             "tsConfig": "client/tsconfig.server.json",
             "externalDependencies": [
               "@nestjs/microservices",

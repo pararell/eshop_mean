@@ -1,20 +1,24 @@
 import { catchError } from 'rxjs/operators';
 import { Observable, of, throwError } from 'rxjs';
-import { Injectable } from '@angular/core';
+import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
 import { TransferState, makeStateKey, StateKey } from '@angular/platform-browser';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable()
 export class BrowserHttpInterceptor implements HttpInterceptor {
   key  : StateKey<string>;
 
-  constructor(private _transferState: TransferState) {
+  constructor(
+      private _transferState: TransferState,
+      @Inject(PLATFORM_ID)
+      private _platformId : Object) {
   }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const accessToken = localStorage.getItem('accessToken');
+    const accessToken = isPlatformBrowser(this._platformId) ? localStorage.getItem('accessToken') : '';
     const clonedRequest = accessToken
-      ? request.clone({ 
+      ? request.clone({
           headers: request.headers.set('Authorization', 'Bearer ' + accessToken),
           withCredentials: true
         })

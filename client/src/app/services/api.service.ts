@@ -204,17 +204,19 @@ export class ApiService {
   }
 
   setUploader({options, titleUrl}): Observable<any> {
-    const titleUrlQuery = titleUrl ? '?titleUrl=' + titleUrl : '';
-    const accessToken = localStorage.getItem('accessToken');
-    const authorizationHeader = accessToken ? {name: 'Authorization', value: 'Bearer ' + accessToken } : {};
+    if (isPlatformBrowser(this._platformId)) {
+      const titleUrlQuery = titleUrl ? '?titleUrl=' + titleUrl : '';
+      const accessToken = localStorage.getItem('accessToken');
+      const authorizationHeader = accessToken ? {name: 'Authorization', value: 'Bearer ' + accessToken } : {};
 
-    this.uploaderSub.next(new FileUploader({
-      url: this.apiUrl + '/api/admin/images/upload' + titleUrlQuery,
-      headers: [{name: 'Accept', value: 'application/json', ...authorizationHeader}],
-      ...options
-   }));
+      this.uploaderSub.next(new FileUploader({
+        url: this.apiUrl + '/api/admin/images/upload' + titleUrlQuery,
+        headers: [{name: 'Accept', value: 'application/json', ...authorizationHeader}],
+        ...options
+    }));
 
-   return this.uploaderSub.asObservable();
+    return this.uploaderSub.asObservable();
+    }
   }
 
   getLocation$() {
