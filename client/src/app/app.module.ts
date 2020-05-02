@@ -1,4 +1,3 @@
-// angular
 import { Routes } from '@angular/router';
 import { BrowserModule, BrowserTransferStateModule } from '@angular/platform-browser';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
@@ -6,11 +5,8 @@ import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ServiceWorkerModule } from '@angular/service-worker';
-
-// universal
 import { TransferHttpCacheModule } from '@nguniversal/common';
 
-// app imports
 import { AppComponent } from './app.component';
 import { ProductsComponent } from './components/products/products.component';
 import { OrdersComponent } from './components/orders/orders.component';
@@ -23,7 +19,13 @@ import { FooterComponent } from './components/footer/footer.component';
 import { OrderComponent } from './components/order/order.component';
 import { routesAll } from './app.routes';
 
-// external
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatIconModule } from '@angular/material/icon';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatInputModule } from '@angular/material/input';
+
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
@@ -57,6 +59,12 @@ const routes: Routes = routesAll;
     ReactiveFormsModule,
     FormsModule,
     TransferHttpCacheModule,
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule,
+    MatToolbarModule,
+    MatAutocompleteModule,
+    MatInputModule,
     EffectsModule.forRoot([ AppEffects ]),
     RouterModule.forRoot(routes, { initialNavigation: 'enabled' }),
     environment.production ? ServiceWorkerModule.register('ngsw-worker.js') : [],

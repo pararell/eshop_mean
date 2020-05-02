@@ -1,5 +1,5 @@
-<div class="collection with-header">
-    <div class="collection-header">
+<div class="collection">
+    <div class="collection-header collection-header-top">
         <h4>{{ 'Categories' | translate | async }}</h4>
     </div>
     <a
@@ -21,7 +21,7 @@
             <h4>{{ 'Sorting' | translate | async }}</h4>
         </div>
         <select
-            class="browser-default"
+            class="collection-select"
             aria-label="Sort"
             [ngModel]="choosenSort || 'newest'"
             (ngModelChange)="onInputChange($event)">
@@ -36,7 +36,7 @@
         <h4>{{ 'PriceRange' | translate | async }}</h4>
     </div>
     <input
-        class="blue darken-4"
+        class="collection-range"
         type="range"
         name="range"
         aria-label="Range"

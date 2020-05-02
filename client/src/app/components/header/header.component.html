@@ -1,86 +1,74 @@
-<nav class="main-nav-header navbar-fixed">
-  <div class="nav-wrapper">
-    <a href="" class="left brand-logo">Bluetooth eshop</a>
-    <ul class="right nav-menu-right-side">
-      <li *ngIf="!(user$ | async)">
-        <a href="{{googleAuthUrl}}">{{ 'Login' | translate | async }} {{ 'with' | translate | async }} Google</a>
-        <a [routerLink]="[signInUrl]">{{ 'Login' | translate | async }}</a>
-      </li>
-      <li>
-        <ng-container *ngIf="(cart$ | async) as cart">
-          <a class="cart-wrap" [routerLink]="[cartUrl]"> {{ cart?.totalQty }} &nbsp;
-            <span *ngIf="cart?.totalQty === 0 || cart?.totalQty > 4"> {{ 'Items+' | translate | async }}</span>
-            <span *ngIf="cart?.totalQty < 5 && cart?.totalQty > 1 "> {{ 'Items2' | translate | async }}</span>
-            <span *ngIf="cart?.totalQty === 1 "> {{ 'Items1' | translate | async }}</span>
-            <i class="material-icons cart-icon">shopping_cart</i>
-          </a>
-        </ng-container>
-      </li>
-      <li *ngIf="(user$ | async)?.roles?.includes('admin')">
-        <a [routerLink]="['/' + translate.lang + '/dashboard']"> Dashboard</a>
-      </li>
-      <li *ngIf="(userOrders$ | async)?.length">
-        <a [routerLink]="[ordersUrl]"> {{'Orders' | translate | async}}</a>
-      </li>
-      <li *ngIf="(user$ | async)">
-        <a (click)="onLogout()"> {{'Logout' | translate | async}}</a>
-      </li>
-      <li>
-        <select class="browser-default lang-select" aria-label="Language" [ngModel]="choosenLanguage"
-          (ngModelChange)="setLang($event)">
-          <option *ngFor="let option of languageOptions;" [value]="option">{{option}}</option>
-        </select>
-      </li>
-    </ul>
-
-    <ul class="right mobile-nav-menu-icon"> <a (click)="showMobileNav = !showMobileNav"><i
-          class="material-icons">menu</i></a> </ul>
-
-    <div class="mobile-nav-menu" [class.active]="showMobileNav">
-      <ul class="">
-        <li *ngIf="!(user$ | async)?._id">
-          <a href="{{googleAuthUrl}}">{{ 'Login' | translate | async }} {{ 'with' | translate | async }} Google</a>
-        </li>
-        <li>
-          <ng-container *ngIf="(cart$ | async) as cart">
-            <a class="cart-wrap" [routerLink]="[cartUrl]"> {{ cart?.totalQty }} &nbsp;
-              <span *ngIf="cart?.totalQty === 0 || cart?.totalQty > 4"> {{ 'Items+' | translate | async }}</span>
-              <span *ngIf="cart?.totalQty < 5 && cart?.totalQty > 1 "> {{ 'Items2' | translate | async }}</span>
-              <span *ngIf="cart?.totalQty === 1 "> {{ 'Items1' | translate | async }}</span>
-              <i class="material-icons cart-icon">shopping_cart</i>
-            </a>
-          </ng-container>
-        </li>
-        <li *ngIf="(user$ | async)?.roles?.includes('admin')">
-          <a [routerLink]="['/' + translate.lang + '/dashboard']"> Dashboard</a>
-        </li>
-        <li *ngIf="(userOrders$ | async)?.length">
-          <a [routerLink]="[ordersUrl]"> {{'Orders' | translate | async}}</a>
-        </li>
-        <li *ngIf="(user$ | async)?._id">
-          <a href="/auth/logout"> {{'Logout' | translate | async}}</a>
-        </li>
-        <li>
-          <select class="browser-default lang-select" aria-label="Language" [ngModel]="choosenLanguage"
-            (ngModelChange)="setLang($event)">
-            <option *ngFor="let option of languageOptions;" [value]="option">{{option}}</option>
-          </select>
-        </li>
-      </ul>
-    </div>
-
-    <div class="fake-form right">
-      <div class="input-field">
-        <input id="search" type="search" class="autocomplete" [formControl]="query" (focus)="onFocus()"
-          (blur)="onBlur()">
-        <label class="label-icon search-icon-position" for="search"><i class="material-icons">search</i></label>
-        <i class="material-icons">close</i>
-        <ul class="autocomplete-content dropdown-content" *ngIf="showAutocomplete$ | async">
-          <li *ngFor="let title of (productTitles$ | async)">
-            <a (click)="onTitleLink(title)" [routerLink]="[productUrl + '/' + title]">{{title}}</a> </li>
-        </ul>
-      </div>
-    </div>
-
+<mat-toolbar class="main-nav-header navbar-fixed" color="primary">
+  <div class="brand-logo">
+    <a href="/">Bluetooth eshop</a>
   </div>
-</nav>
+  <div class="nav-part-right">
+    <div class="fake-form">
+      <mat-form-field class="fake-form-content"
+        [ngClass]="{'focus-active' : (showAutocomplete$ | async)}">
+        <i class="material-icons md-18">search</i>
+        <input type="text"
+               aria-label="Search"
+               matInput
+               [formControl]="query"
+               (focus)="onFocus()"
+               (blur)="onBlur()"
+               [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let title of (productTitles$ | async)" [value]="title">
+            <a class="nav-autocomplete-link"
+              (click)="onTitleLink(title)"
+              [routerLink]="[productUrl + '/' + title]">{{title}}
+            </a>
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+    <ng-container *ngIf="(cart$ | async) as cart">
+      <a class="cart-wrap" [routerLink]="[cartUrl]">
+        <span>{{ cart?.totalQty }}</span>
+        <i class="material-icons cart-icon md-18">shopping_cart</i>
+      </a>
+    </ng-container>
+    <select class="browser-default lang-select" aria-label="Language"
+      [ngModel]="choosenLanguage"
+      (ngModelChange)="setLang($event)">
+      <option *ngFor="let option of languageOptions;" [value]="option">{{option}}</option>
+    </select>
+    <button class="mobile-nav" mat-icon-button [matMenuTriggerFor]="menu">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu" [overlapTrigger]="false">
+      <ng-container *ngTemplateOutlet="menuItems"></ng-container>
+    </mat-menu>
+    <div class="desktop-nav">
+      <ng-container *ngTemplateOutlet="menuItems"></ng-container>
+    </div>
+  </div>
+</mat-toolbar>
+
+
+<ng-template #menuItems>
+  <ng-container *ngIf="!(user$ | async)">
+    <button mat-menu-item>
+      <mat-icon>account_box</mat-icon>
+      <a href="{{googleAuthUrl}}">{{ 'Login' | translate | async }} {{ 'with' | translate | async }} Google</a>
+    </button>
+    <button mat-menu-item>
+      <mat-icon>account_circle</mat-icon>
+      <a [routerLink]="[signInUrl]">{{ 'Login' | translate | async }}</a>
+    </button>
+  </ng-container>
+  <button mat-menu-item *ngIf="(user$ | async)?.roles?.includes('admin')">
+    <mat-icon>dashboard</mat-icon>
+    <a [routerLink]="['/' + translate.lang + '/dashboard']"> Dashboard</a>
+  </button>
+  <button mat-menu-item *ngIf="(userOrders$ | async)?.length">
+    <mat-icon>assignment</mat-icon>
+    <a [routerLink]="[ordersUrl]"> {{'Orders' | translate | async}}</a>
+  </button>
+  <button mat-menu-item *ngIf="(user$ | async)">
+    <mat-icon>exit_to_app</mat-icon>
+    <a (click)="onLogout()"> {{'Logout' | translate | async}}</a>
+  </button>
+</ng-template>

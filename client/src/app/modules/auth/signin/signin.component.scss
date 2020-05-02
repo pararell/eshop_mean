@@ -2,32 +2,30 @@
   display: block;
 
   .sign-form-wrap {
-    margin: 25px auto;
+    margin: 15px auto;
     max-width: 500px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    background: #fff;
+    padding: 15px;
 
     h1 {
-      margin-bottom: 40px;
+      text-align: center;
     }
   }
 
-  .submit-order-button {
-    margin-top: 25px;
+  .sign-form {
+    width: 100%;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sign-field {
     width: 100%;
   }
 
-  input:focus + label {
-    -webkit-transform: translateY(-14px) scale(0.8);
-    transform: translateY(-14px) scale(0.8);
-    -webkit-transform-origin: 0 0;
-    transform-origin: 0 0;
-  }
-
-  input {
-    &.ng-valid + label {
-      -webkit-transform: translateY(-14px) scale(0.8);
-      transform: translateY(-14px) scale(0.8);
-      -webkit-transform-origin: 0 0;
-      transform-origin: 0 0;
-    }
+  .signup-link {
+    color: #222;
   }
 }

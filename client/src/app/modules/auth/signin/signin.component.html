@@ -2,24 +2,31 @@
   <div class="container">
     <div class="sign-form-wrap">
       <h1>SignIn</h1>
-            <form [formGroup]="signInForm">
-                <div class="full-input input-field">
-                    <input class="form-control validate"
-                      id="email"
-                      type="email"
-                      name="email" formControlName="email">
-                    <label for="contantName"> Email</label>
-                </div>
-                <div class="full-input input-field">
-                    <input class="form-control validate" 
-                      type="text" name="password" formControlName="password">
-                    <label for="email">Password</label>
-                </div>
-
-                <button type="submit" class="btn waves-effect waves-light submit-contact-button" [disabled]="signInForm.invalid"
-                  (click)="submit()"> {{ 'SignIn' | translate | async }} </button>
+            <form class="sign-form"  [formGroup]="signInForm">
+              <mat-form-field class="sign-field">
+                <mat-label>Email</mat-label>
+                <input matInput
+                  formControlName="email"
+                  type="email"
+                  name="email">
+              </mat-form-field>
+              <mat-form-field class="sign-field">
+                <mat-label>Password</mat-label>
+                <input matInput
+                  formControlName="password"
+                  type="password"
+                  name="password">
+              </mat-form-field>
+              <button type="submit" class="submit-sign-button"
+              mat-raised-button color="primary"
+              [disabled]="signInForm.invalid"
+              (click)="submit()">
+              SignIn
+                <!-- {{ 'SignIn' | translate | async }} -->
+              </button>
             </form>
+            <a routerLink="/{{lang}}/authorize/signup" class="signup-link">SignUp</a>
     </div>
-    <a routerLink="/{{lang}}/authorize/signup" class="waves-effect waves-light btn-large">SignUp</a>
+
   </div>
 </div>

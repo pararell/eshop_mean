@@ -1,9 +1,9 @@
 <div class="main">
   <div class="container">
 
-  <div (click)="goBack()">
-    <a class="waves-effect waves-light btn"><i class="material-icons left">arrow_back</i>{{ 'Back' | translate | async }}</a>
-  </div>
+    <button (click)="goBack()" mat-raised-button color="primary">
+      <i class="material-icons left">arrow_back</i>{{ 'Back' | translate | async }}
+    </button>
 
 <ng-container *ngIf="lang === 'sk'">
     <p><strong>Podmienky ochrany osobných údajov</strong></p>

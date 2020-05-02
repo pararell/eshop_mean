@@ -8,7 +8,7 @@ import * as fromRoot from '../../store/reducers';
 import { Store } from '@ngrx/store';
 import * as actions from '../../store/actions';
 import { TranslateService } from '../../services/translate.service';
-import { isPlatformBrowser, DOCUMENT } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../environments/environment';
 
 
@@ -38,8 +38,6 @@ export class HeaderComponent implements OnInit {
   constructor(
     @Inject(PLATFORM_ID)
     private _platformId : Object,
-    @Inject(DOCUMENT)
-    private _document   : Document,
     private store: Store<fromRoot.State>, public translate: TranslateService) {
     this.store
       .select(fromRoot.getLang)

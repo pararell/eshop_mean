@@ -1,31 +1,17 @@
 :host {
-  // display: grid;
-  // display: -ms-grid;
-  // -ms-grid-columns: 1fr 1fr 1fr;
-  // grid-template-columns:  repeat( 3, 1fr );
-  // grid-gap: 15px; // edge - ie grid problem
-
   display: flex;
   flex-wrap: wrap;
 
-  // @media(max-width: 1000px) {
-  //   -ms-grid-columns: 1fr 1fr;
-  //   grid-template-columns:  repeat( 2, 1fr );
-  // }
-
-  // @media(max-width: 650px) {
-  //   -ms-grid-columns: 1fr;
-  //   grid-template-columns: 1fr;
-  // }
-
   .card {
     flex-basis: 20%;
-    margin-right: 5%;
     overflow: hidden;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
     display: flex;
     flex-flow: column;
     justify-content: space-between;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    background: #fff;
+    margin: 0.5rem 0 1rem;
 
     @media (max-width: 1400px) {
       flex-basis: 30%;
@@ -42,7 +28,6 @@
     }
 
     .card-action {
-      // background: linear-gradient(to bottom, #ece9e6, #fff);
       border-top: none;
       padding: 0;
     }
@@ -92,8 +77,12 @@
     z-index: 2;
     overflow: visible;
 
+    p {
+      margin: 0;
+    }
+
     .price-info {
-      font-weight: 600;
+      font-weight: 500;
       font-size: 18px;
     }
   }
@@ -121,7 +110,7 @@
   .price-card {
     display: flex;
     justify-content: space-between;
-    font-weight: 600;
+    font-weight: 500;
     font-size: 16px;
     padding: 15px 15px 5px 15px;
     align-items: flex-start;
@@ -131,7 +120,7 @@
     font-size: 18px;
     line-height: 20px;
     margin: 0 5px 0 0;
-    font-weight: 600;
+    font-weight: 500;
     padding: 0;
   }
 

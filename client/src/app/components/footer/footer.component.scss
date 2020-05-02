@@ -1,7 +1,17 @@
-.page-footer {
-  background: linear-gradient(to right, #000428, #004e92);
-}
+:host {
+  color: #fff;
 
-.footer-copyright {
-  background: linear-gradient(to right, #000428, #004e92);
+  .page-footer {
+    background: linear-gradient(to right, #000428, #004e92);
+  }
+
+  .footer-copyright {
+    background: linear-gradient(to right, #000428, #004e92);
+  }
+
+  .links-list {
+    text-decoration: none;
+    list-style-type: none;
+  }
+
 }

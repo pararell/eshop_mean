@@ -2,35 +2,37 @@
   <div class="container">
     <div class="sign-form-wrap">
       <h1>SignUp</h1>
-            <form [formGroup]="signUpForm">
-              <div class="full-input input-field">
-                  <input class="form-control validate"
-                    id="name"
-                    type="text"
-                    name="name"
-                  formControlName="name">
-                  <label for="contantName">Name</label>
-              </div>
-                <div class="full-input input-field">
-                    <input class="form-control validate"
-                      id="email"
-                      type="email"
-                      name="email"
-                     formControlName="name">
-                    <label for="contantName"> Email</label>
-                </div>
-                <div class="full-input input-field">
-                    <input class="form-control validate" 
-                      type="text" 
-                      name="password" 
-                      formControlName="password">
-                    <label for="email">Password</label>
-                </div>
-
-                <button type="submit" class="btn waves-effect waves-light submit-contact-button" [disabled]="signUpForm.invalid"
-                  (click)="submit()"> {{ 'SignUp' | translate | async }} </button>
-            </form>
+        <form class="sign-form" [formGroup]="signUpForm">
+          <mat-form-field class="sign-field">
+            <mat-label>Name</mat-label>
+              <input matInput
+                formControlName="name"
+                type="text"
+                name="name">
+            </mat-form-field>
+            <mat-form-field class="sign-field">
+              <mat-label>Email</mat-label>
+              <input matInput
+                formControlName="email"
+                type="email"
+                name="email">
+            </mat-form-field>
+            <mat-form-field class="sign-field">
+              <mat-label>Password</mat-label>
+              <input matInput
+                formControlName="password"
+                type="password"
+                name="password">
+            </mat-form-field>
+            <button type="submit" class="submit-sign-button"
+              mat-raised-button color="primary"
+              [disabled]="signUpForm.invalid"
+              (click)="submit()">
+              SignUp
+                <!-- {{ 'SignUp' | translate | async }} -->
+              </button>
+        </form>
+        <a routerLink="/{{lang}}/authorize/signin" class="signin-link">SignIn</a>
     </div>
-    <a routerLink="/{{lang}}/authorize/signin" class="waves-effect waves-light btn-large">SignIn</a>
   </div>
 </div>

@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { WindowService } from './services/window.service';
 import { BrowserHttpInterceptor } from './services/browser-http-interceptor';
 import { LazyModule } from './utils/lazyLoadImg/lazy.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
 export function WindowFactory() {
@@ -15,7 +16,8 @@ export function WindowFactory() {
 @NgModule({
   imports: [
     AppModule,
-    LazyModule
+    LazyModule,
+    BrowserAnimationsModule
   ],
   providers: [
     {

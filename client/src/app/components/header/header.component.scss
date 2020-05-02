@@ -1,11 +1,37 @@
+
 :host {
   display: block;
+
+  /deep/ .mat-menu-item a {
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+
+  /deep/ .mat-option .nav-autocomplete-link {
+    color: rgba(0, 0, 0, 0.87) !important;
+  }
+
+  /deep/ .mat-input-element {
+    padding: 2px 5px !important;
+    font-size: 16px !important;
+  }
+
+  /deep/ .mat-form-field .mat-form-field-underline {
+    display: none;
+  }
+
+  /deep/ .mat-form-field.focus-active .mat-form-field-underline {
+    display: block;
+  }
 
   .main-nav-header {
     padding: 0 15px;
     height: 50px;
     line-height: 50px;
     background: linear-gradient(to right, #000460, #004e92);
+    justify-content: space-between;
+    z-index: 5;
+    position: relative;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
 
     select.lang-select {
       background: #004e92;
@@ -14,12 +40,19 @@
     }
 
     .cart-wrap {
+      font-size: 16px;
       display: flex;
+      align-items: center;
+      margin-right: 5px;
+    }
 
-      .cart-icon {
-        height: 50px;
-        line-height: 50px;
-      }
+    .cart-icon {
+      margin: 0 5px;
+    }
+
+    .nav-part-right {
+      display: flex;
+      align-items: center;
     }
 
     .brand-logo {
@@ -39,59 +72,45 @@
       }
     }
 
-    .search-icon-position {
-      top: -15px;
-    }
-
     .fake-form {
-      height: 100%;
-      width: 30%;
-      display: inline-block;
+      margin-right: 30px;
+      max-width: 50%;
 
-      @media screen and (max-width: 600px) {
-        width: 50%;
-      }
-
-      .input-field {
-        z-index: 20;
-
-        .autocomplete-content {
-          max-height: 200px;
-          display: block;
-          opacity: 1;
-          top: initial;
-        }
+      &-content {
+        width: 100%;
       }
     }
   }
 
-  .mobile-nav-menu {
-    display: none;
+  .desktop-nav {
+    display: flex;
 
-    &.active {
-      display: block;
-      position: fixed;
-      top: 50px;
-      width: 100%;
-      left: 0;
-      padding: 5px;
-      background: linear-gradient(to right, #000460, #004e92);
+    /deep/ button.mat-menu-item {
+      width: initial !important;
+
+      a {
+        color: #fff !important;
+      }
+
+      .mat-icon {
+        color: #fff !important;
+      }
     }
   }
 
-  .mobile-nav-menu-icon {
+  .mobile-nav {
     display: none;
-
-    @media screen and (max-width: 600px) {
-      display: block;
-    }
   }
 
   @media screen and (max-width: 600px) {
     padding: 0;
 
-    .nav-menu-right-side {
+    .desktop-nav {
       display: none;
+    }
+
+    .mobile-nav {
+      display: block;
     }
   }
 }

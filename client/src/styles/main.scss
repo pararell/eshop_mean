@@ -1,5 +1,6 @@
 body {
   overflow: hidden;
+  margin: 0;
 }
 
 .full-width {
@@ -16,6 +17,37 @@ body {
   right: 0;
   bottom: 0;
   overflow: auto;
+}
+
+a {
+  text-decoration: none;
+  color: #fff;
+  background-color: transparent;
+}
+
+a:hover {
+  text-decoration: none;
+  color: theme-color('secondary');
+}
+
+.material-icons.md-16 {
+  font-size: 16px;
+}
+
+.material-icons.md-18 {
+  font-size: 18px;
+}
+
+.material-icons.md-24 {
+  font-size: 24px;
+}
+
+.material-icons.md-36 {
+  font-size: 36px;
+}
+
+.material-icons.md-48 {
+  font-size: 48px;
 }
 
 @mixin stripes($color1: #000460, $color2: transparent, $angle: 0deg, $stripe1-width: 25px, $stripe2-width: null) {
@@ -40,7 +72,6 @@ body {
 }
 
 .container {
-  width: 100% !important;
   padding: 20px;
 }
 
