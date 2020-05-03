@@ -3,7 +3,7 @@
     <label for="card-info">Card Info</label>
   <div id="form-field">
         <div id="card-info" #cardElement></div>
-        <button id="submit-button" type="submit">
+        <button class="card-button" mat-raised-button color="primary" id="submit-button" type="submit">
             Pay {{price}} {{ currency }}
         </button>
         <div id="card-errors" role="alert" *ngIf="cardErrors">

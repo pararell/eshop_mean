@@ -2,26 +2,6 @@
   display: block;
   width: 100%;
 
-  .cart-items {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    .cart-title {
-      padding: 0 10px;
-    }
-
-    .cart-image {
-      display: flex;
-      align-items: center;
-      width: 50%;
-
-      img {
-        height: 70px;
-      }
-    }
-  }
-
   .StripeElement {
     box-sizing: border-box;
   
@@ -37,6 +17,25 @@
     -webkit-transition: box-shadow 150ms ease;
     transition: box-shadow 150ms ease;
   }
+
+  .card-button {
+    padding: 10px;
+    background-color: #004e92;
+    user-select: none;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    -webkit-tap-highlight-color: transparent;
+    display: inline-block;
+    white-space: nowrap;
+    text-decoration: none;
+    vertical-align: baseline;
+    text-align: center;
+    margin: 0;
+    color: #fff;
+    float: right;
+  }
+  
   
   .StripeElement--focus {
     box-shadow: 0 1px 3px 0 #cfd7df;

@@ -17,7 +17,7 @@
         <mat-autocomplete #auto="matAutocomplete">
           <mat-option *ngFor="let title of (productTitles$ | async)" [value]="title">
             <a class="nav-autocomplete-link"
-              (click)="onTitleLink(title)"
+              (click)="onTitleLink()"
               [routerLink]="[productUrl + '/' + title]">{{title}}
             </a>
           </mat-option>
