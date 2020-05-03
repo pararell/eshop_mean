@@ -7,7 +7,9 @@
             <div class="card-action">
               <p> {{ order?.orderId }} </p>
               <div class="action-wrap">
-                <a routerLink="/{{translate.lang}}/dashboard/orders/{{order?.orderId}}">Detail</a>
+                <button mat-raised-button color="primary"
+                  routerLink="/{{translate.lang}}/dashboard/orders/{{order?.orderId}}">Detail
+                </button>
                 <p>Status: {{ order?.status }}</p>
               </div>
               <div class="price-card">Amount: {{ order?.amount }}</div>
