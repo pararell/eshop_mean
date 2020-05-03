@@ -1,12 +1,11 @@
+/deep/ .mat-option .nav-autocomplete-link {
+  color: rgba(0, 0, 0, 0.87) !important;
+}
 
 :host {
   display: block;
 
   /deep/ .mat-menu-item a {
-    color: rgba(0, 0, 0, 0.87) !important;
-  }
-
-  /deep/ .mat-option .nav-autocomplete-link {
     color: rgba(0, 0, 0, 0.87) !important;
   }
 

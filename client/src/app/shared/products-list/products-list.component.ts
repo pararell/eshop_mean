@@ -26,15 +26,15 @@ export class ProductsListComponent {
       });
   }
 
-  onAddProduct(id) {
+  onAddProduct(id: string): void {
     this.addProduct.emit(id);
   }
 
-  onRemoveProduct(id) {
+  onRemoveProduct(id: string): void {
     this.removeProduct.emit(id);
   }
 
-  trackById(index, item) {
+  trackById(_index, item) {
     return item._id;
 
   }

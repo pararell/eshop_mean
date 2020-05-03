@@ -2,12 +2,13 @@ import { filter, map, take } from 'rxjs/operators';
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, combineLatest } from 'rxjs';
-
 import { Store } from '@ngrx/store';
-import * as actions from '../../../store/actions';
-import * as fromRoot from '../../../store/reducers';
 import { Location } from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
+
+import * as actions from '../../../store/actions';
+import * as fromRoot from '../../../store/reducers';
+
 
 @Component({
   selector: 'app-product',
@@ -17,35 +18,25 @@ import { Meta, Title } from '@angular/platform-browser';
 export class ProductComponent {
 
   items$          : Observable<any>;
-  productLoading$ : Observable<any>;
+  productLoading$ : Observable<boolean>;
   convertVal$     : Observable<number>;
   currency$       : Observable<string>;
-  lang$           : Observable<any>;
-  activeTab  = 'first';
-  openImages = {};
+  lang$           : Observable<string>;
+  openImages      = {};
 
   constructor(
-    private _route  : ActivatedRoute,
+    private route   : ActivatedRoute,
     private store   : Store<fromRoot.State>,
     private location: Location,
-    private _meta   : Meta,
-    private _title  : Title) {
-    this.lang$ = this.store.select(fromRoot.getLang).pipe(filter(Boolean));
+    private meta    : Meta,
+    private title   : Title ) {
+  
+    this.lang$ = this.store.select(fromRoot.getLang);
 
-    combineLatest(this.lang$, this._route.params.pipe(map(params => params['id'])), (lang, id) => ({ lang, id }))
+    combineLatest(this.lang$, this.route.params.pipe(map(params => params['id'])), (lang, id) => ({ lang, id }))
       .subscribe(({ lang, id }) => this.store.dispatch(new actions.GetProduct(id + '?lang=' + lang)));
 
-    this.store
-      .select(fromRoot.getProduct)
-      .pipe(
-        filter(product => product && product.title),
-        take(1)
-      )
-      .subscribe(product => {
-        this._title.setTitle(product.title);
-        this._meta.updateTag({ name: 'description', content: product.description });
-      });
-
+    this.setMetaData();
     this.productLoading$ = this.store.select(fromRoot.getProductLoading);
 
     this.items$ = combineLatest(
@@ -56,7 +47,7 @@ export class ProductComponent {
       ),
       (product, cartItems) => {
         return {
-          product: product,
+          product,
           cartIds: cartItems.reduce((prev, curr) => ({ ...prev, [curr.id]: curr.qty }), {})
         };
       }
@@ -66,37 +57,47 @@ export class ProductComponent {
     this.currency$ = this.store.select(fromRoot.getCurrency);
   }
 
-  goBack() {
-    this.location.back();
-  }
-
-  addToCart(id: string) {
-    this.lang$.pipe(take(1)).subscribe(lang => {
+  cartEvent(id: string, lang: string, type: string): void {
+    if (type === 'add') {
       this.store.dispatch(new actions.AddToCart('?id=' + id + '&lang=' + lang));
-    });
+    }
+    if (type === 'remove') {
+      this.store.dispatch(new actions.RemoveFromCart('?id=' + id + '&lang=' + lang));
+    }
   }
 
-  removeFromCart(id: string) {
-    this.lang$.pipe(take(1)).subscribe(lang => {
-      this.store.dispatch(new actions.RemoveFromCart('?id=' + id + '&lang=' + lang));
-    });
+  goBack(): void {
+    this.location.back();
   }
 
   toggleModalImg(index: number): void {
     this.openImages[index] = this.openImages[index] ? !this.openImages[index] : true;
   }
 
-  prevImg(event, i: number) {
+  prevImg(event, i: number): void {
     event.stopPropagation();
     event.preventDefault();
     this.openImages[i] = false;
     this.openImages[i - 1] = true;
   }
 
-  nextImg(event, i: number) {
+  nextImg(event, i: number): void {
     event.stopPropagation();
     event.preventDefault();
     this.openImages[i] = false;
     this.openImages[i + 1] = true;
+  }
+
+  private setMetaData(): void {
+    this.store
+      .select(fromRoot.getProduct)
+      .pipe(
+        filter(product => product && product.title),
+        take(1)
+      )
+      .subscribe(product => {
+        this.title.setTitle(product.title);
+        this.meta.updateTag({ name: 'description', content: product.description });
+      });
   }
 }

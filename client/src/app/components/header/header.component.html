@@ -31,7 +31,7 @@
       </a>
     </ng-container>
     <select class="browser-default lang-select" aria-label="Language"
-      [ngModel]="choosenLanguage"
+      [ngModel]="(lang$ | async)"
       (ngModelChange)="setLang($event)">
       <option *ngFor="let option of languageOptions;" [value]="option">{{option}}</option>
     </select>

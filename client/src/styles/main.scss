@@ -73,6 +73,9 @@ a:hover {
 
 .container {
   padding: 20px;
+    @media screen and (max-width: 600px) {
+      padding: 5px !important;
+    }
 }
 
 .clickable {

@@ -156,7 +156,7 @@ export class ApiService {
     return this.http.get(removeFromCartUrl);
   }
 
-  getLangTranslations(lang) {
+  getLangTranslations(lang: string) {
     const translationsUrl = this.apiUrl + '/api/translations?lang=' + lang;
     return this.http.get(translationsUrl);
   }

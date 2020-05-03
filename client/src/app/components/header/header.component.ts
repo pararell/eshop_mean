@@ -1,4 +1,4 @@
-import { debounceTime, filter, take, delay } from 'rxjs/operators';
+import { debounceTime, filter, skip, take, delay } from 'rxjs/operators';
 import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
@@ -20,11 +20,11 @@ import { environment } from '../../../environments/environment';
 export class HeaderComponent implements OnInit {
   user$             : Observable<any>;
   cart$             : Observable<any>;
-  productTitles$    : Observable<any>;
+  productTitles$    : Observable<string[]>;
   userOrders$       : Observable<any>;
   showAutocomplete$ : BehaviorSubject<boolean> = new BehaviorSubject(false);
   languageOptions = ['en', 'sk', 'cs'];
-  choosenLanguage = 'en';
+  lang$             : Observable<string>;
   showMobileNav   = false;
   cartUrl         : string;
   googleAuthUrl   : string;
@@ -39,12 +39,13 @@ export class HeaderComponent implements OnInit {
     @Inject(PLATFORM_ID)
     private _platformId : Object,
     private store: Store<fromRoot.State>, public translate: TranslateService) {
-    this.store
-      .select(fromRoot.getLang)
-      .pipe(filter(Boolean))
+
+    this.lang$ = this.store.select(fromRoot.getLang);
+  
+    this.lang$
+      .pipe(filter(Boolean), skip(1))
       .subscribe((lang: string) => {
-        this.choosenLanguage = lang;
-        translate.use(this.choosenLanguage);
+        translate.use(lang);
       });
 
     this.translate.translationsSub$.pipe(filter(Boolean)).subscribe(translations => {
@@ -92,17 +93,17 @@ export class HeaderComponent implements OnInit {
     });
   }
 
-  onFocus() {
+  onFocus(): void {
     this.showAutocomplete$.next(true);
   }
 
-  onBlur() {
+  onBlur(): void {
     of('blur_event').pipe(delay(300), take(1)).subscribe(() => {
       this.showAutocomplete$.next(false);
     })
   }
 
-  onTitleLink(productUrl) {
+  onTitleLink(): void {
     this.query.setValue('');
   }
 
@@ -113,9 +114,9 @@ export class HeaderComponent implements OnInit {
     this.store.dispatch(new actions.StoreUserAction(null));
   }
 
-  setLang(lang: string) {
+  setLang(lang: string): void {
     const langUpdate = {
-      lang: lang,
+      lang,
       currency: lang === 'cs' ? 'CZK' : '€'
     };
     this.store.dispatch(new actions.ChangeLang(langUpdate));
