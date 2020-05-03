@@ -1,9 +1,6 @@
 <div class="main">
 
-  <div class="progress" *ngIf="!(cart$ | async)">
-    <div class="indeterminate"></div>
-  </div>
-
+  <mat-progress-bar *ngIf="!(cart$ | async)" mode="indeterminate"></mat-progress-bar>
   <div class="container">
 
     <ng-container *ngIf="(cart$ | async) as cart">

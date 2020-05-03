@@ -25,6 +25,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
@@ -65,6 +66,7 @@ const routes: Routes = routesAll;
     MatToolbarModule,
     MatAutocompleteModule,
     MatInputModule,
+    MatProgressBarModule,
     EffectsModule.forRoot([ AppEffects ]),
     RouterModule.forRoot(routes, { initialNavigation: 'enabled' }),
     environment.production ? ServiceWorkerModule.register('ngsw-worker.js') : [],

@@ -9,13 +9,7 @@
         </div>
     </div>
     <div class="container">
-
-        <div
-            class="progress"
-            *ngIf="!(items$ | async)?.products">
-            <div class="indeterminate"></div>
-        </div>
-
+        <mat-progress-bar mode="indeterminate" *ngIf="!(items$ | async)?.products"></mat-progress-bar>
         <div
             class="wrapper"
             *ngIf="(items$ | async) as items">

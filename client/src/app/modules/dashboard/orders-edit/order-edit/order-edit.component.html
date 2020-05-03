@@ -5,9 +5,7 @@
         <i class="material-icons left">arrow_back</i>{{ 'Back' | translate | async }}
       </button>
 
-      <div class="progress" *ngIf="!(order$ | async)">
-        <div class="indeterminate"></div>
-      </div>
+      <mat-progress-bar mode="indeterminate" *ngIf="!(order$ | async)"></mat-progress-bar>
 
       <ng-container *ngIf="(order$ | async) as order">
         <div class="card">
