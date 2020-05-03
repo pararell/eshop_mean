@@ -1,4 +1,4 @@
-<ul class="pagination" *ngIf="pagination && pagination.pages > 1">
+<!-- <ul class="pagination" *ngIf="pagination && pagination.pages > 1">
   <ng-container *ngIf="page">
     <li [class.disabled]="page == 1">
         <a class="clickable" (click)="changePage.emit(page - 1)"><i class="material-icons">chevron_left</i></a>
@@ -18,4 +18,11 @@
         <a (click)="changePage.emit(2)"><i class="material-icons">chevron_right</i></a>
     </ng-container>
   </li>
-</ul>
+</ul> -->
+
+
+<mat-paginator [length]="pagination.total"
+              [pageIndex]="pagination.page - 1"
+              [pageSize]="pagination.limit"
+              (page)="changePage.emit($event.pageIndex + 1)">
+</mat-paginator>

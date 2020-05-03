@@ -6,6 +6,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { MatCardModule } from '@angular/material/card';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 import { CardComponent } from './card/card.component';
 import { CartShowComponent } from './cart-show/cart-show.component';
@@ -28,7 +29,8 @@ import { PaginationComponent } from './pagination/pagination.component';
     RouterModule,
     LazyModule,
     PipeModule,
-    MatCardModule
+    MatCardModule,
+    MatPaginatorModule
   ],
   providers: [],
   exports: [
