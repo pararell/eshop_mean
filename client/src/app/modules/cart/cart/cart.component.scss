@@ -17,6 +17,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
 
     .cart-title {
       padding: 0 10px;
@@ -37,6 +39,7 @@
     box-shadow: 0 0 0 1px #000460 !important;
     background: rgba(255, 255, 255, 0.9) !important;
     border: none !important;
+    padding: 0;
   }
 
   .remove-from-cart {
@@ -67,49 +70,11 @@
     width: 100%;
   }
 
-  input:focus + label {
-    -webkit-transform: translateY(-14px) scale(0.8);
-    transform: translateY(-14px) scale(0.8);
-    -webkit-transform-origin: 0 0;
-    transform-origin: 0 0;
-  }
-
-  input {
-    &.ng-valid + label {
-      -webkit-transform: translateY(-14px) scale(0.8);
-      transform: translateY(-14px) scale(0.8);
-      -webkit-transform-origin: 0 0;
-      transform-origin: 0 0;
-    }
-  }
-
-  textarea:focus + label {
-    -webkit-transform: translateY(-14px) scale(0.8);
-    transform: translateY(-14px) scale(0.8);
-    -webkit-transform-origin: 0 0;
-    transform-origin: 0 0;
-  }
-
-  textarea {
-    &.ng-valid + label {
-      -webkit-transform: translateY(-14px) scale(0.8);
-      transform: translateY(-14px) scale(0.8);
-      -webkit-transform-origin: 0 0;
-      transform-origin: 0 0;
-    }
+  .order-field {
+    width: 100%;
   }
 
   .textarea-wrapp {
     margin: 20px 0;
-
-    textarea {
-      min-height: 100px;
-    }
-  }
-
-  .textarea-label {
-    font-size: 0.8rem;
-    color: #9e9e9e;
-    text-align: left;
   }
 }

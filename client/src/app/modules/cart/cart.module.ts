@@ -1,11 +1,11 @@
-
-// angular
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
-// app imports
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+
 import { CartComponent } from './cart/cart.component';
 import { SharedModule } from '../../shared/shared.module';
 import { PipeModule } from '../../pipes/pipe.module';
@@ -20,6 +20,8 @@ import { PipeModule } from '../../pipes/pipe.module';
     FormsModule,
     PipeModule,
     ReactiveFormsModule,
+    MatButtonModule,
+    MatInputModule,
     RouterModule.forChild([
       { path: '', component: CartComponent }
     ]),

@@ -7,12 +7,12 @@
   <div class="container">
 
     <ng-container *ngIf="(cart$ | async) as cart">
-      <div (click)="goBack()">
-        <a class="waves-effect waves-light btn"><i class="material-icons left">arrow_back</i>{{ 'Back' | translate | async }}</a>
-      </div>
+      <button mat-raised-button color="primary" (click)="goBack()">
+        <i class="material-icons left">arrow_back</i>{{ 'Back' | translate | async }}
+      </button>
 
       <ul class="collection">
-        <li class="collection-item cart-items" *ngFor="let cartItem of cart?.items">
+        <li class="cart-items" *ngFor="let cartItem of cart?.items">
           <div class="cart-image">
             <a routerLink="{{productUrl}}/{{cartItem?.item?.titleUrl}}">
             <img src="{{cartItem?.item?.mainImage?.url}}">
@@ -41,6 +41,9 @@
           <div>
             <b> {{ (cart?.totalPrice * ((convertVal$ | async) || 1)) | priceFormat }} {{ currency$ | async }} </b>
           </div>
+          <div>
+           &nbsp;
+          </div>
         </li>
       </ul>
 
@@ -49,50 +52,83 @@
         <a (click)="onToggleForm()" class="waves-effect green lighten-1 btn-large delivery-button">
             <i class="material-icons left">email</i>{{ 'Payment' | translate | async }} {{ 'on' | translate | async }} {{ 'delivery' | translate | async }}
         </a>
-
-   
       </div>
 
-    <div class="order-form-wrap z-depth-2" *ngIf="toggleOrderForm && !!cart?.items?.length">
+    <div class="order-form-wrap z-depth-2" *ngIf="!!cart?.items?.length">
         <form [formGroup]="orderForm">
             <div class="full-input input-field">
-                <input class="form-control" type="text" name="name" formControlName="name">
-                <label for="name">{{'Firstname' | translate | async }} {{ 'and' | translate | async }} {{ 'Surname' | translate | async }}</label>
+              <mat-form-field class="order-field">
+                <mat-label>{{'Firstname' | translate | async }} {{ 'and' | translate | async }} {{ 'Surname' | translate | async }}</mat-label>
+                <input matInput
+                  formControlName="name"
+                  type="text"
+                  name="name">
+              </mat-form-field>
             </div>
             <div class="full-input input-field">
-                <input class="form-control" type="email" name="email" formControlName="email">
-                <label for="email">Email</label>
+              <mat-form-field class="order-field">
+                <mat-label>Email</mat-label>
+                <input matInput
+                  formControlName="email"
+                  type="email"
+                  name="email">
+              </mat-form-field>
             </div>
             <div class="full-input input-field">
-                <input class="form-control" type="text" name="adress" formControlName="adress">
-                <label for="adress">{{ 'Adress' | translate | async }}</label>
+              <mat-form-field class="order-field">
+                <mat-label>{{ 'Adress' | translate | async }}</mat-label>
+                <input matInput
+                  formControlName="adress"
+                  type="text"
+                  name="adress">
+              </mat-form-field>
             </div>
             <div class="full-input input-field">
-                <input class="form-control" type="text" name="city" formControlName="city">
-                <label for="city">{{ 'City' | translate | async }}</label>
+              <mat-form-field class="order-field">
+                <mat-label>{{ 'City' | translate | async }}</mat-label>
+                <input matInput
+                  formControlName="city"
+                  type="text"
+                  name="city">
+              </mat-form-field>
             </div>
             <div class="full-input input-field">
-                <input class="form-control" type="text" name="zip" formControlName="zip">
-                <label for="zip">{{ 'ZIP' | translate | async }} </label>
+              <mat-form-field class="order-field">
+                <mat-label>{{ 'ZIP' | translate | async }}</mat-label>
+                <input matInput
+                  formControlName="zip"
+                  type="text"
+                  name="zip">
+              </mat-form-field>
             </div>
             <div class="full-input input-field">
-                <input class="form-control" type="text" name="country" formControlName="country">
-                <label for="zip">{{ 'Country' | translate | async }}</label>
+              <mat-form-field class="order-field">
+                <mat-label>{{ 'Country' | translate | async }}</mat-label>
+                <input matInput
+                  formControlName="country"
+                  type="text"
+                  name="country">
+              </mat-form-field>
             </div>
             <div class="textarea-wrapp input-field">
-                <textarea class="form-control materialize-textarea" rows="20" cols="60" name="lang" formControlName="notes">
-                  </textarea>
-                  <label class="textarea-label">Notes</label>
+              <mat-form-field class="order-field">
+                <mat-label>Notes</mat-label>
+                <textarea matInput
+                  formControlName="notes"
+                  name="notes">
+                </textarea>
+              </mat-form-field>
             </div>
-            <button type="submit" class="btn waves-effect waves-light submit-order-button" [disabled]="orderForm.invalid"
+            <app-card 
+              [price]="(cart?.totalPrice * ((convertVal$ | async) || 1) | priceFormat)" 
+              [currency]="currency$ | async" (click)="closeToggleForm()"
+              (payWithCardEmit)="payWithCard($event)"> 
+            </app-card>
+            <button  mat-raised-button color="primary" type="submit" class="submit-order-button" [disabled]="orderForm.invalid"
               (click)="submit()"> {{ 'MakeOrder' | translate | async }} </button>
         </form>
     </div>
-    <app-card 
-      [price]="(cart?.totalPrice * ((convertVal$ | async) || 1) | priceFormat)" 
-      [currency]="currency$ | async" (click)="closeToggleForm()"
-      (payWithCardEmit)="payWithCard($event)"> 
-    </app-card>
+
 
   </ng-container>
 
