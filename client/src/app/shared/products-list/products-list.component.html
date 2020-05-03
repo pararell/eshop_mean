@@ -1,22 +1,23 @@
 <ng-container *ngFor="let product of products; trackBy: trackById;">
-  <div class="card">
+  <div class="product_card">
     <div>
-      <div class="price-card">
+      <div class="product_card-top">
           <h2> {{product?.title}} </h2>
-          <div class="detail-link-wrapp"> <a routerLink="{{productUrl}}/{{product?.titleUrl}}">Detail</a></div>
-          <!-- <app-card [price]="product?.salePrice"> </app-card> -->
+          <a class="product_card-detail" routerLink="{{productUrl}}/{{product?.titleUrl}}">Detail</a>
       </div>
-      <div class="info-wrapp">
+      <div class="product_card-info">
         <p>{{product?.description}}</p>
       </div>
     </div>
-    <a routerLink="{{productUrl}}/{{product?.titleUrl}}" class="card-image" [attr.aria-labelledby]="product?.titleUrl"
-    lazySrc [lazyBackground]="'url(' + product.mainImage.url + ')'"  lazySrcVisible="visible">
-      <!-- <img src="{{product?.mainImage?.url}}"> -->
+    <a class="product_card-image"
+    routerLink="{{productUrl}}/{{product?.titleUrl}}" 
+    [attr.aria-labelledby]="product?.titleUrl"
+    lazySrc [lazyBackground]="'url(' + product.mainImage.url + ')'"  
+    lazySrcVisible="visible">
     </a>
-    <div class="card-action">
-      <div class="action-wrap">
-        <div class="price-info">{{ (product?.salePrice * (convertVal || 1)) | priceFormat }}{{ currency }}</div>
+    <div class="product_card-action">
+      <div class="product_card-action-wrap">
+        <div class="product_card-price-info">{{ (product?.salePrice * (convertVal || 1)) | priceFormat }}{{ currency }}</div>
         <p>{{ product?.stock | translate | async }}</p>
         <app-cart-show
           [items]="cartIds[product?._id]"

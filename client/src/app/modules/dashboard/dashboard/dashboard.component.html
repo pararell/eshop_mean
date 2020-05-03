@@ -2,22 +2,35 @@
 
   <div class="container">
     <h2>Dashboard</h2>
-    <a routerLink="/{{lang}}/dashboard/orders" class="waves-effect waves-light btn-large orders-button">ORDERS</a>
-    <a routerLink="/{{lang}}/dashboard/translations" class="waves-effect waves-light btn-large orders-button">Translations</a>
+    <button class="orders-button"
+      routerLink="/{{lang}}/dashboard/orders" 
+      mat-raised-button color="primary" 
+      aria-label="Orders">
+      Orders
+    </button>
+    <button class="orders-button"
+    routerLink="/{{lang}}/dashboard/translations" 
+    mat-raised-button color="primary" 
+    aria-label="Translations">
+      Translations
+    </button>
     <div class="product-actions-wrap">
       <div class="product-actions">
-        <a (click)="changeAction('add')" class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">add</i></a>
-         Add product
+        <button (click)="changeAction('add')" mat-raised-button color="primary" aria-label="Add product">
+          <i class="material-icons">mode_edit</i> Add product
+        </button>
       </div>
 
       <div class="product-actions">
-        <a (click)="changeAction('edit')" class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">mode_edit</i></a>
-        Edit product
+        <button (click)="changeAction('edit')" mat-raised-button color="primary" aria-label="Edit product">
+          <i class="material-icons">mode_edit</i> Edit product
+        </button>
       </div>
 
       <div class="product-actions">
-        <a (click)="changeAction('remove')" class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">clear</i></a>
-         Remove product
+        <button (click)="changeAction('remove')" mat-raised-button color="primary" aria-label="Remove product">
+          <i class="material-icons">clear</i> Remove product
+        </button>
       </div>
     </div>
 

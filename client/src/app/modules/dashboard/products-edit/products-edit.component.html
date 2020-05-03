@@ -8,49 +8,85 @@
           </select>
       </div>
   </div>
-  <form [formGroup]="productEditForm" novalidate (ngSubmit)="onSubmit()">
+  <form class="product_edit-form" [formGroup]="productEditForm" novalidate>
 
     <div class="full-input">
-      <input class="form-control" formControlName="titleUrl">
-      <label for="titleUrl">titleUrl</label>
-      <a class="edit-find-button waves-effect waves-light btn" *ngIf="action === 'edit'" (click)="findProduct()">Find</a>
+      <mat-form-field class="product_edit-field">
+        <mat-label>TitleUrl</mat-label>
+        <input matInput
+          formControlName="titleUrl"
+          type="text"
+          name="titleUrl">
+      </mat-form-field>
+      <button mat-raised-button color="primary" class="edit-find-button" *ngIf="action === 'edit'" (click)="findProduct()">Find</button>
     </div>
 
     <ng-container *ngIf="action !== 'remove'">
       <div [formGroupName]="chooseLang" class="well well-lg">
         <div class="full-input">
-          <input class="form-control" formControlName="title">
-          <label for="title">Title</label>
+          <mat-form-field class="product_edit-field">
+            <mat-label>Title</mat-label>
+            <input matInput
+              formControlName="title"
+              type="text"
+              name="title">
+          </mat-form-field>
         </div>
 
         <div class="full-input">
-          <textarea class="materialize-textarea" formControlName="description"></textarea>
-          <label for="description">Description</label>
+          <mat-form-field class="product_edit-field">
+            <mat-label>Description</mat-label>
+            <textarea matInput
+              formControlName="description"
+              name="description">
+            </textarea>
+          </mat-form-field>
         </div>
 
         <div class="full-input">
-          <input class="form-control" formControlName="salePrice">
-          <label for="salePrice">SalePrice</label>
+          <mat-form-field class="product_edit-field">
+            <mat-label>SalePrice</mat-label>
+            <input matInput
+              formControlName="salePrice"
+              name="salePrice">
+          </mat-form-field>
         </div>
 
         <div class="full-input">
-          <input class="form-control" formControlName="regularPrice">
-          <label for="regularPrice">RegularPrice</label>
+          <mat-form-field class="product_edit-field">
+          <mat-label>RegularPrice</mat-label>
+          <input matInput
+            formControlName="regularPrice"
+            name="regularPrice">
+          </mat-form-field>
         </div>
 
         <div class="full-input">
-          <input class="form-control" formControlName="tags">
-          <label for="tags">Tags</label>
+          <mat-form-field class="product_edit-field">
+          <mat-label>Tags</mat-label>
+          <input matInput
+            formControlName="tags"
+            name="tags">
+          </mat-form-field>
         </div>
 
         <div class="full-input">
-          <input class="form-control" formControlName="categories">
-          <label for="categories">Categories</label>
+          <mat-form-field class="product_edit-field">
+            <mat-label>Categories</mat-label>
+            <input matInput
+              formControlName="categories"
+              name="categories">
+            </mat-form-field>
         </div>
       </div>
+
       <div class="full-input">
-        <input class="form-control" formControlName="mainImage">
-        <label for="mainImage">MainImage</label>
+        <mat-form-field class="product_edit-field">
+          <mat-label>MainImage</mat-label>
+          <input matInput
+            formControlName="mainImage"
+            name="mainImage">
+          </mat-form-field>
       </div>
 
       <div class="full-check">
@@ -130,10 +166,9 @@
       <ng-container *ngIf="uploader">
         <div ng2FileDrop [uploader]="uploader" class="add-images">
           <div class="file-field input-field">
-            <div class="btn">
-              <span>File</span>
-              <input type="file" ng2FileSelect [uploader]="uploader" multiple />
-            </div>
+            <button mat-raised-button color="primary">
+              <input type="file" #fileInput ng2FileSelect [uploader]="uploader" multiple />
+            </button>
           </div>
           <div class="check-title">Images</div>
         </div>
@@ -141,9 +176,13 @@
 
 
       <div class="full-input">
-        <input class="form-control" formControlName="imageUrl">
-        <label for="imagesUrl">Add Image Url</label>
-        <a class="edit-find-button waves-effect waves-light btn" (click)="addImageUrl()">Add Image Url</a>
+        <mat-form-field class="product_edit-field">
+          <mat-label>Add Image Url</mat-label>
+          <input matInput
+            formControlName="imageUrl"
+            name="imageUrl">
+          </mat-form-field>
+        <button mat-raised-button color="primary" class="edit-find-button" (click)="addImageUrl()">Add Image Url</button>
       </div>
 
       <app-tiny-editor
@@ -154,7 +193,7 @@
 
     </ng-container>
 
-    <button type="submit" [disabled]="!productEditForm.valid" class="btn btn-success">Save</button>
+    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!productEditForm.valid">Save</button>
 
   </form>
 </ng-container>

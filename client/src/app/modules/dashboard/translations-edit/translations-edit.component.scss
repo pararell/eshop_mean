@@ -7,9 +7,12 @@
     min-height: 400px;
   }
 
-  .translations-edit-wrapper {
-    display: flex;
-    flex-wrap: wrap;
+  .translations_edit-wrapper {
+
+
+    a {
+      color: #222;
+    }
 
     .card {
       flex-basis: 30%;

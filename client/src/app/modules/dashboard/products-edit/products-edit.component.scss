@@ -1,4 +1,15 @@
 :host {
+
+  .product_edit {
+
+    &-form {
+      width: 100%;
+    }
+
+    &-field {
+      width: 100%;
+    }
+  }
   .full-input {
     display: flex;
     align-items: center;
