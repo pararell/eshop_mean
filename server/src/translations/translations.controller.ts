@@ -29,6 +29,15 @@ import { RolesGuard } from '../auth/roles.guard';
     }
 
     @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @Patch('all')
+    async updateTranslations(@Body() translations): Promise<Translation[]> {
+      const updateTranslations = translations.map(translation => {
+        return this.translationModel.update({'lang': translation.lang}, {'$set': {'keys': translation.keys }});
+    });
+      return Promise.all(updateTranslations);
+    }
+
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Patch()
     async updateTranslation(@Query('lang') lang: string, @Body() translation): Promise<Translation> {
       return await this.translationModel.findOneAndUpdate({lang}, translation, {new: true});

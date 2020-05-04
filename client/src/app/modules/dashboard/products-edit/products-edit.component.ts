@@ -9,7 +9,7 @@ import * as fromRoot from '../../../store/reducers';
 import { Store } from '@ngrx/store';
 import * as actions from '../../../store/actions'
 import { ApiService } from '../../../services/api.service';
-
+import { languages } from '../../../shared/constants';
 
 @Component({
   selector: 'app-products-edit',
@@ -26,7 +26,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
   descriptionFullSub$ : BehaviorSubject<any> = new BehaviorSubject({sk: '', en: '', cs: ''});
   product$            : Observable<any>;
   productSub          : Subscription;
-  languageOptions     = ['en', 'sk', 'cs'];
+  languageOptions     = languages;
   choosenLanguageSub$ :  BehaviorSubject<string> = new BehaviorSubject('en');
 
   constructor(private fb: FormBuilder, private store: Store<fromRoot.State>, private apiService: ApiService ) {

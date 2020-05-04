@@ -167,7 +167,7 @@ export class AppEffects {
 
   @Effect() editTranslation$: Observable<Action> = this._actions.pipe(
     ofType(actions.EDIT_TRANSLATION),
-      switchMap((action: actions.EditTranslation) => this.apiService.editTranslation(action.payload)),
+      switchMap((action: actions.EditTranslation) => this.apiService.editAllTranslation(action.payload)),
       map(res => new actions.EditTranslationSuccess(res))
   );
 

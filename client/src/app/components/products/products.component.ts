@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 
 import { TranslateService } from '../../services/translate.service';
+import { sortOptions } from '../../shared/constants';
 
 import { Store } from '@ngrx/store';
 import * as actions from './../../store/actions'
@@ -32,28 +33,12 @@ export class ProductsComponent {
   convertVal$           : Observable<number>;
   currency$             : Observable<string>;
   lang$                 : Observable<any>;
-
-  sortOptions = [{
-    name: 'Newest',
-    id: 'newest',
-  },
-  {
-    name: 'Oldest',
-    id: 'oldest',
-  },
-  {
-    name: 'Price-asc',
-    id: 'priceasc',
-  },
-  {
-    name: 'Price-decs',
-    id: 'pricedesc',
-  }];
+  sortOptions           = sortOptions;
 
   readonly component = 'productsComponent';
 
-  productsUrl = '/products';
-  categoryUrl = '/category';
+  productsUrl: string;
+  categoryUrl: string;
 
   constructor(
     private store     : Store<fromRoot.State>,
@@ -80,7 +65,7 @@ export class ProductsComponent {
       this.store.select(fromRoot.getProducts).pipe(filter(Boolean)),
       this.store.select(fromRoot.getCart).pipe(filter(Boolean), map((cart: any) => cart.items)),
       this.filterPrice$,
-      (products:Array<any>, cartItems, filterPrice) => {
+      (products: Array<any>, cartItems, filterPrice) => {
         return {
           products: products
             .filter(product => product.salePrice <= filterPrice),
@@ -136,7 +121,6 @@ export class ProductsComponent {
         if (category) {
           this.router.navigate([this.categoryUrl + '/' + category], { queryParams: { sort: sortBy || 'newest', page: page || 1 } });
         } else {
-          // this.store.dispatch(new actions.LoadProducts({page: page || 1, sort: sortBy || 'newest'}));
           this.router.navigate([this.productsUrl], { queryParams: { sort: sortBy || 'newest', page: page || 1 } });
         }
       });
@@ -148,10 +132,10 @@ export class ProductsComponent {
       (category, page) => ({category, page}))
       .pipe(first())
       .subscribe(({category, page}) => {
+        console.log(this.productsUrl, 'this.productsUrl')
         if (category) {
           this.router.navigate([this.categoryUrl + '/' + category], { queryParams: { sort, page: page || 1 } });
         } else {
-          // this.store.dispatch(new actions.LoadProducts({page: page || 1, sort}));
           this.router.navigate([this.productsUrl], { queryParams: { sort, page: page || 1 } });
         }
       });
@@ -159,8 +143,7 @@ export class ProductsComponent {
   }
 
   private _setUrls(): void {
-    this.translate.translationsSub$
-    .pipe(filter(Boolean))
+    this.translate.getTranslations$()
     .subscribe(translations => {
       this.productsUrl = '/' + this.translate.lang + '/' + (translations['products'] || 'products');
       this.categoryUrl = '/' + this.translate.lang + '/' + (translations['category'] || 'category');

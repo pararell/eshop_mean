@@ -21,8 +21,7 @@
               mat-raised-button color="primary"
               [disabled]="signInForm.invalid"
               (click)="submit()">
-              SignIn
-                <!-- {{ 'SignIn' | translate | async }} -->
+                {{ 'SignIn' | translate | async }}
               </button>
             </form>
             <a routerLink="/{{lang}}/authorize/signup" class="signup-link">SignUp</a>

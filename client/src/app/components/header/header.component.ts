@@ -10,7 +10,7 @@ import * as actions from '../../store/actions';
 import { TranslateService } from '../../services/translate.service';
 import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../environments/environment';
-
+import { languages } from '../../shared/constants';
 
 @Component({
   selector: 'app-header',
@@ -23,7 +23,7 @@ export class HeaderComponent implements OnInit {
   productTitles$    : Observable<string[]>;
   userOrders$       : Observable<any>;
   showAutocomplete$ : BehaviorSubject<boolean> = new BehaviorSubject(false);
-  languageOptions = ['en', 'sk', 'cs'];
+  languageOptions = languages;
   lang$             : Observable<string>;
   showMobileNav   = false;
   cartUrl         : string;
@@ -41,7 +41,7 @@ export class HeaderComponent implements OnInit {
     private store: Store<fromRoot.State>, public translate: TranslateService) {
 
     this.lang$ = this.store.select(fromRoot.getLang);
-  
+
     this.lang$
       .pipe(filter(Boolean), skip(1))
       .subscribe((lang: string) => {

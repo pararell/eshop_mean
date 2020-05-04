@@ -3,21 +3,27 @@
   min-height: 100vh;
   flex-direction: column;
 
-  .translation-textarea {
-    min-height: 400px;
+  .translations-subform {
+    display: flex;
+    width: 100%;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+  }
+
+  .translations-button {
+    margin: 0 10px;
   }
 
   .translations_edit-wrapper {
+    background: #fff;
+    padding: 20px;
+  }
 
+  .translation-sentence {
+    display: flex;
+  }
 
-    a {
-      color: #222;
-    }
-
-    .card {
-      flex-basis: 30%;
-      margin-right: 3%;
-      overflow: hidden;
-    }
+  .translation-textarea {
+    min-height: 400px;
   }
 }

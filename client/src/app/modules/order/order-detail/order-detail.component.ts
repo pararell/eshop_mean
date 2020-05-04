@@ -1,21 +1,21 @@
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { filter, map } from 'rxjs/operators';
-import { TranslateService } from '../../services/translate.service';
+import { TranslateService } from '../../../services/translate.service';
 import { Component } from '@angular/core';
 
 import { Observable } from 'rxjs';
 
-import * as fromRoot from '../../store/reducers';
+import * as fromRoot from '../../../store/reducers';
 import { Store } from '@ngrx/store';
-import * as actions from '../../store/actions'
+import * as actions from '../../../store/actions'
 
 @Component({
-  selector: 'app-order',
-  templateUrl: './order.component.html',
-  styleUrls: ['./order.component.scss']
+  selector: 'app-order-detail',
+  templateUrl: './order-detail.component.html',
+  styleUrls: ['./order-detail.component.scss']
 })
-export class OrderComponent {
+export class OrderDetailComponent {
 
   order$    : Observable<any>;
   ordersUrl : string;

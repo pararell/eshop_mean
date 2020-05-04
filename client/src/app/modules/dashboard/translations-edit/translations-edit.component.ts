@@ -1,51 +1,108 @@
-import { first } from 'rxjs/operators';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Component } from '@angular/core';
+import { take } from 'rxjs/operators';
+import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
+import { Component, OnDestroy } from '@angular/core';
+import { Store } from '@ngrx/store';
 
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject, Subscription } from 'rxjs';
 
 import * as fromRoot from '../../../store/reducers';
-import { Store } from '@ngrx/store';
 import * as actions from '../../../store/actions'
+import { languages } from '../../../shared/constants';
+import { Translations } from 'src/app/shared/models';
 
 @Component({
   selector: 'app-translations-edit',
   templateUrl: './translations-edit.component.html',
   styleUrls: ['./translations-edit.component.scss']
 })
-export class TranslationsEditComponent {
+export class TranslationsEditComponent implements OnDestroy {
 
-  translations$: Observable<any>;
+  translations$: Observable<Translations[]>;
   languageForm: FormGroup;
-
-  editLang = '';
+  translationSub$ = new BehaviorSubject([]);
+  translationsSub: Subscription;
+  allLanguages = languages;
 
   constructor(private store: Store<fromRoot.State>, private _fb: FormBuilder) {
 
      this.store.dispatch(new actions.GetAllTranslations());
 
      this.languageForm = this._fb.group({
-      lang: ['', Validators.required ]
-    });
+        add: ''
+     });
 
      this.translations$ = this.store.select(fromRoot.getAllTranslations);
-   }
 
-   showLanguageEdit(lang) {
-     this.translations$.pipe(first())
+     this.translationsSub = this.translations$
       .subscribe(translations => {
-        const keys = translations
-          .filter(translation => translation.lang === lang)[0].keys;
-        this.languageForm.get('lang').setValue(JSON.stringify(keys));
+        translations.forEach((translation: Translations) => {
+          const keys = translation.keys;
+          const newUsergroup: FormGroup = this._fb.group({});
+          Object.keys(keys).map(key => {
+            newUsergroup.addControl(key, new FormControl(keys[key]));
+          })
+          this.languageForm.setControl(translation.lang, newUsergroup);
+          this.languageForm.setControl(translation.lang + '_json', new FormControl(JSON.stringify(keys)));
+        });
+
+        this.translationSub$.next(translations);
       })
-      this.editLang = lang;
    }
 
-   submit() {
-    const keys = this.languageForm.get('lang').value;
-    this.store.dispatch(new actions.EditTranslation(
-      {lang: this.editLang, keys: JSON.parse(keys) })
-    );
+   addKeyToTranslation(): void {
+      const newKey = this.languageForm.get('add').value;
+      if (newKey) {
+      this.translationSub$.pipe(take(1)).subscribe(translations => {
+        const updateTransations = translations.map(translation => {
+          const langGroup = this.languageForm.get(translation.lang) as FormGroup;
+          langGroup.addControl(newKey, new FormControl(newKey));
+
+          return {...translation, keys: {...translation.keys, [newKey]: newKey}};
+        })
+
+        this.translationSub$.next(updateTransations);
+      })
+
+      this.languageForm.get('add').patchValue('');
+    }
+   }
+
+   removeTranslation(toRemove: string): void {
+    this.translationSub$.pipe(take(1)).subscribe(translations => {
+      const updateTransations = translations.map(translation => {
+        const langGroup = this.languageForm.get(translation.lang) as FormGroup;
+          langGroup.removeControl(toRemove);
+
+          return {...translation, keys: Object.keys(translation.keys)
+            .filter(key => key !== toRemove)
+            .reduce((prev, curr) => ({...prev, [curr]: translation.keys[curr]}) , {})};
+        })
+        this.translationSub$.next(updateTransations);
+    });
+   }
+
+   submitForm(): void {
+     const allTranslations = Object.keys(this.languageForm.value)
+      .filter(value => this.allLanguages.includes(value))
+      .map(lang => ({
+        lang,
+        keys: this.languageForm.value[lang]
+      }))
+     this.store.dispatch(new actions.EditTranslation(allTranslations));
+   }
+
+   submitJSON(): void {
+    const allTranslations = Object.keys(this.languageForm.value)
+    .filter(value => value.includes('_json'))
+    .map(lang => ({
+      lang : lang.replace('_json', ''),
+      keys: JSON.parse(this.languageForm.value[lang])
+    }))
+    this.store.dispatch(new actions.EditTranslation(allTranslations));
+  }
+
+   ngOnDestroy(): void {
+    this.translationsSub.unsubscribe();
    }
 
 }

@@ -6,6 +6,7 @@ import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { FileUploader } from 'ng2-file-upload';
 import { Observable, BehaviorSubject} from 'rxjs';
 import { environment } from '../../environments/environment';
+import { Translations } from '../shared/models';
 
 
 @Injectable({
@@ -169,6 +170,11 @@ export class ApiService {
   editTranslation({lang, keys}) {
     const translationsUpdateUrl = this.apiUrl + '/api/translations?lang=' + lang;
     return this.http.patch(translationsUpdateUrl, { keys : keys });
+  }
+
+  editAllTranslation(translations: Translations[]) {
+    const translationsUpdateUrl = this.apiUrl + '/api/translations/all';
+    return this.http.patch(translationsUpdateUrl, translations);
   }
 
   getImages() {

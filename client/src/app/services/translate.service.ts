@@ -1,5 +1,5 @@
 import { filter, take } from 'rxjs/operators';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { ApiService } from './api.service';
 import { Injectable, Injector } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
@@ -27,6 +27,10 @@ export class TranslateService {
 
   getLocation$() {
     return this._apiService.getLocation$().pipe(filter(Boolean, take(1)));
+  }
+
+  getTranslations$(): Observable<any> {
+    return this.translationsSub$.asObservable();
   }
 
   getTranslationsData(lang: string) {

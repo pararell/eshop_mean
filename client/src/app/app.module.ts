@@ -9,14 +9,12 @@ import { TransferHttpCacheModule } from '@nguniversal/common';
 
 import { AppComponent } from './app.component';
 import { ProductsComponent } from './components/products/products.component';
-import { OrdersComponent } from './components/orders/orders.component';
 import { SharedModule } from './shared/shared.module';
 import { PipeModule } from './pipes/pipe.module';
 import { reducers } from './store/reducers/index';
 import { AppEffects } from './store/effects';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
-import { OrderComponent } from './components/order/order.component';
 import { routesAll } from './app.routes';
 
 import { MatButtonModule } from '@angular/material/button';
@@ -45,8 +43,6 @@ const routes: Routes = routesAll;
   declarations: [
     AppComponent,
     ProductsComponent,
-    OrderComponent,
-    OrdersComponent,
     HeaderComponent,
     FooterComponent
   ],
