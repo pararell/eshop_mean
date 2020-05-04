@@ -1,43 +1,46 @@
 <div class="main">
-
   <div class="container">
-    <h2>Dashboard</h2>
-    <button class="orders-button"
-      routerLink="/{{lang}}/dashboard/orders" 
-      mat-raised-button color="primary" 
-      aria-label="Orders">
-      Orders
-    </button>
-    <button class="orders-button"
-    routerLink="/{{lang}}/dashboard/translations" 
-    mat-raised-button color="primary" 
-    aria-label="Translations">
-      Translations
-    </button>
-    <div class="product-actions-wrap">
-      <div class="product-actions">
-        <button (click)="changeAction('add')" mat-raised-button color="primary" aria-label="Add product">
-          <i class="material-icons">mode_edit</i> Add product
+    <div class="dashboard-container">
+      <h1>Dashboard</h1>
+      <div class="orders-menu">
+        <button
+          class="orders-button"
+          routerLink="/{{lang}}/dashboard/orders"
+          mat-raised-button
+          color="primary"
+          aria-label="Orders">
+          Orders
         </button>
       </div>
-
-      <div class="product-actions">
-        <button (click)="changeAction('edit')" mat-raised-button color="primary" aria-label="Edit product">
-          <i class="material-icons">mode_edit</i> Edit product
-        </button>
-      </div>
-
-      <div class="product-actions">
-        <button (click)="changeAction('remove')" mat-raised-button color="primary" aria-label="Remove product">
-          <i class="material-icons">clear</i> Remove product
-        </button>
-      </div>
+      <mat-tab-group backgroundColor="primary">
+        <mat-tab label="Add product">
+          <div class="dashboard-tab-content">
+            <app-products-edit
+              [action]="'add'">
+            </app-products-edit>
+          </div>
+        </mat-tab>
+        <mat-tab label="Edit product">
+          <div class="dashboard-tab-content">
+            <app-products-edit
+              [action]="'edit'">
+            </app-products-edit>
+          </div>
+        </mat-tab>
+        <mat-tab label="Remove product">
+          <div class="dashboard-tab-content">
+          <app-products-edit
+            [action]="'remove'">
+          </app-products-edit>
+        </div>
+        </mat-tab>
+        <mat-tab label="Translations">
+          <div class="dashboard-tab-content">
+          <app-translations-edit>
+          </app-translations-edit>
+        </div>
+        </mat-tab>
+      </mat-tab-group>
     </div>
-
-    <app-products-edit *ngIf="productAction === 'add'" [action]="'add'"></app-products-edit>
-    <app-products-edit *ngIf="productAction === 'edit'" [action]="'edit'"></app-products-edit>
-    <app-products-edit *ngIf="productAction === 'remove'"  [action]="'remove'"></app-products-edit>
-
   </div>
-
 </div>

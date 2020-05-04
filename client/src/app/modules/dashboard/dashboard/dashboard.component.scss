@@ -3,19 +3,22 @@
   min-height: 100vh;
   flex-direction: column;
 
+  .orders-menu {
+    display: flex;
+    justify-content: space-between;
+  }
+
   .orders-button {
     margin: 15px;
   }
 
-  .product-actions-wrap {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-
-    .product-actions {
-      display: flex;
-      align-items: center;
-      flex-flow: column;
-    }
+  .dashboard-container {
+    background: #fff;
   }
+
+  .dashboard-tab-content {
+    padding: 15px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
 }

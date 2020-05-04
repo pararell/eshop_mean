@@ -1,32 +1,53 @@
 <ng-container *ngIf="!sendRequest && (choosenLanguageSub$ | async) as chooseLang">
   <div class="products-title-wrapp">
-      <h4> {{action | uppercase}} PRODUCT </h4>
-      <div>
-          <select class="browser-default lang-select" aria-label="Language" [ngModel]="chooseLang"
-          (ngModelChange)="setLang($event)">
-                  <option *ngFor="let option of languageOptions;" [value]="option">{{option}}</option>
-          </select>
-      </div>
+    <h4> {{action | uppercase}} PRODUCT </h4>
+    <div>
+      <select
+        class="browser-default lang-select"
+        aria-label="Language"
+        [ngModel]="chooseLang"
+        (ngModelChange)="setLang($event)">
+        <option
+          *ngFor="let option of languageOptions;"
+          [value]="option">
+          {{option}}
+        </option>
+      </select>
+    </div>
   </div>
-  <form class="product_edit-form" [formGroup]="productEditForm" novalidate>
+  <form
+    class="product_edit-form"
+    [formGroup]="productEditForm"
+    novalidate>
 
     <div class="full-input">
       <mat-form-field class="product_edit-field">
         <mat-label>TitleUrl</mat-label>
-        <input matInput
+        <input
+          matInput
           formControlName="titleUrl"
           type="text"
           name="titleUrl">
       </mat-form-field>
-      <button mat-raised-button color="primary" class="edit-find-button" *ngIf="action === 'edit'" (click)="findProduct()">Find</button>
+      <button
+        mat-raised-button
+        color="primary"
+        class="edit-find-button"
+        *ngIf="action === 'edit'"
+        (click)="findProduct()">
+        Find
+      </button>
     </div>
 
     <ng-container *ngIf="action !== 'remove'">
-      <div [formGroupName]="chooseLang" class="well well-lg">
+      <div
+        [formGroupName]="chooseLang"
+        class="well well-lg">
         <div class="full-input">
           <mat-form-field class="product_edit-field">
             <mat-label>Title</mat-label>
-            <input matInput
+            <input
+              matInput
               formControlName="title"
               type="text"
               name="title">
@@ -36,7 +57,8 @@
         <div class="full-input">
           <mat-form-field class="product_edit-field">
             <mat-label>Description</mat-label>
-            <textarea matInput
+            <textarea
+              matInput
               formControlName="description"
               name="description">
             </textarea>
@@ -46,7 +68,8 @@
         <div class="full-input">
           <mat-form-field class="product_edit-field">
             <mat-label>SalePrice</mat-label>
-            <input matInput
+            <input
+              matInput
               formControlName="salePrice"
               name="salePrice">
           </mat-form-field>
@@ -54,135 +77,186 @@
 
         <div class="full-input">
           <mat-form-field class="product_edit-field">
-          <mat-label>RegularPrice</mat-label>
-          <input matInput
-            formControlName="regularPrice"
-            name="regularPrice">
+            <mat-label>RegularPrice</mat-label>
+            <input
+              matInput
+              formControlName="regularPrice"
+              name="regularPrice">
           </mat-form-field>
         </div>
 
         <div class="full-input">
           <mat-form-field class="product_edit-field">
-          <mat-label>Tags</mat-label>
-          <input matInput
-            formControlName="tags"
-            name="tags">
+            <mat-label>Tags</mat-label>
+            <input
+              matInput
+              formControlName="tags"
+              name="tags">
           </mat-form-field>
         </div>
 
         <div class="full-input">
           <mat-form-field class="product_edit-field">
             <mat-label>Categories</mat-label>
-            <input matInput
+            <input
+              matInput
               formControlName="categories"
               name="categories">
-            </mat-form-field>
+          </mat-form-field>
         </div>
       </div>
 
       <div class="full-input">
         <mat-form-field class="product_edit-field">
           <mat-label>MainImage</mat-label>
-          <input matInput
+          <input
+            matInput
             formControlName="mainImage"
             name="mainImage">
-          </mat-form-field>
-      </div>
-
-      <div class="full-check">
-
-
-        <label for="visible">
-          <input type="radio" name="visibility" value="visible" formControlName="visibility" id="visible" />
-          <span>Visible</span>
-        </label>
-
-        <label for="hidden">
-          <input type="radio" name="visibility" value="hidden" formControlName="visibility" id="hidden" />
-          <span>Hidden</span>
-        </label>
+        </mat-form-field>
       </div>
       <div class="check-title">Visibility</div>
-
-      <div class="full-check">
-
-        <label for="onStock">
-          <input type="radio" value="onStock" name="stock" formControlName="stock" id="onStock" />
-          <span>On Stock</span>
-        </label>
-
-        <label for="onWaitings">
-          <input type="radio" value="onWaitings" name="stock" formControlName="stock" id="onWaitings" />
-          <span>Avaible in two weeks</span>
-        </label>
-
-        <label for="inavailable">
-          <input type="radio" value="inavailable" name="stock" formControlName="stock" id="inavailable" />
-          <span>Inavaible</span>
-        </label>
-
-      </div>
+      <mat-radio-group aria-label="Visibility">
+        <mat-radio-button
+          name="visibility"
+          value="visible"
+          formControlName="visibility"
+          id="visible">
+          Visible
+        </mat-radio-button>
+        <mat-radio-button
+          name="visibility"
+          value="hidden"
+          formControlName="visibility"
+          id="hidden">
+          Hidden
+        </mat-radio-button>
+      </mat-radio-group>
       <div class="check-title">On Stock</div>
-
-      <div class="full-check">
-
-        <label for="onSale">
-          <input type="radio" value="true" name="onSale" formControlName="onSale" id="onSale" />
-          <span>On Sale</span>
-        </label>
-
-        <label for="normal">
-          <input type="radio" value="false" name="onSale" formControlName="onSale" id="normal" />
-          <span>Normal</span>
-        </label>
-
-      </div>
+      <mat-radio-group aria-label="Visibility">
+        <mat-radio-button
+          value="onStock"
+          name="stock"
+          formControlName="stock"
+          id="onStock">
+          On Stock
+        </mat-radio-button>
+        <mat-radio-button
+          value="onWaitings"
+          name="stock"
+          formControlName="stock"
+          id="onWaitings">
+          Avaible in few weeks
+        </mat-radio-button>
+        <mat-radio-button
+          value="inavailable"
+          name="stock"
+          formControlName="stock"
+          id="inavailable">
+          Unavailable
+        </mat-radio-button>
+      </mat-radio-group>
       <div class="check-title">On Sale</div>
+      <mat-radio-group aria-label="On Sale">
+        <mat-radio-button
+          value="true"
+          name="onSale"
+          formControlName="onSale"
+          id="onSale">
+          On Sale
+        </mat-radio-button>
+        <mat-radio-button
+          value="false"
+          name="onSale"
+          formControlName="onSale"
+          id="normal">
+          Normal
+        </mat-radio-button>
+      </mat-radio-group>
+      <div class="check-title">Shipping</div>
+      <mat-radio-group aria-label="Shipping">
+        <mat-radio-button
+          value="basic"
+          name="shiping"
+          formControlName="shiping"
+          id="basic">
+          On Sale
+        </mat-radio-button>
+        <mat-radio-button
+          value="extended"
+          name="shiping"
+          formControlName="shiping"
+          id="extended">
+          Normal
+        </mat-radio-button>
+      </mat-radio-group>
 
-      <div class="full-check">
-
-        <label for="shiping">
-          <input type="checkbox" value="shiping" name="shiping" formControlName="shiping" id="shiping" />
-          <span>Cash on Delivery</span>
-        </label>
-
-      </div>
-      <div class="check-title">Shiping</div>
-
-      <div class="images-wrapp" *ngIf="!!(images$ | async)?.length && !(product$ | async)?.images?.length">
-        <div class="image-dash-wrap" *ngFor="let image of (images$ | async)">
+      <div
+        class="images-wrapp"
+        *ngIf="!!(images$ | async)?.length && !(product$ | async)?.images?.length">
+        <div
+          class="image-dash-wrap"
+          *ngFor="let image of (images$ | async)">
           <img src="{{image}}">
-          <div class="remove-image" (click)="onRemoveImage(image, 'image')">X</div>
+          <div
+            class="remove-image"
+            (click)="onRemoveImage(image, 'image')">
+            X
+          </div>
         </div>
       </div>
 
-      <div class="images-wrapp" *ngIf="!!(product$ | async)?.images?.length">
-        <div class="image-dash-wrap" *ngFor="let image of (product$ | async)?.images">
+      <div
+        class="images-wrapp"
+        *ngIf="!!(product$ | async)?.images?.length">
+        <div
+          class="image-dash-wrap"
+          *ngFor="let image of (product$ | async)?.images">
           <img src="{{image}}">
-          <div class="remove-image" (click)="onRemoveImage(image, 'product')">X</div>
+          <div
+            class="remove-image"
+            (click)="onRemoveImage(image, 'product')">
+            X
+          </div>
         </div>
       </div>
 
       <ng-container *ngIf="uploader">
-        <div ng2FileDrop [uploader]="uploader" class="add-images">
+        <div
+          ng2FileDrop
+          [uploader]="uploader"
+          class="add-images">
           <div class="file-field input-field">
-            <button mat-raised-button color="primary">
-              <input type="file" #fileInput ng2FileSelect [uploader]="uploader" multiple />
+            <button
+              mat-raised-button
+              color="primary">
+              <input
+                type="file"
+                #fileInput
+                ng2FileSelect
+                [uploader]="uploader"
+                multiple>
             </button>
           </div>
           <div class="check-title">Images</div>
         </div>
       </ng-container>
 
-
       <div class="full-input">
         <mat-form-field class="product_edit-field">
           <mat-label>Add Image Url</mat-label>
-          <input matInput
+          <input
+            matInput
             formControlName="imageUrl"
             name="imageUrl">
-          </mat-form-field>
-        <button mat-raised-button color="primary" class="edit-find-button" (click)="addImageUrl()">Add Image Url</button>
+        </mat-form-field>
+        <button
+          mat-raised-button
+          color="primary"
+          class="edit-find-button"
+          (click)="addImageUrl()">
+          Add Image Url
+        </button>
       </div>
 
       <app-tiny-editor
@@ -193,9 +267,24 @@
 
     </ng-container>
 
-    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!productEditForm.valid">Save</button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onSubmit()"
+      [disabled]="!productEditForm.valid">
+      Save
+    </button>
 
   </form>
 </ng-container>
 
-<div class="after-send" *ngIf="sendRequest"> Request was send. <a (click)="openForm()" class="waves-effect waves-light btn">Again</a> </div>
+<div
+  class="after-send"
+  *ngIf="sendRequest">
+  Request was send.
+  <a
+    (click)="openForm()"
+    class="waves-effect waves-light btn">
+    Again
+  </a>
+</div>
