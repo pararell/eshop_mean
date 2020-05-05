@@ -10,17 +10,17 @@ const getProductLangInfo = () => {
     categories      : [],
     tags            : [],
     regularPrice    : Number,
-    salePrice       : Number
+    salePrice       : Number,
+    onSale          : Boolean,
+    stock           : String,
+    visibility      : Boolean,
+    shipping        : String
   }
 }
 
 const ProductSchema = new Schema({
     titleUrl    : String,
-    onSale      : Boolean,
-    stock       : String,
-    visibility  : String,
-    shipping    : String,
-    mainImage   : 
+    mainImage   :
     {
       url : { type: String, trim: true },
       name: { type: String, trim: true }
@@ -36,5 +36,3 @@ const ProductSchema = new Schema({
 ProductSchema.plugin(paginate.pagination);
 
 export default ProductSchema;
-
-

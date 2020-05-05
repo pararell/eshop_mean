@@ -10,16 +10,17 @@
       </div>
     </div>
     <a class="product_card-image"
-    routerLink="{{productUrl}}/{{product?.titleUrl}}" 
-    [attr.aria-labelledby]="product?.titleUrl"
-    lazySrc [lazyBackground]="'url(' + product.mainImage.url + ')'"  
-    lazySrcVisible="visible">
+      routerLink="{{productUrl}}/{{product?.titleUrl}}"
+      [attr.aria-labelledby]="product?.titleUrl"
+      lazySrc [lazyBackground]="'url(' + product.mainImage.url + ')'"
+      lazySrcVisible="visible">
     </a>
     <div class="product_card-action">
       <div class="product_card-action-wrap">
-        <div class="product_card-price-info">{{ (product?.salePrice * (convertVal || 1)) | priceFormat }}{{ currency }}</div>
+        <div class="product_card-price-info" *ngIf="product.onSale">{{ (product?.salePrice * (convertVal || 1)) | priceFormat }}{{ currency }}</div>
+        <div class="product_card-price-info" *ngIf="!product.onSale">{{ (product?.regularPrice * (convertVal || 1)) | priceFormat }}{{ currency }}</div>
         <p>{{ product?.stock | translate | async }}</p>
-        <app-cart-show
+        <app-cart-show *ngIf="cartIds"
           [items]="cartIds[product?._id]"
           (add)="onAddProduct(product?._id)"
           (remove)="onRemoveProduct(product?._id)">

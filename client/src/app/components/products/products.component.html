@@ -44,18 +44,9 @@
 
         <app-pagination
           [class.disabled]="loadingProducts$ | async"
-          *ngIf="!(category$ | async) && (pagination$ | async) as pagination"
+          *ngIf="(pagination$ | async) as pagination"
           [pagination]="pagination"
           [page]="page$ | async"
-          (changePage)="changePage($event)">
-        </app-pagination>
-
-        <app-pagination
-          [class.disabled]="loadingProducts$ | async"
-          *ngIf="(category$ | async) as category"
-          [pagination]="(paginationCategories$ | async)?.category"
-          [page]="page$ | async"
-          [category]="category"
           (changePage)="changePage($event)">
         </app-pagination>
       </div>

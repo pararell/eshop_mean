@@ -4,6 +4,7 @@ import { GetProductsDto } from './dto/get-products';
 import { Product, ProductModel, ProductsWithPagination } from './models/product.model';
 import { GetProductDto } from './dto/get-product';
 import { Category } from './models/category.model';
+import { User } from '../auth/models/user.model';
 
 
 @Injectable()
@@ -15,7 +16,7 @@ export class ProductsService {
     const searchQuery = search      ? { titleUrl:  new RegExp(search, 'i') }                : {};
     const categoryQuery = category  ? { [`${lang}.categories`] : new RegExp(category, 'i' ) } : {};
 
-    const query = {...searchQuery, ...categoryQuery}
+    const query = {...searchQuery, ...categoryQuery, ...{ [`${lang}.visibility`] : true}}
     const options = {
         page  : parseFloat(page),
         sort  : this.prepareSort(sort, lang),
@@ -55,7 +56,7 @@ export class ProductsService {
   }
 
 
-  async addProduct(productReq, user): Promise<void> {
+  async addProduct(productReq, user: User): Promise<void> {
     const newProduct = Object.assign(productReq, {
       _user     : user._id,
       dateAdded : Date.now()
@@ -86,6 +87,12 @@ export class ProductsService {
       if (!found) {
         throw new NotFoundException(`Product with title ${name} not found`);
       }
+  }
+
+
+  async getAllProducts(lang: string): Promise<Product[]> {
+    const products = await this.productModel.find({});
+    return products.map(product => this.prepareProduct(product, lang));
   }
 
 

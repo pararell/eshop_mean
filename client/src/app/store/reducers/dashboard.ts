@@ -1,19 +1,22 @@
 
 import * as actions from '../../store/actions';
+import { Product, Translations } from 'src/app/shared/models';
 
 
 export interface State {
   orders: null;
   order: any;
   productImages: Array<string>;
-  translations: Array<any>;
+  translations: Array<Translations>;
+  allProducts: Array<Product>;
 }
 
 export const initialState: State = {
   orders: null,
   order: null,
   productImages: [],
-  translations: []
+  translations: [],
+  allProducts: []
 };
 
 
@@ -46,6 +49,8 @@ export function dashboardReducer(state = initialState, action): State {
     case actions.GET_ALL_TRANSLATIONS_SUCCESS: {
       return { ...state, translations: action.payload } }
 
+    case actions.GET_ALL_PRODUCTS_SUCCESS: {
+      return { ...state, allProducts: action.payload } }
 
     case actions.EDIT_TRANSLATION_SUCCESS: {
       return { ...state, translations: state.translations
@@ -63,3 +68,4 @@ export const orders = (state: State) => state.orders;
 export const order = (state: State) => state.order;
 export const productImages = (state: State) => state.productImages;
 export const translations = (state: State) => state.translations;
+export const allProducts = (state: State) => state.allProducts;

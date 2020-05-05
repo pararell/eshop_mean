@@ -13,32 +13,45 @@
         </button>
       </div>
       <mat-tab-group backgroundColor="primary">
-        <mat-tab label="Add product">
+        <mat-tab label="All products">
           <div class="dashboard-tab-content">
-            <app-products-edit
-              [action]="'add'">
-            </app-products-edit>
+            <app-all-products></app-all-products>
           </div>
+        </mat-tab>
+        <mat-tab label="Add product">
+          <ng-template matTabContent>
+            <div class="dashboard-tab-content">
+              <app-products-edit
+                [action]="'add'">
+              </app-products-edit>
+            </div>
+          </ng-template>
         </mat-tab>
         <mat-tab label="Edit product">
-          <div class="dashboard-tab-content">
-            <app-products-edit
-              [action]="'edit'">
-            </app-products-edit>
-          </div>
+          <ng-template matTabContent>
+            <div class="dashboard-tab-content">
+              <app-products-edit
+                [action]="'edit'">
+              </app-products-edit>
+            </div>
+          </ng-template>
         </mat-tab>
         <mat-tab label="Remove product">
-          <div class="dashboard-tab-content">
-          <app-products-edit
-            [action]="'remove'">
-          </app-products-edit>
-        </div>
+          <ng-template matTabContent>
+            <div class="dashboard-tab-content">
+              <app-products-edit
+                [action]="'remove'">
+              </app-products-edit>
+            </div>
+          </ng-template>
         </mat-tab>
         <mat-tab label="Translations">
-          <div class="dashboard-tab-content">
-          <app-translations-edit>
-          </app-translations-edit>
-        </div>
+          <ng-template matTabContent>
+            <div class="dashboard-tab-content">
+              <app-translations-edit>
+              </app-translations-edit>
+            </div>
+          </ng-template>
         </mat-tab>
       </mat-tab-group>
     </div>

@@ -1,0 +1,12 @@
+
+<button
+    (click)="getProducts()"
+    mat-raised-button
+    color="primary">
+    Refresh
+</button>
+<app-products-list *ngIf="(allProduct$ | async) as allProducts"
+  [products]="allProducts"
+  [convertVal]="convertVal$ | async"
+  [currency]="currency$ | async">
+</app-products-list>

@@ -6,7 +6,7 @@ import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { FileUploader } from 'ng2-file-upload';
 import { Observable, BehaviorSubject} from 'rxjs';
 import { environment } from '../../environments/environment';
-import { Translations } from '../shared/models';
+import { Translations, Pagination } from '../shared/models';
 
 
 @Injectable({
@@ -74,15 +74,15 @@ export class ApiService {
     return this.http.get(productsUrl).pipe(map((data: any) => ({
         products : data.all
           .map(product => ({...product,
-              categories: product.categories.filter(Boolean).map(category => category.toLowerCase()),
-              tags: product.tags.map(tag => tag ? tag.toLowerCase() : '')})),
+              categories: product.categories.filter(Boolean).map((cat: string) => cat.toLowerCase()),
+              tags: product.tags.map((tag: string) => tag ? tag.toLowerCase() : '')})),
         pagination: {
           limit: data.limit,
           page: data.page,
           pages: data.pages,
           total: data.total,
           range: Array(data.pages).fill(0).map((v, i) => i + 1)
-        },
+        } as Pagination,
         ...addCategory
     })))
   }
@@ -110,6 +110,11 @@ export class ApiService {
   editProduct(product) {
     const eidtProduct = this.apiUrl + '/api/products/edit';
     return this.http.patch(eidtProduct, product);
+  }
+
+  getAllProducts(lang: string) {
+    const productUrl = this.apiUrl + '/api/products/all?lang=' + lang;
+    return this.http.get(productUrl);
   }
 
   removeProduct(name: string) {

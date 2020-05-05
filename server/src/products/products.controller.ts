@@ -41,13 +41,18 @@ import { User } from '../auth/models/user.model';
       return this.productService.getProductsTitles(query);
     }
 
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @Get('/all')
+    getAllProducts(@Query('lang') lang: string): Promise<Product[]> {
+      return this.productService.getAllProducts(lang);
+    }
+
     @Get('/:name')
     getProductByName(
       @Query() getProductDto: GetProductDto,
       @Param('name') name: string): Promise<Product> {
       return this.productService.getProductByName(name, getProductDto);
     }
-
 
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Delete('/:name')

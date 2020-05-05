@@ -1,6 +1,7 @@
 import { filter } from 'rxjs/operators';
 import { TranslateService } from '../../services/translate.service';
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Product } from '../models';
 
 @Component({
   selector: 'app-products-list',
@@ -9,7 +10,7 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from 
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductsListComponent {
-  @Input()  products:  any;
+  @Input()  products:  Product[];
   @Input()  cartIds:   any;
   @Input()  convertVal : number;
   @Input()  currency: string;

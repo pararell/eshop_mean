@@ -74,6 +74,12 @@ export class AppEffects {
       map(res => new actions.GetProductSuccess(res))
   );
 
+  @Effect() getAllProducts$: Observable<Action> = this._actions.pipe(
+    ofType(actions.GET_ALL_PRODUCTS),
+      switchMap((action: actions.GetAllProducts) => this.apiService.getAllProducts(action.payload)),
+      map(res => new actions.GetAllProductsSuccess(res))
+  );
+
   @Effect() getCart$: Observable<Action> = this._actions.pipe(
     ofType(actions.GET_CART),
       switchMap((action: actions.GetCart) => this.apiService.getCart()),

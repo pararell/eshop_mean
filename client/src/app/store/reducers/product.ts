@@ -1,22 +1,22 @@
 
 import * as actions from '../../store/actions';
+import { Product, Cart } from 'src/app/shared/models';
 
 
 export interface State {
-  products: any;
+  products: Product[];
   loadingProducts: boolean;
   categories: Array<string>;
-  categoriesPagination: any;
   pagination: {
     page: number;
     pages: number;
     limit: number;
     total: number;
   };
-  product: any;
+  product: Product;
   loadingProduct: boolean;
-  cart: any;
-  userOrders: null;
+  cart: Cart;
+  userOrders: any;
   order: any;
   productsTitles: Array<string>;
   priceFilter: number;
@@ -27,7 +27,6 @@ export const initialState: State = {
   products: null,
   loadingProducts: false,
   categories: [],
-  categoriesPagination: {},
   pagination: {
     page: 1,
     pages: 1,
@@ -53,43 +52,31 @@ export function productReducer(state = initialState, action): State {
       return {...state, loadingProducts: true };
     }
 
-    case actions.LOAD_CATEGORY_PRODUCTS: {
-      return {...state, loadingProducts: true };
-    }
 
-
-    case actions.LOAD_PRODUCTS_SUCESS: {
+    case actions.LOAD_PRODUCTS_SUCCESS: {
       return { ...state,
                   products: action.payload.products,
                   pagination: action.payload.pagination,
                   loadingProducts: false }
     }
 
-    case actions.LOAD_CATEGORY_PRODUCTS_SUCESS: {
-      return { ...state,
-                  products: action.payload.products,
-                  categoriesPagination : {...state.categoriesPagination, [action.payload.category] : action.payload.pagination},
-                  loadingProducts: false }
-    }
-
-    case actions.LOAD_CATEGORIES_SUCESS: {
+    case actions.LOAD_CATEGORIES_SUCCESS: {
       return { ...state,
                   categories: action.payload }
     }
-
 
     case actions.GET_PRODUCT: {
       return { ...state,
                   loadingProduct: true  }
     }
 
-    case actions.GET_PRODUCT_SUCESS: {
+    case actions.GET_PRODUCT_SUCCESS: {
         return { ...state,
                     product: action.payload,
                     loadingProduct: false  }
       }
 
-    case actions.LOAD_PRODUCTS_SEARCH_SUCESS: {
+    case actions.LOAD_PRODUCTS_SEARCH_SUCCESS: {
         return { ...state, productsTitles: action.payload }
       }
 
@@ -132,7 +119,6 @@ export const products = (state: State) => state.products;
 export const loadingProducts = (state: State) => state.loadingProducts;
 export const categories = (state: State) => state.categories;
 export const pagination = (state: State) => state.pagination;
-export const categoriesPagination = (state: State) => state.categoriesPagination;
 export const product = (state: State) => state.product;
 export const cart = (state: State) => state.cart;
 export const productLoading = (state: State) => state.loadingProduct;

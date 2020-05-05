@@ -12,7 +12,7 @@ export interface Product extends Document {
     titleUrl            : string;
     onSale              : boolean;
     stock               : string;
-    visibility          : string;
+    visibility          : boolean;
     shipping?           : string;
     mainImage           : { url: string; name: string }
     images              : string[];

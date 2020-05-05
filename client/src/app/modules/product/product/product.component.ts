@@ -8,6 +8,7 @@ import { Meta, Title } from '@angular/platform-browser';
 
 import * as actions from '../../../store/actions';
 import * as fromRoot from '../../../store/reducers';
+import { Cart, Product } from 'src/app/shared/models';
 
 
 @Component({
@@ -17,7 +18,7 @@ import * as fromRoot from '../../../store/reducers';
 })
 export class ProductComponent {
 
-  items$          : Observable<any>;
+  items$          : Observable<{ product: Product; cartIds: any }>;
   productLoading$ : Observable<boolean>;
   convertVal$     : Observable<number>;
   currency$       : Observable<string>;
@@ -30,7 +31,7 @@ export class ProductComponent {
     private location: Location,
     private meta    : Meta,
     private title   : Title ) {
-  
+
     this.lang$ = this.store.select(fromRoot.getLang);
 
     combineLatest(this.lang$, this.route.params.pipe(map(params => params['id'])), (lang, id) => ({ lang, id }))
@@ -43,12 +44,12 @@ export class ProductComponent {
       this.store.select(fromRoot.getProduct),
       this.store.select(fromRoot.getCart).pipe(
         filter(Boolean),
-        map((cart:any) => cart.items)
+        map((cart: Cart) => cart.items)
       ),
       (product, cartItems) => {
         return {
           product,
-          cartIds: cartItems.reduce((prev, curr) => ({ ...prev, [curr.id]: curr.qty }), {})
+          cartIds: cartItems.reduce((prev: any, curr: any) => ({ ...prev, [curr.id]: curr.qty }), {})
         };
       }
     );
@@ -92,7 +93,7 @@ export class ProductComponent {
     this.store
       .select(fromRoot.getProduct)
       .pipe(
-        filter(product => product && product.title),
+        filter((product: any) => product && product.title),
         take(1)
       )
       .subscribe(product => {

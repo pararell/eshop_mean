@@ -20,6 +20,7 @@ import { SharedModule } from '../../shared/shared.module';
 import { TinyEditorComponent } from './tiny-editor.ts/tiny-editor.component';
 import { PipeModule } from '../../pipes/pipe.module';
 import { TranslationsEditComponent } from './translations-edit/translations-edit.component';
+import { AllProductsComponent } from './all-products/all-products.component';
 
 const DASHBOARD_ROUTER: Routes = [
   {
@@ -57,6 +58,6 @@ const DASHBOARD_ROUTER: Routes = [
     MatTabsModule,
     MatRadioModule
   ],
-  declarations: [ProductsEditComponent, OrdersEditComponent, OrderEditComponent, DashboardComponent, TinyEditorComponent, TranslationsEditComponent]
+  declarations: [ProductsEditComponent, OrdersEditComponent, OrderEditComponent, AllProductsComponent, DashboardComponent, TinyEditorComponent, TranslationsEditComponent]
 })
 export class DashboardModule { }

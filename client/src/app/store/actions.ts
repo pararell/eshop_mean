@@ -21,24 +21,24 @@ export const GET_CART_SUCCESS = 'Get Cart Success'
 export const GET_IMAGES = 'Get Images';
 export const GET_IMAGES_SUCCESS = 'Get Images Success';
 export const GET_PRODUCT = 'GET Product';
-export const GET_PRODUCT_SUCESS = 'GET Product Sucess';
+export const GET_PRODUCT_SUCCESS = 'GET Product Success';
+export const GET_ALL_PRODUCTS = 'GET All Products';
+export const GET_ALL_PRODUCTS_SUCCESS = 'GET All Products Success';
 export const LOAD_CATEGORIES = 'LOAD Categories';
-export const LOAD_CATEGORIES_SUCESS = 'LOAD Categories Sucess';
-export const LOAD_CATEGORY_PRODUCTS = 'LOAD Category Products';
-export const LOAD_CATEGORY_PRODUCTS_SUCESS = 'LOAD Category Products Sucess';
+export const LOAD_CATEGORIES_SUCCESS = 'LOAD Categories Success';
 export const LOAD_ORDER = 'Load Order';
 export const LOAD_ORDER_SUCCESS = 'Load Order Success';
 export const LOAD_ORDERS = 'Load Orders';
 export const LOAD_ORDERS_SUCCESS = 'Load Orders Success';
 export const LOAD_PAYMENT = 'LOAD_PAYMENT';
 export const LOAD_PAYMENT_FAIL = 'LOAD_PAYMENT Fail';
-export const LOAD_PAYMENT_SUCCESS = 'LOAD_PAYMENT Sucess';
+export const LOAD_PAYMENT_SUCCESS = 'LOAD_PAYMENT Success';
 export const LOAD_PRODUCT = 'LOAD Product';
-export const LOAD_PRODUCT_SUCESS = 'LOAD Product Sucess';
+export const LOAD_PRODUCT_SUCCESS = 'LOAD Product Success';
 export const LOAD_PRODUCTS = 'LOAD Products';
 export const LOAD_PRODUCTS_SEARCH = 'LOAD Products Search';
-export const LOAD_PRODUCTS_SEARCH_SUCESS = 'LOAD Products Search Sucess';
-export const LOAD_PRODUCTS_SUCESS = 'LOAD Products Sucess';
+export const LOAD_PRODUCTS_SEARCH_SUCCESS = 'LOAD Products Search Success';
+export const LOAD_PRODUCTS_SUCCESS = 'LOAD Products Success';
 export const LOAD_USER_ACTION = 'LOAD_USER__ACTION';
 export const LOAD_USER_ORDERS = 'Load User Orders';
 export const LOAD_USER_ORDERS_SUCCESS = 'Load User Orders Success';
@@ -334,7 +334,7 @@ export class LoadProducts implements Action {
 }
 
 export class LoadProductsSuccess implements Action {
-    readonly type = LOAD_PRODUCTS_SUCESS;
+    readonly type = LOAD_PRODUCTS_SUCCESS;
      constructor(public payload: any) {
     }
 }
@@ -346,7 +346,7 @@ export class LoadCategories implements Action {
 }
 
 export class LoadCategoriesSuccess implements Action {
-  readonly type = LOAD_CATEGORIES_SUCESS;
+  readonly type = LOAD_CATEGORIES_SUCCESS;
    constructor(public payload: any) {
   }
 }
@@ -359,7 +359,7 @@ export class LoadProductsSearch implements Action {
 }
 
 export class LoadProductsSearchSuccess implements Action {
-  readonly type = LOAD_PRODUCTS_SEARCH_SUCESS;
+  readonly type = LOAD_PRODUCTS_SEARCH_SUCCESS;
    constructor(public payload: any) {
   }
 }
@@ -372,10 +372,23 @@ export class GetProduct implements Action {
 }
 
 export class GetProductSuccess implements Action {
-    readonly type = GET_PRODUCT_SUCESS;
+    readonly type = GET_PRODUCT_SUCCESS;
      constructor(public payload: any) {
     }
 }
+
+export class GetAllProducts implements Action {
+  readonly type = GET_ALL_PRODUCTS;
+   constructor(public payload: any) {
+  }
+}
+
+export class GetAllProductsSuccess implements Action {
+  readonly type = GET_ALL_PRODUCTS_SUCCESS;
+   constructor(public payload: any) {
+  }
+}
+
 
 export class LoadPaymentFail implements Action {
     readonly type = LOAD_PAYMENT_FAIL;

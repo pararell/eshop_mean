@@ -15,11 +15,10 @@
       </select>
     </div>
   </div>
-  <form
-    class="product_edit-form"
+
+  <form class="product_edit-form"
     [formGroup]="productEditForm"
     novalidate>
-
     <div class="full-input">
       <mat-form-field class="product_edit-field">
         <mat-label>TitleUrl</mat-label>
@@ -115,82 +114,75 @@
             name="mainImage">
         </mat-form-field>
       </div>
+      <div
+      [formGroupName]="chooseLang">
       <div class="check-title">Visibility</div>
-      <mat-radio-group aria-label="Visibility">
+      <mat-radio-group aria-label="Visibility" formControlName="visibility">
         <mat-radio-button
           name="visibility"
-          value="visible"
-          formControlName="visibility"
+          [value]="true"
           id="visible">
           Visible
         </mat-radio-button>
         <mat-radio-button
           name="visibility"
-          value="hidden"
-          formControlName="visibility"
+          [value]="false"
           id="hidden">
           Hidden
         </mat-radio-button>
       </mat-radio-group>
       <div class="check-title">On Stock</div>
-      <mat-radio-group aria-label="Visibility">
+      <mat-radio-group aria-label="onStock" formControlName="stock">
         <mat-radio-button
           value="onStock"
           name="stock"
-          formControlName="stock"
           id="onStock">
           On Stock
         </mat-radio-button>
         <mat-radio-button
           value="onWaitings"
           name="stock"
-          formControlName="stock"
           id="onWaitings">
           Avaible in few weeks
         </mat-radio-button>
         <mat-radio-button
-          value="inavailable"
+          value="unavailable"
           name="stock"
-          formControlName="stock"
           id="inavailable">
           Unavailable
         </mat-radio-button>
       </mat-radio-group>
       <div class="check-title">On Sale</div>
-      <mat-radio-group aria-label="On Sale">
+      <mat-radio-group aria-label="On Sale" formControlName="onSale">
         <mat-radio-button
-          value="true"
+          [value]="true"
           name="onSale"
-          formControlName="onSale"
           id="onSale">
           On Sale
         </mat-radio-button>
         <mat-radio-button
-          value="false"
+          [value]="false"
           name="onSale"
-          formControlName="onSale"
           id="normal">
           Normal
         </mat-radio-button>
       </mat-radio-group>
       <div class="check-title">Shipping</div>
-      <mat-radio-group aria-label="Shipping">
+      <mat-radio-group aria-label="Shipping" formControlName="shiping">
         <mat-radio-button
           value="basic"
           name="shiping"
-          formControlName="shiping"
           id="basic">
-          On Sale
+          Basic
         </mat-radio-button>
         <mat-radio-button
           value="extended"
           name="shiping"
-          formControlName="shiping"
           id="extended">
-          Normal
+          Extended
         </mat-radio-button>
       </mat-radio-group>
-
+     </div>
       <div
         class="images-wrapp"
         *ngIf="!!(images$ | async)?.length && !(product$ | async)?.images?.length">
@@ -282,9 +274,10 @@
   class="after-send"
   *ngIf="sendRequest">
   Request was send.
-  <a
-    (click)="openForm()"
-    class="waves-effect waves-light btn">
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="openForm()">
     Again
-  </a>
+  </button>
 </div>

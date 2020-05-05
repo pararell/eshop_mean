@@ -1,9 +1,10 @@
 
 import * as actions from '../../store/actions';
+import { User } from 'src/app/shared/models';
 
 
 export interface State {
-  user: any;
+  user: User;
   lang: string;
   currency: string;
   convertVal: number;

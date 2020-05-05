@@ -10,6 +10,7 @@ import { sortOptions } from '../../shared/constants';
 import { Store } from '@ngrx/store';
 import * as actions from './../../store/actions'
 import * as fromRoot from '../../store/reducers';
+import { Product, Category, Pagination } from 'src/app/shared/models';
 
 
 
@@ -21,18 +22,17 @@ import * as fromRoot from '../../store/reducers';
 })
 export class ProductsComponent {
 
-  items$                : Observable<any>;
+  items$                : Observable<{ products: Product[]; minPrice: number; maxPrice: number; cartIds: any }>;
   loadingProducts$      : Observable<boolean>;
-  categories$           : Observable<any>;
-  pagination$           : Observable<any>;
-  paginationCategories$ : Observable<any>;
-  category$             : Observable<any>;
+  categories$           : Observable<Category[]>;
+  pagination$           : Observable<Pagination>;
+  category$             : Observable<string>;
   filterPrice$          : Observable<number>;
-  page$                 : Observable<any>;
-  sortBy$               : Observable<any>;
+  page$                 : Observable<number>;
+  sortBy$               : Observable<string>;
   convertVal$           : Observable<number>;
   currency$             : Observable<string>;
-  lang$                 : Observable<any>;
+  lang$                 : Observable<string>;
   sortOptions           = sortOptions;
 
   readonly component = 'productsComponent';
@@ -51,7 +51,7 @@ export class ProductsComponent {
     this.category$ = route.params.pipe(map(params => params['category']), distinctUntilChanged());
     this.page$     = route.queryParams.pipe(map(params => params['page']), map(page => parseFloat(page)));
     this.sortBy$   = route.queryParams.pipe(map(params => params['sort']), map(sort => sort));
-    this.lang$     = store.select(fromRoot.getLang).pipe(filter(Boolean))
+    this.lang$     = store.select(fromRoot.getLang).pipe(filter((lang: string) => !!lang));
 
     this._setUrls();
 
@@ -83,9 +83,8 @@ export class ProductsComponent {
     this._title.setTitle('Products');
     this._meta.updateTag({ name: 'description', content: 'Bluetooth Headphones for every ears' });
 
-    this.categories$           = this.store.select(fromRoot.getCategories).pipe(filter(Boolean));
+    this.categories$           = this.store.select(fromRoot.getCategories).pipe(filter((category: any) => !!category));
     this.pagination$           = this.store.select(fromRoot.getPagination);
-    this.paginationCategories$ = this.store.select(fromRoot.getCategoriesPagination);
     this.convertVal$           = this.store.select(fromRoot.getConvertVal);
     this.currency$             = this.store.select(fromRoot.getCurrency);
 
@@ -143,7 +142,7 @@ export class ProductsComponent {
   }
 
   private _setUrls(): void {
-    this.translate.getTranslations$()
+    this.translate.getTranslations$().pipe(take(1))
     .subscribe(translations => {
       this.productsUrl = '/' + this.translate.lang + '/' + (translations['products'] || 'products');
       this.categoryUrl = '/' + this.translate.lang + '/' + (translations['category'] || 'category');
