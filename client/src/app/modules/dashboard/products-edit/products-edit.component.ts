@@ -190,7 +190,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
             mainImage: (product.mainImage && product.mainImage.url) ? product.mainImage.url : '',
             images: product.images,
             imageUrl: product.imageUrl || '',
-            ...this.prepareLangEditForm(this.languageOptions, product)
+            ...this.prepareLangEditForm(product)
           };
 
           const uploaderOptions = {
@@ -206,7 +206,6 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
             })).reduce((prev, curr) => ({ ...prev, ...curr }), {});
 
           this.descriptionFullSub$.next(prepareDescFull);
-          console.log(newForm, 'newForm')
           this.productEditForm.setValue(newForm);
         });
     }
@@ -232,8 +231,8 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
       ).reduce((prev, curr) => ({ ...prev, ...curr }), {});
   }
 
-  private prepareLangEditForm(languageOptions: Array<string>, product: any) {
-    return languageOptions
+  private prepareLangEditForm(product: any) {
+    return this.languageOptions
       .map((lang: string) => ({
         [lang]: {
           title: product[lang].title || '',
@@ -247,7 +246,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
             ? product[lang].categories.reduce((string, tag) => (string ? string + ',' : string) + tag, '')
             : '',
           descriptionFull: product[lang].descriptionFull || '',
-          visibility: [product.visibility] || true,
+          visibility: product.visibility || true,
           stock: product.stock || 'onStock',
           onSale: product.onSale || true,
           shiping: product.shiping || 'basic'

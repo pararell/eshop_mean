@@ -16,7 +16,8 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 a {
@@ -50,7 +51,13 @@ a:hover {
   font-size: 48px;
 }
 
-@mixin stripes($color1: #000460, $color2: transparent, $angle: 0deg, $stripe1-width: 25px, $stripe2-width: null) {
+@mixin stripes(
+  $color1: #000460,
+  $color2: transparent,
+  $angle: 0deg,
+  $stripe1-width: 25px,
+  $stripe2-width: null
+) {
   @if ($stripe2-width == null) {
     $stripe2-width: $stripe1-width;
   }
@@ -61,7 +68,17 @@ a:hover {
   $stripe4-start: $stripe3-start + (($stripe1-width / $tile-size) * 100%);
 
   background-size: $tile-size $tile-size;
-  background-image: linear-gradient($angle, $color1, $color1 $stripe2-start, $color2 $stripe2-start, $color2 $stripe3-start, $color1 $stripe3-start, $color1 $stripe4-start, $color2 $stripe4-start, $color2);
+  background-image: linear-gradient(
+    $angle,
+    $color1,
+    $color1 $stripe2-start,
+    $color2 $stripe2-start,
+    $color2 $stripe3-start,
+    $color1 $stripe3-start,
+    $color1 $stripe4-start,
+    $color2 $stripe4-start,
+    $color2
+  );
   background-repeat: repeat;
 }
 
@@ -73,9 +90,9 @@ a:hover {
 
 .container {
   padding: 20px;
-    @media screen and (max-width: 600px) {
-      padding: 5px !important;
-    }
+  @media screen and (max-width: 600px) {
+    padding: 5px !important;
+  }
 }
 
 .clickable {

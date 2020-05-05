@@ -2,17 +2,16 @@
   <div class="products-title-wrapp">
     <h4> {{action | uppercase}} PRODUCT </h4>
     <div>
-      <select
-        class="browser-default lang-select"
-        aria-label="Language"
-        [ngModel]="chooseLang"
-        (ngModelChange)="setLang($event)">
-        <option
-          *ngFor="let option of languageOptions;"
-          [value]="option">
-          {{option}}
-        </option>
-      </select>
+      <mat-form-field class="browser-default lang-select">
+        <mat-label>Chose language for product detail</mat-label>
+        <mat-select
+          [ngModel]="chooseLang"
+          (ngModelChange)="setLang($event)">
+          <mat-option *ngFor="let option of languageOptions;" [value]="option">
+            {{option}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
   </div>
 

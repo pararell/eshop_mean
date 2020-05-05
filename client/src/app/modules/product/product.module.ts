@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDialogModule } from '@angular/material/dialog';
 
 import { ProductComponent } from './product/product.component';
 import { LazyModule } from '../../utils/lazyLoadImg/lazy.module';
@@ -29,6 +30,7 @@ import { PipeModule } from '../../pipes/pipe.module';
     MatTabsModule,
     MatChipsModule,
     MatProgressBarModule,
+    MatDialogModule,
     RouterModule.forChild([
       { path: ':id', component: ProductComponent },
       { path: '**', redirectTo: 'products' }

@@ -68,6 +68,7 @@ const routes: Routes = routesAll;
     environment.production ? ServiceWorkerModule.register('ngsw-worker.js') : [],
     !environment.production ? StoreDevtoolsModule.instrument() : []
   ],
+  exports: [MatButtonModule],
   providers: [
     CookieService,
     {

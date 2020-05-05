@@ -57,6 +57,10 @@ export class ProductsService {
 
 
   async addProduct(productReq, user: User): Promise<void> {
+    const found = await this.productModel.findOne({ titleUrl: productReq.titleUrl });
+    if (found) {
+      throw new BadRequestException();
+    }
     const newProduct = Object.assign(productReq, {
       _user     : user._id,
       dateAdded : Date.now()

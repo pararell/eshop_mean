@@ -34,6 +34,14 @@ export class CartService {
     const storeCart = new Cart(cart || {});
     try {
         const product = await this.productModel.findById(id);
+
+        if (!product) {
+          const itIsInCart = storeCart.check(id);
+
+          if (itIsInCart) {
+            return new Cart({});
+          }
+        }
         const updatedProduct = this.prepareProduct(product, lang);
         storeCart.remove(updatedProduct, id);
         return storeCart;

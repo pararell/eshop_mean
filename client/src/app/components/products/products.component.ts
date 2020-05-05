@@ -131,7 +131,6 @@ export class ProductsComponent {
       (category, page) => ({category, page}))
       .pipe(first())
       .subscribe(({category, page}) => {
-        console.log(this.productsUrl, 'this.productsUrl')
         if (category) {
           this.router.navigate([this.categoryUrl + '/' + category], { queryParams: { sort, page: page || 1 } });
         } else {

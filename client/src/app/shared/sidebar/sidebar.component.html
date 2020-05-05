@@ -20,30 +20,27 @@
         <div class="collection-header">
             <h4>{{ 'Sorting' | translate | async }}</h4>
         </div>
-        <select
-            class="collection-select"
-            aria-label="Sort"
+        <mat-form-field class="collection-select">
+          <mat-select  aria-label="Sort"
             [ngModel]="choosenSort || 'newest'"
             (ngModelChange)="onInputChange($event)">
-            <option
-                *ngFor="let option of sortOptions;"
-                [value]="option.id">
-                {{ option.name | translate | async }}
-            </option>
-        </select>
+            <mat-option  *ngFor="let option of sortOptions;" [value]="option.id">
+              {{ option.name | translate | async }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
     </div>
     <div class="collection-header">
         <h4>{{ 'PriceRange' | translate | async }}</h4>
     </div>
-    <input
-        class="collection-range"
-        type="range"
-        name="range"
-        aria-label="Range"
-        max="{{maxPrice}}"
-        min="{{minPrice}}"
-        value="{{ (maxPrice < price) ? maxPrice : price }}"
-        #ref
-        (change)="changePrice.emit(ref.value)">
+    <mat-slider
+      #ref
+      aria-label="Range"
+      class="collection-range"
+      [max]="maxPrice"
+      [min]="minPrice"
+      (change)="changePrice.emit(ref.value)"
+      [(ngModel)]="(maxPrice < price) ? maxPrice : price">
+    </mat-slider>
     {{ 'Price' | translate | async }} {{ 'to' | translate | async }}: {{ (ref.value * (convertVal || 1)) | priceFormat }}{{ currency }}
 </div>

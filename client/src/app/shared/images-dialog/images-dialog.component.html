@@ -1,0 +1,27 @@
+<ng-container *ngFor="let imageSrc of data.images; let i = index; let f = first; let l = last;">
+  <div
+    class="product-modal"
+    *ngIf="openImages[i]">
+    <button
+      class="prev-btn"
+      mat-raised-button
+      color="primary"
+      *ngIf="!f && openImages[i]"
+      (click)="prevImg($event, i)">
+      <i class="material-icons left">arrow_back</i>
+      {{ 'Prev' | translate | async }}
+    </button>
+    <button
+      class="next-btn"
+      mat-raised-button
+      color="primary"
+      *ngIf="!l && openImages[i]"
+      (click)="nextImg($event, i)">
+      <i class="material-icons right">arrow_forward</i>
+      {{ 'Next' | translate | async }}
+    </button>
+    <img (click)="onCloseImage()"
+      [lazySrc]="imageSrc"
+      lazySrcVisible="visible">
+  </div>
+</ng-container>

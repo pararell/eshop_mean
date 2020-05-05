@@ -11,7 +11,7 @@
   &-header {
     width: 100%;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
-    padding: 10px;
+    padding: 10px 0;
 
     &-top {
       border: none;
@@ -41,14 +41,7 @@
     font-size: 20px;
     font-weight: 500;
     text-align: center;
-  }
-
-  .input-field > select {
-    width: 100%;
-    pointer-events: initial;
-    height: initial;
-    opacity: 1;
-    cursor: pointer;
+    margin-bottom: 5px;
   }
 
   .sort-wrap {

@@ -5,10 +5,12 @@ import { Observable, combineLatest } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { Location } from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
+import { MatDialog } from '@angular/material/dialog';
 
 import * as actions from '../../../store/actions';
 import * as fromRoot from '../../../store/reducers';
-import { Cart, Product } from 'src/app/shared/models';
+import { Cart, Product } from '../../../shared/models';
+import { ImagesDialogComponent } from '../../../shared/images-dialog/images-dialog.component';
 
 
 @Component({
@@ -23,14 +25,14 @@ export class ProductComponent {
   convertVal$     : Observable<number>;
   currency$       : Observable<string>;
   lang$           : Observable<string>;
-  openImages      = {};
 
   constructor(
     private route   : ActivatedRoute,
     private store   : Store<fromRoot.State>,
     private location: Location,
     private meta    : Meta,
-    private title   : Title ) {
+    private title   : Title,
+    public dialog   : MatDialog) {
 
     this.lang$ = this.store.select(fromRoot.getLang);
 
@@ -71,22 +73,16 @@ export class ProductComponent {
     this.location.back();
   }
 
-  toggleModalImg(index: number): void {
-    this.openImages[index] = this.openImages[index] ? !this.openImages[index] : true;
-  }
+  openDialog(index: number, images): void {
+    const dialogRef = this.dialog.open(ImagesDialogComponent, {
+      width: '100vw',
+      maxHeight: '100vh',
+      data: {index, images}
+    });
 
-  prevImg(event, i: number): void {
-    event.stopPropagation();
-    event.preventDefault();
-    this.openImages[i] = false;
-    this.openImages[i - 1] = true;
-  }
-
-  nextImg(event, i: number): void {
-    event.stopPropagation();
-    event.preventDefault();
-    this.openImages[i] = false;
-    this.openImages[i + 1] = true;
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
   }
 
   private setMetaData(): void {

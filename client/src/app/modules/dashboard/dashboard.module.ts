@@ -10,6 +10,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
 
 import { ProductsEditComponent } from './products-edit/products-edit.component';
 import { OrdersEditComponent } from './orders-edit/orders-edit.component';
@@ -56,7 +57,8 @@ const DASHBOARD_ROUTER: Routes = [
     MatCardModule,
     MatProgressBarModule,
     MatTabsModule,
-    MatRadioModule
+    MatRadioModule,
+    MatSelectModule
   ],
   declarations: [ProductsEditComponent, OrdersEditComponent, OrderEditComponent, AllProductsComponent, DashboardComponent, TinyEditorComponent, TranslationsEditComponent]
 })

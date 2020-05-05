@@ -1,0 +1,13 @@
+:host {
+  display: block;
+
+  .next-btn {
+    float: right;
+    margin: 10px;
+  }
+
+  .prev-btn {
+    float: left;
+    margin: 10px;
+  }
+}
