@@ -44,13 +44,6 @@
         </li>
       </ul>
 
-      <div class="pay-wrapp" *ngIf="!!cart?.items?.length">
-
-        <a (click)="onToggleForm()" class="waves-effect green lighten-1 btn-large delivery-button">
-            <i class="material-icons left">email</i>{{ 'Payment' | translate | async }} {{ 'on' | translate | async }} {{ 'delivery' | translate | async }}
-        </a>
-      </div>
-
     <div class="order-form-wrap z-depth-2" *ngIf="!!cart?.items?.length">
         <form [formGroup]="orderForm">
             <div class="full-input input-field">
@@ -116,12 +109,23 @@
                 </textarea>
               </mat-form-field>
             </div>
-            <app-card 
-              [price]="(cart?.totalPrice * ((convertVal$ | async) || 1) | priceFormat)" 
-              [currency]="currency$ | async" (click)="closeToggleForm()"
-              (payWithCardEmit)="payWithCard($event)"> 
+            <mat-radio-group class="delivery-button" *ngIf="orderForm.valid"
+              [(ngModel)]="toggleCard" [ngModelOptions]="{standalone: true}">
+              <mat-radio-button
+                [value]="true">
+                {{'Pay' | translate | async}} {{(cart?.totalPrice * ((convertVal$ | async) || 1) | priceFormat)}} {{ currency$ | async }}
+              </mat-radio-button>
+              <mat-radio-button
+                [value]="false">
+                {{ 'Payment' | translate | async }} {{ 'on' | translate | async }} {{ 'delivery' | translate | async }}
+              </mat-radio-button>
+            </mat-radio-group>
+            <app-card *ngIf="toggleCard"
+              [price]="(cart?.totalPrice * ((convertVal$ | async) || 1) | priceFormat)"
+              [currency]="currency$ | async"
+              (payWithCardEmit)="payWithCard($event)">
             </app-card>
-            <button  mat-raised-button color="primary" type="submit" class="submit-order-button" [disabled]="orderForm.invalid"
+            <button mat-raised-button color="primary" type="submit" class="submit-order-button" [disabled]="orderForm.invalid"
               (click)="submit()"> {{ 'MakeOrder' | translate | async }} </button>
         </form>
     </div>

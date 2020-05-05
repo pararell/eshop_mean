@@ -3,6 +3,10 @@
   min-height: 100vh;
   flex-direction: column;
 
+  /deep/ .mat-radio-button ~ .mat-radio-button {
+    margin-left: 16px;
+  }
+
   .pay-wrapp {
     padding: 10px;
     display: flex;
@@ -10,7 +14,8 @@
   }
 
   .delivery-button {
-    margin-right: 15px;
+    margin: 20px 0;
+    display: block;
   }
 
   .cart-items {

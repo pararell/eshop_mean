@@ -1,15 +1,14 @@
-import { TranslateService } from '../../../services/translate.service';
 import { map, filter, take } from 'rxjs/operators';
 import { Component } from '@angular/core';
 import { Location } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-
 import { Observable } from 'rxjs';
-
 import { Store } from '@ngrx/store';
 
+import { TranslateService } from '../../../services/translate.service';
 import * as actions from '../../../store/actions';
 import * as fromRoot from '../../../store/reducers';
+import { Cart, User } from '../../../shared/models';
 
 @Component({
   selector: 'app-cart',
@@ -17,15 +16,15 @@ import * as fromRoot from '../../../store/reducers';
   styleUrls: ['./cart.component.scss']
 })
 export class CartComponent {
-  cart$       : Observable<any>;
-  lang$       : Observable<any>;
+  cart$       : Observable<Cart>;
+  lang$       : Observable<string>;
   order$      : Observable<any>;
-  user$       : Observable<any>;
+  user$       : Observable<User>;
   orderForm   : FormGroup;
   convertVal$ : Observable<number>;
   currency$   : Observable<string>;
-  toggleOrderForm = false;
-  productUrl      : string;
+  toggleCard = false;
+  productUrl  : string;
 
   constructor(
     private store: Store<fromRoot.State>,
@@ -37,12 +36,12 @@ export class CartComponent {
       this.productUrl = '/' + this.translate.lang + '/' + (translations['product'] || 'product');
     });
 
-    this.lang$ = this.store.select(fromRoot.getLang).pipe(filter(Boolean));
+    this.lang$ = this.store.select(fromRoot.getLang).pipe(filter((lang: string) => !!lang));
 
     this.cart$ = this.store.select(fromRoot.getCart);
     this.order$ = this.store.select(fromRoot.getOrder).pipe(
       filter(Boolean),
-      map((order:any) => order.outcome)
+      map((order: any) => order.outcome)
     );
 
     this.user$ = this.store.select(fromRoot.getUser);
@@ -71,15 +70,7 @@ export class CartComponent {
     });
   }
 
-  onToggleForm() {
-    this.toggleOrderForm = !this.toggleOrderForm;
-  }
-
-  closeToggleForm() {
-    this.toggleOrderForm = false;
-  }
-
-  payWithCard(payment){
+  payWithCard(payment) {
     const addresses = [{
       name                : this.orderForm.value.name,
       address_city        : this.orderForm.value.city,
@@ -104,6 +95,6 @@ export class CartComponent {
 
       const orderRequest = {...this.orderForm.value, addresses};
       this.store.dispatch(new actions.MakeOrder(orderRequest));
-      this.toggleOrderForm = false;
+      this.toggleCard = false;
   }
 }
