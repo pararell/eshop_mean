@@ -35,6 +35,7 @@ For productions and another commands look to package.json
 
 ## SET ENVIROMENT FOR BE - Rename .env.example to .env
 
+```bash
 # BE HOST
 SERVER_PORT=4000
 SERVER_URL="http://localhost:4000"
@@ -69,3 +70,4 @@ GOOGLE_CLIENT_SECRET="set for google login activation"
 
 # Admin emails get notification from sendgrid when order or contact are submitted
 ADMIN_EMAILS="your@email.com, another@mail.com"
+```
