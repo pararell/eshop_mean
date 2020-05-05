@@ -155,7 +155,7 @@ export class AppEffects {
 
   @Effect() loadUserOrders$: Observable<Action> = this._actions.pipe(
     ofType(actions.LOAD_USER_ORDERS),
-      switchMap((action: actions.LoadUserOrders) => this.apiService.getUserOrders(action.payload)),
+      switchMap((action: actions.LoadUserOrders) => this.apiService.getUserOrders()),
       map(res => new actions.LoadUserOrdersSuccess(res))
   );
 

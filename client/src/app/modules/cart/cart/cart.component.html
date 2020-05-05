@@ -113,7 +113,7 @@
               [(ngModel)]="toggleCard" [ngModelOptions]="{standalone: true}">
               <mat-radio-button
                 [value]="true">
-                {{'Pay' | translate | async}} {{(cart?.totalPrice * ((convertVal$ | async) || 1) | priceFormat)}} {{ currency$ | async }}
+                  {{'Pay' | translate | async}} {{(cart?.totalPrice * ((convertVal$ | async) || 1) | priceFormat)}} {{ currency$ | async }}
               </mat-radio-button>
               <mat-radio-button
                 [value]="false">
@@ -125,7 +125,7 @@
               [currency]="currency$ | async"
               (payWithCardEmit)="payWithCard($event)">
             </app-card>
-            <button mat-raised-button color="primary" type="submit" class="submit-order-button" [disabled]="orderForm.invalid"
+            <button *ngIf="!toggleCard" mat-raised-button color="primary" type="submit" class="submit-order-button" [disabled]="orderForm.invalid"
               (click)="submit()"> {{ 'MakeOrder' | translate | async }} </button>
         </form>
     </div>

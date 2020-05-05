@@ -11,6 +11,7 @@ import { TranslateService } from '../../services/translate.service';
 import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../environments/environment';
 import { languages } from '../../shared/constants';
+import { Cart, User } from 'src/app/shared/models';
 
 @Component({
   selector: 'app-header',
@@ -18,8 +19,8 @@ import { languages } from '../../shared/constants';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
-  user$             : Observable<any>;
-  cart$             : Observable<any>;
+  user$             : Observable<User>;
+  cart$             : Observable<Cart>;
   productTitles$    : Observable<string[]>;
   userOrders$       : Observable<any>;
   showAutocomplete$ : BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -76,14 +77,14 @@ export class HeaderComponent implements OnInit {
     });
 
     this.user$
-      .pipe(
-        filter(user => user && user.accessToken),
-      )
-      .subscribe(user => {
-        if (isPlatformBrowser(this._platformId)) {
+      .subscribe((user: User) => {
+        if (user && user.accessToken && isPlatformBrowser(this._platformId)) {
           localStorage.setItem('accessToken', user.accessToken);
         }
-        this.store.dispatch(new actions.LoadUserOrders({ token: user.accessToken }));
+
+        if (user && user.email) {
+          this.store.dispatch(new actions.LoadUserOrders());
+        }
       });
 
     this.cart$.pipe(filter(() => isPlatformBrowser(this._platformId)), take(1)).subscribe(cart => {

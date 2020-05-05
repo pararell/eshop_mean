@@ -29,7 +29,12 @@ export interface Product {
 export interface Cart {
   totalQty    : number;
   totalPrice  : number;
-  items       : Product[]
+  items       : {
+    id? : string;
+    item: Product
+    price: number;
+    qty  : number;
+  }[]
 }
 
 export interface Category {
@@ -46,7 +51,8 @@ export interface Pagination {
 }
 
 export interface User {
-  email     : string;
-  id?       : string;
-  roles     : string[];
+  email       : string;
+  id?         : string;
+  roles?      : string[];
+  accessToken?: string;
 }

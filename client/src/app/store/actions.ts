@@ -447,7 +447,7 @@ export class UpdateOrder implements Action {
 
 export class LoadUserOrders implements Action {
   readonly type = LOAD_USER_ORDERS;
-   constructor(public payload: any) {
+   constructor() {
   }
 }
 

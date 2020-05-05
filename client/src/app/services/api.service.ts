@@ -122,9 +122,9 @@ export class ApiService {
     return this.http.delete(removeProduct);
   }
 
-  getUserOrders(req) {
+  getUserOrders() {
     const userOrderUrl = this.apiUrl + '/api/orders';
-    return this.http.post(userOrderUrl, req);
+    return this.http.get(userOrderUrl);
   }
 
   getOrders() {

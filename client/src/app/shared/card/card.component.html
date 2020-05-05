@@ -4,7 +4,7 @@
   <div id="form-field">
         <div id="card-info" #cardElement></div>
         <button class="card-button" mat-raised-button color="primary" id="submit-button" type="submit">
-            {{'Pay' | translate | async}} {{price}} {{ currency }}
+          {{ 'MakeOrder' | translate | async }} {{ 'and' | translate | async }} {{'Pay' | translate | async}} {{price}} {{ currency }}
         </button>
         <div id="card-errors" role="alert" *ngIf="cardErrors">
             &nbsp;{{ cardErrors }}
