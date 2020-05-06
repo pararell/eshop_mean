@@ -4,6 +4,7 @@ import { User } from 'src/app/shared/models';
 
 
 export interface State {
+  loading: boolean;
   user: User;
   lang: string;
   currency: string;
@@ -11,6 +12,7 @@ export interface State {
 }
 
  export const initialState: State = {
+    loading: false,
     user: null,
     lang: '',
     currency: 'EUR',
@@ -21,8 +23,16 @@ export interface State {
 export function appReducer(state = initialState, action): State {
   switch (action.type) {
 
+    case actions.LOAD_USER_ACTION: {
+      return { ...state, loading: true };
+    }
+
     case actions.STORE_USER_ACTION: {
-      return { ...state, user: action.payload };
+      return { ...state, user: action.payload, loading: false };
+    }
+
+    case actions.LOAD_USER_ACTION_FAIL: {
+      return { ...state, user: action.payload, loading: false };
     }
 
     case actions.SIGN_IN_SUCCESS: {
@@ -48,3 +58,4 @@ export const user = (state: State) => state.user;
 export const lang = (state: State) => state.lang;
 export const currency = (state: State) => state.currency;
 export const convertVal = (state: State) => state.convertVal;
+export const loading = (state: State) => state.loading;

@@ -16,7 +16,8 @@ export class AppEffects {
   @Effect() fetchUser$: Observable<Action> = this._actions.pipe(
     ofType(actions.LOAD_USER_ACTION),
       switchMap((action: actions.LoadUserAction) => this.apiService.getUser()),
-      map(res => new actions.StoreUserAction(res))
+      map(res => new actions.StoreUserAction(res)),
+      catchError(() => of(new actions.LoadUserActionFail()))
   );
 
   @Effect() loadPayment$: Observable<Action> = this._actions.pipe(

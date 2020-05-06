@@ -1,32 +1,34 @@
 import { Injectable } from '@angular/core';
-import { ApiService } from './api.service';
 import { Observable } from 'rxjs';
-import { first, map } from 'rxjs/operators';
-
-
+import { map, take, withLatestFrom, filter } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import * as fromRoot from '../store/reducers';
+import { User } from '../shared/models';
+import * as actions from '../store/actions';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(public apiService: ApiService) { }
+  constructor(private store : Store<fromRoot.State>) {
+    this.store.dispatch(new actions.LoadUserAction());
+  }
 
   get isLoggedIn(): Observable<boolean> {
-    return this.apiService.getUser().pipe(
-     first(),
-      map((user: any) => {
-      return (user && user.email) ? true : false;
-    }));
+    return this.store.select(fromRoot.getUser).pipe(
+      withLatestFrom(this.store.select(fromRoot.getAuthLoading).pipe(filter(loading => !loading)), (user) => ({user})),
+      take(1),
+      map(({user}: {user: User}) => !!(user && user.email))
+    );
   }
 
   get isAdmin(): Observable<boolean> {
-    return this.apiService.getUser().pipe(
-      first(),
-      map((user: any) => {
-      return (user && user.roles.includes('admin')) ? true : false;
-    }));
-
+    return this.store.select(fromRoot.getUser).pipe(
+      withLatestFrom(this.store.select(fromRoot.getAuthLoading).pipe(filter(loading => !loading)), (user) => ({user})),
+      take(1),
+      map(({user}: {user: User}) => !!(user && user.roles.includes('admin')))
+    );
   }
 
 }

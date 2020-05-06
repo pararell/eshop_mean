@@ -40,6 +40,7 @@ export const LOAD_PRODUCTS_SEARCH = 'LOAD Products Search';
 export const LOAD_PRODUCTS_SEARCH_SUCCESS = 'LOAD Products Search Success';
 export const LOAD_PRODUCTS_SUCCESS = 'LOAD Products Success';
 export const LOAD_USER_ACTION = 'LOAD_USER__ACTION';
+export const LOAD_USER_ACTION_FAIL = 'LOAD_USER__ACTION Fail';
 export const LOAD_USER_ORDERS = 'Load User Orders';
 export const LOAD_USER_ORDERS_SUCCESS = 'Load User Orders Success';
 export const MAKE_ORDER = 'Make Order';
@@ -282,6 +283,10 @@ export class AddToCartSuccess implements Action {
 
 export class LoadUserAction implements Action {
     readonly type = LOAD_USER_ACTION;
+}
+
+export class LoadUserActionFail implements Action {
+  readonly type = LOAD_USER_ACTION_FAIL;
 }
 
 export class StoreUserAction implements Action {

@@ -1,17 +1,16 @@
-import { debounceTime, filter, skip, take, delay } from 'rxjs/operators';
+import { debounceTime, filter, take, delay } from 'rxjs/operators';
 import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
 import { FormControl } from '@angular/forms';
-
+import { isPlatformBrowser } from '@angular/common';
 import { Observable, BehaviorSubject, of } from 'rxjs';
+import { Store } from '@ngrx/store';
 
 import * as fromRoot from '../../store/reducers';
-import { Store } from '@ngrx/store';
 import * as actions from '../../store/actions';
 import { TranslateService } from '../../services/translate.service';
-import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../environments/environment';
 import { languages } from '../../shared/constants';
-import { Cart, User } from 'src/app/shared/models';
+import { Cart, User } from '../../shared/models';
 
 @Component({
   selector: 'app-header',
@@ -35,19 +34,12 @@ export class HeaderComponent implements OnInit {
 
   readonly query: FormControl = new FormControl();
 
-
   constructor(
     @Inject(PLATFORM_ID)
     private _platformId : Object,
     private store: Store<fromRoot.State>, public translate: TranslateService) {
 
     this.lang$ = this.store.select(fromRoot.getLang);
-
-    this.lang$
-      .pipe(filter(Boolean), skip(1))
-      .subscribe((lang: string) => {
-        translate.use(lang);
-      });
 
     this.translate.translationsSub$.pipe(filter(Boolean)).subscribe(translations => {
       this.cartUrl = '/' + this.translate.lang + '/' + (translations['cart'] || 'cart');
@@ -68,29 +60,6 @@ export class HeaderComponent implements OnInit {
     this.query.valueChanges.pipe(debounceTime(200)).subscribe(value => {
       const sendQuery = value || 'EMPTY___QUERY';
       this.store.dispatch(new actions.LoadProductsSearch(sendQuery));
-    });
-
-    this.user$.pipe(filter(() => isPlatformBrowser(this._platformId)), take(1)).subscribe(user => {
-      if (!user) {
-        this.store.dispatch(new actions.LoadUserAction());
-      }
-    });
-
-    this.user$
-      .subscribe((user: User) => {
-        if (user && user.accessToken && isPlatformBrowser(this._platformId)) {
-          localStorage.setItem('accessToken', user.accessToken);
-        }
-
-        if (user && user.email) {
-          this.store.dispatch(new actions.LoadUserOrders());
-        }
-      });
-
-    this.cart$.pipe(filter(() => isPlatformBrowser(this._platformId)), take(1)).subscribe(cart => {
-      if (!cart) {
-        this.store.dispatch(new actions.GetCart());
-      }
     });
   }
 
