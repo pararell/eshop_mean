@@ -2,7 +2,7 @@
  MEAN (server - Nest.js with Mongoose BE, client - Angular, server-ssr- build both)
 </p>
 <p>
-eshop.miroslavsmrtic.sk - dashboard test - email: test@miroslavsmrtic.sk , passwrord: test123456
+eshop.miroslavsmrtic.sk - dashboard test - email: test@miroslavsmrtic.sk , password: test123456
 </p>
 ## Description
 - Eshop with products and administration
