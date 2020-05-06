@@ -21,6 +21,8 @@ export interface State {
   productsTitles: Array<string>;
   priceFilter: number;
   position: any;
+  loading: boolean;
+  error: string;
 }
 
 export const initialState: State = {
@@ -40,7 +42,9 @@ export const initialState: State = {
   order: null,
   productsTitles: [],
   priceFilter: Infinity,
-  position: null
+  position: null,
+  loading: false,
+  error: ''
 };
 
 
@@ -49,64 +53,106 @@ export function productReducer(state = initialState, action): State {
   switch (action.type) {
 
     case actions.LOAD_PRODUCTS: {
-      return {...state, loadingProducts: true };
+      return { ...state, loadingProducts: true };
     }
 
-
     case actions.LOAD_PRODUCTS_SUCCESS: {
-      return { ...state,
-                  products: action.payload.products,
-                  pagination: action.payload.pagination,
-                  loadingProducts: false }
+      return {
+        ...state,
+        products: action.payload.products,
+        pagination: action.payload.pagination,
+        loadingProducts: false
+      }
     }
 
     case actions.LOAD_CATEGORIES_SUCCESS: {
-      return { ...state,
-                  categories: action.payload }
+      return {
+        ...state,
+        categories: action.payload
+      }
     }
 
     case actions.GET_PRODUCT: {
-      return { ...state,
-                  loadingProduct: true  }
+      return {
+        ...state,
+        loadingProduct: true
+      }
     }
 
     case actions.GET_PRODUCT_SUCCESS: {
-        return { ...state,
-                    product: action.payload,
-                    loadingProduct: false  }
+      return {
+        ...state,
+        product: action.payload,
+        loadingProduct: false
       }
+    }
 
     case actions.LOAD_PRODUCTS_SEARCH_SUCCESS: {
-        return { ...state, productsTitles: action.payload }
-      }
+      return { ...state, productsTitles: action.payload }
+    }
 
     case actions.GET_CART_SUCCESS:
     case actions.ADD_TO_CART_SUCCESS: {
-        return { ...state,
-                    cart: action.payload  }
+      return {
+        ...state,
+        cart: action.payload
       }
+    }
+
+    case actions.LOAD_PAYMENT:
+      return { ...state, loading: true }
 
     case actions.LOAD_PAYMENT_SUCCESS:
-      return {...state,
-                 order: action.payload.order,
-                 cart: action.payload.cart
-                }
+      return {
+        ...state,
+        order: action.payload.result,
+        cart: action.payload.cart,
+        error: action.payload.error,
+        loading: false
+      }
+
+    case actions.LOAD_PAYMENT_FAIL:
+      return {
+        ...state,
+        order: null,
+        error: 'ORDER_SUBMIT_ERROR',
+        loading: false
+      }
+
+    case actions.MAKE_ORDER:
+      return { ...state, loading: true }
 
     case actions.MAKE_ORDER_SUCCESS:
-          return {...state,
-                    order: action.payload.order,
-                    cart: action.payload.cart
-                  }
+      return {
+        ...state,
+        order: action.payload.result,
+        cart: action.payload.cart,
+        error: action.payload.error,
+        loading: false
+      }
+
+    case actions.MAKE_ORDER_FAIL:
+      return {
+        ...state,
+        order: null,
+        error: 'ORDER_SUBMIT_ERROR',
+        loading: false
+      }
 
     case actions.FILTER_PRICE:
-      return {...state, priceFilter: action.payload };
+      return { ...state, priceFilter: action.payload };
 
     case actions.LOAD_USER_ORDERS_SUCCESS: {
-      return { ...state, userOrders: action.payload } }
+      return { ...state, userOrders: action.payload }
+    }
 
     case actions.UPDATE_POSITION: {
-      return { ...state, position: action.payload } }
+      return { ...state, position: action.payload }
+    }
 
+    case actions.CLEAN_ERROR: {
+      return { ...state, error: '' }
+    }
 
 
     default: {

@@ -25,12 +25,16 @@ export class CartComponent {
   currency$   : Observable<string>;
   toggleCard = false;
   productUrl  : string;
+  loading$    : Observable<boolean>;
+  error$      : Observable<string>;
 
   constructor(
     private store: Store<fromRoot.State>,
     private _fb: FormBuilder,
     private location: Location,
     private translate: TranslateService) {
+
+    this.store.dispatch(new actions.CleanError());
 
     this.translate.translationsSub$.pipe(filter(Boolean)).subscribe(translations => {
       this.productUrl = '/' + this.translate.lang + '/' + (translations['product'] || 'product');
@@ -71,19 +75,24 @@ export class CartComponent {
   }
 
   payWithCard(payment) {
-    const addresses = [{
-      name                : this.orderForm.value.name,
-      address_city        : this.orderForm.value.city,
-      address_country     : this.orderForm.value.country,
-      address_line1       : this.orderForm.value.adress,
-      address_line2       : '',
-      address_zip         : this.orderForm.value.zip,
-    }]
-    const paymentRequest = {...payment, ...this.orderForm.value, addresses};
-    this.store.dispatch(new actions.LoadPayment(paymentRequest));
+    this.user$.pipe(take(1)).subscribe((user: User) => {
+      const userToOrder = user ? {userId: user.id} : {};
+      const addresses = [{
+        name                : this.orderForm.value.name,
+        address_city        : this.orderForm.value.city,
+        address_country     : this.orderForm.value.country,
+        address_line1       : this.orderForm.value.adress,
+        address_line2       : '',
+        address_zip         : this.orderForm.value.zip,
+      }]
+      const paymentRequest = {...payment, ...this.orderForm.value, ...userToOrder, addresses};
+      this.store.dispatch(new actions.LoadPayment(paymentRequest));
+    })
   }
 
   submit() {
+    this.user$.pipe(take(1)).subscribe((user: User) => {
+      const userToOrder = user ? {userId: user.id} : {};
       const addresses = [{
         name                : this.orderForm.value.name,
         address_city        : this.orderForm.value.city,
@@ -93,8 +102,10 @@ export class CartComponent {
         address_zip         : this.orderForm.value.zip,
       }];
 
-      const orderRequest = {...this.orderForm.value, addresses};
+      const orderRequest = {...this.orderForm.value, ...userToOrder, addresses};
       this.store.dispatch(new actions.MakeOrder(orderRequest));
       this.toggleCard = false;
+    })
+
   }
 }

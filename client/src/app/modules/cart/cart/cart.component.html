@@ -44,7 +44,7 @@
         </li>
       </ul>
 
-    <div class="order-form-wrap z-depth-2" *ngIf="!!cart?.items?.length">
+    <div class="order-form-wrap z-depth-2" *ngIf="!!cart?.items?.length && !(loading$ | async)">
         <form [formGroup]="orderForm">
             <div class="full-input input-field">
               <mat-form-field class="order-field">
@@ -129,15 +129,15 @@
               (click)="submit()"> {{ 'MakeOrder' | translate | async }} </button>
         </form>
     </div>
-
+    <mat-progress-bar *ngIf="(loading$ | async)" mode="indeterminate"></mat-progress-bar>
 
   </ng-container>
 
     <ng-container *ngIf="(order$ | async) as order">
-      <div class="pay-success" *ngIf="order.type == 'authorized' && order.seller_message == 'Payment complete.'">
+      <div class="pay-success" *ngIf="order.seller_message == 'WITH_PAYMENT'">
         {{ 'SuccessPayment' | translate | async }}
       </div>
-      <div class="pay-success" *ngIf="order.seller_message == 'Payment on delivery'">
+      <div class="pay-success" *ngIf="order.seller_message == 'PAYMENT_ON_DELIVERY'">
         {{ 'SuccessOrder' | translate | async }}
       </div>
     </ng-container>

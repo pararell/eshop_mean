@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Logger, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import Stripe from 'stripe';
@@ -15,6 +15,7 @@ export const stripe = new Stripe(secret, {apiVersion: '2020-03-02'});
 
 @Injectable()
 export class OrdersService {
+  private logger = new Logger('OrdersService');
   constructor(
       @InjectModel('Order') private orderModel: Model<Order>) {}
 
@@ -23,11 +24,11 @@ export class OrdersService {
     return orders;
   }
 
-  async addOrder(orderDto: OrderDto, cart: Cart): Promise<Order> {
-    const newOrder = await new this.orderModel(this.createOrder(orderDto, cart));
+  async addOrder(orderDto: OrderDto, cart: Cart): Promise<{error: string; result: Order}> {
+    const newOrder = await new this.orderModel(this.createOrder(orderDto, cart, 'PAYMENT_ON_DELIVERY'));
     newOrder.save();
     try {
-    this.sendmail(newOrder.customerEmail, newOrder, cart);
+      this.sendmail(newOrder.customerEmail, newOrder, cart);
 
       if (process.env.ADMIN_EMAILS) {
         process.env.ADMIN_EMAILS
@@ -37,11 +38,11 @@ export class OrdersService {
             this.sendmail(email, newOrder, cart);
           });
       }
-    } catch {
-      console.log('Email send error')
+    } catch (error) {
+      this.logger.error(error.stack + ' Failed to send email');
     }
 
-    return newOrder;
+    return { error: '', result: newOrder };
   }
 
   async getAllOrders(): Promise<Order[]> {
@@ -49,20 +50,19 @@ export class OrdersService {
     return orders;
   }
 
-
-  async orderWithStripe(body, cart: Cart) {
+  async orderWithStripe(body, cart: Cart): Promise<{error: string; result: Order}> {
     const charge = await stripe.charges.create({
       amount        : cart.totalPrice * 100,
-      currency      : 'eur',
+      currency      : body.currency,
       description   : 'Credit Card Payment',
       source        : body.token.id,
       capture       : false
     });
       const requestOrder = {...body, cardId: charge.id};
-      const newOrder = await new this.orderModel(this.createOrder(requestOrder, cart));
 
-      if (charge && newOrder) {
+      if (charge) {
         try {
+          const newOrder = await new this.orderModel(this.createOrder(requestOrder, cart, 'WITH_PAYMENT'));
           const capturePayment = await stripe.charges.capture(charge.id);
           this.sendmail(newOrder.customerEmail, newOrder, cart);
 
@@ -74,16 +74,17 @@ export class OrdersService {
                 this.sendmail(email, newOrder, cart);
               });
           }
-          return newOrder;
+          return { error: '', result: newOrder };
         } catch {
-          return {newOrder, status: 'UNPAID'};
+          return { error: 'ORDER_CREATION_FAIL', result: null };
         }
+      } else {
+        return { error: 'ORDER_CREATION_FAIL', result: null };
       }
-      return;
   }
 
 
-  async getOrderById(id: string): Promise<Order>{
+  async getOrderById(id: string): Promise<Order> {
     const order = await this.orderModel.findOne({orderId : id});
     return order;
   }
@@ -94,7 +95,7 @@ export class OrdersService {
   }
 
 
-  private createOrder = (orderDto: OrderDto, cart: Cart) => {
+  private createOrder = (orderDto: OrderDto, cart: Cart, type: string) => {
     const { addresses, currency, email, userId, cardId } = orderDto;
     const orderId = 'order' + new Date().getTime() + 't' + Math.floor(Math.random() * 1000 + 1);
     const date = Date.now();
@@ -109,10 +110,10 @@ export class OrdersService {
         dateAdded       : date,
         cart,
         status          : 'NEW',
-        description     : 'PAY_ON_DELIVERY',
+        description     : type,
         customerEmail   : email,
         outcome         : {
-            seller_message: 'Payment on delivery'
+            seller_message: type
         },
         source          : {
             name                : deliveryAdress.name,

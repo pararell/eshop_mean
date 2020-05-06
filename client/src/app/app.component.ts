@@ -27,7 +27,7 @@ export class AppComponent {
       .subscribe((lang: string) => {
         const langUpdate = {
           lang,
-          currency  : lang === 'cs' ? 'CZK' : '€'
+          currency  : lang === 'cs' ? 'CZK' : 'EUR'
         };
       this.store.dispatch(new actions.ChangeLang(langUpdate));
       });

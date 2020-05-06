@@ -66,6 +66,7 @@ export const STORE_ACTION = 'STORE_ACTION';
 export const STORE_USER_ACTION = 'STORE_USER_ACTION';
 export const UPDATE_ORDER = 'Update Order';
 export const UPDATE_POSITION = 'Update Position';
+export const CLEAN_ERROR = 'Clean Error';
 
 
 export class ChangeLang implements Action {
@@ -77,6 +78,12 @@ export class ChangeLang implements Action {
 export class ChangeLangSuccess implements Action {
   readonly type = CHANGE_LANG_SUCCESS;
   constructor(public payload: any ) {
+  }
+}
+
+export class CleanError implements Action {
+  readonly type = CLEAN_ERROR;
+  constructor( ) {
   }
 }
 
@@ -305,6 +312,12 @@ export class MakeOrder implements Action {
 export class MakeOrderSuccess implements Action {
   readonly type = MAKE_ORDER_SUCCESS;
     constructor(public payload: any ) {
+  }
+}
+
+export class MakeOrderFail implements Action {
+  readonly type = MAKE_ORDER_FAIL;
+    constructor() {
   }
 }
 

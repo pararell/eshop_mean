@@ -13,7 +13,7 @@ export interface State {
  export const initialState: State = {
     user: null,
     lang: '',
-    currency: '€',
+    currency: 'EUR',
     convertVal: 0
 };
 

@@ -7,6 +7,7 @@ import {
     Session,
     Param,
     Patch,
+    UnprocessableEntityException,
   } from '@nestjs/common';
 
 import { AuthGuard } from '@nestjs/passport';
@@ -16,6 +17,7 @@ import { User } from '../auth/models/user.model';
 import { OrderDto } from './dto/order.dto';
 import { Order } from './models/order.model';
 import { RolesGuard } from '../auth/roles.guard';
+import { Cart } from 'src/cart/utils/cart';
 
 
   @Controller('api/orders')
@@ -29,14 +31,36 @@ import { RolesGuard } from '../auth/roles.guard';
     }
 
     @Post('/add')
-    addOrder(@Body() orderDto: OrderDto, @Session() session): Promise<Order> {
-      return this.ordersService.addOrder(orderDto, session.cart);
+    async addOrder(@Body() orderDto: OrderDto, @Session() session): Promise<{error: string; result: Order, cart: Cart}> {
+      try {
+        const successResult = await this.ordersService.addOrder(orderDto, session.cart);
+        if (successResult && !successResult.error) {
+          const emptyCart = new Cart({});
+          session.cart = emptyCart;
+          return {...successResult, cart: emptyCart}
+        } else {
+          return {...successResult, cart: session.cart}
+        }
+      } catch (e) {
+        throw new UnprocessableEntityException();
+      }
     }
 
-
     @Post('/stripe')
-    orderWithStripe(@Body() body, @Session() session): Promise<any> {
-      return this.ordersService.orderWithStripe(body, session.cart);
+    async orderWithStripe(@Body() body, @Session() session): Promise<{error: string; result: Order, cart: Cart}> {
+      try {
+        const successResult = await this.ordersService.orderWithStripe(body, session.cart);
+
+        if (successResult && !successResult.error) {
+          const emptyCart = new Cart({});
+          session.cart = emptyCart;
+          return {...successResult, cart: emptyCart}
+        } else {
+          return {...successResult, cart: session.cart}
+        }
+      } catch (e) {
+        throw new UnprocessableEntityException();
+      }
     }
 
     @UseGuards(AuthGuard('jwt'), RolesGuard)

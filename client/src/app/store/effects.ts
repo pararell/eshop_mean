@@ -1,8 +1,8 @@
-import { switchMap, map, filter } from 'rxjs/operators';
+import { switchMap, map, filter, catchError } from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {Actions, Effect, ofType} from '@ngrx/effects';
 
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 
 import { ApiService } from '../services/api.service';
 
@@ -28,7 +28,8 @@ export class AppEffects {
   @Effect() makeOrder$: Observable<Action> = this._actions.pipe(
     ofType(actions.MAKE_ORDER),
       switchMap((action: actions.MakeOrder) => this.apiService.makeOrder(action.payload)),
-      map(res => new actions.MakeOrderSuccess(res))
+      map(res => new actions.MakeOrderSuccess(res)),
+      catchError(() => of(new actions.MakeOrderFail()))
   );
 
   @Effect() loadProducts$: Observable<Action> = this._actions.pipe(

@@ -118,7 +118,7 @@ export class HeaderComponent implements OnInit {
   setLang(lang: string): void {
     const langUpdate = {
       lang,
-      currency: lang === 'cs' ? 'CZK' : '€'
+      currency: lang === 'cs' ? 'CZK' : 'EUR'
     };
     this.store.dispatch(new actions.ChangeLang(langUpdate));
   }
