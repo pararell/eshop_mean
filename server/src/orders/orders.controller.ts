@@ -17,7 +17,7 @@ import { User } from '../auth/models/user.model';
 import { OrderDto } from './dto/order.dto';
 import { Order } from './models/order.model';
 import { RolesGuard } from '../auth/roles.guard';
-import { Cart } from 'src/cart/utils/cart';
+import { Cart } from '../cart/utils/cart';
 
 
   @Controller('api/orders')
