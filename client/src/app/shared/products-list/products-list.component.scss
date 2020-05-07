@@ -1,3 +1,5 @@
+@import 'variables';
+
 :host {
   display: flex;
   flex-wrap: wrap;
@@ -9,7 +11,7 @@
     display: flex;
     flex-flow: column;
     justify-content: space-between;
-    box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.12), 0 1px 5px 0 rgba(0,0,0,.2);
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
     background: #fff;
     margin: 0.5rem 5% 1rem 0;
     z-index: 1;
@@ -36,8 +38,8 @@
       padding: 15px 15px 5px 15px;
       align-items: flex-start;
     }
-  
-    &-top h2 {
+
+    &-title {
       font-size: 18px;
       line-height: 20px;
       margin: 0 5px 0 0;
@@ -48,10 +50,11 @@
     &-info {
       padding: 0 15px;
       margin-bottom: 15px;
-      p {
-        margin: 0;
-        font-size: 13px;
-      }
+    }
+
+    &-description {
+      margin: 0;
+      font-size: 13px;
     }
 
     &-action {
@@ -74,7 +77,8 @@
     }
 
     &:hover {
-      box-shadow: 0 6px 20px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.22);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+
       .product_card-image {
         transform: scale(1.1);
         overflow: hidden;
@@ -88,14 +92,14 @@
       color: #fff;
       padding: 5px 20px;
       position: relative;
-      box-shadow: 0 0 40px -9px #000460;
-      background: linear-gradient(to left, #000460, #004e92);
+      box-shadow: 0 0 40px -9px $primary-color;
+      background: linear-gradient(to left, $primary-color, $secondary-color);
       z-index: 2;
       overflow: visible;
-  
-      p {
-        margin: 0;
-      }
+    }
+
+    &-stock {
+      margin: 0;
     }
 
     &-price-info {
@@ -105,7 +109,7 @@
 
     &-detail {
       font-size: 16px;
-      color: #039be5;
+      color: $primary-color;
       margin-top: -5px;
     }
   }

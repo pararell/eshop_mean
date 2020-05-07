@@ -1,6 +1,8 @@
 import { filter } from 'rxjs/operators';
-import { TranslateService } from '../../services/translate.service';
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+
+import { Category } from '../models';
+import { TranslateService } from '../../services/translate.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -9,19 +11,19 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from 
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SidebarComponent  {
-  @Input() categories: any;
+  @Input() categories: Category[];
   @Input() activeCategory?: string;
   @Input() minPrice: number;
   @Input() maxPrice: number;
   @Input() price: number;
-  @Input() sortOptions: Array<any>;
+  @Input() sortOptions: {name: string; id: string}[];
   @Input() choosenSort: string;
   @Input() convertVal : number;
   @Input() currency: string;
 
-  @Output() changePrice: EventEmitter<any> = new EventEmitter<any>();
-  @Output() changeSort: EventEmitter<any> = new EventEmitter<any>();
-  @Output() changeCategory: EventEmitter<any> = new EventEmitter<any>();
+  @Output() changePrice = new EventEmitter<number>();
+  @Output() changeSort = new EventEmitter<string>();
+  @Output() changeCategory = new EventEmitter<string>();
 
   productsUrl: string;
   categoryUrl: string;
@@ -35,7 +37,7 @@ export class SidebarComponent  {
     });
   }
 
-  onInputChange($event: any): void {
+  onInputChange($event: string): void {
     this.changeSort.emit($event);
   }
 

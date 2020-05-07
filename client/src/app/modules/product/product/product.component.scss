@@ -5,12 +5,7 @@
 
   .product {
     margin-top: 10px;
-
-    h1 {
-      font-size: 2.92rem;
-      line-height: 110%;
-      margin: 1.94666667rem 0 1.168rem;
-    }
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
 
     &-content {
       display: flex;
@@ -19,60 +14,67 @@
       @media screen and (max-width: 600px) {
         flex-flow: wrap;
       }
-
-      h4 {
-        font-size: 20px;
-        line-height: 22px;
-        padding-right: 10px;
-      }
-
-      .product-info {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin: 20px 0;
-
-        .stock {
-          font-size: 16px;
-          color: #1de9b6;
-        }
-
-        .price {
-          padding: 0 5px;
-          font-size: 25px;
-          font-weight: 500;
-        }
-      }
-
-      .tags {
-        display: flex;
-        justify-content: flex-start;
-        padding-right: 10px;
-        margin: 20px 0;
-        font-size: 16px;
-      }
-
-      .image-wrap {
-        width: 50%;
-        background-size: contain !important;
-        min-height: 300px;
-      }
     }
-  }
 
-  .cart-wrap {
-    padding-right: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+    &-title {
+      font-size: 2.92rem;
+      line-height: 110%;
+      margin: 1.94666667rem 0 1.168rem;
+    }
 
-  .images-wrapp-content {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 0 4px;
+    &-description {
+      font-size: 20px;
+      line-height: 22px;
+      padding-right: 10px;
+      font-weight: 400;
+    }
 
-    .images-wrapp-content-img {
+    &-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 20px 0;
+    }
+
+    &-stock {
+      font-size: 16px;
+      color: #1de9b6;
+    }
+
+    &-price {
+      padding: 0 15px;
+      font-size: 25px;
+      font-weight: 500;
+    }
+
+    &-tags {
+      display: flex;
+      justify-content: flex-start;
+      padding-right: 10px;
+      margin: 20px 0;
+      font-size: 16px;
+    }
+
+    &-cart-wrap {
+      padding: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &-main-image {
+      width: 50%;
+      background-size: contain !important;
+      min-height: 300px;
+    }
+
+    &-images {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 0 4px;
+    }
+
+    &-images-content {
       flex: 25%;
       max-width: 25%;
       padding: 0 4px;
@@ -88,12 +90,12 @@
         flex: 100%;
         max-width: 100%;
       }
+    }
 
-      img {
-        margin-top: 8px;
-        display: block;
-        max-width: 100%;
-      }
+    &-images-image {
+      margin-top: 8px;
+      display: block;
+      max-width: 100%;
     }
   }
 }

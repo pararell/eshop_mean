@@ -1,10 +1,10 @@
-<mat-toolbar class="main-nav-header navbar-fixed" color="primary">
-  <div class="brand-logo">
-    <a href="/">Bluetooth eshop</a>
+<mat-toolbar class="nav navbar-fixed" color="primary">
+  <div class="nav-brand-logo">
+    <a href="/">Eshop</a>
   </div>
   <div class="nav-part-right">
-    <div class="fake-form">
-      <mat-form-field class="fake-form-content"
+    <div class="nav-search-form">
+      <mat-form-field class="nav-search-form-content"
         [ngClass]="{'focus-active' : (showAutocomplete$ | async)}">
         <i class="material-icons md-18">search</i>
         <input type="text"
@@ -24,24 +24,28 @@
         </mat-autocomplete>
       </mat-form-field>
     </div>
-    <ng-container *ngIf="(cart$ | async) as cart">
-      <a class="cart-wrap" [routerLink]="[cartUrl]">
-        <span>{{ cart?.totalQty }}</span>
-        <i class="material-icons cart-icon md-18">shopping_cart</i>
-      </a>
-    </ng-container>
-    <select class="browser-default lang-select" aria-label="Language"
-      [ngModel]="(lang$ | async)"
-      (ngModelChange)="setLang($event)">
-      <option *ngFor="let option of languageOptions;" [value]="option">{{option}}</option>
-    </select>
-    <button class="mobile-nav" mat-icon-button [matMenuTriggerFor]="menu">
-      <mat-icon>menu</mat-icon>
-    </button>
-    <mat-menu #menu="matMenu" [overlapTrigger]="false">
-      <ng-container *ngTemplateOutlet="menuItems"></ng-container>
-    </mat-menu>
-    <div class="desktop-nav">
+    <div class="nav-basic">
+      <ng-container *ngIf="(cart$ | async) as cart">
+        <a class="nav-cart-wrap" [routerLink]="[cartUrl]">
+          <span>{{ cart?.totalQty }}</span>
+          <i class="nav-cart-icon material-icons md-18">shopping_cart</i>
+        </a>
+      </ng-container>
+      <select class="browser-default nav-lang-select" aria-label="Language"
+        [ngModel]="(lang$ | async)"
+        (ngModelChange)="setLang($event)">
+        <option *ngFor="let option of languageOptions;" [value]="option">{{option}}</option>
+      </select>
+    </div>
+    <div class="nav-mobile">
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu" [overlapTrigger]="false">
+        <ng-container *ngTemplateOutlet="menuItems"></ng-container>
+      </mat-menu>
+    </div>
+    <div class="nav-desktop">
       <ng-container *ngTemplateOutlet="menuItems"></ng-container>
     </div>
   </div>
@@ -52,23 +56,23 @@
   <ng-container *ngIf="!(user$ | async)">
     <button mat-menu-item>
       <mat-icon>account_box</mat-icon>
-      <a href="{{googleAuthUrl}}">{{ 'Login' | translate | async }} {{ 'with' | translate | async }} Google</a>
+      <a class="nav-link" href="{{googleAuthUrl}}">{{ 'Login' | translate | async }} {{ 'with' | translate | async }} Google</a>
     </button>
     <button mat-menu-item>
       <mat-icon>account_circle</mat-icon>
-      <a [routerLink]="[signInUrl]">{{ 'Login' | translate | async }}</a>
+      <a class="nav-link" [routerLink]="[signInUrl]">{{ 'Login' | translate | async }}</a>
     </button>
   </ng-container>
   <button mat-menu-item *ngIf="(user$ | async)?.roles?.includes('admin')">
     <mat-icon>dashboard</mat-icon>
-    <a [routerLink]="['/' + translate.lang + '/dashboard']"> Dashboard</a>
+    <a class="nav-link" [routerLink]="['/' + translate.lang + '/dashboard']"> Dashboard</a>
   </button>
   <button mat-menu-item *ngIf="(userOrders$ | async)?.length">
     <mat-icon>assignment</mat-icon>
-    <a [routerLink]="[ordersUrl]"> {{'Orders' | translate | async}}</a>
+    <a class="nav-link" [routerLink]="[ordersUrl]"> {{'Orders' | translate | async}}</a>
   </button>
   <button mat-menu-item *ngIf="(user$ | async)">
     <mat-icon>exit_to_app</mat-icon>
-    <a (click)="onLogout()"> {{'Logout' | translate | async}}</a>
+    <a class="nav-link" (click)="onLogout()"> {{'Logout' | translate | async}}</a>
   </button>
 </ng-template>

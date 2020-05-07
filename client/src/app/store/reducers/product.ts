@@ -1,12 +1,12 @@
 
 import { EshopActions } from '../../store/actions';
-import { Product, Cart } from 'src/app/shared/models';
+import { Product, Cart, Category } from 'src/app/shared/models';
 
 
 export interface State {
   products: Product[];
   loadingProducts: boolean;
-  categories: Array<string>;
+  categories: Array<Category>;
   pagination: {
     page: number;
     pages: number;
@@ -20,7 +20,7 @@ export interface State {
   order: any;
   productsTitles: Array<string>;
   priceFilter: number;
-  position: any;
+  position: {[component: string]: number};
   loading: boolean;
   error: string;
 }

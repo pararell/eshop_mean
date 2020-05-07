@@ -11,21 +11,21 @@ export class ImagesDialogComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<ImagesDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any) {}
+    @Inject(MAT_DIALOG_DATA) public data: {index: number; images: string[]}) {}
 
 
     ngOnInit(): void {
       this.openImages[this.data.index] = true;
     }
 
-    prevImg(event, i: number): void {
+    prevImg(event: Event, i: number): void {
       event.stopPropagation();
       event.preventDefault();
       this.openImages[i] = false;
       this.openImages[i - 1] = true;
     }
 
-    nextImg(event, i: number): void {
+    nextImg(event: Event, i: number): void {
       event.stopPropagation();
       event.preventDefault();
       this.openImages[i] = false;

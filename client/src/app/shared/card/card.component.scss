@@ -1,3 +1,5 @@
+@import 'variables';
+
 :host {
   display: block;
   width: 100%;
@@ -16,7 +18,7 @@
 
   .card-button {
     padding: 10px;
-    background-color: #004e92;
+    background-color: $secondary-color;
     user-select: none;
     cursor: pointer;
     outline: none;

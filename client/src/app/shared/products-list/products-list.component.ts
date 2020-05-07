@@ -1,6 +1,7 @@
 import { filter } from 'rxjs/operators';
-import { TranslateService } from '../../services/translate.service';
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+
+import { TranslateService } from '../../services/translate.service';
 import { Product } from '../models';
 
 @Component({
@@ -10,12 +11,12 @@ import { Product } from '../models';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductsListComponent {
-  @Input()  products:  Product[];
-  @Input()  cartIds:   any;
-  @Input()  convertVal : number;
-  @Input()  currency: string;
-  @Output() addProduct:    EventEmitter<any> = new EventEmitter<any>();
-  @Output() removeProduct: EventEmitter<any> = new EventEmitter<any>();
+  @Input()  products    : Product[];
+  @Input()  cartIds     : {[productId: string]: number};
+  @Input()  convertVal  : number;
+  @Input()  currency    : string;
+  @Output() addProduct     = new EventEmitter<string>();
+  @Output() removeProduct  = new EventEmitter<string>();
 
   productUrl: string;
 
@@ -35,8 +36,7 @@ export class ProductsListComponent {
     this.removeProduct.emit(id);
   }
 
-  trackById(_index, item) {
+  trackById(_index: number, item: Product) {
     return item._id;
-
   }
 }

@@ -1,3 +1,5 @@
+@import 'variables';
+
 :host {
   display: flex;
   min-height: 100vh;
@@ -41,7 +43,7 @@
   }
 
   .collection {
-    box-shadow: 0 0 0 1px #000460 !important;
+    box-shadow: 0 0 0 1px $primary-color !important;
     background: rgba(255, 255, 255, 1) !important;
     border: none !important;
     padding: 0;
@@ -60,7 +62,7 @@
     background: #fff;
     margin-top: 25px;
     padding: 25px;
-    box-shadow: 0 0 0 1px #000460 !important;
+    box-shadow: 0 0 0 1px $primary-color !important;
     width: 50%;
     margin-left: auto;
     margin-right: auto;

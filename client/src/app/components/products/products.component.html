@@ -1,10 +1,8 @@
 <div class="main">
-  <div class="top-primary-header">
+  <div class="products-primary-header">
     <div class="container">
-      <h1 *ngIf="!(category$ | async)">
-                Bluetooth {{ 'headphones' | translate | async }}
-            </h1>
-      <h1 *ngIf="(category$ | async) as category">{{category}}</h1>
+      <h1 class="products-title" *ngIf="!(category$ | async)">Products</h1>
+      <h1 class="products-title" *ngIf="(category$ | async) as category">{{category}}</h1>
     </div>
   </div>
   <div class="container">
@@ -12,7 +10,7 @@
       mode="indeterminate"
       *ngIf="!(items$ | async)?.products"></mat-progress-bar>
     <div
-      class="wrapper"
+      class="sidebar-layout"
       *ngIf="(items$ | async) as items">
       <div class="sidebar-wrap">
         <app-sidebar
@@ -28,7 +26,7 @@
           [choosenSort]="sortBy$ | async"
           (changePrice)="priceRange($event)"
           (changeSort)="changeSort($event)"
-          (changeCategory)="changeCategory($event)">
+          (changeCategory)="changeCategory()">
         </app-sidebar>
       </div>
       <div class="main-wrap">

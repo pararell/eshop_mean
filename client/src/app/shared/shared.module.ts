@@ -8,6 +8,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
+import { MatButtonModule } from '@angular/material/button';
 
 import { PipeModule } from '../pipes/pipe.module';
 import { LazyModule } from '../utils/lazyLoadImg/lazy.module';
@@ -39,7 +40,8 @@ import { ImagesDialogComponent } from './images-dialog/images-dialog.component';
     MatPaginatorModule,
     MatDialogModule,
     MatSelectModule,
-    MatSliderModule
+    MatSliderModule,
+    MatButtonModule
   ],
   providers: [],
   exports: [

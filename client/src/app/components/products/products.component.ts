@@ -3,14 +3,13 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Observable, combineLatest } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
+import { Store } from '@ngrx/store';
 
 import { TranslateService } from '../../services/translate.service';
 import { sortOptions } from '../../shared/constants';
-
-import { Store } from '@ngrx/store';
 import * as actions from './../../store/actions'
 import * as fromRoot from '../../store/reducers';
-import { Product, Category, Pagination } from 'src/app/shared/models';
+import { Product, Category, Pagination, Cart } from '../../shared/models';
 
 
 
@@ -22,7 +21,7 @@ import { Product, Category, Pagination } from 'src/app/shared/models';
 })
 export class ProductsComponent {
 
-  items$                : Observable<{ products: Product[]; minPrice: number; maxPrice: number; cartIds: any }>;
+  items$                : Observable<{ products: Product[]; minPrice: number; maxPrice: number; cartIds: {[productID: string]: number} }>;
   loadingProducts$      : Observable<boolean>;
   categories$           : Observable<Category[]>;
   pagination$           : Observable<Pagination>;
@@ -63,9 +62,9 @@ export class ProductsComponent {
 
     this.items$ = combineLatest(
       this.store.select(fromRoot.getProducts).pipe(filter(Boolean)),
-      this.store.select(fromRoot.getCart).pipe(filter(Boolean), map((cart: any) => cart.items)),
+      this.store.select(fromRoot.getCart).pipe(filter(Boolean), map((cart: Cart) => cart.items)),
       this.filterPrice$,
-      (products: Array<any>, cartItems, filterPrice) => {
+      (products: Array<Product>, cartItems, filterPrice) => {
         return {
           products: products
             .filter(product => product.salePrice <= filterPrice),
@@ -81,40 +80,39 @@ export class ProductsComponent {
     )
 
     this._title.setTitle('Products');
-    this._meta.updateTag({ name: 'description', content: 'Bluetooth Headphones for every ears' });
+    this._meta.updateTag({ name: 'description', content: 'Products description' });
 
-    this.categories$           = this.store.select(fromRoot.getCategories).pipe(filter((category: any) => !!category));
-    this.pagination$           = this.store.select(fromRoot.getPagination);
-    this.convertVal$           = this.store.select(fromRoot.getConvertVal);
-    this.currency$             = this.store.select(fromRoot.getCurrency);
-
+    this.categories$  = this.store.select(fromRoot.getCategories);
+    this.pagination$  = this.store.select(fromRoot.getPagination);
+    this.convertVal$  = this.store.select(fromRoot.getConvertVal);
+    this.currency$    = this.store.select(fromRoot.getCurrency);
   }
 
-  addToCart(id) {
+  addToCart(id: string): void {
     this.lang$.pipe(take(1))
     .subscribe(lang => {
       this.store.dispatch(new actions.AddToCart('?id=' + id + '&lang=' + lang));
     });
   }
 
-  removeFromCart(id) {
+  removeFromCart(id: string): void {
     this.lang$.pipe(take(1))
     .subscribe(lang => {
       this.store.dispatch(new actions.RemoveFromCart('?id=' + id + '&lang=' + lang));
     });
   }
 
-  priceRange(price) {
+  priceRange(price: number): void {
     this.store.dispatch(new actions.FilterPrice(price));
   }
 
-  changeCategory(category) {
+  changeCategory(): void {
       this.store.dispatch(new actions.UpdatePosition({productsComponent: 0}));
   }
 
-  changePage(page) {
+  changePage(page: number): void {
     combineLatest(this.category$, this.sortBy$,
-      (category, sortBy) => ({category, sortBy}))
+      (category: string, sortBy: string) => ({category, sortBy}))
       .pipe(first())
       .subscribe(({category, sortBy}) => {
         if (category) {
@@ -126,9 +124,9 @@ export class ProductsComponent {
       this.store.dispatch(new actions.UpdatePosition({productsComponent: 0}));
   }
 
-  changeSort(sort: string) {
+  changeSort(sort: string): void {
     combineLatest(this.category$, this.page$,
-      (category, page) => ({category, page}))
+      (category: string, page: number) => ({category, page}))
       .pipe(first())
       .subscribe(({category, page}) => {
         if (category) {
@@ -151,14 +149,14 @@ export class ProductsComponent {
   private _loadCategories(): void {
     combineLatest(this.store.select(fromRoot.getCategories).pipe(
       filter(categories => !categories.length),
-      take(1)),  this.lang$, (categories, lang) => ({categories, lang}))
+      take(1)),  this.lang$, (categories: Category[], lang: string) => ({categories, lang}))
     .subscribe(({categories, lang}) => this.store.dispatch(new actions.GetCategories({lang})));
   }
 
   private _loadProducts(): void {
     combineLatest(this.lang$, this.category$, this.route.queryParams.pipe(
       map(params => ({page: params['page'], sort: params['sort']}))),
-        (lang, category, {page, sort}) => ({lang, category, page, sort}))
+        (lang: string, category: string, {page, sort}) => ({lang, category, page, sort}))
     .subscribe(({lang, category, page, sort}) => {
       this.store.dispatch(new actions.GetProducts({lang, category, page: page || 1, sort: sort || 'newest' }));
     });

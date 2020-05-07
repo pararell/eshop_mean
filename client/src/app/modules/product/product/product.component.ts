@@ -1,7 +1,7 @@
 import { filter, map, take } from 'rxjs/operators';
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, combineLatest } from 'rxjs';
+import { Observable, combineLatest, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { Location } from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
@@ -18,13 +18,14 @@ import { ImagesDialogComponent } from '../../../shared/images-dialog/images-dial
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.scss']
 })
-export class ProductComponent {
+export class ProductComponent implements OnDestroy {
 
-  items$          : Observable<{ product: Product; cartIds: any }>;
+  items$          : Observable<{ product: Product; cartIds: {[productId: string]: number} }>;
   productLoading$ : Observable<boolean>;
   convertVal$     : Observable<number>;
   currency$       : Observable<string>;
   lang$           : Observable<string>;
+  routeSub        : Subscription;
 
   constructor(
     private route   : ActivatedRoute,
@@ -36,7 +37,7 @@ export class ProductComponent {
 
     this.lang$ = this.store.select(fromRoot.getLang);
 
-    combineLatest(this.lang$, this.route.params.pipe(map(params => params['id'])), (lang, id) => ({ lang, id }))
+    this.routeSub = combineLatest(this.lang$, this.route.params.pipe(map(params => params['id'])), (lang, id) => ({ lang, id }))
       .subscribe(({ lang, id }) => this.store.dispatch(new actions.GetProduct(id + '?lang=' + lang)));
 
     this.setMetaData();
@@ -73,7 +74,7 @@ export class ProductComponent {
     this.location.back();
   }
 
-  openDialog(index: number, images): void {
+  openDialog(index: number, images: string[]): void {
     const dialogRef = this.dialog.open(ImagesDialogComponent, {
       width: '100vw',
       maxHeight: '100vh',
@@ -83,6 +84,10 @@ export class ProductComponent {
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
     });
+  }
+
+  ngOnDestroy(): void {
+    this.routeSub.unsubscribe();
   }
 
   private setMetaData(): void {

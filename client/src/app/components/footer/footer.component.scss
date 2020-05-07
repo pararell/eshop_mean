@@ -1,17 +1,18 @@
+@import 'variables';
+
 :host {
   color: #fff;
 
   .page-footer {
-    background: linear-gradient(to right, #000428, #004e92);
+    background: linear-gradient(to right, $primary-color, $secondary-color);
   }
 
   .footer-copyright {
-    background: linear-gradient(to right, #000428, #004e92);
+    background: linear-gradient(to right, $primary-color, $secondary-color);
   }
 
   .links-list {
     text-decoration: none;
     list-style-type: none;
   }
-
 }

@@ -1,15 +1,18 @@
 body {
   overflow: hidden;
   margin: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .full-width {
   display: flex;
   min-height: 100vh;
   flex-direction: column;
+  width: 100%;
 }
 
-.main-scroll-wrapp {
+.main-scroll-wrap {
   position: absolute;
   scroll-behavior: smooth;
   top: 50px;
@@ -18,6 +21,7 @@ body {
   bottom: 0;
   overflow-y: auto;
   overflow-x: hidden;
+  width: 100%;
 }
 
 a {
@@ -89,9 +93,38 @@ a:hover {
 }
 
 .container {
-  padding: 20px;
+  padding: 15px;
   @media screen and (max-width: 600px) {
     padding: 5px !important;
+  }
+}
+
+.sidebar-layout {
+  display: grid;
+  display: -ms-grid;
+  grid-template-areas: "sidebar main";
+  grid-template-columns: 200px 1fr;
+  -ms-grid-columns: 200px 1fr;
+  grid-column-gap: 15px;
+
+  .main-wrap {
+    grid-area: main;
+  }
+
+  .sidebar-wrap {
+    grid-area: sidebar;
+  }
+
+  @media screen and (max-width: 600px) {
+    grid-template-areas: "sidebar" "main";
+    grid-template-columns: auto;
+
+    .main-wrap {
+      grid-area: main;
+    }
+    .sidebar-wrap {
+      grid-area: sidebar;
+    }
   }
 }
 
@@ -106,5 +139,5 @@ a:hover {
 }
 
 .btn {
-  background-color: #004e92 !important;
+  background-color: $secondary-color !important;
 }
