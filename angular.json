@@ -101,6 +101,11 @@
             "outputPath": "dist/eshop/server",
             "main": "server-ssr.ts",
             "tsConfig": "client/tsconfig.server.json",
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "client/src/styles"
+              ]
+            },
             "externalDependencies": [
               "@nestjs/microservices",
               "@nestjs/microservices/microservices-module",

@@ -1,0 +1,16 @@
+.editorconfig
+.git*
+.htmlhintrc
+.prettierrc
+.stylelintrc
+.svgorc
+.vscode
+CHANGELOG.md
+README.md
+builds
+coverage
+e2e
+node_modules
+proxy.conf.js
+raml
+tslint*
