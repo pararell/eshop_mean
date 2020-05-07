@@ -34,7 +34,7 @@ export class OrderDetailComponent {
 
     this._route.params.pipe(map(params => params['id']))
     .subscribe(params => {
-      this.store.dispatch(new actions.LoadOrder(params));
+      this.store.dispatch(new actions.GetOrder(params));
     });
 
     this.order$ = this.store.select(fromRoot.getOrderId);

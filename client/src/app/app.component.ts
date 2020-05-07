@@ -33,7 +33,7 @@ export class AppComponent {
           lang,
           currency  : lang === 'cs' ? 'CZK' : 'EUR'
         };
-        this.store.dispatch(new actions.ChangeLang(langUpdate));
+        this.store.dispatch(new actions.ChangeLanguage(langUpdate));
       });
 
     this.store.select(fromRoot.getLang)
@@ -52,7 +52,7 @@ export class AppComponent {
       this.store.select(fromRoot.getUser).pipe(filter(() => isPlatformBrowser(this._platformId)), take(1))
         .subscribe(user => {
           if (!user) {
-            this.store.dispatch(new actions.LoadUserAction());
+            this.store.dispatch(new actions.GetUser());
           }
       });
 
@@ -63,7 +63,7 @@ export class AppComponent {
         }
 
         if (user && user.email) {
-          this.store.dispatch(new actions.LoadUserOrders());
+          this.store.dispatch(new actions.GetUserOrders());
         }
       });
 

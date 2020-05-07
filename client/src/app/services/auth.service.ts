@@ -12,7 +12,7 @@ import * as actions from '../store/actions';
 export class AuthService {
 
   constructor(private store : Store<fromRoot.State>) {
-    this.store.dispatch(new actions.LoadUserAction());
+    this.store.dispatch(new actions.GetUser());
   }
 
   get isLoggedIn(): Observable<boolean> {

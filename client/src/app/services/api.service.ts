@@ -66,7 +66,7 @@ export class ApiService {
     return this.http.post(sendContact, req);
   }
 
-  loadProducts(req) {
+  getProducts(req) {
     const {lang, page, sort, category} = req;
     const addCategory = category ? {category} : {};
     const categoryQuery = category ? '&category=' + category : '';
@@ -87,12 +87,12 @@ export class ApiService {
     })))
   }
 
-  loadCategories(payload) {
+  getCategories(payload) {
     const categoriesUrl = this.apiUrl + '/api/products/categories?lang=' + payload.lang;
     return this.http.get(categoriesUrl)
   }
 
-  loadProductsSearch(query: string) {
+  getProductsSearch(query: string) {
     const productUrl = this.apiUrl + '/api/products/search?query=' + query;
     return this.http.get(productUrl);
   }

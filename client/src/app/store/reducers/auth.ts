@@ -1,5 +1,5 @@
 
-import * as actions from '../../store/actions';
+import { EshopActions } from '../../store/actions';
 import { User } from 'src/app/shared/models';
 
 
@@ -23,28 +23,24 @@ export interface State {
 export function appReducer(state = initialState, action): State {
   switch (action.type) {
 
-    case actions.LOAD_USER_ACTION: {
+    case EshopActions.GetUser: {
       return { ...state, loading: true };
     }
 
-    case actions.STORE_USER_ACTION: {
+    case EshopActions.StoreUser: {
       return { ...state, user: action.payload, loading: false };
     }
 
-    case actions.LOAD_USER_ACTION_FAIL: {
+    case EshopActions.GetUserFail: {
       return { ...state, user: action.payload, loading: false };
     }
 
-    case actions.SIGN_IN_SUCCESS: {
+    case EshopActions.SignInSuccess: {
       return { ...state, user: action.payload };
     }
 
-    case actions.CHANGE_LANG: {
+    case EshopActions.ChangeLanguage: {
       return {...state, lang: action.payload.lang, currency: action.payload.currency, convertVal: 0 };
-    }
-
-    case actions.CHANGE_LANG_SUCCESS: {
-      return {...state, convertVal: action.payload.val };
     }
 
 

@@ -1,5 +1,5 @@
 
-import * as actions from '../../store/actions';
+import { EshopActions } from '../../store/actions';
 import { Product, Translations } from 'src/app/shared/models';
 
 
@@ -24,35 +24,35 @@ export const initialState: State = {
 export function dashboardReducer(state = initialState, action): State {
   switch (action.type) {
 
-    case actions.LOAD_ORDERS_SUCCESS: {
+    case EshopActions.GetOrdersSuccess: {
       return { ...state, orders: action.payload } }
 
-    case actions.LOAD_ORDER_SUCCESS: {
+    case EshopActions.GetOrdersSuccess: {
       return { ...state, order: action.payload }}
 
-    case actions.GET_IMAGES_SUCCESS: {
+    case EshopActions.GetImagesSuccess: {
       return { ...state, productImages: action.payload.all }
     }
 
-    case actions.ADD_PRODUCT_IMAGE: {
+    case EshopActions.AddProductImage: {
         return { ...state, productImages: action.payload.all }
       }
 
-    case actions.ADD_PRODUCT_IMAGES_URL_SUCCESS: {
+    case EshopActions.AddProductImagesUrlSuccess: {
       return { ...state, productImages: action.payload.all };
     }
 
-    case actions.REMOVE_PRODUCT_IMAGE_SUCCESS: {
+    case EshopActions.RemoveProductImageSuccess: {
       return { ...state, productImages: action.payload.all };
     }
 
-    case actions.GET_ALL_TRANSLATIONS_SUCCESS: {
+    case EshopActions.GetAllTranslationsSuccess: {
       return { ...state, translations: action.payload } }
 
-    case actions.GET_ALL_PRODUCTS_SUCCESS: {
+    case EshopActions.GetAllProductsSuccess: {
       return { ...state, allProducts: action.payload } }
 
-    case actions.EDIT_TRANSLATION_SUCCESS: {
+    case EshopActions.EditTranslationSuccess: {
       return { ...state, translations: state.translations
           .map(trans => trans._id === action.payload._id ? action.payload : trans)}
         }

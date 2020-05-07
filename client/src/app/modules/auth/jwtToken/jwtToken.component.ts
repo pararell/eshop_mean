@@ -26,7 +26,7 @@ export class JwtTokenComponent  {
         filter(() => isPlatformBrowser(this.platformId)))
     .subscribe(accessToken => {
       localStorage.setItem('accessToken', accessToken);
-      this.store.dispatch(new actions.LoadUserAction());
+      this.store.dispatch(new actions.GetUser());
       this.router.navigate(['/']);
     })
   }

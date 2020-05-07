@@ -1,5 +1,5 @@
 
-import * as actions from '../../store/actions';
+import { EshopActions } from '../../store/actions';
 import { Product, Cart } from 'src/app/shared/models';
 
 
@@ -52,11 +52,11 @@ export const initialState: State = {
 export function productReducer(state = initialState, action): State {
   switch (action.type) {
 
-    case actions.LOAD_PRODUCTS: {
+    case EshopActions.GetProducts: {
       return { ...state, loadingProducts: true };
     }
 
-    case actions.LOAD_PRODUCTS_SUCCESS: {
+    case EshopActions.GetProductsSuccess: {
       return {
         ...state,
         products: action.payload.products,
@@ -65,21 +65,21 @@ export function productReducer(state = initialState, action): State {
       }
     }
 
-    case actions.LOAD_CATEGORIES_SUCCESS: {
+    case EshopActions.GetCategoriesSuccess: {
       return {
         ...state,
         categories: action.payload
       }
     }
 
-    case actions.GET_PRODUCT: {
+    case EshopActions.GetProduct: {
       return {
         ...state,
         loadingProduct: true
       }
     }
 
-    case actions.GET_PRODUCT_SUCCESS: {
+    case EshopActions.GetProductSuccess: {
       return {
         ...state,
         product: action.payload,
@@ -87,22 +87,22 @@ export function productReducer(state = initialState, action): State {
       }
     }
 
-    case actions.LOAD_PRODUCTS_SEARCH_SUCCESS: {
+    case EshopActions.GetProductsSearchSuccess: {
       return { ...state, productsTitles: action.payload }
     }
 
-    case actions.GET_CART_SUCCESS:
-    case actions.ADD_TO_CART_SUCCESS: {
+    case EshopActions.GetCartSuccess:
+    case EshopActions.AddToCartSuccess: {
       return {
         ...state,
         cart: action.payload
       }
     }
 
-    case actions.LOAD_PAYMENT:
+    case EshopActions.MakeOrderWithPayment:
       return { ...state, loading: true }
 
-    case actions.LOAD_PAYMENT_SUCCESS:
+    case EshopActions.MakeOrderWithPaymentSuccess:
       return {
         ...state,
         order: action.payload.result,
@@ -111,7 +111,7 @@ export function productReducer(state = initialState, action): State {
         loading: false
       }
 
-    case actions.LOAD_PAYMENT_FAIL:
+    case EshopActions.MakeOrderWithPaymentFail:
       return {
         ...state,
         order: null,
@@ -119,10 +119,10 @@ export function productReducer(state = initialState, action): State {
         loading: false
       }
 
-    case actions.MAKE_ORDER:
+    case EshopActions.MakeOrder:
       return { ...state, loading: true }
 
-    case actions.MAKE_ORDER_SUCCESS:
+    case EshopActions.MakeOrderSuccess:
       return {
         ...state,
         order: action.payload.result,
@@ -131,7 +131,7 @@ export function productReducer(state = initialState, action): State {
         loading: false
       }
 
-    case actions.MAKE_ORDER_FAIL:
+    case EshopActions.MakeOrderFail:
       return {
         ...state,
         order: null,
@@ -139,18 +139,18 @@ export function productReducer(state = initialState, action): State {
         loading: false
       }
 
-    case actions.FILTER_PRICE:
-      return { ...state, priceFilter: action.payload };
-
-    case actions.LOAD_USER_ORDERS_SUCCESS: {
+    case EshopActions.GetUserOrdersSuccess: {
       return { ...state, userOrders: action.payload }
     }
 
-    case actions.UPDATE_POSITION: {
+    case EshopActions.FilterPrice:
+      return { ...state, priceFilter: action.payload };
+
+    case EshopActions.UpdatePosition: {
       return { ...state, position: action.payload }
     }
 
-    case actions.CLEAN_ERROR: {
+    case EshopActions.CleanError: {
       return { ...state, error: '' }
     }
 
@@ -172,5 +172,4 @@ export const userOrders = (state: State) => state.userOrders;
 export const order = (state: State) => state.order;
 export const productsTitles = (state: State) => state.productsTitles;
 export const priceFilter = (state: State) => state.priceFilter;
-
 export const position = (state: State) => state.position;

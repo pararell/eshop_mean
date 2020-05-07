@@ -59,7 +59,7 @@ export class HeaderComponent implements OnInit {
 
     this.query.valueChanges.pipe(debounceTime(200)).subscribe(value => {
       const sendQuery = value || 'EMPTY___QUERY';
-      this.store.dispatch(new actions.LoadProductsSearch(sendQuery));
+      this.store.dispatch(new actions.GetProductsSearch(sendQuery));
     });
   }
 
@@ -81,7 +81,7 @@ export class HeaderComponent implements OnInit {
     if (isPlatformBrowser(this._platformId)) {
       localStorage.removeItem('accessToken');
     }
-    this.store.dispatch(new actions.StoreUserAction(null));
+    this.store.dispatch(new actions.StoreUser(null));
   }
 
   setLang(lang: string): void {
@@ -89,6 +89,6 @@ export class HeaderComponent implements OnInit {
       lang,
       currency: lang === 'cs' ? 'CZK' : 'EUR'
     };
-    this.store.dispatch(new actions.ChangeLang(langUpdate));
+    this.store.dispatch(new actions.ChangeLanguage(langUpdate));
   }
 }

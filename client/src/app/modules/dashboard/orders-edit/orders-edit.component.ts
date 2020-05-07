@@ -18,7 +18,7 @@ export class OrdersEditComponent {
 
   constructor(private store: Store<fromRoot.State>, public translate: TranslateService) {
 
-     this.store.dispatch(new actions.LoadOrders());
+     this.store.dispatch(new actions.GetOrders());
 
      this.orders$ = this.store.select(fromRoot.getOrders);
    }

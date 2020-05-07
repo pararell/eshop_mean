@@ -152,7 +152,7 @@ export class ProductsComponent {
     combineLatest(this.store.select(fromRoot.getCategories).pipe(
       filter(categories => !categories.length),
       take(1)),  this.lang$, (categories, lang) => ({categories, lang}))
-    .subscribe(({categories, lang}) => this.store.dispatch(new actions.LoadCategories({lang})));
+    .subscribe(({categories, lang}) => this.store.dispatch(new actions.GetCategories({lang})));
   }
 
   private _loadProducts(): void {
@@ -160,7 +160,7 @@ export class ProductsComponent {
       map(params => ({page: params['page'], sort: params['sort']}))),
         (lang, category, {page, sort}) => ({lang, category, page, sort}))
     .subscribe(({lang, category, page, sort}) => {
-      this.store.dispatch(new actions.LoadProducts({lang, category, page: page || 1, sort: sort || 'newest' }));
+      this.store.dispatch(new actions.GetProducts({lang, category, page: page || 1, sort: sort || 'newest' }));
     });
   }
 

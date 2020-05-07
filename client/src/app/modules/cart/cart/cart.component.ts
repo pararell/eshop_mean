@@ -86,7 +86,7 @@ export class CartComponent {
         address_zip         : this.orderForm.value.zip,
       }]
       const paymentRequest = {...payment, ...this.orderForm.value, ...userToOrder, addresses};
-      this.store.dispatch(new actions.LoadPayment(paymentRequest));
+      this.store.dispatch(new actions.MakeOrderWithPayment(paymentRequest));
     })
   }
 

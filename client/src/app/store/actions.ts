@@ -1,476 +1,464 @@
-import {Action} from '@ngrx/store';
+import { Action } from '@ngrx/store';
 
-export const ADD_PRODUCT = 'Add Product';
-export const ADD_PRODUCT_IMAGE = 'Add Product Image';
-export const ADD_PRODUCT_IMAGES_URL = 'Add Product Images Url';
-export const ADD_PRODUCT_IMAGES_URL_SUCCESS = 'Add Product Images Url Success';
-export const ADD_PRODUCT_SUCCESS = 'Add Product Success';
-export const ADD_TO_CART = 'ADD to Cart';
-export const ADD_TO_CART_SUCCESS = 'ADD to Cart Success';
-export const CHANGE_LANG = 'Change Lang';
-export const CHANGE_LANG_SUCCESS = 'Change Lang Success';
-export const EDIT_PRODUCT = 'Edit Product';
-export const EDIT_PRODUCT_SUCCESS = 'Edit Product Success';
-export const EDIT_TRANSLATION = 'Edit Translation';
-export const EDIT_TRANSLATION_SUCCESS = 'Edit Translation Success';
-export const FILTER_PRICE = 'Filter Price';
-export const GET_ALL_TRANSLATIONS = 'Get All Translations';
-export const GET_ALL_TRANSLATIONS_SUCCESS = 'Get All Translations Success';
-export const GET_CART = 'Get Cart';
-export const GET_CART_SUCCESS = 'Get Cart Success'
-export const GET_IMAGES = 'Get Images';
-export const GET_IMAGES_SUCCESS = 'Get Images Success';
-export const GET_PRODUCT = 'GET Product';
-export const GET_PRODUCT_SUCCESS = 'GET Product Success';
-export const GET_ALL_PRODUCTS = 'GET All Products';
-export const GET_ALL_PRODUCTS_SUCCESS = 'GET All Products Success';
-export const LOAD_CATEGORIES = 'LOAD Categories';
-export const LOAD_CATEGORIES_SUCCESS = 'LOAD Categories Success';
-export const LOAD_ORDER = 'Load Order';
-export const LOAD_ORDER_SUCCESS = 'Load Order Success';
-export const LOAD_ORDERS = 'Load Orders';
-export const LOAD_ORDERS_SUCCESS = 'Load Orders Success';
-export const LOAD_PAYMENT = 'LOAD_PAYMENT';
-export const LOAD_PAYMENT_FAIL = 'LOAD_PAYMENT Fail';
-export const LOAD_PAYMENT_SUCCESS = 'LOAD_PAYMENT Success';
-export const LOAD_PRODUCT = 'LOAD Product';
-export const LOAD_PRODUCT_SUCCESS = 'LOAD Product Success';
-export const LOAD_PRODUCTS = 'LOAD Products';
-export const LOAD_PRODUCTS_SEARCH = 'LOAD Products Search';
-export const LOAD_PRODUCTS_SEARCH_SUCCESS = 'LOAD Products Search Success';
-export const LOAD_PRODUCTS_SUCCESS = 'LOAD Products Success';
-export const LOAD_USER_ACTION = 'LOAD_USER__ACTION';
-export const LOAD_USER_ACTION_FAIL = 'LOAD_USER__ACTION Fail';
-export const LOAD_USER_ORDERS = 'Load User Orders';
-export const LOAD_USER_ORDERS_SUCCESS = 'Load User Orders Success';
-export const MAKE_ORDER = 'Make Order';
-export const MAKE_ORDER_FAIL = 'Make Order Fail';
-export const MAKE_ORDER_SUCCESS = 'Make Order Success';
-export const REMOVE_FROM_CART = 'Remove from Cart';
-export const REMOVE_PRODUCT = 'Remove Product';
-export const REMOVE_PRODUCT_IMAGE = 'Remove Product Image';
-export const REMOVE_PRODUCT_IMAGE_SUCCESS = 'Remove Product Image Success';
-export const REMOVE_PRODUCT_SUCCESS = 'Remove Product Success';
-export const SEND_CONTACT = 'Send Contact';
-export const SEND_CONTACT_SUCCESS = 'Send Contact Success';
-export const SET_UPLOADER = 'Set Uploader';
-export const SET_UPLOADER_SUCCESS = 'Set Uploader Success';
-export const SET_UPLOADER_ERROR = 'Set Uploader Error';
-export const STRIPE_SESSION = 'Stripe Session';
-export const STRIPE_SESSION_SUCCESS = 'Stripe Session Success';
-export const STRIPE_SESSION_ERROR = 'Stripe Session Error';
-export const SIGN_IN = 'SignIn';
-export const SIGN_IN_SUCCESS = 'SignIn Success';
-export const SIGN_UP = 'SignUp';
-export const SIGN_UP_SUCCESS = 'SignUp Success';
-export const STORE_ACTION = 'STORE_ACTION';
-export const STORE_USER_ACTION = 'STORE_USER_ACTION';
-export const UPDATE_ORDER = 'Update Order';
-export const UPDATE_POSITION = 'Update Position';
-export const CLEAN_ERROR = 'Clean Error';
+export enum EshopActions {
+  ChangeLanguage = '[Auth] Change Language',
+  SignIn = '[Auth] SignIn',
+  SignInSuccess = '[Auth] SignInSuccess',
+  SignUp = '[Auth] SignUp',
+  SignUpSuccess = '[Auth] SignUpSuccess',
+  GetUser = '[Auth] GetUser',
+  StoreUser = '[Auth] StoreUser',
+  GetUserFail = '[Auth] GetUserFail',
+
+  CleanError = '[Product] Clean Error',
+  FilterPrice = '[Product] FilterPrice',
+  UpdatePosition = '[Product] UpdatePosition',
+  GetCart = '[Product] GetCart',
+  GetCartSuccess = '[Product] GetCartSuccess',
+  AddToCart = '[Product] AddToCart',
+  AddToCartSuccess = '[Product] AddToCartSuccess',
+  RemoveFromCart = '[Product] RemoveFromCart',
+  GetProducts = '[Product] GetProducts',
+  GetProductsSuccess = '[Product] GetProductsSuccess',
+  GetCategories = '[Product] GetCategories',
+  GetCategoriesSuccess = '[Product] GetCategoriesSuccess',
+  GetProductsSearch = '[Product] GetProductsSearch',
+  GetProductsSearchSuccess = '[Product] GetProductsSearchSuccess',
+  GetProduct = '[Product] GetProduct',
+  GetProductSuccess = '[Product] GetProductSuccess',
+  MakeOrderWithPayment = '[Product] MakeOrderWithPayment',
+  MakeOrderWithPaymentSuccess = '[Product] MakeOrderWithPaymentSuccess',
+  MakeOrderWithPaymentFail = '[Product] MakeOrderWithPaymentFail',
+  MakeOrder = '[Product] MakeOrder',
+  MakeOrderSuccess = '[Product] MakeOrderSuccess',
+  MakeOrderFail = '[Product] MakeOrderFail',
+  StripeSession = '[Product] StripeSession',
+  StripeSessionSuccess = '[Product] StripeSessionSuccess',
+  StripeSessionError = '[Product] StripeSessionError',
+  GetUserOrders = '[Product] GetUserOrders',
+  GetUserOrdersSuccess = '[Product] GetUserOrdersSuccess',
+
+  GetAllProducts = '[Dashboard] GetAllProducts',
+  GetAllProductsSuccess = '[Dashboard] GetAllProductsSuccess',
+  GetAllTranslations = '[Dashboard] GetAllTranslations',
+  GetAllTranslationsSuccess = '[Dashboard] GetAllTranslationsSuccess',
+  EditTranslation = '[Dashboard] EditTranslation',
+  EditTranslationSuccess = '[Dashboard] EditTranslationSuccess',
+  GetOrders = '[Dashboard] GetOrders',
+  GetOrdersSuccess = '[Dashboard] GetOrdersSuccess',
+  GetOrder = '[Dashboard] GetOrder',
+  GetOrderSuccess = '[Dashboard] GetOrderSuccess',
+  UpdateOrder = '[Dashboard] UpdateOrder',
+  AddProduct = '[Dashboard] AddProduct',
+  AddProductSuccess = '[Dashboard] AddProductSuccess',
+  EditProduct = '[Dashboard] EditProduct',
+  EditProductSuccess  = '[Dashboard] EditProductSuccess',
+  RemoveProduct = '[Dashboard] RemoveProduct',
+  RemoveProductSuccess = '[Dashboard] RemoveProductSuccess',
+  GetImages = '[Dashboard] GetImages',
+  GetImagesSuccess = '[Dashboard] GetImagesSuccess',
+  AddProductImage = '[Dashboard] AddProductImage',
+  AddProductImagesUrl = '[Dashboard] AddProductImagesUrl',
+  AddProductImagesUrlSuccess = '[Dashboard] AddProductImagesSuccessUrl',
+  RemoveProductImage = '[Dashboard] RemoveProductImage',
+  RemoveProductImageSuccess = '[Dashboard] RemoveProductImageSuccess',
+  SetUploader = '[Dashboard] SetUploader',
+  SetUploaderSuccess = '[Dashboard] SetUploaderSuccess',
+  SetUploaderError = '[Dashboard] SetUploaderError',
+
+  SendContact = 'SendContact',
+  SendContactSuccess = 'SendContactSuccess',
+}
 
 
-export class ChangeLang implements Action {
-  readonly type = CHANGE_LANG;
+
+// AUTH
+export class ChangeLanguage implements Action {
+  readonly type = EshopActions.ChangeLanguage;
   constructor(public payload: any ) {
   }
 }
-
-export class ChangeLangSuccess implements Action {
-  readonly type = CHANGE_LANG_SUCCESS;
-  constructor(public payload: any ) {
-  }
-}
-
-export class CleanError implements Action {
-  readonly type = CLEAN_ERROR;
-  constructor( ) {
-  }
-}
-
-export class SendContact implements Action {
-  readonly type = SEND_CONTACT;
-  constructor(public payload: any ) {
-  }
-}
-
-export class SendContactSuccess implements Action {
-  readonly type = SEND_CONTACT_SUCCESS;
-  constructor(public payload: any ) {
-  }
-}
-
 
 export class SignIn implements Action {
-  readonly type = SIGN_IN;
+  readonly type = EshopActions.SignIn;
   constructor(public payload: any ) {
   }
 }
 
 export class SignInSuccess implements Action {
-  readonly type = SIGN_IN_SUCCESS;
+  readonly type = EshopActions.SignInSuccess;
   constructor(public payload: any ) {
   }
 }
 
 export class SignUp implements Action {
-  readonly type = SIGN_UP;
+  readonly type = EshopActions.SignUp;
   constructor(public payload: any ) {
   }
 }
 
 export class SignUpSuccess implements Action {
-  readonly type = SIGN_UP_SUCCESS;
+  readonly type = EshopActions.SignUpSuccess;
   constructor(public payload: any ) {
   }
 }
 
-export class AddProduct implements Action {
-    readonly type = ADD_PRODUCT;
+export class GetUser implements Action {
+  readonly type = EshopActions.GetUser;
+}
+
+export class GetUserFail implements Action {
+readonly type = EshopActions.GetUserFail;
+}
+
+export class StoreUser implements Action {
+  readonly type = EshopActions.StoreUser;
+   constructor(public payload: any ) {
+   }
+}
+
+// PRODUCT
+
+export class CleanError implements Action {
+  readonly type = EshopActions.CleanError;
+  constructor( ) {
+  }
+}
+
+export class FilterPrice implements Action {
+  readonly type = EshopActions.FilterPrice;
     constructor(public payload: any ) {
+  }
+}
+
+export class UpdatePosition implements Action {
+readonly type = EshopActions.UpdatePosition;
+  constructor(public payload: any ) {
+ }
+}
+
+export class GetCart implements Action {
+  readonly type = EshopActions.GetCart;
+}
+
+export class GetCartSuccess implements Action {
+  readonly type = EshopActions.GetCartSuccess;
+  constructor(public payload: any ) {
+  }
+}
+
+export class AddToCart implements Action {
+  readonly type = EshopActions.AddToCart;
+  constructor(public payload: any ) {
+  }
+}
+
+export class AddToCartSuccess implements Action {
+  readonly type = EshopActions.AddToCartSuccess;
+  constructor(public payload: any ) {
+  }
+}
+
+export class RemoveFromCart implements Action {
+  readonly type = EshopActions.RemoveFromCart;
+  constructor(public payload: any ) {
+  }
+}
+
+export class GetProducts implements Action {
+  readonly type = EshopActions.GetProducts;
+   constructor(public payload: any) {
+  }
+}
+
+export class GetProductsSuccess implements Action {
+  readonly type = EshopActions.GetProductsSuccess;
+   constructor(public payload: any) {
+  }
+}
+
+export class GetCategories implements Action {
+  readonly type = EshopActions.GetCategories;
+   constructor(public payload: any) {
+  }
+}
+
+export class GetCategoriesSuccess implements Action {
+  readonly type = EshopActions.GetCategoriesSuccess;
+   constructor(public payload: any) {
+  }
+}
+
+
+export class GetProductsSearch implements Action {
+  readonly type = EshopActions.GetProductsSearch;
+   constructor(public payload: any) {
+  }
+}
+
+export class GetProductsSearchSuccess implements Action {
+  readonly type = EshopActions.GetProductsSearchSuccess;
+   constructor(public payload: any) {
+  }
+}
+
+export class GetProduct implements Action {
+    readonly type = EshopActions.GetProduct;
+     constructor(public payload: any) {
     }
 }
 
-export class AddProductSuccess implements Action {
-  readonly type = ADD_PRODUCT_SUCCESS;
-  constructor(public payload: any ) {
-  }
-}
-
-export class EditProduct implements Action {
-    readonly type = EDIT_PRODUCT;
-    constructor(public payload: any ) {
+export class GetProductSuccess implements Action {
+    readonly type = EshopActions.GetProductSuccess;
+     constructor(public payload: any) {
     }
 }
 
-export class EditProductSuccess implements Action {
-  readonly type = EDIT_PRODUCT_SUCCESS;
-  constructor(public payload: any ) {
-  }
-}
-
-export class RemoveProduct implements Action {
-    readonly type = REMOVE_PRODUCT;
-    constructor(public payload: any ) {
+export class MakeOrderWithPayment implements Action {
+        readonly type = EshopActions.MakeOrderWithPayment;
+         constructor(public payload: any ) {
     }
 }
 
-export class RemoveProductSuccess implements Action {
-  readonly type = REMOVE_PRODUCT_SUCCESS;
-  constructor(public payload: any ) {
-  }
-}
-
-export class GetImages implements Action {
-  readonly type = GET_IMAGES;
-  constructor() {
-  }
-}
-
-
-export class GetImagesSuccess implements Action {
-  readonly type = GET_IMAGES_SUCCESS;
-  constructor(public payload: any ) {
-  }
-}
-
-export class AddProductImage implements Action {
-    readonly type = ADD_PRODUCT_IMAGE;
-    constructor(public payload: any ) {
+export class MakeOrderWithPaymentSuccess implements Action {
+    readonly type = EshopActions.MakeOrderWithPaymentSuccess;
+     constructor(public payload: any ) {
     }
 }
 
-export class AddProductImagesUrl implements Action {
-  readonly type = ADD_PRODUCT_IMAGES_URL;
-  constructor(public payload: any ) {
+export class MakeOrderWithPaymentFail implements Action {
+  readonly type = EshopActions.MakeOrderWithPaymentFail;
+   constructor(public payload: any ) {
   }
 }
 
-
-export class AddProductImagesUrlSuccess implements Action {
-  readonly type = ADD_PRODUCT_IMAGES_URL_SUCCESS;
-  constructor(public payload: any ) {
+export class MakeOrder implements Action {
+  readonly type = EshopActions.MakeOrder;
+   constructor(public payload: any ) {
   }
 }
 
-export class SetUploader implements Action {
-  readonly type = SET_UPLOADER;
-  constructor(public payload: any) {
-  }
-}
-
-export class SetUploaderSuccess implements Action {
-  readonly type = SET_UPLOADER_SUCCESS;
-  constructor(public payload: any) {
-  }
-}
-
-
-export class SetUploaderError implements Action {
-  readonly type = SET_UPLOADER_ERROR;
-  constructor(public payload: any) {
-  }
-}
-
-export class RemoveProductImage implements Action {
-    readonly type = REMOVE_PRODUCT_IMAGE;
+export class MakeOrderSuccess implements Action {
+  readonly type = EshopActions.MakeOrderSuccess;
     constructor(public payload: any ) {
-    }
-}
-
-export class RemoveProductImageSuccess implements Action {
-  readonly type = REMOVE_PRODUCT_IMAGE_SUCCESS;
-  constructor(public payload: any ) {
   }
 }
 
+export class MakeOrderFail implements Action {
+  readonly type = EshopActions.MakeOrderFail;
+    constructor() {
+  }
+}
+
+
+export class StripeSession implements Action {
+  readonly type = EshopActions.StripeSession;
+   constructor(public payload: any ) {
+  }
+}
+
+export class StripeSessionSuccess implements Action {
+  readonly type = EshopActions.StripeSessionSuccess;
+    constructor(public payload: any ) {
+  }
+}
+
+export class StripeSessionError implements Action {
+  readonly type = EshopActions.StripeSessionError;
+   constructor(public payload: any ) {
+  }
+}
+
+export class GetUserOrders implements Action {
+  readonly type = EshopActions.GetUserOrders;
+   constructor() {
+  }
+}
+
+export class GetUserOrdersSuccess implements Action {
+  readonly type = EshopActions.GetUserOrdersSuccess;
+   constructor(public payload: any) {
+  }
+}
+
+
+// DASHBOARD
+
+export class GetAllProducts implements Action {
+  readonly type = EshopActions.GetAllProducts;
+   constructor(public payload: any) {
+  }
+}
+
+export class GetAllProductsSuccess implements Action {
+  readonly type = EshopActions.GetAllProductsSuccess;
+   constructor(public payload: any) {
+  }
+}
 
 export class GetAllTranslations implements Action {
-  readonly type = GET_ALL_TRANSLATIONS;
+  readonly type = EshopActions.GetAllTranslations;
   constructor( ) {
   }
 }
 
 export class GetAllTranslationsSuccess implements Action {
-  readonly type = GET_ALL_TRANSLATIONS_SUCCESS;
+  readonly type = EshopActions.GetAllTranslationsSuccess;
   constructor( public payload: any ) {
   }
 }
 
 export class EditTranslation implements Action {
-  readonly type = EDIT_TRANSLATION;
+  readonly type = EshopActions.EditTranslation;
   constructor( public payload: any ) {
   }
 }
 
 
 export class EditTranslationSuccess implements Action {
-  readonly type = EDIT_TRANSLATION_SUCCESS;
+  readonly type = EshopActions.EditTranslationSuccess;
   constructor( public payload: any ) {
   }
 }
 
-
-
-export class AddToCart implements Action {
-    readonly type = ADD_TO_CART;
-    constructor(public payload: any ) {
-    }
-}
-
-export class RemoveFromCart implements Action {
-    readonly type = REMOVE_FROM_CART;
-    constructor(public payload: any ) {
-    }
-}
-
-export class GetCart implements Action {
-    readonly type = GET_CART;
-}
-
-export class GetCartSuccess implements Action {
-    readonly type = GET_CART_SUCCESS;
-    constructor(public payload: any ) {
-    }
-}
-
-
-export class AddToCartSuccess implements Action {
-    readonly type = ADD_TO_CART_SUCCESS;
-    constructor(public payload: any ) {
-    }
-}
-
-export class LoadUserAction implements Action {
-    readonly type = LOAD_USER_ACTION;
-}
-
-export class LoadUserActionFail implements Action {
-  readonly type = LOAD_USER_ACTION_FAIL;
-}
-
-export class StoreUserAction implements Action {
-    readonly type = STORE_USER_ACTION;
-     constructor(public payload: any ) {
-     }
-}
-
-export class LoadPayment implements Action {
-        readonly type = LOAD_PAYMENT;
-         constructor(public payload: any ) {
-    }
-}
-
-export class LoadPaymentSuccess implements Action {
-    readonly type = LOAD_PAYMENT_SUCCESS;
-     constructor(public payload: any ) {
-    }
-}
-
-
-export class MakeOrder implements Action {
-  readonly type = MAKE_ORDER;
-   constructor(public payload: any ) {
-  }
-}
-
-export class MakeOrderSuccess implements Action {
-  readonly type = MAKE_ORDER_SUCCESS;
-    constructor(public payload: any ) {
-  }
-}
-
-export class MakeOrderFail implements Action {
-  readonly type = MAKE_ORDER_FAIL;
-    constructor() {
-  }
-}
-
-export class StripeSession implements Action {
-  readonly type = STRIPE_SESSION;
-   constructor(public payload: any ) {
-  }
-}
-
-export class StripeSessionSuccess implements Action {
-  readonly type = STRIPE_SESSION_SUCCESS;
-    constructor(public payload: any ) {
-  }
-}
-
-export class StripeSessionError implements Action {
-  readonly type = STRIPE_SESSION_ERROR;
-   constructor(public payload: any ) {
-  }
-}
-
-
-export class LoadProducts implements Action {
-    readonly type = LOAD_PRODUCTS;
-     constructor(public payload: any) {
-    }
-}
-
-export class LoadProductsSuccess implements Action {
-    readonly type = LOAD_PRODUCTS_SUCCESS;
-     constructor(public payload: any) {
-    }
-}
-
-export class LoadCategories implements Action {
-  readonly type = LOAD_CATEGORIES;
-   constructor(public payload: any) {
-  }
-}
-
-export class LoadCategoriesSuccess implements Action {
-  readonly type = LOAD_CATEGORIES_SUCCESS;
-   constructor(public payload: any) {
-  }
-}
-
-
-export class LoadProductsSearch implements Action {
-  readonly type = LOAD_PRODUCTS_SEARCH;
-   constructor(public payload: any) {
-  }
-}
-
-export class LoadProductsSearchSuccess implements Action {
-  readonly type = LOAD_PRODUCTS_SEARCH_SUCCESS;
-   constructor(public payload: any) {
-  }
-}
-
-
-export class GetProduct implements Action {
-    readonly type = GET_PRODUCT;
-     constructor(public payload: any) {
-    }
-}
-
-export class GetProductSuccess implements Action {
-    readonly type = GET_PRODUCT_SUCCESS;
-     constructor(public payload: any) {
-    }
-}
-
-export class GetAllProducts implements Action {
-  readonly type = GET_ALL_PRODUCTS;
-   constructor(public payload: any) {
-  }
-}
-
-export class GetAllProductsSuccess implements Action {
-  readonly type = GET_ALL_PRODUCTS_SUCCESS;
-   constructor(public payload: any) {
-  }
-}
-
-
-export class LoadPaymentFail implements Action {
-    readonly type = LOAD_PAYMENT_FAIL;
-     constructor(public payload: any ) {
-    }
-}
-
-
-export class StoreAction implements Action {
-    readonly type = STORE_ACTION;
-     constructor(public payload: any ) {
-    }
-  }
-
-export class FilterPrice implements Action {
-    readonly type = FILTER_PRICE;
-      constructor(public payload: any ) {
-    }
-}
-
-export class UpdatePosition implements Action {
-  readonly type = UPDATE_POSITION;
-    constructor(public payload: any ) {
-  }
-}
-
-export class LoadOrders implements Action {
-  readonly type = LOAD_ORDERS;
+export class GetOrders implements Action {
+  readonly type = EshopActions.GetOrders;
    constructor() {
   }
 }
 
-export class LoadOrdersSuccess implements Action {
-  readonly type = LOAD_ORDERS_SUCCESS;
+export class GetOrdersSuccess implements Action {
+  readonly type = EshopActions.GetOrdersSuccess;
    constructor(public payload: any) {
   }
 }
 
-export class LoadOrder implements Action {
-  readonly type = LOAD_ORDER;
+export class GetOrder implements Action {
+  readonly type = EshopActions.GetOrder;
    constructor(public payload: any) {
   }
 }
 
-export class LoadOrderSuccess implements Action {
-  readonly type = LOAD_ORDER_SUCCESS;
+export class GetOrderSuccess implements Action {
+  readonly type = EshopActions.GetOrderSuccess;
    constructor(public payload: any) {
   }
 }
 
 export class UpdateOrder implements Action {
-  readonly type = UPDATE_ORDER;
+  readonly type = EshopActions.UpdateOrder;
    constructor(public payload: any) {
   }
 }
 
-export class LoadUserOrders implements Action {
-  readonly type = LOAD_USER_ORDERS;
-   constructor() {
+
+export class AddProduct implements Action {
+  readonly type = EshopActions.AddProduct;
+  constructor(public payload: any ) {
   }
 }
 
-export class LoadUserOrdersSuccess implements Action {
-  readonly type = LOAD_USER_ORDERS_SUCCESS;
-   constructor(public payload: any) {
+export class AddProductSuccess implements Action {
+readonly type = EshopActions.AddProductSuccess;
+constructor(public payload: any ) {
+}
+}
+
+export class EditProduct implements Action {
+  readonly type = EshopActions.EditProduct;
+  constructor(public payload: any ) {
+  }
+}
+
+export class EditProductSuccess implements Action {
+readonly type = EshopActions.EditProductSuccess;
+constructor(public payload: any ) {
+}
+}
+
+export class RemoveProduct implements Action {
+  readonly type = EshopActions.RemoveProduct;
+  constructor(public payload: any ) {
+  }
+}
+
+export class RemoveProductSuccess implements Action {
+  readonly type = EshopActions.RemoveProductSuccess;
+  constructor(public payload: any ) {
+  }
+}
+
+export class GetImages implements Action {
+  readonly type = EshopActions.GetImages;
+  constructor() {
+  }
+}
+
+export class GetImagesSuccess implements Action {
+  readonly type = EshopActions.GetImagesSuccess;
+  constructor(public payload: any ) {
+  }
+}
+
+export class AddProductImage implements Action {
+    readonly type = EshopActions.AddProductImage;
+    constructor(public payload: any ) {
+    }
+}
+
+export class AddProductImagesUrl implements Action {
+  readonly type = EshopActions.AddProductImagesUrl;
+  constructor(public payload: any ) {
+  }
+}
+
+export class RemoveProductImage implements Action {
+  readonly type = EshopActions.RemoveProductImage;
+  constructor(public payload: any ) {
+  }
+}
+
+export class RemoveProductImageSuccess implements Action {
+ readonly type = EshopActions.RemoveProductImageSuccess;
+  constructor(public payload: any ) {
+  }
+}
+
+export class AddProductImagesUrlSuccess implements Action {
+  readonly type = EshopActions.AddProductImagesUrlSuccess;
+  constructor(public payload: any ) {
+  }
+}
+
+export class SetUploader implements Action {
+  readonly type = EshopActions.SetUploader;
+  constructor(public payload: any) {
+  }
+}
+
+export class SetUploaderSuccess implements Action {
+  readonly type = EshopActions.SetUploaderSuccess;
+  constructor(public payload: any) {
+  }
+}
+
+export class SetUploaderError implements Action {
+  readonly type = EshopActions.SetUploaderError;
+  constructor(public payload: any) {
+  }
+}
+
+
+// OTHERS
+
+export class SendContact implements Action {
+  readonly type = EshopActions.SendContact;
+  constructor(public payload: any ) {
+  }
+}
+
+export class SendContactSuccess implements Action {
+  readonly type = EshopActions.SendContactSuccess;
+  constructor(public payload: any ) {
   }
 }
