@@ -68,7 +68,7 @@ export class AppComponent {
       }
     });
 
-    this.store.select(fromRoot.getCart).pipe(take(1))
+    this.store.select(fromRoot.getCart).pipe(filter(() => isPlatformBrowser(this.platformId)), take(1))
       .subscribe(cart => {
       if (!cart) {
         this.store.dispatch(new actions.GetCart());
