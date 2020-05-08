@@ -8,7 +8,8 @@ RUN npm run build:ssr
 
 FROM node:13.0.1-alpine
 WORKDIR /usr/src/app
+RUN chmod -R 775 /usr/src/app
 COPY --from=buildContainer /usr/src/app/package.json /usr/src/app/.env* ./
 COPY --from=buildContainer /usr/src/app/dist ./dist
 
-ENTRYPOINT ["node", "dist/eshop/server/main.js"]
+ENTRYPOINT ["npm", "run", "serve:ssr"]
