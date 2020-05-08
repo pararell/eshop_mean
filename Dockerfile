@@ -9,7 +9,7 @@ RUN npm run build:ssr
 
 FROM node:13.0.1-alpine
 WORKDIR /app
-COPY --from=buildContainer /app/package.json /app/.env /app/
+COPY --from=buildContainer /app/package.json /app/.env* /app/
 COPY --from=buildContainer /app/dist /app/dist
 
 CMD ["npm", "run", "serve:ssr"]
