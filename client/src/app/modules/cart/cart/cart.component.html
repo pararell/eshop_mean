@@ -1,147 +1,183 @@
 <div class="main">
-
-  <mat-progress-bar *ngIf="!(cart$ | async)" mode="indeterminate"></mat-progress-bar>
+  <mat-progress-bar
+    *ngIf="!(cart$ | async)"
+     mode="indeterminate"
+  ></mat-progress-bar>
   <div class="container">
-
-    <ng-container *ngIf="(cart$ | async) as cart">
+    <ng-container *ngIf="cart$ | async as cart">
       <button mat-raised-button color="primary" (click)="goBack()">
-        <i class="material-icons left">arrow_back</i>{{ 'Back' | translate | async }}
+        <i class="material-icons left">arrow_back</i>
+        {{ 'Back' | translate | async }}
       </button>
 
-      <ul class="collection">
+      <ul class="cart-wrap">
         <li class="cart-items" *ngFor="let cartItem of cart?.items">
-          <div class="cart-image">
-            <a routerLink="{{productUrl}}/{{cartItem?.item?.titleUrl}}">
-            <img src="{{cartItem?.item?.mainImage?.url}}">
+          <div class="cart-image-wrap">
+            <a routerLink="{{ productUrl }}/{{ cartItem?.item?.titleUrl }}">
+              <img class="cart-image" src="{{ cartItem?.item?.mainImage?.url }}" />
             </a>
-            <div class="cart-title">
-              {{cartItem?.item.title}}
-            </div>
+            <div class="cart-title">{{ cartItem?.item.title }}</div>
           </div>
+          <div>{{ cartItem.qty }} ks</div>
           <div>
-            {{cartItem.qty}} ks
+            {{ cartItem.price * ((convertVal$ | async) || 1) | priceFormat }}
+            {{ currency$ | async }}
           </div>
-          <div>
-            {{ (cartItem.price * ((convertVal$ | async) || 1)) | priceFormat }} {{ currency$ | async }}
-          </div>
-          <div class="remove-from-cart" (click)="removeFromCart(cartItem?.item?._id)">
+          <div class="cart-remove"
+            (click)="removeFromCart(cartItem?.item?._id)">
             <i class="material-icons cart-icon">remove</i>
           </div>
         </li>
-        <li class="collection-item cart-items">
-          <div class="cart-image">
+        <li class="cart-items">
+          <div class="cart-image-wrap">
             <b>{{ 'Summary' | translate | async }}</b>
           </div>
           <div>
-            <b> {{cart?.totalQty}} ks </b>
+            <b>{{ cart?.totalQty }} ks</b>
           </div>
           <div>
-            <b> {{ (cart?.totalPrice * ((convertVal$ | async) || 1)) | priceFormat }} {{ currency$ | async }} </b>
+            <b>
+              {{ cart?.totalPrice * ((convertVal$ | async) || 1) | priceFormat }}
+              {{ currency$ | async }}
+            </b>
           </div>
-          <div>
-           &nbsp;
-          </div>
+          <div class="cart-item-last-down">&nbsp;</div>
         </li>
       </ul>
 
-    <div class="order-form-wrap z-depth-2" *ngIf="!!cart?.items?.length && !(loading$ | async)">
-        <form [formGroup]="orderForm">
-            <div class="full-input input-field">
+      <div class="order-form-wrap"
+        *ngIf="!!cart?.items?.length && !(loading$ | async)">
+        <mat-horizontal-stepper [linear]="true" #stepper>
+          <mat-step [stepControl]="orderForm">
+            <form [formGroup]="orderForm">
+              <ng-template matStepLabel>Address</ng-template>
               <mat-form-field class="order-field">
-                <mat-label>{{'Firstname' | translate | async }} {{ 'and' | translate | async }} {{ 'Surname' | translate | async }}</mat-label>
-                <input matInput
+                <mat-label>
+                  {{ 'Firstname' | translate | async }}
+                  {{ 'and' | translate | async }}
+                  {{ 'Surname' | translate | async }}
+                </mat-label>
+                <input
+                  matInput
                   formControlName="name"
                   type="text"
-                  name="name">
+                  name="name"/>
               </mat-form-field>
-            </div>
-            <div class="full-input input-field">
               <mat-form-field class="order-field">
                 <mat-label>Email</mat-label>
-                <input matInput
+                <input
+                  matInput
                   formControlName="email"
                   type="email"
-                  name="email">
+                  name="email"/>
               </mat-form-field>
-            </div>
-            <div class="full-input input-field">
               <mat-form-field class="order-field">
                 <mat-label>{{ 'Adress' | translate | async }}</mat-label>
-                <input matInput
+                <input
+                  matInput
                   formControlName="adress"
                   type="text"
-                  name="adress">
+                  name="adress"/>
               </mat-form-field>
-            </div>
-            <div class="full-input input-field">
               <mat-form-field class="order-field">
                 <mat-label>{{ 'City' | translate | async }}</mat-label>
-                <input matInput
+                <input
+                  matInput
                   formControlName="city"
                   type="text"
-                  name="city">
+                  name="city"/>
               </mat-form-field>
-            </div>
-            <div class="full-input input-field">
               <mat-form-field class="order-field">
                 <mat-label>{{ 'ZIP' | translate | async }}</mat-label>
-                <input matInput
-                  formControlName="zip"
-                  type="text"
-                  name="zip">
+                <input matInput formControlName="zip" type="text" name="zip" />
               </mat-form-field>
-            </div>
-            <div class="full-input input-field">
               <mat-form-field class="order-field">
                 <mat-label>{{ 'Country' | translate | async }}</mat-label>
-                <input matInput
+                <input
+                  matInput
                   formControlName="country"
                   type="text"
-                  name="country">
+                  name="country"/>
               </mat-form-field>
-            </div>
-            <div class="textarea-wrapp input-field">
               <mat-form-field class="order-field">
                 <mat-label>Notes</mat-label>
-                <textarea matInput
-                  formControlName="notes"
-                  name="notes">
+                <textarea matInput formControlName="notes" name="notes">
                 </textarea>
               </mat-form-field>
-            </div>
-            <mat-radio-group class="delivery-button" *ngIf="orderForm.valid"
-              [(ngModel)]="toggleCard" [ngModelOptions]="{standalone: true}">
-              <mat-radio-button
-                [value]="true">
-                  {{'Pay' | translate | async}} {{(cart?.totalPrice * ((convertVal$ | async) || 1) | priceFormat)}} {{ currency$ | async }}
+              <div>
+                <button mat-button matStepperNext>
+                  Next
+                </button>
+              </div>
+            </form>
+          </mat-step>
+          <mat-step [stepControl]="toggleCard">
+            <ng-template matStepLabel>Payment</ng-template>
+            <mat-radio-group
+              class="delivery-button"
+              *ngIf="orderForm.valid"
+              [(ngModel)]="toggleCard">
+              <mat-radio-button [value]="true">
+                {{ 'Pay' | translate | async }}
+                {{ cart?.totalPrice * ((convertVal$ | async) || 1) | priceFormat }}
+                {{ currency$ | async }}
               </mat-radio-button>
-              <mat-radio-button
-                [value]="false">
-                {{ 'Payment' | translate | async }} {{ 'on' | translate | async }} {{ 'delivery' | translate | async }}
+              <mat-radio-button [value]="false">
+                {{ 'Payment' | translate | async }}
+                {{ 'on' | translate | async }}
+                {{ 'delivery' | translate | async }}
               </mat-radio-button>
             </mat-radio-group>
-            <app-card *ngIf="toggleCard"
-              [price]="(cart?.totalPrice * ((convertVal$ | async) || 1) | priceFormat)"
+            <div>
+              <button mat-button matStepperPrevious>
+                Back
+              </button>
+              <button mat-button matStepperNext>
+                Next
+              </button>
+            </div>
+          </mat-step>
+          <mat-step>
+            <ng-template matStepLabel>Summary and payment</ng-template>
+            <app-card
+              *ngIf="toggleCard"
+              [price]="cart?.totalPrice * ((convertVal$ | async) || 1) | priceFormat"
               [currency]="currency$ | async"
               (payWithCardEmit)="payWithCard($event)">
             </app-card>
-            <button *ngIf="!toggleCard" mat-raised-button color="primary" type="submit" class="submit-order-button" [disabled]="orderForm.invalid"
-              (click)="submit()"> {{ 'MakeOrder' | translate | async }} </button>
-        </form>
-    </div>
-    <mat-progress-bar *ngIf="(loading$ | async)" mode="indeterminate"></mat-progress-bar>
-
-  </ng-container>
-
-    <ng-container *ngIf="(order$ | async) as order">
-      <div class="pay-success" *ngIf="order.seller_message == 'WITH_PAYMENT'">
-        {{ 'SuccessPayment' | translate | async }}
+            <button
+              *ngIf="!toggleCard"
+              mat-raised-button
+              color="primary"
+              type="submit"
+              class="submit-order-button"
+              [disabled]="orderForm.invalid"
+              (click)="submit()">
+              {{ 'MakeOrder' | translate | async }}
+            </button>
+            <div>
+              <button mat-button matStepperPrevious>
+                Back
+              </button>
+            </div>
+          </mat-step>
+        </mat-horizontal-stepper>
       </div>
-      <div class="pay-success" *ngIf="order.seller_message == 'PAYMENT_ON_DELIVERY'">
-        {{ 'SuccessOrder' | translate | async }}
-      </div>
+      <mat-progress-bar *ngIf="(loading$ | async)"  mode="indeterminate"></mat-progress-bar>
     </ng-container>
 
-  </div>
+    <div class="order-form-wrap" *ngIf="!cart?.items?.length && order$ | async as order">
+      <ng-container *ngIf="order.seller_message">
+        <div class="pay-success" *ngIf="order.seller_message == 'WITH_PAYMENT'">
+          {{ 'SuccessPayment' | translate | async }}
+        </div>
+        <div
+          class="pay-success"
+          *ngIf="order.seller_message == 'PAYMENT_ON_DELIVERY'">
+          {{ 'SuccessOrder' | translate | async }}
+        </div>
+      </ng-container>
+    </div>
 
+  </div>
 </div>

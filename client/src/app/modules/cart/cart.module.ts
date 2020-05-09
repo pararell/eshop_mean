@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatStepperModule } from '@angular/material/stepper';
 
 import { CartComponent } from './cart/cart.component';
 import { SharedModule } from '../../shared/shared.module';
@@ -26,6 +27,7 @@ import { PipeModule } from '../../pipes/pipe.module';
     MatInputModule,
     MatProgressBarModule,
     MatRadioModule,
+    MatStepperModule,
     RouterModule.forChild([
       { path: '', component: CartComponent }
     ]),

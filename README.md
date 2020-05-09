@@ -73,3 +73,16 @@ GOOGLE_CLIENT_SECRET="set for google login activation"
 # Admin emails get notification from sendgrid when order or contact are submitted
 ADMIN_EMAILS="your@email.com, another@mail.com"
 ```
+## Docker
+
+```bash
+# pull docker
+docker pull pararel/eshop-mean:latest
+
+# run docker with env file
+docker run --env-file $PathToEnv --network host pararel/eshop-mean:latest
+
+# run docker with env set in cmd line
+docker run --e MONGO_URI=mongodbUrl --e OTHER_ENV=otherEnvValue --network host pararel/eshop-mean:latest
+
+```
