@@ -164,20 +164,18 @@
         </mat-horizontal-stepper>
       </div>
       <mat-progress-bar *ngIf="(loading$ | async)"  mode="indeterminate"></mat-progress-bar>
+      <div class="order-form-wrap" *ngIf="!cart?.items?.length && order$ | async as order">
+        <ng-container *ngIf="order.seller_message">
+          <div class="pay-success" *ngIf="order.seller_message == 'WITH_PAYMENT'">
+            {{ 'SuccessPayment' | translate | async }}
+          </div>
+          <div
+            class="pay-success"
+            *ngIf="order.seller_message == 'PAYMENT_ON_DELIVERY'">
+            {{ 'SuccessOrder' | translate | async }}
+          </div>
+        </ng-container>
+      </div>
     </ng-container>
-
-    <div class="order-form-wrap" *ngIf="!cart?.items?.length && order$ | async as order">
-      <ng-container *ngIf="order.seller_message">
-        <div class="pay-success" *ngIf="order.seller_message == 'WITH_PAYMENT'">
-          {{ 'SuccessPayment' | translate | async }}
-        </div>
-        <div
-          class="pay-success"
-          *ngIf="order.seller_message == 'PAYMENT_ON_DELIVERY'">
-          {{ 'SuccessOrder' | translate | async }}
-        </div>
-      </ng-container>
-    </div>
-
   </div>
 </div>
