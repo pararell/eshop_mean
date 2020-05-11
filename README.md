@@ -1,9 +1,10 @@
-<p align="center">
- MEAN (server - Nest.js with Mongoose BE, client - Angular, server-ssr- build both)
-</p>
-<p>
-eshop.miroslavsmrtic.sk - dashboard test - email: test@miroslavsmrtic.sk , password: test123456
-</p>
+
+# MEAN (server : Nest.js with Mongoose, client : Angular, server-ssr : Server-side rendering - build both)
+
+
+- eshop.miroslavsmrtic.sk - dashboard test - email: test@miroslavsmrtic.sk , password: test123456
+
+
 ## Description
 - Eshop with products and administration
 - Typescript stack with decorators, use MongoDB and mongoose schemas, JWT Passport
@@ -31,9 +32,13 @@ $ npm run start:dev
 
 # build ssr, watch for changes doesnt work well now
 $ npm run dev:ssr
+
+# build ssr and serve
+$ npm run build:ssr
+$ npm run serve:ssr
 ```
 
-For productions and another commands look to package.json
+For another commands look to package.json
 
 ## SET ENVIROMENT FOR BE - Rename .env.example to .env
 
@@ -84,9 +89,9 @@ FE_TINYMCE_API_KEY="FE_TINYMCE_API_KEY"
 docker pull pararel/eshop-mean:latest
 
 # run docker with env file
-docker run --env-file $PathToEnv --network host pararel/eshop-mean:latest
+docker run --env-file $PathToEnv --network=host pararel/eshop-mean:latest
 
 # run docker with env set in cmd line
-docker run --e MONGO_URI=mongodbUrl --e OTHER_ENV=otherEnvValue --network host pararel/eshop-mean:latest
+docker run --e MONGO_URI=mongodbUrl --e OTHER_ENV=otherEnvValue --network=host pararel/eshop-mean:latest
 
 ```
