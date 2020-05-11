@@ -2,9 +2,9 @@ import { TranslateService } from '../../../services/translate.service';
 import { Component } from '@angular/core';
 
 import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
 
 import * as fromRoot from '../../../store/reducers';
-import { Store } from '@ngrx/store';
 import * as actions from '../../../store/actions'
 
 @Component({

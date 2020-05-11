@@ -1,9 +1,10 @@
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Component } from '@angular/core';
+import { Store } from '@ngrx/store';
 
 import * as actions from '../../../store/actions'
 import * as fromRoot from '../../../store/reducers';
-import { Store } from '@ngrx/store';
+
 
 @Component({
   selector: 'app-contact',
@@ -22,7 +23,8 @@ export class ContactComponent  {
       notes: ['', Validators.required ]
     });
    }
-   submit() {
+
+   submit(): void {
     this.store.dispatch(new actions.SendContact(this.contactForm.value));
     this.contactForm.reset();
   }

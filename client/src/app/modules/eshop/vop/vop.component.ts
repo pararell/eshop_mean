@@ -1,5 +1,6 @@
 import { Location } from '@angular/common';
 import { Component } from '@angular/core';
+
 import { TranslateService } from '../../../services/translate.service';
 
 @Component({
@@ -18,7 +19,7 @@ export class VopComponent {
       });
   }
 
-  goBack() {
+  goBack(): void {
     this.location.back();
   }
 

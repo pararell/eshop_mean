@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-
-import * as fromRoot from '../../../store/reducers';
-import * as actions from '../../../store/actions'
 import { Observable } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
-import { Product } from 'src/app/shared/models';
+
+import { Product } from '../../../shared/models';
+import * as fromRoot from '../../../store/reducers';
+import * as actions from '../../../store/actions'
 
 @Component({
   selector: 'app-all-products',

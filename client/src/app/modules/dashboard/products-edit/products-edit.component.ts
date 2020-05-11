@@ -9,6 +9,7 @@ import * as fromRoot from '../../../store/reducers';
 import * as actions from '../../../store/actions'
 import { ApiService } from '../../../services/api.service';
 import { languages } from '../../../shared/constants';
+import { Product } from 'src/app/shared/models';
 
 @Component({
   selector: 'app-products-edit',
@@ -23,7 +24,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
   images$: Observable<string[]>;
   sendRequest = false;
   descriptionFullSub$: BehaviorSubject<{ [x: string]: string }> = new BehaviorSubject({ sk: '', en: '', cs: '' });
-  product$: Observable<any>;
+  product$: Observable<Product>;
   productSub: Subscription;
   languageOptions = languages;
   choosenLanguageSub$ = new BehaviorSubject('en');
@@ -182,14 +183,14 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
       this.store.dispatch(new actions.GetProduct(titleUrl));
 
       this.productSub = this.product$.pipe(
-        filter(product => product && product.titleUrl && !product.toBeShow))
+        filter(product => !!product && !!product.titleUrl))
         .subscribe((product) => {
 
           const newForm = {
             titleUrl: product.titleUrl,
             mainImage: (product.mainImage && product.mainImage.url) ? product.mainImage.url : '',
             images: product.images,
-            imageUrl: product.imageUrl || '',
+            imageUrl: '',
             ...this.prepareLangEditForm(product)
           };
 

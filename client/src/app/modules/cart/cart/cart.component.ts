@@ -64,17 +64,17 @@ export class CartComponent {
     this.currency$ = this.store.select(fromRoot.getCurrency);
   }
 
-  goBack() {
+  goBack(): void {
     this.location.back();
   }
 
-  removeFromCart(id) {
+  removeFromCart(id: string): void {
     this.lang$.pipe(take(1)).subscribe(lang => {
       this.store.dispatch(new actions.RemoveFromCart('?id=' + id + '&lang=' + lang));
     });
   }
 
-  payWithCard(payment) {
+  payWithCard(payment): void {
     this.user$.pipe(take(1)).subscribe((user: User) => {
       const userToOrder = user ? {userId: user.id} : {};
       const addresses = [{
@@ -90,7 +90,7 @@ export class CartComponent {
     })
   }
 
-  submit() {
+  submit(): void {
     this.user$.pipe(take(1)).subscribe((user: User) => {
       const userToOrder = user ? {userId: user.id} : {};
       const addresses = [{

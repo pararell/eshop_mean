@@ -1,6 +1,7 @@
 import { Location } from '@angular/common';
-import { TranslateService } from '../../../services/translate.service';
 import { Component } from '@angular/core';
+
+import { TranslateService } from '../../../services/translate.service';
 
 @Component({
   selector: 'app-about',
@@ -18,7 +19,7 @@ export class AboutComponent {
       });
   }
 
-  goBack() {
+  goBack(): void {
     this.location.back();
   }
 

@@ -2,13 +2,12 @@ import { take } from 'rxjs/operators';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { Component, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
-
 import { Observable, BehaviorSubject, Subscription } from 'rxjs';
 
 import * as fromRoot from '../../../store/reducers';
 import * as actions from '../../../store/actions'
 import { languages } from '../../../shared/constants';
-import { Translations } from 'src/app/shared/models';
+import { Translations } from '../../../shared/models';
 
 @Component({
   selector: 'app-translations-edit',

@@ -1,14 +1,12 @@
-
 <div class="main">
-    <div class="container">
-
-      <button (click)="goBack()" mat-raised-button color="primary">
-        <i class="material-icons left">arrow_back</i>{{ 'Back' | translate | async }}
-      </button>
-
-    <div>
-      About Us
-    </div>
-
+  <div class="container">
+    <button
+      (click)="goBack()"
+      mat-raised-button
+      color="primary">
+      <i class="material-icons left">arrow_back</i>
+      {{ 'Back' | translate | async }}
+    </button>
+    <div>About Us</div>
   </div>
 </div>

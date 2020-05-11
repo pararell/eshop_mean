@@ -4,9 +4,9 @@ import { ActivatedRoute } from '@angular/router';
 import { Component } from '@angular/core';
 import { Location } from '@angular/common';
 import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
 
 import * as fromRoot from '../../../../store/reducers';
-import { Store } from '@ngrx/store';
 import * as actions from './../../../../store/actions'
 import { TranslateService } from '../../../../services/translate.service';
 

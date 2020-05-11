@@ -20,7 +20,7 @@ export class DashboardComponent  {
       });
   }
 
-  changeAction(action: string) {
+  changeAction(action: string): void {
     this.productAction = this.productAction === action ? '' : action;
   }
 
