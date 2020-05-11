@@ -30,6 +30,7 @@ import { FooterComponent } from './components/footer/footer.component';
 import { routesAll } from './app.routes';
 import { environment } from '../environments/environment';
 import { TranslateService } from './services/translate.service';
+import { EnvConfigurationService } from './services/env-configuration.service';
 
 
 export function setupTranslateFactory(
@@ -74,6 +75,12 @@ const routes: Routes = routesAll;
       provide: APP_INITIALIZER,
       useFactory: setupTranslateFactory,
       deps: [ TranslateService ],
+      multi: true
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (envConfigService: EnvConfigurationService) => () => envConfigService.load().toPromise(),
+      deps: [EnvConfigurationService],
       multi: true
     }
   ]

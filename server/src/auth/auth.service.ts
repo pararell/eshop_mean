@@ -42,7 +42,7 @@ export class AuthService {
 
   async signIn(
     authCredentialsDto: AuthCredentialDto,
-  ): Promise<{ accessToken: string; id:  string; email: string }> {
+  ): Promise<{ accessToken: string; id: string; email: string; roles?: string[] }> {
     const { email, password } = authCredentialsDto;
     const user = await this.userModel.findOne({email});
     const loggedUser = user && (await this.validatePassword(password, user));
@@ -54,7 +54,7 @@ export class AuthService {
     const payload: JwtPayload = { email };
     const accessToken = await this.jwtService.sign(payload);
 
-    return { accessToken, id: user._id, email };
+    return { accessToken, id: user._id, roles: user.roles, email };
   }
 
   async signInGoogle(googleUserDto: GoogleUserDto) {
@@ -75,7 +75,6 @@ export class AuthService {
 
   async getGoogleUser(email: string, profile: any) {
     const user = this.userModel.findOne({ email });
-
     const googleUser = user || await new this.userModel({email, googleId: profile.id});
 
     return googleUser;

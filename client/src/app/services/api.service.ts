@@ -36,6 +36,11 @@ export class ApiService {
     }
   }
 
+  getConfig() {
+    const configUrl = this.apiUrl + '/api/eshop/config';
+    return this.http.get(configUrl);
+  }
+
   getUser() {
     const userUrl = this.apiUrl + '/api/auth';
     return this.http.get(userUrl);

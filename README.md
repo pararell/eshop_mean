@@ -72,6 +72,10 @@ GOOGLE_CLIENT_SECRET="set for google login activation"
 
 # Admin emails get notification from sendgrid when order or contact are submitted
 ADMIN_EMAILS="your@email.com, another@mail.com"
+
+# FE ENV SEND FROM BE
+FE_STRIPE_PUBLISHABLE_KEY="FE_STRIPE_PUBLISHABLE_KEY"
+FE_TINYMCE_API_KEY="FE_TINYMCE_API_KEY"
 ```
 ## Docker
 

@@ -3,7 +3,8 @@ declare const Stripe: any;
 import { Component, Input, EventEmitter, Inject, PLATFORM_ID, ViewChild, ElementRef, OnInit, Output  } from '@angular/core';
 import { isPlatformServer, DOCUMENT } from '@angular/common';
 
-import { keys } from './../../../config/keys';
+import { EnvConfigurationService } from '../../services/env-configuration.service';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-card',
@@ -26,8 +27,8 @@ export class CardComponent implements OnInit {
   loading = false;
   confirmation;
 
-
   constructor(
+    private envConfigurationService: EnvConfigurationService,
     @Inject(DOCUMENT)
     private _document   : Document,
     @Inject(PLATFORM_ID)
@@ -68,15 +69,19 @@ export class CardComponent implements OnInit {
   }
 
   private _setHandler() {
-    this.stripe = Stripe(keys.stripePublishableKey);
-    const elements = this.stripe.elements();
+    this.envConfigurationService.getConfigType$('FE_STRIPE_PUBLISHABLE_KEY').pipe(take(1))
+      .subscribe(stripePublishableKey => {
+        this.stripe = Stripe(stripePublishableKey);
+        const elements = this.stripe.elements();
 
-    this.card = elements.create('card');
-    this.card.mount(this.cardElement.nativeElement);
+        this.card = elements.create('card');
+        this.card.mount(this.cardElement.nativeElement);
 
-    this.card.addEventListener('change', ({ error }) => {
-        this.cardErrors = error && error.message;
-    });
+        this.card.addEventListener('change', ({ error }) => {
+            this.cardErrors = error && error.message;
+        });
+      })
+
   }
 
 

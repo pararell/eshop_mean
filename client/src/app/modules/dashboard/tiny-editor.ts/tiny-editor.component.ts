@@ -1,4 +1,7 @@
 import { Component, Output, Input, EventEmitter } from '@angular/core';
+import { Observable } from 'rxjs';
+
+import { EnvConfigurationService } from '../../../services/env-configuration.service';
 
 @Component({
   selector: 'app-tiny-editor',
@@ -6,13 +9,16 @@ import { Component, Output, Input, EventEmitter } from '@angular/core';
   styleUrls: ['./tiny-editor.component.scss']
 })
 export class TinyEditorComponent {
+  editorApiKey$: Observable<string>;
 
   @Input() description = '';
   @Output() onEditorContentChange = new EventEmitter();
 
-  constructor() { }
+  constructor(envConfigurationService: EnvConfigurationService) {
+    this.editorApiKey$ = envConfigurationService.getConfigType$('FE_TINYMCE_API_KEY');
+  }
 
-  onEditorChange(value) {
+  onEditorChange(value): void {
     this.onEditorContentChange.emit(value);
   }
 
