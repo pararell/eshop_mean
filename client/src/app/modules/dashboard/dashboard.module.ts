@@ -11,6 +11,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
+import { MatChipsModule } from '@angular/material/chips';
 
 import { ProductsEditComponent } from './products-edit/products-edit.component';
 import { OrdersEditComponent } from './orders-edit/orders-edit.component';
@@ -22,6 +23,7 @@ import { TinyEditorComponent } from './tiny-editor.ts/tiny-editor.component';
 import { PipeModule } from '../../pipes/pipe.module';
 import { TranslationsEditComponent } from './translations-edit/translations-edit.component';
 import { AllProductsComponent } from './all-products/all-products.component';
+
 
 const DASHBOARD_ROUTER: Routes = [
   {
@@ -58,7 +60,8 @@ const DASHBOARD_ROUTER: Routes = [
     MatProgressBarModule,
     MatTabsModule,
     MatRadioModule,
-    MatSelectModule
+    MatSelectModule,
+    MatChipsModule
   ],
   declarations: [ProductsEditComponent, OrdersEditComponent, OrderEditComponent, AllProductsComponent, DashboardComponent, TinyEditorComponent, TranslationsEditComponent]
 })

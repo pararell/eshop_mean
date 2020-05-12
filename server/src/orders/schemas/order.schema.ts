@@ -6,16 +6,16 @@ const OrderSchema = new Schema({
     cardId                  : String,
     amount                  : Number,
     amount_refunded         : Number,
-    description             : String,
-    customerEmail           : String,
-    status                  : String,
     currency                : String,
+    status                  : String,
+    notes                   : String,
+    type                    : String,
+    customerEmail           : String,
     cart                    : {},
-    outcome                 : {},
-    source                  : {},
+    outcome                 : { seller_message: String },
     addresses               : [],
+    dateAdded               : { type: Date, default: Date.now },
     _user                   : { type: Schema.Types.ObjectId, ref: 'user' },
-    dateAdded               : { type: Date, default: Date.now }
 });
 
 export default OrderSchema;

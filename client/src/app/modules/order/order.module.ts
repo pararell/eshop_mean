@@ -9,15 +9,14 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { OrdersComponent } from './orders.component';
-import { OrderDetailComponent } from './order-detail/order-detail.component';
-
+import { OrderComponent } from './order/order.component';
 import { SharedModule } from '../../shared/shared.module';
 import { PipeModule } from '../../pipes/pipe.module';
 
 @NgModule({
   declarations: [
     OrdersComponent,
-    OrderDetailComponent
+    OrderComponent
   ],
   imports: [
     CommonModule,
@@ -29,7 +28,7 @@ import { PipeModule } from '../../pipes/pipe.module';
     MatChipsModule,
     MatProgressBarModule,
     RouterModule.forChild([
-      { path: ':id', component: OrderDetailComponent },
+      { path: ':id', component: OrderComponent },
       { path: '', component: OrdersComponent }
     ]),
   ],

@@ -17,21 +17,12 @@
   }
 
   .card-button {
-    padding: 10px;
-    background-color: $secondary-color;
-    user-select: none;
-    cursor: pointer;
-    outline: none;
-    border: none;
-    -webkit-tap-highlight-color: transparent;
-    display: inline-block;
-    white-space: nowrap;
-    text-decoration: none;
-    vertical-align: baseline;
-    text-align: center;
     margin: 10px 0;
-    color: #fff;
     width: 100%;
+  }
+
+  .card-errors {
+    color: #fa755a;
   }
 
   .StripeElement--focus {

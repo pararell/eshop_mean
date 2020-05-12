@@ -9,7 +9,7 @@ import * as fromRoot from '../../../store/reducers';
 import * as actions from '../../../store/actions'
 import { ApiService } from '../../../services/api.service';
 import { languages } from '../../../shared/constants';
-import { Product } from 'src/app/shared/models';
+import { Product } from '../../../shared/models';
 
 @Component({
   selector: 'app-products-edit',

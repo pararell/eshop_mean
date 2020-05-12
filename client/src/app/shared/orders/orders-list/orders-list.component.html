@@ -1,0 +1,29 @@
+<div class="main">
+  <div class="container">
+    <mat-progress-bar *ngIf="!orders" mode="indeterminate"></mat-progress-bar>
+    <div class="orders-edit-wrapper" *ngIf="orders">
+      <div class="card scale-transition"
+        *ngFor="let order of orders">
+        <div class="card-action">
+          <p>Status: {{ order?.status }}</p>
+          <div class="action-wrap">
+            <button
+              mat-raised-button
+              color="primary"
+              routerLink="{{orderUrl}}{{order?.orderId}}">
+              Detail
+            </button>
+          </div>
+          <br/>
+          <div class="price-card">Amount: {{ order?.amount }} {{ order?.currency }}</div>
+          <br/>
+          <p>Type: {{ order?.type }}</p>
+          <p>Customer: {{ order?.customerEmail }}</p>
+          <p>Created: {{ order.dateAdded | date:'dd-MM-yy' }}</p>
+          <p>Paid: {{ order?.outcome?.seller_message }}</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

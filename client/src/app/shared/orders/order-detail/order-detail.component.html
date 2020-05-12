@@ -1,0 +1,95 @@
+<div class="main">
+  <div class="container">
+    <button
+      (click)="goBack()"
+      mat-raised-button
+      color="primary">
+      <i class="material-icons left">arrow_back</i>
+      {{ 'Back' | translate | async }}
+    </button>
+    <mat-progress-bar
+      mode="indeterminate"
+      *ngIf="!(order$ | async)"></mat-progress-bar>
+
+    <ng-container *ngIf="(order$ | async) as order">
+      <mat-card class="card">
+        <mat-card-content class="order-top-content">
+          <div>
+            <h4>{{ order?.orderId }}</h4>
+            <div class="product-info">
+              <div class="stock">
+                Status: {{ order?.status }}
+                <div class="order-edit-toggle"
+                  *ngIf="type === 'EDIT'"
+                  (click)="toggleForm()">
+                  EDIT
+                </div>
+              </div>
+              <div class="price">
+                Amount: {{ order?.amount }} {{ order.currency }}
+              </div>
+            </div>
+            <div *ngIf="showForm">
+              <form class="order-form" [formGroup]="statusForm">
+                <mat-select
+                  aria-label="Status"
+                  formControlName="status">
+                  <mat-option
+                    *ngFor="let option of statusOptions | keyvalue;"
+                    [value]="option.value">
+                    {{ option.value }}
+                  </mat-option>
+                </mat-select>
+                <button
+                  type="submit"
+                  mat-raised-button
+                  color="primary"
+                  [disabled]="statusForm.invalid"
+                  (click)="submit()">
+                  OK
+                </button>
+              </form>
+            </div>
+              <mat-chip-list class="order-tags">
+                <mat-chip>Customer: {{ order?.customerEmail }}</mat-chip>
+              </mat-chip-list>
+          </div>
+          <div>
+            <p *ngIf="order?.description">Desc: {{ order?.description }}</p>
+            <p>Customer: {{ order?.customerEmail }}</p>
+            <p>Created: {{ order.dateAdded | date:'dd-MM-yy' }}</p>
+            <p>Paid: {{ order?.outcome?.seller_message }}</p>
+            <p>Total Price: {{ order?.cart?.totalPrice }}</p>
+            <p>Total Quantity: {{ order?.cart?.totalQty }}</p>
+          </div>
+        </mat-card-content>
+        <mat-card-content class="order-content">
+          <div *ngIf="order.addresses[0] as address">
+            <h4>Customer data</h4>
+            <p>CITY: {{ address.city }}</p>
+            <p>COUNTRY: {{ address.country }}</p>
+            <p>ADRESS: {{ address.line1 }}</p>
+            <p>ZIP: {{ address.zip }}</p>
+            <p *ngIf="address.name">Customer Name : {{ address.name }}</p>
+            <br/>
+          </div>
+          <div>
+            <h4 class="order-cart-title">Cart</h4>
+            <div *ngFor="let cartItem of order?.cart?.items">
+              <div class="order-cart">
+                <a routerLink="/{{translate.lang}}/product/{{cartItem?.item?.titleUrl}}">
+                  <img class="order-cart-img"
+                    src="{{cartItem?.item?.mainImage?.url}}">
+                </a>
+                <div class="order-cart-text">
+                  <span>{{cartItem.qty}} ks </span> {{cartItem?.item.title}}  <br/>
+                  <span>{{cartItem.price}} {{ order.currency }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </ng-container>
+  </div>
+</div>

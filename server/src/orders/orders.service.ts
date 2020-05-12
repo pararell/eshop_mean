@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import Stripe from 'stripe';
 
-import { Order } from './models/order.model';
+import { Order, OrderStatus } from './models/order.model';
 import { User } from '../auth/models/user.model';
 import { OrderDto } from './dto/order.dto';
 import Mailer from '../shared/utils/mailer';
@@ -64,16 +64,19 @@ export class OrdersService {
         try {
           const newOrder = await new this.orderModel(this.createOrder(requestOrder, cart, 'WITH_PAYMENT'));
           const capturePayment = await stripe.charges.capture(charge.id);
-          this.sendmail(newOrder.customerEmail, newOrder, cart);
+          if (capturePayment) {
+            newOrder.save();
+            this.sendmail(newOrder.customerEmail, newOrder, cart);
 
-          if (process.env.ADMIN_EMAILS) {
-            process.env.ADMIN_EMAILS
-              .split(',')
-              .filter(Boolean)
-              .forEach(email => {
-                this.sendmail(email, newOrder, cart);
-              });
-          }
+            if (process.env.ADMIN_EMAILS) {
+              process.env.ADMIN_EMAILS
+                .split(',')
+                .filter(Boolean)
+                .forEach(email => {
+                  this.sendmail(email, newOrder, cart);
+                });
+            }
+        }
           return { error: '', result: newOrder };
         } catch {
           return { error: 'ORDER_CREATION_FAIL', result: null };
@@ -96,33 +99,24 @@ export class OrdersService {
 
 
   private createOrder = (orderDto: OrderDto, cart: Cart, type: string) => {
-    const { addresses, currency, email, userId, cardId } = orderDto;
+    const { addresses, currency, email, userId, cardId, notes } = orderDto;
     const orderId = 'order' + new Date().getTime() + 't' + Math.floor(Math.random() * 1000 + 1);
     const date = Date.now();
-    const deliveryAdress = addresses[0];
-    const addUser = userId ? {_user: userId} : {};
-    const addCard = cardId ? {cardId} : {};
+    const addUser = userId ? { _user: userId } : {};
+    const addCard = cardId ? { cardId } : {};
 
     return {
         orderId,
-        amount          : cart.totalPrice,
+        amount : cart.totalPrice,
         currency,
-        dateAdded       : date,
+        dateAdded : date,
         cart,
-        status          : 'NEW',
-        description     : type,
-        customerEmail   : email,
-        outcome         : {
+        status : type === 'WITH_PAYMENT' ? OrderStatus.PAID : OrderStatus.NEW,
+        type,
+        notes,
+        customerEmail : email,
+        outcome : {
             seller_message: type
-        },
-        source          : {
-            name                : deliveryAdress.name,
-            address_city        : deliveryAdress.city,
-            address_country     : deliveryAdress.country,
-            address_line1       : deliveryAdress.line1,
-            address_line2       : deliveryAdress.line2,
-            address_zip         : deliveryAdress.zip,
-            object              : 'deliver'
         },
         addresses,
         ...addUser,

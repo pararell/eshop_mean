@@ -1,8 +1,9 @@
 import { filter, take } from 'rxjs/operators';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { ApiService } from './api.service';
 import { Injectable, Injector } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
+
+import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root'

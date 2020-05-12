@@ -23,7 +23,7 @@ export interface Product {
   mainImage           : { url: string; name: string }
   images              : string[];
   _user?              : any;
-  dateAdded?          : Date;
+  dateAdded?          : any;
 }
 
 export interface Cart {
@@ -55,4 +55,42 @@ export interface User {
   id?         : string;
   roles?      : string[];
   accessToken?: string;
+}
+
+export interface Address {
+  name: string;
+  line1: string;
+  line2: string;
+  city: string;
+  zip: string;
+  country: string;
+  region?: string;
+}
+
+export enum OrderStatus {
+  NEW = 'NEW',
+  PAID = 'PAID',
+  SHIPPING = 'SHIPPING',
+  COMPLETED = 'COMPLETED',
+  CANCELED = 'CANCELED',
+}
+
+export interface Order {
+  _id?: string;
+  orderId: string;
+  addresses: Address[]
+  amount: number;
+  amount_refunded: number;
+  currency: string;
+  cart: Cart;
+  cardId?: string;
+  customerEmail: string;
+  dateAdded: any;
+  type: string;
+  description?: string;
+  notes? : string;
+  outcome?: {seller_message: string; }
+  status: OrderStatus;
+  __v?: number;
+  _user?: string;
 }

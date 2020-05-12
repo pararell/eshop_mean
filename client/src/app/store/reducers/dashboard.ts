@@ -1,11 +1,11 @@
 
 import { EshopActions } from '../../store/actions';
-import { Product, Translations } from 'src/app/shared/models';
+import { Product, Translations, Order } from '../../shared/models';
 
 
 export interface State {
-  orders: null;
-  order: any;
+  orders: Order[];
+  order: Order;
   productImages: Array<string>;
   translations: Array<Translations>;
   allProducts: Array<Product>;
@@ -25,18 +25,20 @@ export function dashboardReducer(state = initialState, action): State {
   switch (action.type) {
 
     case EshopActions.GetOrdersSuccess: {
-      return { ...state, orders: action.payload } }
+      return { ...state, orders: action.payload }
+    }
 
-    case EshopActions.GetOrdersSuccess: {
-      return { ...state, order: action.payload }}
+    case EshopActions.GetOrderSuccess: {
+      return { ...state, order: action.payload }
+    }
 
     case EshopActions.GetImagesSuccess: {
       return { ...state, productImages: action.payload.all }
     }
 
     case EshopActions.AddProductImage: {
-        return { ...state, productImages: action.payload.all }
-      }
+      return { ...state, productImages: action.payload.all }
+    }
 
     case EshopActions.AddProductImagesUrlSuccess: {
       return { ...state, productImages: action.payload.all };
@@ -47,16 +49,17 @@ export function dashboardReducer(state = initialState, action): State {
     }
 
     case EshopActions.GetAllTranslationsSuccess: {
-      return { ...state, translations: action.payload } }
+      return { ...state, translations: action.payload }
+    }
 
     case EshopActions.GetAllProductsSuccess: {
-      return { ...state, allProducts: action.payload } }
+      return { ...state, allProducts: action.payload }
+    }
 
     case EshopActions.EditTranslationSuccess: {
       return { ...state, translations: state.translations
           .map(trans => trans._id === action.payload._id ? action.payload : trans)}
-        }
-
+    }
 
     default: {
       return state;

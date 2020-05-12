@@ -105,22 +105,23 @@
                 </textarea>
               </mat-form-field>
               <div>
-                <button mat-button matStepperNext>
+                <button class="cart-navigation-button" mat-stroked-button matStepperNext>
                   Next
                 </button>
               </div>
             </form>
           </mat-step>
           <mat-step [stepControl]="toggleCard">
-            <ng-template matStepLabel>Payment</ng-template>
+            <ng-template matStepLabel>Payment method</ng-template>
             <mat-radio-group
               class="delivery-button"
               *ngIf="orderForm.valid"
               [(ngModel)]="toggleCard">
               <mat-radio-button [value]="true">
                 {{ 'Pay' | translate | async }}
-                {{ cart?.totalPrice * ((convertVal$ | async) || 1) | priceFormat }}
+               <b> {{ cart?.totalPrice * ((convertVal$ | async) || 1) | priceFormat }}
                 {{ currency$ | async }}
+              </b>
               </mat-radio-button>
               <mat-radio-button [value]="false">
                 {{ 'Payment' | translate | async }}
@@ -129,11 +130,11 @@
               </mat-radio-button>
             </mat-radio-group>
             <div>
-              <button mat-button matStepperPrevious>
-                Back
-              </button>
-              <button mat-button matStepperNext>
+              <button class="cart-navigation-button" mat-stroked-button matStepperNext>
                 Next
+              </button>
+              <button class="cart-navigation-button" mat-stroked-button matStepperPrevious>
+                Back
               </button>
             </div>
           </mat-step>
@@ -143,20 +144,22 @@
               *ngIf="toggleCard"
               [price]="cart?.totalPrice * ((convertVal$ | async) || 1) | priceFormat"
               [currency]="currency$ | async"
+              [loading]="loading$ | async"
+              (scrollToTop)="scrollToTop()"
               (payWithCardEmit)="payWithCard($event)">
             </app-card>
             <button
-              *ngIf="!toggleCard"
+              *ngIf="!toggleCard && (currency$ | async) as currency"
               mat-raised-button
               color="primary"
               type="submit"
               class="submit-order-button"
               [disabled]="orderForm.invalid"
-              (click)="submit()">
+              (click)="submit(currency)">
               {{ 'MakeOrder' | translate | async }}
             </button>
             <div>
-              <button mat-button matStepperPrevious>
+              <button class="cart-navigation-button" mat-stroked-button matStepperPrevious>
                 Back
               </button>
             </div>
@@ -165,13 +168,13 @@
       </div>
       <mat-progress-bar *ngIf="(loading$ | async)"  mode="indeterminate"></mat-progress-bar>
       <div class="order-form-wrap" *ngIf="!cart?.items?.length && order$ | async as order">
-        <ng-container *ngIf="order.seller_message">
-          <div class="pay-success" *ngIf="order.seller_message == 'WITH_PAYMENT'">
+        <ng-container *ngIf="order.outcome.seller_message">
+          <div class="pay-success" *ngIf="order.outcome.seller_message == 'WITH_PAYMENT'">
             {{ 'SuccessPayment' | translate | async }}
           </div>
           <div
             class="pay-success"
-            *ngIf="order.seller_message == 'PAYMENT_ON_DELIVERY'">
+            *ngIf="order.outcome.seller_message == 'PAYMENT_ON_DELIVERY'">
             {{ 'SuccessOrder' | translate | async }}
           </div>
         </ng-container>

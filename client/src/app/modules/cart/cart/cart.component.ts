@@ -8,7 +8,7 @@ import { Store } from '@ngrx/store';
 import { TranslateService } from '../../../services/translate.service';
 import * as actions from '../../../store/actions';
 import * as fromRoot from '../../../store/reducers';
-import { Cart, User } from '../../../shared/models';
+import { Cart, User, Order } from '../../../shared/models';
 
 @Component({
   selector: 'app-cart',
@@ -18,7 +18,7 @@ import { Cart, User } from '../../../shared/models';
 export class CartComponent {
   cart$       : Observable<Cart>;
   lang$       : Observable<string>;
-  order$      : Observable<any>;
+  order$      : Observable<Order>;
   user$       : Observable<User>;
   orderForm   : FormGroup;
   convertVal$ : Observable<number>;
@@ -28,9 +28,11 @@ export class CartComponent {
   loading$    : Observable<boolean>;
   error$      : Observable<string>;
 
+  readonly component = 'cartComponent';
+
   constructor(
     private store: Store<fromRoot.State>,
-    private _fb: FormBuilder,
+    private fb: FormBuilder,
     private location: Location,
     private translate: TranslateService) {
 
@@ -41,16 +43,11 @@ export class CartComponent {
     });
 
     this.lang$ = this.store.select(fromRoot.getLang).pipe(filter((lang: string) => !!lang));
-
     this.cart$ = this.store.select(fromRoot.getCart);
-    this.order$ = this.store.select(fromRoot.getOrder).pipe(
-      filter(Boolean),
-      map((order: any) => order.outcome)
-    );
-
+    this.order$ = this.store.select(fromRoot.getOrder).pipe(filter(order => !!order));
     this.user$ = this.store.select(fromRoot.getUser);
 
-    this.orderForm = this._fb.group({
+    this.orderForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', Validators.required],
       adress: ['', Validators.required],
@@ -76,7 +73,7 @@ export class CartComponent {
 
   payWithCard(payment): void {
     this.user$.pipe(take(1)).subscribe((user: User) => {
-      const userToOrder = user ? {userId: user.id} : {};
+      const userToOrder = user ? { userId: user.id } : {};
       const addresses = [{
         name                : this.orderForm.value.name,
         address_city        : this.orderForm.value.city,
@@ -90,21 +87,26 @@ export class CartComponent {
     })
   }
 
-  submit(): void {
+  scrollToTop(): void {
+    this.store.dispatch(new actions.UpdatePosition({cartComponent: 0}));
+  }
+
+  submit(currency: string): void {
     this.user$.pipe(take(1)).subscribe((user: User) => {
-      const userToOrder = user ? {userId: user.id} : {};
+      const userToOrder = user ? { userId: user.id } : {};
       const addresses = [{
-        name                : this.orderForm.value.name,
-        address_city        : this.orderForm.value.city,
-        address_country     : this.orderForm.value.country,
-        address_line1       : this.orderForm.value.adress,
-        address_line2       : '',
-        address_zip         : this.orderForm.value.zip,
+        name        : this.orderForm.value.name,
+        city        : this.orderForm.value.city,
+        country     : this.orderForm.value.country,
+        line1       : this.orderForm.value.adress,
+        line2       : '',
+        zip         : this.orderForm.value.zip,
       }];
 
-      const orderRequest = {...this.orderForm.value, ...userToOrder, addresses};
+      const orderRequest = {...this.orderForm.value, ...userToOrder, currency, addresses};
       this.store.dispatch(new actions.MakeOrder(orderRequest));
       this.toggleCard = false;
+      this.scrollToTop();
     })
 
   }

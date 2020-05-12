@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 
 import { TranslateService } from '../../services/translate.service';
 import * as fromRoot from '../../store/reducers';
+import { Order } from '../../shared/models';
 
 @Component({
   selector: 'app-orders',
@@ -13,14 +14,12 @@ import * as fromRoot from '../../store/reducers';
 })
 export class OrdersComponent {
 
-  orders$   : Observable<any>;
-  ordersUrl : string;
+  orders$   : Observable<Order[]>;
+  orderUrl : string;
 
   constructor(private store: Store<fromRoot.State>, private translate: TranslateService) {
-    this.store.select(fromRoot.getLang)
-    .pipe(filter(Boolean))
-    .subscribe(lang => {
-      this.ordersUrl = `/${lang}/${translate.data['orders']}`;
+    this.translate.translationsSub$.pipe(filter(Boolean)).subscribe(translations => {
+      this.orderUrl = `/${this.translate.lang}/${translations['orders']}/`;
     });
 
     this.orders$ = this.store.select(fromRoot.getUserOrders);

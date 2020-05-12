@@ -9,6 +9,9 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatListModule } from '@angular/material/list';
 
 import { PipeModule } from '../pipes/pipe.module';
 import { LazyModule } from '../utils/lazyLoadImg/lazy.module';
@@ -18,7 +21,8 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { ProductsListComponent } from './products-list/products-list.component';
 import { PaginationComponent } from './pagination/pagination.component';
 import { ImagesDialogComponent } from './images-dialog/images-dialog.component';
-
+import { OrdersListComponent } from './orders/orders-list/orders-list.component';
+import { OrderDetailComponent } from './orders/order-detail/order-detail.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +31,9 @@ import { ImagesDialogComponent } from './images-dialog/images-dialog.component';
     SidebarComponent,
     ProductsListComponent,
     PaginationComponent,
-    ImagesDialogComponent
+    ImagesDialogComponent,
+    OrdersListComponent,
+    OrderDetailComponent
   ],
   imports: [
     ReactiveFormsModule,
@@ -41,7 +47,10 @@ import { ImagesDialogComponent } from './images-dialog/images-dialog.component';
     MatDialogModule,
     MatSelectModule,
     MatSliderModule,
-    MatButtonModule
+    MatButtonModule,
+    MatProgressBarModule,
+    MatChipsModule,
+    MatListModule
   ],
   providers: [],
   exports: [
@@ -50,7 +59,9 @@ import { ImagesDialogComponent } from './images-dialog/images-dialog.component';
     SidebarComponent,
     ProductsListComponent,
     PaginationComponent,
-    ImagesDialogComponent
+    ImagesDialogComponent,
+    OrdersListComponent,
+    OrderDetailComponent
   ]
 })
 export class SharedModule { }

@@ -1,6 +1,6 @@
 
 import { EshopActions } from '../../store/actions';
-import { User } from 'src/app/shared/models';
+import { User } from '../../shared/models';
 
 
 export interface State {

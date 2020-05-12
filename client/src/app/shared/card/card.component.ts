@@ -2,9 +2,11 @@ declare const Stripe: any;
 
 import { Component, Input, EventEmitter, Inject, PLATFORM_ID, ViewChild, ElementRef, OnInit, Output  } from '@angular/core';
 import { isPlatformServer, DOCUMENT } from '@angular/common';
+import { take } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
 
 import { EnvConfigurationService } from '../../services/env-configuration.service';
-import { take } from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-card',
@@ -16,16 +18,15 @@ export class CardComponent implements OnInit {
 
   @Input() price: number;
   @Input() currency: string;
+  @Input() loading: boolean;
+
+  @Output() scrollToTop = new EventEmitter();
   @Output() payWithCardEmit  = new EventEmitter();
   @ViewChild('cardElement') cardElement: ElementRef;
 
-  handler: any;
-  payWithCard = false;
   stripe; // : stripe.Stripe;
   card;
-  cardErrors;
-  loading = false;
-  confirmation;
+  cardErrorSub$ = new BehaviorSubject('INVALID');
 
   constructor(
     private envConfigurationService: EnvConfigurationService,
@@ -55,9 +56,11 @@ export class CardComponent implements OnInit {
 
     this.stripe.createToken(this.card).then((result) => {
       if (result.error) {
-       this.cardErrors = result.error.message;
+        this.cardErrorSub$.next(result.error.message);
       } else {
+        this.cardErrorSub$.next('');
         this.stripeTokenHandler(result.token);
+        this.scrollToTop.emit();
       }
     });
   }
@@ -77,8 +80,9 @@ export class CardComponent implements OnInit {
         this.card = elements.create('card');
         this.card.mount(this.cardElement.nativeElement);
 
-        this.card.addEventListener('change', ({ error }) => {
-            this.cardErrors = error && error.message;
+        this.card.addEventListener('change', ({error, complete}) => {
+          const cardError = error && error.message ? error.message : (complete ? '' : 'INVALID');
+          this.cardErrorSub$.next(cardError);
         });
       })
 

@@ -1,6 +1,6 @@
 
 import { EshopActions } from '../../store/actions';
-import { Product, Cart, Category } from 'src/app/shared/models';
+import { Product, Cart, Category, Order } from '../../shared/models';
 
 
 export interface State {
@@ -16,8 +16,8 @@ export interface State {
   product: Product;
   loadingProduct: boolean;
   cart: Cart;
-  userOrders: any;
-  order: any;
+  userOrders: Order[];
+  order: Order;
   productsTitles: Array<string>;
   priceFilter: number;
   position: {[component: string]: number};

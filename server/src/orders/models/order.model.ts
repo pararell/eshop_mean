@@ -1,18 +1,40 @@
-import { Document } from "mongoose";
+import { Document } from 'mongoose';
+import { Cart } from '../../cart/utils/cart';
+
+export enum OrderStatus {
+  NEW = 'NEW',
+  PAID = 'PAID',
+  SHIPPING = 'SHIPPING',
+  COMPLETED = 'COMPLETED',
+  CANCELED = 'CANCELED',
+}
+
+
+export interface Address {
+  name?: string;
+  line1: string;
+  line2?: string;
+  city: string;
+  zip: string;
+  country: string;
+  region?: string;
+}
+
 
 export interface Order extends Document {
     orderId             : string;
     amount              : number;
     amount_refunded?    : number;
-    description         : string;
+    currency            : string;
+    cart                : Cart;
+    status              : OrderStatus;
     customerEmail       : string;
-    status              : string;
-    cart                : any;
-    outcome?            : any;
-    source?             : any;
-    addresses?          : any[];
-    currency?           : string;
+    addresses           : Address[];
     notes?              : string;
-    _user               : any;
-    dateAdded           : Date;
+    type?               : string;
+    description?        : string;
+    outcome?            : {seller_message: string; };
+    dateAdded           : any;
+    cardId?             : string;
+    _user?              : any;
 }
