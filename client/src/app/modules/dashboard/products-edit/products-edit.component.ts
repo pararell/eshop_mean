@@ -244,7 +244,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
       ).reduce((prev, curr) => ({ ...prev, ...curr }), {});
   }
 
-  private prepareLangEditForm(product: any) {
+  private prepareLangEditForm(product) {
     return this.languageOptions
       .map((lang: string) => ({
         [lang]: {
@@ -269,7 +269,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
 
   }
 
-  private _prepareProductData(languageOptions: Array<string>, formData: any) {
+  private _prepareProductData(languageOptions: Array<string>, formData) {
     return languageOptions
       .map((lang: string) => ({
         [lang]: {

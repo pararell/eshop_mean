@@ -10,7 +10,7 @@ import * as actions from '../../store/actions';
 import { TranslateService } from '../../services/translate.service';
 import { environment } from '../../../environments/environment';
 import { languages } from '../../shared/constants';
-import { Cart, User } from '../../shared/models';
+import { Cart, User, Order } from '../../shared/models';
 
 @Component({
   selector: 'app-header',
@@ -21,7 +21,7 @@ export class HeaderComponent implements OnInit {
   user$             : Observable<User>;
   cart$             : Observable<Cart>;
   productTitles$    : Observable<string[]>;
-  userOrders$       : Observable<any>;
+  userOrders$       : Observable<Order[]>;
   showAutocomplete$ : BehaviorSubject<boolean> = new BehaviorSubject(false);
   languageOptions = languages;
   lang$             : Observable<string>;

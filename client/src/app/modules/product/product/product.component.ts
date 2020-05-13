@@ -52,7 +52,7 @@ export class ProductComponent implements OnDestroy {
       (product, cartItems) => {
         return {
           product,
-          cartIds: cartItems.reduce((prev: any, curr: any) => ({ ...prev, [curr.id]: curr.qty }), {})
+          cartIds: cartItems.reduce((prev, curr) => ({ ...prev, [curr.id]: curr.qty }), {})
         };
       }
     );
@@ -94,7 +94,7 @@ export class ProductComponent implements OnDestroy {
     this.store
       .select(fromRoot.getProduct)
       .pipe(
-        filter((product: any) => product && product.title),
+        filter((product: Product) => !!product && !!product.title),
         take(1)
       )
       .subscribe(product => {

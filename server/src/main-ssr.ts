@@ -8,7 +8,7 @@ import * as connectMongo from 'connect-mongo';
 import * as passport from 'passport';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
-
+import * as compression from 'compression';
 
 
 async function bootstrap() {
@@ -16,6 +16,7 @@ async function bootstrap() {
   const MongoStore = connectMongo(session);
 
   const app = await NestFactory.create<NestExpressApplication>(AppSSRModule);
+  app.use(compression())
   app.use(cookieParser());
 
   app.use(cors({

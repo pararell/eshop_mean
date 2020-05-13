@@ -23,7 +23,7 @@
     "dev:ssr": "ng run eshop:serve-ssr",
     "serve:ssr": "node dist/eshop/server/main.js",
     "prebuild:ssr": "ngcc",
-    "build:ssr": "ng build --prod && ng run eshop:server:production",
+    "build:ssr": "NODE_ENV=production ng build --prod && ng run eshop:server:production",
     "prerender": "ng run eshop:prerender"
   },
   "dependencies": {

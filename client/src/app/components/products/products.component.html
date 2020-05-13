@@ -44,7 +44,6 @@
           [class.disabled]="loadingProducts$ | async"
           *ngIf="(pagination$ | async) as pagination"
           [pagination]="pagination"
-          [page]="page$ | async"
           (changePage)="changePage($event)">
         </app-pagination>
       </div>
