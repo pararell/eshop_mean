@@ -28,6 +28,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
   productSub: Subscription;
   languageOptions = languages;
   choosenLanguageSub$ = new BehaviorSubject('en');
+  testImageUrl: string;
 
   constructor(private fb: FormBuilder, private store: Store<fromRoot.State>, private apiService: ApiService) {
     this.createForm();
@@ -88,7 +89,6 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
       ...this._createLangForm(this.languageOptions)
     });
   }
-
 
   onRemoveImage(image: string, type: string): void {
     const titleUrl = type === 'product'
@@ -170,8 +170,20 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
   }
 
   addImageUrl(): void {
-    this.store.dispatch(new actions.AddProductImagesUrl({ image: this.productEditForm.get('imageUrl').value, titleUrl: this.productEditForm.get('titleUrl').value }));
+    const imageUrl = this.productEditForm.get('imageUrl').value;
+    const titleUrl = this.productEditForm.get('titleUrl').value;
+    if (imageUrl && titleUrl) {
+      this.testImageUrl = imageUrl;
+    }
   }
+
+  checkImageUrl() {
+    const imageUrl = this.productEditForm.get('imageUrl').value;
+    const titleUrl = this.productEditForm.get('titleUrl').value;
+    this.store.dispatch(new actions.AddProductImagesUrl({ image: imageUrl, titleUrl }));
+    this.testImageUrl = '';
+  }
+
 
   openForm(): void {
     this.sendRequest = false;

@@ -1,6 +1,6 @@
 <ng-container *ngIf="!sendRequest && (choosenLanguageSub$ | async) as chooseLang">
   <div class="products-title-wrapp">
-    <h4> {{action | uppercase}} PRODUCT </h4>
+    <h2> {{action | uppercase}} PRODUCT </h2>
     <div>
       <mat-form-field class="browser-default lang-select">
         <mat-label>Chose language for product detail</mat-label>
@@ -18,7 +18,7 @@
   <form class="product_edit-form"
     [formGroup]="productEditForm"
     novalidate>
-    <div class="full-input">
+    <div class="product_edit-full-input">
       <mat-form-field class="product_edit-field">
         <mat-label>TitleUrl</mat-label>
         <input
@@ -36,12 +36,10 @@
         Find
       </button>
     </div>
-
     <ng-container *ngIf="action !== 'remove'">
-      <div
-        [formGroupName]="chooseLang"
-        class="well well-lg">
-        <div class="full-input">
+      <h3 class="product_edit-subtitle">Content (for chosen language/market)</h3>
+      <div [formGroupName]="chooseLang">
+        <div class="product_edit-full-input">
           <mat-form-field class="product_edit-field">
             <mat-label>Title</mat-label>
             <input
@@ -51,10 +49,9 @@
               name="title">
           </mat-form-field>
         </div>
-
-        <div class="full-input">
+        <div class="product_edit-full-input">
           <mat-form-field class="product_edit-field">
-            <mat-label>Description</mat-label>
+            <mat-label>Short Description</mat-label>
             <textarea
               matInput
               formControlName="description"
@@ -62,19 +59,15 @@
             </textarea>
           </mat-form-field>
         </div>
-
-        <div class="full-input">
-          <mat-form-field class="product_edit-field">
+        <div class="product_edit-full-input">
+          <mat-form-field class="product_edit-field-small">
             <mat-label>SalePrice</mat-label>
             <input
               matInput
               formControlName="salePrice"
               name="salePrice">
           </mat-form-field>
-        </div>
-
-        <div class="full-input">
-          <mat-form-field class="product_edit-field">
+          <mat-form-field class="product_edit-field-small">
             <mat-label>RegularPrice</mat-label>
             <input
               matInput
@@ -82,108 +75,153 @@
               name="regularPrice">
           </mat-form-field>
         </div>
-
-        <div class="full-input">
-          <mat-form-field class="product_edit-field">
-            <mat-label>Tags</mat-label>
+        <div class="product_edit-full-input">
+          <mat-form-field class="product_edit-field-small">
+            <mat-label>Categories (separate with coma)</mat-label>
+            <input
+              matInput
+              formControlName="categories"
+              name="categories">
+          </mat-form-field>
+          <mat-form-field class="product_edit-field-small">
+            <mat-label>Tags (separate with coma)</mat-label>
             <input
               matInput
               formControlName="tags"
               name="tags">
           </mat-form-field>
         </div>
-
-        <div class="full-input">
-          <mat-form-field class="product_edit-field">
-            <mat-label>Categories</mat-label>
-            <input
-              matInput
-              formControlName="categories"
-              name="categories">
-          </mat-form-field>
+        <div class="product_edit-full-input">
+          <div class="product_edit-field-small">
+            <div class="check-title">Visibility</div>
+            <mat-radio-group aria-label="Visibility" formControlName="visibility">
+              <mat-radio-button
+                name="visibility"
+                [value]="true"
+                id="visible">
+                Visible
+              </mat-radio-button>
+              <mat-radio-button
+                name="visibility"
+                [value]="false"
+                id="hidden">
+                Hidden
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <div class="product_edit-field-small">
+            <div class="check-title">On Stock</div>
+            <mat-radio-group aria-label="onStock" formControlName="stock">
+              <mat-radio-button
+                value="onStock"
+                name="stock"
+                id="onStock">
+                On Stock
+              </mat-radio-button>
+              <mat-radio-button
+                value="onWaitings"
+                name="stock"
+                id="onWaitings">
+                Avaible in few weeks
+              </mat-radio-button>
+              <mat-radio-button
+                value="unavailable"
+                name="stock"
+                id="inavailable">
+                Unavailable
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+        </div>
+        <div class="product_edit-full-input">
+          <div class="product_edit-field-small">
+            <div class="check-title">On Sale</div>
+            <mat-radio-group aria-label="On Sale" formControlName="onSale">
+              <mat-radio-button
+                [value]="true"
+                name="onSale"
+                id="onSale">
+                On Sale
+              </mat-radio-button>
+              <mat-radio-button
+                [value]="false"
+                name="onSale"
+                id="normal">
+                Normal
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <div class="product_edit-field-small">
+            <div class="check-title">Shipping</div>
+            <mat-radio-group aria-label="Shipping" formControlName="shiping">
+              <mat-radio-button
+                value="basic"
+                name="shiping"
+                id="basic">
+                Basic
+              </mat-radio-button>
+              <mat-radio-button
+                value="extended"
+                name="shiping"
+                id="extended">
+                Extended
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
         </div>
       </div>
-
-      <div class="full-input">
+      <h3 class="product_edit-subtitle">Images (for all languages/markets)</h3>
+      <div class="product_edit-full-input">
         <mat-form-field class="product_edit-field">
-          <mat-label>MainImage</mat-label>
+          <mat-label>Main Image Url</mat-label>
           <input
             matInput
             formControlName="mainImage"
             name="mainImage">
         </mat-form-field>
       </div>
-      <div
-      [formGroupName]="chooseLang">
-      <div class="check-title">Visibility</div>
-      <mat-radio-group aria-label="Visibility" formControlName="visibility">
-        <mat-radio-button
-          name="visibility"
-          [value]="true"
-          id="visible">
-          Visible
-        </mat-radio-button>
-        <mat-radio-button
-          name="visibility"
-          [value]="false"
-          id="hidden">
-          Hidden
-        </mat-radio-button>
-      </mat-radio-group>
-      <div class="check-title">On Stock</div>
-      <mat-radio-group aria-label="onStock" formControlName="stock">
-        <mat-radio-button
-          value="onStock"
-          name="stock"
-          id="onStock">
-          On Stock
-        </mat-radio-button>
-        <mat-radio-button
-          value="onWaitings"
-          name="stock"
-          id="onWaitings">
-          Avaible in few weeks
-        </mat-radio-button>
-        <mat-radio-button
-          value="unavailable"
-          name="stock"
-          id="inavailable">
-          Unavailable
-        </mat-radio-button>
-      </mat-radio-group>
-      <div class="check-title">On Sale</div>
-      <mat-radio-group aria-label="On Sale" formControlName="onSale">
-        <mat-radio-button
-          [value]="true"
-          name="onSale"
-          id="onSale">
-          On Sale
-        </mat-radio-button>
-        <mat-radio-button
-          [value]="false"
-          name="onSale"
-          id="normal">
-          Normal
-        </mat-radio-button>
-      </mat-radio-group>
-      <div class="check-title">Shipping</div>
-      <mat-radio-group aria-label="Shipping" formControlName="shiping">
-        <mat-radio-button
-          value="basic"
-          name="shiping"
-          id="basic">
-          Basic
-        </mat-radio-button>
-        <mat-radio-button
-          value="extended"
-          name="shiping"
-          id="extended">
-          Extended
-        </mat-radio-button>
-      </mat-radio-group>
-     </div>
-      <div
-        class="images-wrapp"
+      <h4 class="product_edit-infotitle">Upload Images from file or url</h4>
+        <ng-container *ngIf="uploader">
+          <div class="product_edit-add-images"
+            ng2FileDrop
+            [uploader]="uploader">
+            <div class="file-field input-field">
+              <button
+                mat-raised-button
+                color="primary">
+                <input
+                  type="file"
+                  #fileInput
+                  ng2FileSelect
+                  [uploader]="uploader"
+                  multiple>
+              </button>
+            </div>
+          </div>
+        </ng-container>
+        <div class="product_edit-full-input">
+          <mat-form-field class="product_edit-field-small">
+            <mat-label>Add Image Url</mat-label>
+            <input
+              matInput
+              formControlName="imageUrl"
+              name="imageUrl">
+          </mat-form-field>
+          <button
+            mat-raised-button
+            color="primary"
+            class="edit-find-button"
+            (click)="addImageUrl()">
+            Add Image Url
+          </button>
+        </div>
+        <div class="images-wrapp" *ngIf="testImageUrl">
+          <div class="image-dash-wrap">
+            <img [src]="testImageUrl" (load)="checkImageUrl()">
+          </div>
+        </div>
+
+      <div class="images-wrapp"
         *ngIf="!!(images$ | async)?.length && !(product$ | async)?.images?.length">
         <div
           class="image-dash-wrap"
@@ -196,66 +234,23 @@
           </div>
         </div>
       </div>
-
-      <div
-        class="images-wrapp"
+      <div class="images-wrapp"
         *ngIf="!!(product$ | async)?.images?.length">
         <div
           class="image-dash-wrap"
           *ngFor="let image of (product$ | async)?.images">
           <img src="{{image}}">
-          <div
-            class="remove-image"
+          <div class="remove-image"
             (click)="onRemoveImage(image, 'product')">
             X
           </div>
         </div>
       </div>
-
-      <ng-container *ngIf="uploader">
-        <div
-          ng2FileDrop
-          [uploader]="uploader"
-          class="add-images">
-          <div class="file-field input-field">
-            <button
-              mat-raised-button
-              color="primary">
-              <input
-                type="file"
-                #fileInput
-                ng2FileSelect
-                [uploader]="uploader"
-                multiple>
-            </button>
-          </div>
-          <div class="check-title">Images</div>
-        </div>
-      </ng-container>
-
-      <div class="full-input">
-        <mat-form-field class="product_edit-field">
-          <mat-label>Add Image Url</mat-label>
-          <input
-            matInput
-            formControlName="imageUrl"
-            name="imageUrl">
-        </mat-form-field>
-        <button
-          mat-raised-button
-          color="primary"
-          class="edit-find-button"
-          (click)="addImageUrl()">
-          Add Image Url
-        </button>
-      </div>
-
+      <h3 class="product_edit-subtitle">Full Description (for chosen language/market)</h3>
       <app-tiny-editor
         [description]="(descriptionFullSub$ | async)[chooseLang]"
         (onEditorContentChange)="onEditorChange($event)">
       </app-tiny-editor>
-      <div class="check-title">DescriptionFull</div>
-
     </ng-container>
 
     <button
@@ -269,8 +264,7 @@
   </form>
 </ng-container>
 
-<div
-  class="after-send"
+<div class="after-send"
   *ngIf="sendRequest">
   Request was send.
   <button

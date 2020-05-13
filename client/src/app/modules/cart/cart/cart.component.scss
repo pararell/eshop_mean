@@ -9,48 +9,66 @@
     margin-left: 16px;
   }
 
-  .cart-wrap {
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
-    background: rgba(255, 255, 255, 1);
-    padding: 0 15px;
-    max-width: 600px;
-    margin: 0 auto;
-  }
-
-  .cart-items {
+  .cart {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    flex-flow: wrap;
 
-    .cart-title {
+    &-back {
+      flex: 1;
+    }
+
+    &-with-order {
+      flex: 20;
+    }
+
+    &-wrap {
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+      background: rgba(255, 255, 255, 1);
+      padding: 0 10px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    &-items {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    &-title {
       padding: 0 10px;
     }
 
-    .cart-image-wrap {
+    &-image-wrap {
       display: flex;
       align-items: center;
       width: 50%;
+    }
 
-      .cart-image {
-        height: 70px;
-      }
+    &-image {
+      height: 70px;
+    }
+
+    &-remove {
+      color: red;
+      cursor: pointer;
+    }
+
+    &-item-last-down {
+      width: 24px;
+    }
+
+    &-navigation-button {
+      float: right;
+      margin: 5px 2px;
     }
   }
 
-  .cart-remove {
-    color: red;
-    cursor: pointer;
-  }
-
-  .cart-item-last-down {
-    width: 24px;
-  }
-
-  .cart-navigation-button {
-    float: right;
-    margin: 5px 2px;
+  .cart-address-field {
+    display: flex;
+    flex-wrap: wrap;
   }
 
   .pay-success {
@@ -64,7 +82,7 @@
   .order-form-wrap {
     background: #fff;
     margin-top: 15px;
-    padding: 15px;
+    padding: 10px;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
     max-width: 600px;
     margin-left: auto;
@@ -83,5 +101,11 @@
 
   .order-field {
     width: 100%;
+    margin: 0 5px;
+  }
+
+  .order-field-small {
+    flex: 1;
+    margin: 0 5px;
   }
 }

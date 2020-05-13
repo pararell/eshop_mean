@@ -3,6 +3,12 @@
     margin-left: 16px;
   }
 
+  @media screen and (max-width: 600px) {
+    /deep/ .mat-radio-button ~ .mat-radio-button {
+      margin-left: 0;
+    }
+  }
+
   .product_edit {
     &-form {
       width: 100%;
@@ -10,14 +16,34 @@
 
     &-field {
       width: 100%;
+      margin: 0 5px;
     }
-  }
 
-  .full-input {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-    flex-flow: wrap;
+    &-field-small {
+      margin: 0 5px;
+      flex: 1;
+    }
+
+    &-full-input {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-flow: wrap;
+    }
+
+    &-subtitle {
+      font-weight: 500;
+      margin: 40px 5px 20px 5px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    &-infotitle {
+      font-weight: 500;
+    }
+
+    &-add-images {
+      margin: 25px 0;
+    }
   }
 
   .full-check {
@@ -39,10 +65,6 @@
 
   .file-field .btn {
     float: none !important;
-  }
-
-  .add-images {
-    margin: 25px 0;
   }
 
   .image-dash-wrap {
