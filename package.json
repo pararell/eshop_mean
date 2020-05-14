@@ -66,6 +66,7 @@
     "core-js": "^3.6.5",
     "express-session": "^1.17.1",
     "mongoose": "^5.9.14",
+    "ng-recaptcha": "^5.0.0",
     "ng2-file-upload": "^1.4.0",
     "ngx-cookie-service": "^3.0.4",
     "passport": "^0.4.1",

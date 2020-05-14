@@ -220,7 +220,7 @@ export class AppEffects {
   @Effect() sendContact$: Observable<Action> = this._actions.pipe(
     ofType(EshopActions.SendContact),
       switchMap((action: actions.SendContact) => this.apiService.sendContact(action.payload)),
-      map(res => new actions.SendContactSuccess(res))
+      map(res => new actions.SendContactSuccess())
   );
 
 

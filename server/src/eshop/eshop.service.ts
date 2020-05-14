@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, HttpService} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
@@ -11,23 +11,32 @@ import { Page } from './models/page.model';
 
 @Injectable()
 export class EshopService {
-  constructor(@InjectModel('Page') private pageModel: Model<Page>) {}
+  constructor(@InjectModel('Page') private pageModel: Model<Page>, private httpService: HttpService) {}
 
   async sendContact(contactDto: ContactDto, cart: Cart): Promise<void> {
-    try {
-    this.sendmail(contactDto.email, contactDto, cart);
+    const { token } = contactDto;
+    const url = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SERVER_KEY}&response=${token}`;
 
-    if (process.env.ADMIN_EMAILS) {
-      process.env.ADMIN_EMAILS
-        .split(',')
-        .filter(Boolean)
-        .forEach(email => {
-          this.sendmail(email, contactDto, cart);
-        });
-     }
-    } catch {
-      console.log('Email send error')
-    }
+   const result = await this.httpService.post(url).toPromise();
+   if (result.data.success) {
+    try {
+      this.sendmail(contactDto.email, contactDto, cart);
+
+      if (process.env.ADMIN_EMAILS) {
+        process.env.ADMIN_EMAILS
+          .split(',')
+          .filter(Boolean)
+          .forEach(email => {
+            this.sendmail(email, contactDto, cart);
+          });
+       }
+      } catch {
+        throw new BadRequestException();
+      }
+   } else {
+    throw new BadRequestException();
+   }
+
   }
 
   async getPages(): Promise<Page[]> {

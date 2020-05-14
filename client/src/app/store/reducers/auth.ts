@@ -9,7 +9,6 @@ export interface State {
   lang: string;
   currency: string;
   convertVal: number;
-  pages: any;
 }
 
  export const initialState: State = {
@@ -18,7 +17,6 @@ export interface State {
     lang: '',
     currency: 'EUR',
     convertVal: 0,
-    pages: null
 };
 
 
@@ -45,11 +43,6 @@ export function appReducer(state = initialState, action): State {
       return {...state, lang: action.payload.lang, currency: action.payload.currency, convertVal: 0 };
     }
 
-    case EshopActions.GetPagesSuccess: {
-      return { ...state, pages: action.payload };
-    }
-
-
     default: {
       return state;
     }
@@ -60,5 +53,4 @@ export const user = (state: State) => state.user;
 export const lang = (state: State) => state.lang;
 export const currency = (state: State) => state.currency;
 export const convertVal = (state: State) => state.convertVal;
-export const pages = (state: State) => state.pages;
 export const loading = (state: State) => state.loading;

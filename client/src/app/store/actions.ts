@@ -9,15 +9,6 @@ export enum EshopActions {
   GetUser = '[Auth] GetUser',
   StoreUser = '[Auth] StoreUser',
   GetUserFail = '[Auth] GetUserFail',
-  GetPages = '[Auth] GetPages',
-  GetPagesSuccess = '[Auth] GetPagesSuccess',
-  GetPagesFail = '[Auth] GetPagesFail',
-  AddOrEditPage = '[Auth] AddOrEditPage',
-  AddOrEditPageSuccess = '[Auth] AddOrEditPageSuccess',
-  AddOrEditPageFail = '[Auth] AddOrEditPageFail',
-  RemovePage = '[Auth] RemovePage',
-  RemovePageSuccess = '[Auth] RemovePageSuccess',
-  RemovePageFail = '[Auth] RemovePageFail',
 
   CleanError = '[Product] Clean Error',
   FilterPrice = '[Product] FilterPrice',
@@ -75,8 +66,18 @@ export enum EshopActions {
   SetUploaderSuccess = '[Dashboard] SetUploaderSuccess',
   SetUploaderError = '[Dashboard] SetUploaderError',
 
-  SendContact = 'SendContact',
-  SendContactSuccess = 'SendContactSuccess',
+  SendContact = '[Eshop] SendContact',
+  SendContactSuccess = '[Eshop] SendContactSuccess',
+  SendContactFail = '[Eshop] SendContactFail',
+  GetPages = '[Eshop] GetPages',
+  GetPagesSuccess = '[Eshop] GetPagesSuccess',
+  GetPagesFail = '[Eshop] GetPagesFail',
+  AddOrEditPage = '[Eshop] AddOrEditPage',
+  AddOrEditPageSuccess = '[Eshop] AddOrEditPageSuccess',
+  AddOrEditPageFail = '[Eshop] AddOrEditPageFail',
+  RemovePage = '[Eshop] RemovePage',
+  RemovePageSuccess = '[Eshop] RemovePageSuccess',
+  RemovePageFail = '[Eshop] RemovePageFail'
 }
 
 
@@ -125,61 +126,6 @@ export class StoreUser implements Action {
    constructor(public payload: any ) {
    }
 }
-
-export class GetPages implements Action {
-  readonly type = EshopActions.GetPages;
-   constructor() {
-   }
-}
-
-export class GetPagesSuccess implements Action {
-  readonly type = EshopActions.GetPagesSuccess;
-   constructor(public payload: any) {
-   }
-}
-
-export class GetPagesFail implements Action {
-  readonly type = EshopActions.GetPagesFail;
-   constructor() {
-   }
-}
-
-export class AddOrEditPage implements Action {
-  readonly type = EshopActions.AddOrEditPage;
-   constructor(public payload: any) {
-   }
-}
-
-export class AddOrEditPageSuccess implements Action {
-  readonly type = EshopActions.AddOrEditPageSuccess;
-   constructor(public payload: any) {
-   }
-}
-
-export class AddOrEditPageFail implements Action {
-  readonly type = EshopActions.AddOrEditPageFail;
-   constructor() {
-   }
-}
-
-export class RemovePage implements Action {
-  readonly type = EshopActions.RemovePage;
-   constructor(public payload: any) {
-   }
-}
-
-export class RemovePageSuccess implements Action {
-  readonly type = EshopActions.RemovePageSuccess;
-   constructor(public payload: any) {
-   }
-}
-
-export class RemovePageFail implements Action {
-  readonly type = EshopActions.RemovePageFail;
-   constructor() {
-   }
-}
-
 
 // PRODUCT
 
@@ -513,7 +459,7 @@ export class SetUploaderError implements Action {
 }
 
 
-// OTHERS
+// ESHOP
 
 export class SendContact implements Action {
   readonly type = EshopActions.SendContact;
@@ -523,6 +469,66 @@ export class SendContact implements Action {
 
 export class SendContactSuccess implements Action {
   readonly type = EshopActions.SendContactSuccess;
-  constructor(public payload: any ) {
+  constructor( ) {
   }
+}
+
+export class SendContactFail implements Action {
+  readonly type = EshopActions.SendContactFail;
+  constructor( ) {
+  }
+}
+
+export class GetPages implements Action {
+  readonly type = EshopActions.GetPages;
+   constructor() {
+   }
+}
+
+export class GetPagesSuccess implements Action {
+  readonly type = EshopActions.GetPagesSuccess;
+   constructor(public payload: any) {
+   }
+}
+
+export class GetPagesFail implements Action {
+  readonly type = EshopActions.GetPagesFail;
+   constructor() {
+   }
+}
+
+export class AddOrEditPage implements Action {
+  readonly type = EshopActions.AddOrEditPage;
+   constructor(public payload: any) {
+   }
+}
+
+export class AddOrEditPageSuccess implements Action {
+  readonly type = EshopActions.AddOrEditPageSuccess;
+   constructor(public payload: any) {
+   }
+}
+
+export class AddOrEditPageFail implements Action {
+  readonly type = EshopActions.AddOrEditPageFail;
+   constructor() {
+   }
+}
+
+export class RemovePage implements Action {
+  readonly type = EshopActions.RemovePage;
+   constructor(public payload: any) {
+   }
+}
+
+export class RemovePageSuccess implements Action {
+  readonly type = EshopActions.RemovePageSuccess;
+   constructor(public payload: any) {
+   }
+}
+
+export class RemovePageFail implements Action {
+  readonly type = EshopActions.RemovePageFail;
+   constructor() {
+   }
 }

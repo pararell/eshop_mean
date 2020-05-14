@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, HttpModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -11,6 +11,7 @@ import PageSchema from './schemas/page.schema';
   imports       : [
       ConfigModule.forRoot(),
       MongooseModule.forFeature([{ name: 'Page', schema: PageSchema }]),
+      HttpModule
     ],
   controllers   : [EshopController],
   providers     : [EshopService]

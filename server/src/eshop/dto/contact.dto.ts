@@ -6,10 +6,14 @@ export class ContactDto {
     @MinLength(4)
     @MaxLength(50)
     email: string;
-  
+
     name   : string;
 
     @IsNotEmpty()
     @IsString()
     notes  : string;
+
+    @IsNotEmpty()
+    @IsString()
+    token: string;
   }
