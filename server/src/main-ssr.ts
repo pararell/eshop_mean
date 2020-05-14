@@ -9,7 +9,7 @@ import * as passport from 'passport';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import * as compression from 'compression';
-
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const logger = new Logger('boostrap');
@@ -17,6 +17,8 @@ async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppSSRModule);
   app.use(compression())
+  app.use(bodyParser.json({limit: '10mb' }))
+  app.use(bodyParser.urlencoded({limit: '10mb'}))
   app.use(cookieParser());
 
   app.use(cors({

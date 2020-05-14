@@ -107,13 +107,13 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
 
 
     const prepareDescFull = this.languageOptions
-      .map(language => ({
-        [language]: typeof this.productEditForm.get([language]).value.descriptionFull === 'string'
-          ? this.productEditForm.get([language]).value.descriptionFull
-          : this.productEditForm.get([language]).value.descriptionFull.length
-            ? this.productEditForm.get([language]).value.descriptionFull[0]
-            : ''
-      })).reduce((prev, curr) => ({ ...prev, ...curr }), {});
+      .map(language => {
+        const descriptionFull = this.productEditForm.get([language]).value.descriptionFull;
+        return {
+        [language]: typeof descriptionFull === 'string'
+          ? descriptionFull
+          : descriptionFull.length ? descriptionFull[0] : ''
+      }}).reduce((prev, curr) => ({ ...prev, ...curr }), {});
     this.descriptionFullSub$.next(prepareDescFull);
   }
 

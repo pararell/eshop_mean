@@ -37,6 +37,8 @@ export class AppComponent {
         this.store.dispatch(new actions.ChangeLanguage(langUpdate));
     });
 
+    this.store.dispatch(new actions.GetPages());
+
     this.store.select(fromRoot.getLang)
       .pipe(filter(Boolean), skip(1))
       .subscribe((lang: string) => {

@@ -34,6 +34,27 @@ export class AppEffects {
       catchError(() => of(new actions.GetUserFail()))
   );
 
+  @Effect() getPages$: Observable<Action> = this._actions.pipe(
+    ofType(EshopActions.GetPages),
+      switchMap((action: actions.GetUser) => this.apiService.getPages()),
+      map(res => new actions.GetPagesSuccess(res)),
+      catchError(() => of(new actions.GetPagesFail()))
+  );
+
+  @Effect() addOrEditPage$: Observable<Action> = this._actions.pipe(
+    ofType(EshopActions.AddOrEditPage),
+      switchMap((action: actions.AddOrEditPage) => this.apiService.addOrEditPage(action.payload)),
+      map(res => new actions.AddOrEditPageSuccess(res)),
+      catchError(() => of(new actions.AddOrEditPageFail()))
+  );
+
+  @Effect() removePage$: Observable<Action> = this._actions.pipe(
+    ofType(EshopActions.RemovePage),
+      switchMap((action: actions.RemovePage) => this.apiService.removePage(action.payload)),
+      map(res => new actions.RemovePageSuccess(res)),
+      catchError(() => of(new actions.RemovePageFail()))
+  );
+
   // PRODUCT
 
   @Effect() getProducts$: Observable<Action> = this._actions.pipe(

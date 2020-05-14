@@ -8,11 +8,14 @@
       <div class="col l4 offset-l2 s12">
         <h5 class="white-text">Links</h5>
         <ul class="links-list">
-          <li><a class="text-lighten-3" [routerLink]="['/' + lang + '/eshop/vop']"> VOP</a></li>
-          <li><a class="text-lighten-3" [routerLink]="['/' + lang + '/eshop/gdpr']"> GDPR</a></li>
           <li><a class="text-lighten-3" [routerLink]="['/' + lang + '/eshop/contact']"> CONTACT</a></li>
-          <li><a class="text-lighten-3" [routerLink]="['/' + lang + '/eshop/info']"> ABOUT US</a></li>
-          <li><a class="text-lighten-3" href="https://angular-un-ngrx-node-eshop.herokuapp.com">Heroku link</a></li>
+          <ng-container *ngFor="let page of (pages$ | async)">
+            <li>
+                <a class="text-lighten-3" [routerLink]="['/' + lang + '/eshop/' + page.titleUrl]">
+                  {{ page[lang].title || page.titleUrl }}
+                </a>
+            </li>
+          </ng-container>
         </ul>
       </div>
     </div>
@@ -20,7 +23,7 @@
   <div class="footer-copyright">
     <div class="container">
       © {{currentYear}}
-      <a class="text-lighten-4 right" href="https://github.com/pararell/angular-universal-node.js-mongodb-eshop">More on github</a>
+      <a class="right" href="https://github.com/pararell/eshop_mean">More on github</a>
     </div>
   </div>
 </footer>

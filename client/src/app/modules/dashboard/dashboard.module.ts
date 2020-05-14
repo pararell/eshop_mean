@@ -23,6 +23,7 @@ import { TinyEditorComponent } from './tiny-editor.ts/tiny-editor.component';
 import { PipeModule } from '../../pipes/pipe.module';
 import { TranslationsEditComponent } from './translations-edit/translations-edit.component';
 import { AllProductsComponent } from './all-products/all-products.component';
+import { PagesEditComponent } from './pages-edit/pages-edit.component';
 
 
 const DASHBOARD_ROUTER: Routes = [
@@ -63,6 +64,6 @@ const DASHBOARD_ROUTER: Routes = [
     MatSelectModule,
     MatChipsModule
   ],
-  declarations: [ProductsEditComponent, OrdersEditComponent, OrderEditComponent, AllProductsComponent, DashboardComponent, TinyEditorComponent, TranslationsEditComponent]
+  declarations: [ProductsEditComponent, OrdersEditComponent, OrderEditComponent, AllProductsComponent, DashboardComponent, TinyEditorComponent, TranslationsEditComponent, PagesEditComponent]
 })
 export class DashboardModule { }

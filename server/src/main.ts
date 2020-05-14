@@ -8,13 +8,15 @@ import * as connectMongo from 'connect-mongo';
 import * as passport from 'passport';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
-
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const logger = new Logger('boostrap');
   const MongoStore = connectMongo(session);
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.use(bodyParser.json({limit: '10mb' }))
+  app.use(bodyParser.urlencoded({limit: '10mb'}))
   app.use(cookieParser());
 
   app.use(cors({

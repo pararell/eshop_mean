@@ -94,3 +94,12 @@ export interface Order {
   __v?: number;
   _user?: string;
 }
+
+export interface Page {
+  _id?                : string;
+  titleUrl            : string;
+  dateAdded?          : Date;
+  en?                 : {title: string; contentHTML: string};
+  sk?                 : {title: string; contentHTML: string};
+  cs?                 : {title: string; contentHTML: string};
+}

@@ -56,11 +56,6 @@ export class ApiService {
     return this.http.post(addOrder, req);
   }
 
-  sendContact(req) {
-    const sendContact = this.apiUrl + '/api/eshop/contact';
-    return this.http.post(sendContact, req);
-  }
-
   signIn(req) {
     const sendContact = this.apiUrl + '/api/auth/signin';
     return this.http.post(sendContact, req);
@@ -222,6 +217,26 @@ export class ApiService {
 
     return this.uploaderSub.asObservable();
     }
+  }
+
+  sendContact(req) {
+    const sendContact = this.apiUrl + '/api/eshop/contact';
+    return this.http.post(sendContact, req);
+  }
+
+  getPages() {
+    const pagesUrl = this.apiUrl + '/api/eshop/page/all';
+    return this.http.get(pagesUrl);
+  }
+
+  addOrEditPage(pageReq) {
+    const pageUrl = this.apiUrl + '/api/eshop/page';
+    return this.http.post(pageUrl, pageReq);
+  }
+
+  removePage(titleUrl: string) {
+    const pageUrl = this.apiUrl + '/api/eshop/page/' + titleUrl;
+    return this.http.delete(pageUrl);
   }
 
   getLocation$() {

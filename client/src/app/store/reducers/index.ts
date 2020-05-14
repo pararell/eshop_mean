@@ -24,6 +24,7 @@ export const getUser = createSelector(getAuth, fromAuth.user);
 export const getLang = createSelector(getAuth, fromAuth.lang);
 export const getCurrency = createSelector(getAuth, fromAuth.currency);
 export const getConvertVal = createSelector(getAuth, fromAuth.convertVal);
+export const getPages = createSelector(getAuth, fromAuth.pages);
 export const getAuthLoading = createSelector(getAuth, fromAuth.loading);
 
 export const getProducts = createSelector(Products, fromProducts.products);
