@@ -2,12 +2,11 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import Mailer from '../shared/utils/mailer';
+import { sendMsg } from '../shared/utils/mailer';
 import { ContactDto } from './dto/contact.dto';
 import { PageDto } from './dto/page.dto';
 import { Cart } from '../cart/utils/cart';
 import { Page } from './models/page.model';
-
 
 
 @Injectable()
@@ -82,7 +81,7 @@ export class EshopService {
       }
   }
 
-  private sendmail = (email: string, contactDto: ContactDto, cart: Cart) => {
+  private sendmail = async (email: string, contactDto: ContactDto, cart: Cart) => {
       const emailType = {
         subject: 'Contact',
         cart,
@@ -90,8 +89,8 @@ export class EshopService {
         date   : new Date()
       };
 
-      const mailer = new Mailer(email, emailType);
-      mailer.send();
+      const mailSended = await sendMsg(email, emailType);
+      return mailSended;
   }
 
 

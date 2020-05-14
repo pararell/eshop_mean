@@ -1,44 +1,21 @@
-import * as sendgrid from 'sendgrid';
+import * as sgMail from '@sendgrid/mail';
+
 import emailTemplates from './emailTemplates';
 
-class Mailer extends sendgrid.mail.Mail {
-    sgApi;
-    from_email;
-    subject;
-    body;
-    email;
+sgMail.setApiKey(process.env.SENDGRID_KEY);
 
-  constructor(reqEmail, emailType) {
-    super();
+export const sendMsg = async (email: string, emailType) => {
+  const msg = {
+    to      : email,
+    from    : 'no-reply@bluetooh-eshop.sk',
+    subject : emailType.subject,
+    html    : getContent(emailType)
+  };
 
-    this.sgApi = sendgrid(process.env.SENDGRID_KEY);
-
-    this.from_email = new sendgrid.mail.Email('no-reply@bluetooh-eshop.com');
-    this.subject = emailType.subject;
-
-    this.body = new sendgrid.mail.Content('text/html', getContent(emailType));
-
-    this.email = new sendgrid.mail.Email(reqEmail);
-    const personalize = new sendgrid.mail.Personalization();
-    personalize.addTo(this.email);
-
-    this.addContent(this.body);
-    this.addPersonalization(personalize);
-  }
-
-  async send() {
-    const request = this.sgApi.emptyRequest({
-      method: 'POST',
-      path: '/v3/mail/send',
-      body: this.toJSON()
-    });
-
-    const response = await this.sgApi.API(request);
-    return response;
-  }
+  const response = await sgMail.send(msg);
+  return response;
 }
 
-export default Mailer;
 
 function getContent(emailType) {
   if (emailType.subject === 'Order') {

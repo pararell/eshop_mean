@@ -6,7 +6,7 @@ import Stripe from 'stripe';
 import { Order, OrderStatus } from './models/order.model';
 import { User } from '../auth/models/user.model';
 import { OrderDto } from './dto/order.dto';
-import Mailer from '../shared/utils/mailer';
+import { sendMsg } from '../shared/utils/mailer';
 import { Cart } from '../cart/utils/cart';
 
 
@@ -125,7 +125,7 @@ export class OrdersService {
   }
 
 
-  private sendmail = (email: string, order: Order, cart: Cart) => {
+  private sendmail = async (email: string, order: Order, cart: Cart) => {
       const emailType = {
         subject: 'Order',
         cart,
@@ -136,10 +136,8 @@ export class OrdersService {
         date      : new Date()
       };
 
-      const mailer = new Mailer(email, emailType);
-
-      mailer.send();
+      const mailSended = await sendMsg(email, emailType);
+      return mailSended;
   }
-
 
 }

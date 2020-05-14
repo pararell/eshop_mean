@@ -15,11 +15,11 @@
                (blur)="onBlur()"
                [matAutocomplete]="auto">
         <mat-autocomplete #auto="matAutocomplete">
-          <mat-option *ngFor="let title of (productTitles$ | async)" [value]="title">
-            <a class="nav-autocomplete-link"
-              (click)="onTitleLink()"
-              [routerLink]="[productUrl + '/' + title]">{{title}}
-            </a>
+          <mat-option *ngFor="let title of (productTitles$ | async)"
+              [value]="title"
+              [routerLink]="[productUrl + '/' + title]"
+              (click)="onTitleLink()">
+            <a class="nav-autocomplete-link">{{title}}</a>
           </mat-option>
         </mat-autocomplete>
       </mat-form-field>
@@ -58,21 +58,24 @@
       <mat-icon>account_box</mat-icon>
       <a class="nav-link" href="{{googleAuthUrl}}">{{ 'Login' | translate | async }} {{ 'with' | translate | async }} Google</a>
     </button>
-    <button mat-menu-item>
+    <button mat-menu-item  [routerLink]="[signInUrl]">
       <mat-icon>account_circle</mat-icon>
-      <a class="nav-link" [routerLink]="[signInUrl]">{{ 'Login' | translate | async }}</a>
+      <a class="nav-link">{{ 'Login' | translate | async }}</a>
     </button>
   </ng-container>
-  <button mat-menu-item *ngIf="(user$ | async)?.roles?.includes('admin')">
+  <button mat-menu-item [routerLink]="['/' + translate.lang + '/dashboard']"
+     *ngIf="(user$ | async)?.roles?.includes('admin')">
     <mat-icon>dashboard</mat-icon>
-    <a class="nav-link" [routerLink]="['/' + translate.lang + '/dashboard']"> Dashboard</a>
+    <a class="nav-link"> Dashboard</a>
   </button>
-  <button mat-menu-item *ngIf="(userOrders$ | async)?.length">
+  <button mat-menu-item [routerLink]="[ordersUrl]"
+    *ngIf="(userOrders$ | async)?.length">
     <mat-icon>assignment</mat-icon>
-    <a class="nav-link" [routerLink]="[ordersUrl]"> {{'Orders' | translate | async}}</a>
+    <a class="nav-link"> {{'Orders' | translate | async}}</a>
   </button>
-  <button mat-menu-item *ngIf="(user$ | async)">
+  <button mat-menu-item (click)="onLogout()"
+    *ngIf="(user$ | async)">
     <mat-icon>exit_to_app</mat-icon>
-    <a class="nav-link" (click)="onLogout()"> {{'Logout' | translate | async}}</a>
+    <a class="nav-link" > {{'Logout' | translate | async}}</a>
   </button>
 </ng-template>
