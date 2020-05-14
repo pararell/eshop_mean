@@ -16,7 +16,7 @@ export class AllProductsComponent  {
   allProduct$ : Observable<Product[]>;
   convertVal$ : Observable<number>;
   currency$   : Observable<string>;
-  lang        : string;
+  lang$       : Observable<string>;
 
   constructor(private store: Store<fromRoot.State>) {
 
@@ -24,6 +24,7 @@ export class AllProductsComponent  {
     this.convertVal$    = this.store.select(fromRoot.getConvertVal);
     this.currency$      = this.store.select(fromRoot.getCurrency);
     this.allProduct$    = this.store.select(fromRoot.getAllProducts);
+    this.lang$          = this.store.select(fromRoot.getLang).pipe(filter((lang: string) => !!lang));
   }
 
   getProducts(): void {
@@ -34,7 +35,6 @@ export class AllProductsComponent  {
     this.store.select(fromRoot.getLang)
     .pipe(filter(Boolean), take(1))
     .subscribe((lang: string) => {
-      this.lang = lang;
       this.store.dispatch(new actions.GetAllProducts(lang));
     });
   }

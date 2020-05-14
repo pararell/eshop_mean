@@ -1,6 +1,6 @@
 import { map, distinctUntilChanged, filter, take, first } from 'rxjs/operators';
-import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { Observable, combineLatest } from 'rxjs';
+import { Component, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+import { Observable, combineLatest, Subscription, pipe } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 import { Store } from '@ngrx/store';
@@ -19,7 +19,7 @@ import { Product, Category, Pagination, Cart } from '../../shared/models';
   styleUrls: ['./products.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProductsComponent {
+export class ProductsComponent implements OnDestroy {
 
   items$                : Observable<{ products: Product[]; minPrice: number; maxPrice: number; cartIds: {[productID: string]: number} }>;
   loadingProducts$      : Observable<boolean>;
@@ -32,6 +32,8 @@ export class ProductsComponent {
   convertVal$           : Observable<number>;
   currency$             : Observable<string>;
   lang$                 : Observable<string>;
+  categoriesSub         : Subscription;
+  productsSub           : Subscription;
   sortOptions           = sortOptions;
 
   readonly component = 'productsComponent';
@@ -43,8 +45,8 @@ export class ProductsComponent {
     private store     : Store<fromRoot.State>,
     private route     : ActivatedRoute,
     private router    : Router,
-    private _meta     : Meta,
-    private _title    : Title,
+    private meta      : Meta,
+    private title     : Title,
     private translate : TranslateService ) {
 
     this.category$ = route.params.pipe(map(params => params['category']), distinctUntilChanged());
@@ -79,8 +81,8 @@ export class ProductsComponent {
       }
     )
 
-    this._title.setTitle('Products');
-    this._meta.updateTag({ name: 'description', content: 'Products description' });
+    this.title.setTitle('Products');
+    this.meta.updateTag({ name: 'description', content: 'Products description' });
 
     this.categories$  = this.store.select(fromRoot.getCategories);
     this.pagination$  = this.store.select(fromRoot.getPagination);
@@ -138,6 +140,11 @@ export class ProductsComponent {
       this.store.dispatch(new actions.UpdatePosition({productsComponent: 0}));
   }
 
+  ngOnDestroy(): void {
+    this.categoriesSub.unsubscribe();
+    this.productsSub.unsubscribe();
+  }
+
   private _setUrls(): void {
     this.translate.getTranslations$().pipe(take(1))
     .subscribe(translations => {
@@ -147,18 +154,19 @@ export class ProductsComponent {
   }
 
   private _loadCategories(): void {
-    combineLatest(this.store.select(fromRoot.getCategories).pipe(
-      filter(categories => !categories.length),
-      take(1)),  this.lang$, (categories: Category[], lang: string) => ({categories, lang}))
-    .subscribe(({categories, lang}) => this.store.dispatch(new actions.GetCategories({lang})));
+    this.categoriesSub = this.lang$.subscribe(lang => this.store.dispatch(new actions.GetCategories({lang})));
   }
 
   private _loadProducts(): void {
-    combineLatest(this.lang$, this.category$, this.route.queryParams.pipe(
-      map(params => ({page: params['page'], sort: params['sort']}))),
+    this.productsSub = combineLatest(
+        this.lang$.pipe(distinctUntilChanged()),
+        this.category$.pipe(distinctUntilChanged()),
+        this.route.queryParams.pipe(
+            map(params => ({page: params['page'], sort: params['sort']})),
+            distinctUntilChanged()),
         (lang: string, category: string, {page, sort}) => ({lang, category, page, sort}))
-    .subscribe(({lang, category, page, sort}) => {
-      this.store.dispatch(new actions.GetProducts({lang, category, page: page || 1, sort: sort || 'newest' }));
+      .subscribe(({lang, category, page, sort}) => {
+        this.store.dispatch(new actions.GetProducts({lang, category, page: page || 1, sort: sort || 'newest' }));
     });
   }
 

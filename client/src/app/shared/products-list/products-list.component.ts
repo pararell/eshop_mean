@@ -15,16 +15,17 @@ export class ProductsListComponent {
   @Input()  cartIds     : {[productId: string]: number};
   @Input()  convertVal  : number;
   @Input()  currency    : string;
+  @Input()  lang        : string;
   @Output() addProduct     = new EventEmitter<string>();
   @Output() removeProduct  = new EventEmitter<string>();
 
   productUrl: string;
 
   constructor(private translate: TranslateService) {
-    this.translate.translationsSub$
+    this.translate.getTranslations$()
       .pipe(filter(Boolean))
       .subscribe(translations => {
-        this.productUrl = '/' + this.translate.lang + '/' + (translations['product'] || 'product');
+        this.productUrl = (translations['product'] || 'product');
       });
   }
 

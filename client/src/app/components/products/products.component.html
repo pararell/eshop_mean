@@ -36,6 +36,7 @@
           [cartIds]="items?.cartIds"
           [convertVal]="convertVal$ | async"
           [currency]="currency$ | async"
+          [lang]="lang$ | async"
           (addProduct)="addToCart($event)"
           (removeProduct)="removeFromCart($event)">
         </app-products-list>

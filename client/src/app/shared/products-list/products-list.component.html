@@ -10,7 +10,7 @@
       </div>
     </div>
     <a class="product_card-image"
-      routerLink="{{productUrl}}/{{product?.titleUrl}}"
+      [routerLink]="[ '/' + lang + '/' + productUrl + '/' + product?.titleUrl]"
       [attr.aria-labelledby]="product?.titleUrl"
       lazySrc [lazyBackground]="'url(' + product.mainImage.url + ')'"
       lazySrcVisible="visible">

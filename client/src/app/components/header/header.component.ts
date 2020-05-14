@@ -41,7 +41,7 @@ export class HeaderComponent implements OnInit {
 
     this.lang$ = this.store.select(fromRoot.getLang);
 
-    this.translate.translationsSub$.pipe(filter(Boolean)).subscribe(translations => {
+    this.translate.getTranslations$().pipe(filter(Boolean)).subscribe(translations => {
       this.cartUrl = '/' + this.translate.lang + '/' + (translations['cart'] || 'cart');
       this.signInUrl = '/' + this.translate.lang + '/authorize/signin';
       this.ordersUrl = `/${this.translate.lang}/${translations['orders']}`;

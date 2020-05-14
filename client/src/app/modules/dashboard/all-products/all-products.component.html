@@ -8,5 +8,6 @@
 <app-products-list *ngIf="(allProduct$ | async) as allProducts"
   [products]="allProducts"
   [convertVal]="convertVal$ | async"
+  [lang]="lang$ | async"
   [currency]="currency$ | async">
 </app-products-list>
