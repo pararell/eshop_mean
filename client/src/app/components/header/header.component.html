@@ -17,7 +17,7 @@
         <mat-autocomplete #auto="matAutocomplete">
           <mat-option *ngFor="let title of (productTitles$ | async)"
               [value]="title"
-              [routerLink]="[productUrl + '/' + title]"
+              [routerLink]="['/' + (lang$ | async) + '/product/' + title]"
               (click)="onTitleLink()">
             <a class="nav-autocomplete-link">{{title}}</a>
           </mat-option>
@@ -26,7 +26,7 @@
     </div>
     <div class="nav-basic">
       <ng-container *ngIf="(cart$ | async) as cart">
-        <a class="nav-cart-wrap" [routerLink]="[cartUrl]">
+        <a class="nav-cart-wrap" [routerLink]="['/' + (lang$ | async) + '/cart']">
           <span>{{ cart?.totalQty }}</span>
           <i class="nav-cart-icon material-icons md-18">shopping_cart</i>
         </a>
@@ -58,17 +58,17 @@
       <mat-icon>account_box</mat-icon>
       <a class="nav-link" href="{{googleAuthUrl}}">{{ 'Login' | translate | async }} {{ 'with' | translate | async }} Google</a>
     </button>
-    <button mat-menu-item  [routerLink]="[signInUrl]">
+    <button mat-menu-item  [routerLink]="['/' + (lang$ | async) + '/authorize/signin']">
       <mat-icon>account_circle</mat-icon>
       <a class="nav-link">{{ 'Login' | translate | async }}</a>
     </button>
   </ng-container>
-  <button mat-menu-item [routerLink]="['/' + translate.lang + '/dashboard']"
+  <button mat-menu-item [routerLink]="['/' + (lang$ | async) + '/dashboard']"
      *ngIf="(user$ | async)?.roles?.includes('admin')">
     <mat-icon>dashboard</mat-icon>
     <a class="nav-link"> Dashboard</a>
   </button>
-  <button mat-menu-item [routerLink]="[ordersUrl]"
+  <button mat-menu-item [routerLink]="['/' + (lang$ | async) + '/orders']"
     *ngIf="(userOrders$ | async)?.length">
     <mat-icon>assignment</mat-icon>
     <a class="nav-link"> {{'Orders' | translate | async}}</a>

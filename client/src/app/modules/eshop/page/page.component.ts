@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 
 import * as fromRoot from '../../../store/reducers';
+import { TranslateService } from '../../../services/translate.service';
 
 
 @Component({
@@ -23,9 +24,10 @@ export class PageComponent {
     private location: Location,
     private route: ActivatedRoute,
     private router : Router,
-    private store: Store<fromRoot.State>) {
+    private store: Store<fromRoot.State>,
+    private translate: TranslateService) {
 
-    this.lang$ = store.select(fromRoot.getLang).pipe(filter((lang: string) => !!lang));
+    this.lang$ = this.translate.getLang$().pipe(filter((lang: string) => !!lang));
     this.titleUrl$ = this.route.params.pipe(map(params => params['titleUrl']));
     this.page$ = combineLatest(
       this.titleUrl$,

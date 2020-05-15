@@ -23,30 +23,20 @@ export class HeaderComponent implements OnInit {
   productTitles$    : Observable<string[]>;
   userOrders$       : Observable<Order[]>;
   showAutocomplete$ : BehaviorSubject<boolean> = new BehaviorSubject(false);
-  languageOptions = languages;
+  languageOptions   = languages;
   lang$             : Observable<string>;
-  showMobileNav   = false;
-  cartUrl         : string;
-  googleAuthUrl   : string;
-  signInUrl       : string;
-  ordersUrl       : string;
-  productUrl      : string;
+  showMobileNav     = false;
+  googleAuthUrl     : string;
 
   readonly query: FormControl = new FormControl();
 
   constructor(
     @Inject(PLATFORM_ID)
     private _platformId : Object,
-    private store: Store<fromRoot.State>, public translate: TranslateService) {
+    private store: Store<fromRoot.State>,
+    public translate: TranslateService) {
 
-    this.lang$ = this.store.select(fromRoot.getLang);
-
-    this.translate.getTranslations$().pipe(filter(Boolean)).subscribe(translations => {
-      this.cartUrl = '/' + this.translate.lang + '/' + (translations['cart'] || 'cart');
-      this.signInUrl = '/' + this.translate.lang + '/authorize/signin';
-      this.ordersUrl = `/${this.translate.lang}/${translations['orders']}`;
-      this.productUrl = `/${this.translate.lang}/${translations['product']}`;
-    });
+    this.lang$ = this.translate.getLang$();
 
     this.googleAuthUrl = environment.apiUrl + '/api/auth/google';
   }

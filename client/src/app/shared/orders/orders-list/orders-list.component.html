@@ -10,7 +10,7 @@
             <button
               mat-raised-button
               color="primary"
-              routerLink="{{orderUrl}}{{order?.orderId}}">
+              [routerLink]="[orderUrl + order?.orderId]">
               Detail
             </button>
           </div>

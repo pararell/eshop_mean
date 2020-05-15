@@ -3,14 +3,17 @@
     <div class="product_card-header">
       <div class="product_card-top">
           <h2 class="product_card-title"> {{product?.title}} </h2>
-          <a class="product_card-detail" routerLink="{{productUrl}}/{{product?.titleUrl}}">Detail</a>
+          <a class="product_card-detail"
+            [routerLink]="[ '/' + lang + '/product/' + product?.titleUrl]">
+            Detail
+          </a>
       </div>
       <div class="product_card-info">
         <p class="product_card-description">{{product?.description}}</p>
       </div>
     </div>
     <a class="product_card-image"
-      [routerLink]="[ '/' + lang + '/' + productUrl + '/' + product?.titleUrl]"
+      [routerLink]="[ '/' + lang + '/product/' + product?.titleUrl]"
       [attr.aria-labelledby]="product?.titleUrl"
       lazySrc [lazyBackground]="'url(' + product.mainImage.url + ')'"
       lazySrcVisible="visible">

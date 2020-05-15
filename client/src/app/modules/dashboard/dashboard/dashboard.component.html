@@ -5,7 +5,7 @@
         <h1>Dashboard</h1>
         <button
           class="orders-button"
-          routerLink="/{{lang}}/dashboard/orders"
+          [routerLink]="['/' + (lang$ | async) + '/dashboard/orders']"
           mat-raised-button
           color="primary"
           aria-label="Orders">

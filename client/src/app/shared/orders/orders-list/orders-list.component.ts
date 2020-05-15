@@ -1,6 +1,5 @@
 import { Component, Input } from '@angular/core';
 
-import { TranslateService } from '../../../services/translate.service';
 import { Order } from '../../../shared/models';
 
 @Component({
@@ -13,7 +12,7 @@ export class OrdersListComponent {
   @Input() orders: Order[];
   @Input() orderUrl: string;
 
-  constructor(public translate: TranslateService) {
+  constructor() {
    }
 
 }

@@ -1,8 +1,7 @@
-import { filter } from 'rxjs/operators';
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 
 import { Category } from '../models';
-import { TranslateService } from '../../services/translate.service';
+
 
 @Component({
   selector: 'app-sidebar',
@@ -20,6 +19,7 @@ export class SidebarComponent  {
   @Input() choosenSort: string;
   @Input() convertVal : number;
   @Input() currency: string;
+  @Input() lang: string;
 
   @Output() changePrice = new EventEmitter<number>();
   @Output() changeSort = new EventEmitter<string>();
@@ -28,13 +28,7 @@ export class SidebarComponent  {
   productsUrl: string;
   categoryUrl: string;
 
-  constructor(private translate: TranslateService) {
-    this.translate.translationsSub$
-    .pipe(filter(Boolean))
-    .subscribe(translations => {
-      this.productsUrl =  '/' + this.translate.lang + '/' + (translations['products'] ? translations['products'].toLowerCase() : 'products');
-      this.categoryUrl = '/' + this.translate.lang + '/' + (translations['category']);
-    });
+  constructor() {
   }
 
   onInputChange($event: string): void {

@@ -240,10 +240,10 @@ export class ApiService {
   }
 
   getLocation$() {
-    const locationFindUrl = 'https://ipinfo.io';
+    const locationFindUrl = 'https://geolocation-db.com/json/6db070f0-7c27-11ea-8264-e974339fc182';
     return this.http.get(locationFindUrl)
       .pipe(map((response: any ) => {
-        const country = response.country ? response.country.toLowerCase() : '';
+        const country = response.country_code ? response.country_code.toLowerCase() : '';
         if (country === 'sk') {
           return country;
         } else if (country === 'cz') {
@@ -251,7 +251,6 @@ export class ApiService {
         } else {
           return 'en';
         }
-
       }))
   }
 

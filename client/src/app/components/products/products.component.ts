@@ -1,6 +1,6 @@
-import { map, distinctUntilChanged, filter, take, first } from 'rxjs/operators';
+import { map, distinctUntilChanged, filter, take } from 'rxjs/operators';
 import { Component, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
-import { Observable, combineLatest, Subscription, pipe } from 'rxjs';
+import { Observable, combineLatest, Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 import { Store } from '@ngrx/store';
@@ -38,9 +38,6 @@ export class ProductsComponent implements OnDestroy {
 
   readonly component = 'productsComponent';
 
-  productsUrl: string;
-  categoryUrl: string;
-
   constructor(
     private store     : Store<fromRoot.State>,
     private route     : ActivatedRoute,
@@ -52,9 +49,7 @@ export class ProductsComponent implements OnDestroy {
     this.category$ = route.params.pipe(map(params => params['category']), distinctUntilChanged());
     this.page$     = route.queryParams.pipe(map(params => params['page']), map(page => parseFloat(page)));
     this.sortBy$   = route.queryParams.pipe(map(params => params['sort']), map(sort => sort));
-    this.lang$     = store.select(fromRoot.getLang).pipe(filter((lang: string) => !!lang));
-
-    this._setUrls();
+    this.lang$     = this.translate.getLang$().pipe(filter((lang: string) => !!lang));
 
     this.filterPrice$ = store.select(fromRoot.getPriceFilter);
     this.loadingProducts$ = store.select(fromRoot.getLoadingProducts);
@@ -113,28 +108,28 @@ export class ProductsComponent implements OnDestroy {
   }
 
   changePage(page: number): void {
-    combineLatest(this.category$, this.sortBy$,
-      (category: string, sortBy: string) => ({category, sortBy}))
-      .pipe(first())
-      .subscribe(({category, sortBy}) => {
+    combineLatest(this.category$, this.sortBy$, this.lang$,
+      (category: string, sortBy: string, lang: string) => ({category, sortBy, lang}))
+      .pipe(take(1))
+      .subscribe(({category, sortBy, lang}) => {
         if (category) {
-          this.router.navigate([this.categoryUrl + '/' + category], { queryParams: { sort: sortBy || 'newest', page: page || 1 } });
+          this.router.navigate(['/' + lang + '/category/' + category], { queryParams: { sort: sortBy || 'newest', page: page || 1 } });
         } else {
-          this.router.navigate([this.productsUrl], { queryParams: { sort: sortBy || 'newest', page: page || 1 } });
+          this.router.navigate(['/' + lang + '/products'], { queryParams: { sort: sortBy || 'newest', page: page || 1 } });
         }
       });
       this.store.dispatch(new actions.UpdatePosition({productsComponent: 0}));
   }
 
   changeSort(sort: string): void {
-    combineLatest(this.category$, this.page$,
-      (category: string, page: number) => ({category, page}))
-      .pipe(first())
-      .subscribe(({category, page}) => {
+    combineLatest(this.category$, this.page$, this.lang$,
+      (category: string, page: number, lang: string) => ({category, page, lang}))
+      .pipe(take(1))
+      .subscribe(({category, page, lang}) => {
         if (category) {
-          this.router.navigate([this.categoryUrl + '/' + category], { queryParams: { sort, page: page || 1 } });
+          this.router.navigate(['/' + lang + '/category/' + category], { queryParams: { sort, page: page || 1 } });
         } else {
-          this.router.navigate([this.productsUrl], { queryParams: { sort, page: page || 1 } });
+          this.router.navigate(['/' + lang + '/products'], { queryParams: { sort, page: page || 1 } });
         }
       });
       this.store.dispatch(new actions.UpdatePosition({productsComponent: 0}));
@@ -143,14 +138,6 @@ export class ProductsComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.categoriesSub.unsubscribe();
     this.productsSub.unsubscribe();
-  }
-
-  private _setUrls(): void {
-    this.translate.getTranslations$().pipe(take(1))
-    .subscribe(translations => {
-      this.productsUrl = '/' + this.translate.lang + '/' + (translations['products'] || 'products');
-      this.categoryUrl = '/' + this.translate.lang + '/' + (translations['category'] || 'category');
-    });
   }
 
   private _loadCategories(): void {

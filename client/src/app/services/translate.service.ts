@@ -4,6 +4,7 @@ import { Injectable, Injector } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 
 import { ApiService } from './api.service';
+import { languages } from '../shared/constants';
 
 @Injectable({
   providedIn: 'root'
@@ -11,23 +12,24 @@ import { ApiService } from './api.service';
 export class TranslateService {
 
   translationsSub$  : BehaviorSubject<any> = new BehaviorSubject({});
-  languageSub$      : BehaviorSubject<any> = new BehaviorSubject('');
-
-  data = {};
-  lang = '';
+  languageSub$      = new BehaviorSubject('');
 
   constructor(private injector: Injector) {}
 
-  private get _apiService(): ApiService {
+  private get apiService(): ApiService {
     return this.injector.get(ApiService);
   }
 
-  private get _cookie(): CookieService {
+  private get cookie(): CookieService {
     return this.injector.get(CookieService);
   }
 
   getLocation$() {
-    return this._apiService.getLocation$().pipe(filter(Boolean, take(1)));
+    return this.apiService.getLocation$().pipe(filter(Boolean, take(1)));
+  }
+
+  getLang$() {
+    return this.languageSub$.asObservable();
   }
 
   getTranslations$(): Observable<any> {
@@ -35,7 +37,7 @@ export class TranslateService {
   }
 
   getTranslationsData(lang: string) {
-    return this._apiService.getLangTranslations(lang).subscribe(
+    return this.apiService.getLangTranslations(lang).subscribe(
       (translation: any) => {
         const translationKeys = translation && translation['keys'] ? translation['keys'] : {};
         this.translationsSub$.next(translationKeys);
@@ -49,18 +51,25 @@ export class TranslateService {
 
   use(lang: string): Promise<{}> {
     return new Promise<{}>((resolve, reject) => {
-      const foundLang   = lang || this._cookie.get('lang');
-      const defaultLang = 'en';
-      const useLang     = foundLang || defaultLang;
-      this.data         = this.getTranslationsData(useLang);
-      this.lang         = useLang;
-
-      if (lang || !this._cookie.get('lang')) {
-        this._cookie.set('lang', useLang);
+      const foundLang = lang || this.cookie.get('eshop_lang');
+      if (!foundLang) {
+        this.getLocation$().toPromise()
+          .then((langByIP: string) => {
+            resolve(this.setTranslations(langByIP));
+          }, (error) => {
+            const defaultLang = languages[0];
+            resolve(this.setTranslations(defaultLang));
+        })
+      } else {
+        resolve(this.setTranslations(foundLang));
       }
-
-      this.languageSub$.next(useLang);
-      resolve(this.data);
     });
+  }
+
+  private setTranslations(lang: string) {
+    this.languageSub$.next(lang);
+    this.cookie.set('eshop_lang', lang);
+
+    return this.getTranslationsData(lang);
   }
 }

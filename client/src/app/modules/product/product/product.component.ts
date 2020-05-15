@@ -11,6 +11,7 @@ import * as actions from '../../../store/actions';
 import * as fromRoot from '../../../store/reducers';
 import { Cart, Product } from '../../../shared/models';
 import { ImagesDialogComponent } from '../../../shared/images-dialog/images-dialog.component';
+import { TranslateService } from '../../../services/translate.service';
 
 
 @Component({
@@ -33,11 +34,14 @@ export class ProductComponent implements OnDestroy {
     private location: Location,
     private meta    : Meta,
     private title   : Title,
-    public dialog   : MatDialog) {
+    public dialog   : MatDialog,
+    private translate : TranslateService) {
 
-    this.lang$ = this.store.select(fromRoot.getLang);
+    this.lang$ = this.translate.getLang$();
 
-    this.routeSub = combineLatest(this.lang$, this.route.params.pipe(map(params => params['id'])), (lang, id) => ({ lang, id }))
+    this.routeSub = combineLatest(
+        this.lang$,
+        this.route.params.pipe(map(params => params['id'])), (lang, id) => ({ lang, id }))
       .subscribe(({ lang, id }) => this.store.dispatch(new actions.GetProduct(id + '?lang=' + lang)));
 
     this.setMetaData();

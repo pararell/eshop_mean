@@ -15,62 +15,64 @@
       <mat-card
         class="product"
         *ngIf="!(productLoading$ | async) && items.product as product">
-        <mat-card-content class="product-content">
-          <div class="product-detail">
-            <h1 class="product-title">{{ product?.title }}</h1>
-            <h2 class="product-description">{{ product?.description }}</h2>
-            <div class="product-info">
-              <div class="product-stock">
-                {{ product?.stock | translate | async }}
-              </div>
-              <div
-                class="product-price"
-                *ngIf="product?.onSale">
-                {{ (product?.salePrice * ((convertVal$ | async) || 1)) | priceFormat }} {{ currency$ | async }}
-              </div>
-              <div
-                class="product-price"
-                *ngIf="!product?.onSale">
-                {{ (product?.regularPrice * ((convertVal$ | async) || 1)) | priceFormat }} {{ currency$ | async }}
-              </div>
-              <button class="product-cart-wrap"
-                *ngIf="(this.lang$ | async) as lang"
-                mat-raised-button
-                color="primary">
-                <app-cart-show
-                  [items]="items?.cartIds[product?._id]"
-                  (add)="cartEvent(product?._id, lang, 'add')"
-                  (remove)="cartEvent(product?._id, lang, 'remove')">
-                </app-cart-show>
-              </button>
-            </div>
-            <mat-chip-list class="product-tags">
-              <mat-chip *ngFor="let tag of product?.tags">{{ tag }}</mat-chip>
-            </mat-chip-list>
-          </div>
-          <div class="product-main-image"
-            [ngStyle]="{'background': 'url(' + product?.mainImage?.url + ') no-repeat'}"></div>
-        </mat-card-content>
-        <mat-tab-group>
-          <mat-tab label="{{ 'Description' | translate | async }}">
-            <mat-card-content class="product-tab-content">
-              <div [innerHTML]="product?.descriptionFull"></div>
-            </mat-card-content>
-          </mat-tab>
-          <mat-tab label="{{ 'Images' | translate | async }}">
-            <mat-card-content class="product-tab-content">
-              <div class="product-images">
-                <div class="product-images-content"
-                  *ngFor="let imageSrc of product?.images; let i = index; let f = first; let l = last;"
-                  (click)="openDialog(i, product?.images)">
-                  <img class="product-images-image"
-                    [lazySrc]="imageSrc"
-                    lazySrcVisible="visible">
+        <ng-container *ngIf="product.visibility && (product.salePrice || product.regularPrice)">
+          <mat-card-content class="product-content">
+            <div class="product-detail">
+              <h1 class="product-title">{{ product?.title }}</h1>
+              <h2 class="product-description">{{ product?.description }}</h2>
+              <div class="product-info">
+                <div class="product-stock">
+                  {{ product?.stock | translate | async }}
                 </div>
+                <div
+                  class="product-price"
+                  *ngIf="product?.onSale">
+                  {{ (product?.salePrice * ((convertVal$ | async) || 1)) | priceFormat }} {{ currency$ | async }}
+                </div>
+                <div
+                  class="product-price"
+                  *ngIf="!product?.onSale">
+                  {{ (product?.regularPrice * ((convertVal$ | async) || 1)) | priceFormat }} {{ currency$ | async }}
+                </div>
+                <button class="product-cart-wrap"
+                  *ngIf="(this.lang$ | async) as lang"
+                  mat-raised-button
+                  color="primary">
+                  <app-cart-show
+                    [items]="items?.cartIds[product?._id]"
+                    (add)="cartEvent(product?._id, lang, 'add')"
+                    (remove)="cartEvent(product?._id, lang, 'remove')">
+                  </app-cart-show>
+                </button>
               </div>
-            </mat-card-content>
-          </mat-tab>
-        </mat-tab-group>
+              <mat-chip-list class="product-tags">
+                <mat-chip *ngFor="let tag of product?.tags">{{ tag }}</mat-chip>
+              </mat-chip-list>
+            </div>
+            <div class="product-main-image"
+              [ngStyle]="{'background': 'url(' + product?.mainImage?.url + ') no-repeat'}"></div>
+          </mat-card-content>
+          <mat-tab-group>
+            <mat-tab label="{{ 'Description' | translate | async }}">
+              <mat-card-content class="product-tab-content">
+                <div [innerHTML]="product?.descriptionFull"></div>
+              </mat-card-content>
+            </mat-tab>
+            <mat-tab label="{{ 'Images' | translate | async }}">
+              <mat-card-content class="product-tab-content">
+                <div class="product-images">
+                  <div class="product-images-content"
+                    *ngFor="let imageSrc of product?.images; let i = index; let f = first; let l = last;"
+                    (click)="openDialog(i, product?.images)">
+                    <img class="product-images-image"
+                      [lazySrc]="imageSrc"
+                      lazySrcVisible="visible">
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-tab>
+          </mat-tab-group>
+        </ng-container>
       </mat-card>
     </ng-container>
   </div>

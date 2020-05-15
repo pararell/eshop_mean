@@ -1,6 +1,8 @@
-import { filter } from 'rxjs/operators';
 import { Component } from '@angular/core';
+import { Observable } from 'rxjs';
+
 import { TranslateService } from '../../../services/translate.service';
+
 
 @Component({
   selector: 'app-dashboard',
@@ -10,14 +12,10 @@ import { TranslateService } from '../../../services/translate.service';
 export class DashboardComponent  {
 
   productAction = '';
-  lang: string;
+  lang$: Observable<string>;
 
   constructor(private translate: TranslateService) {
-    this.translate.translationsSub$
-      .pipe(filter(Boolean))
-      .subscribe(() => {
-        this.lang = translate.lang;
-      });
+    this.lang$ = this.translate.getLang$();
   }
 
   changeAction(action: string): void {

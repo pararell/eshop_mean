@@ -33,11 +33,6 @@ import { TranslateService } from './services/translate.service';
 import { EnvConfigurationService } from './services/env-configuration.service';
 
 
-export function setupTranslateFactory(
-  translateService: TranslateService) {
-    return () => translateService.use('');
-  }
-
 const routes: Routes = routesAll;
 
 @NgModule({
@@ -73,7 +68,7 @@ const routes: Routes = routesAll;
     CookieService,
     {
       provide: APP_INITIALIZER,
-      useFactory: setupTranslateFactory,
+      useFactory: (translateService: TranslateService) => () => translateService.use(''),
       deps: [ TranslateService ],
       multi: true
     },

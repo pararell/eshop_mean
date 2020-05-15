@@ -1,25 +1,32 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { Observable, Subscription } from 'rxjs';
 
 import * as fromRoot from '../../store/reducers';
 import { TranslateService } from '../../services/translate.service';
-import { Observable } from 'rxjs';
+import { Page } from '../../shared/models';
+
 
 @Component({
   selector: 'app-footer',
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss']
 })
-export class FooterComponent {
+export class FooterComponent implements OnDestroy {
   currentYear = new Date().getFullYear();
   lang: string;
-  pages$: Observable<any>;
+  getPagesSub: Subscription;
+  pages$: Observable<Page[]>;
 
   constructor(translate: TranslateService, private store: Store<fromRoot.State>) {
-    translate.languageSub$.subscribe(lang => {
-      this.lang = lang;
-
-      this.pages$ = this.store.select(fromRoot.getPages)
+    this.getPagesSub = translate.getLang$()
+      .subscribe(lang => {
+        this.lang = lang;
+        this.pages$ = this.store.select(fromRoot.getPages)
     });
+  }
+
+  ngOnDestroy(): void {
+    this.getPagesSub.unsubscribe();
   }
 }

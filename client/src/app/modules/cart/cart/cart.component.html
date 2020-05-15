@@ -16,7 +16,7 @@
           <li class="cart-items"
             *ngFor="let cartItem of cart?.items">
             <div class="cart-image-wrap">
-              <a routerLink="{{ productUrl }}/{{ cartItem?.item?.titleUrl }}">
+              <a [routerLink]="[ '/' + (lang$ | async) + '/product/' + cartItem?.item?.titleUrl ]">
                 <img class="cart-image"
                   src="{{ cartItem?.item?.mainImage?.url }}">
               </a>

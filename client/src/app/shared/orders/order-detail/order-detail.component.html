@@ -77,7 +77,7 @@
             <h4 class="order-cart-title">Cart</h4>
             <div *ngFor="let cartItem of order?.cart?.items">
               <div class="order-cart">
-                <a routerLink="/{{translate.lang}}/product/{{cartItem?.item?.titleUrl}}">
+                <a [routerLink]="['/' + (lang$ | async) + '/product/' + cartItem?.item?.titleUrl]">
                   <img class="order-cart-img"
                     src="{{cartItem?.item?.mainImage?.url}}">
                 </a>

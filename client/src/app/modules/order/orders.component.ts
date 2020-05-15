@@ -14,16 +14,13 @@ import { Order } from '../../shared/models';
 })
 export class OrdersComponent {
 
-  orders$   : Observable<Order[]>;
+  orders$  : Observable<Order[]>;
   orderUrl : string;
+  lang$    : Observable<string>;
 
   constructor(private store: Store<fromRoot.State>, private translate: TranslateService) {
-    this.translate.translationsSub$.pipe(filter(Boolean)).subscribe(translations => {
-      this.orderUrl = `/${this.translate.lang}/${translations['orders']}/`;
-    });
-
+    this.lang$ = this.translate.getLang$();
     this.orders$ = this.store.select(fromRoot.getUserOrders);
-
    }
 
 

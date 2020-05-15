@@ -1,41 +1,49 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 
 import { Product } from '../../../shared/models';
 import * as fromRoot from '../../../store/reducers';
 import * as actions from '../../../store/actions'
+import { TranslateService } from '../../../services/translate.service';
 
 @Component({
   selector: 'app-all-products',
   templateUrl: './all-products.component.html',
   styleUrls: ['./all-products.component.scss']
 })
-export class AllProductsComponent  {
+export class AllProductsComponent implements OnDestroy {
   allProduct$ : Observable<Product[]>;
+  getProductsSub: Subscription;
   convertVal$ : Observable<number>;
   currency$   : Observable<string>;
   lang$       : Observable<string>;
 
-  constructor(private store: Store<fromRoot.State>) {
+  constructor(private store: Store<fromRoot.State>, private translate: TranslateService) {
 
+    this.lang$          = this.translate.getLang$().pipe(filter((lang: string) => !!lang));
     this.getAllProducts();
     this.convertVal$    = this.store.select(fromRoot.getConvertVal);
     this.currency$      = this.store.select(fromRoot.getCurrency);
     this.allProduct$    = this.store.select(fromRoot.getAllProducts);
-    this.lang$          = this.store.select(fromRoot.getLang).pipe(filter((lang: string) => !!lang));
   }
 
   getProducts(): void {
-    this.getAllProducts();
+    this.lang$.pipe(take(1))
+      .subscribe((lang: string) => {
+        this.store.dispatch(new actions.GetAllProducts(lang));
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.getProductsSub.unsubscribe();
   }
 
   private getAllProducts(): void {
-    this.store.select(fromRoot.getLang)
-    .pipe(filter(Boolean), take(1))
-    .subscribe((lang: string) => {
-      this.store.dispatch(new actions.GetAllProducts(lang));
+    this.getProductsSub = this.lang$
+      .subscribe((lang: string) => {
+        this.store.dispatch(new actions.GetAllProducts(lang));
     });
   }
 

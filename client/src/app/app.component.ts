@@ -1,13 +1,15 @@
 import { Component, ElementRef, Renderer2, PLATFORM_ID, Inject } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser, Location } from '@angular/common';
 import { Store, select } from '@ngrx/store';
 import { filter, take, delay, skip } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { Router } from '@angular/router';
 
 import { TranslateService } from './services/translate.service';
 import * as fromRoot from './store/reducers';
 import * as actions from './store/actions';
 import { User } from './shared/models';
+import { languages } from './shared/constants';
 
 @Component({
   selector    : 'app-root',
@@ -23,11 +25,13 @@ export class AppComponent {
     private elRef     : ElementRef,
     private renderer  : Renderer2,
     private store     : Store<fromRoot.State>,
+    private router    : Router,
+    private location  : Location,
     private translate : TranslateService,
     @Inject(PLATFORM_ID)
     private platformId : Object) {
 
-    this.translate.languageSub$
+    this.translate.getLang$()
       .pipe(filter(Boolean), take(1))
       .subscribe((lang: string) => {
         const langUpdate = {
@@ -42,6 +46,11 @@ export class AppComponent {
     this.store.select(fromRoot.getLang)
       .pipe(filter(Boolean), skip(1))
       .subscribe((lang: string) => {
+        const checkLang = this.router.url.split('/').filter(Boolean)[0];
+        if (checkLang && languages.includes(checkLang)) {
+          const urlWithNewLang = this.router.url.replace(checkLang, lang);
+          this.location.replaceState(urlWithNewLang);
+        }
         translate.use(lang);
     });
 

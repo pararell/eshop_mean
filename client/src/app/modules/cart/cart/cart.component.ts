@@ -38,11 +38,7 @@ export class CartComponent {
 
     this.store.dispatch(new actions.CleanError());
 
-    this.translate.translationsSub$.pipe(filter(Boolean)).subscribe(translations => {
-      this.productUrl = '/' + this.translate.lang + '/' + (translations['product'] || 'product');
-    });
-
-    this.lang$ = this.store.select(fromRoot.getLang).pipe(filter((lang: string) => !!lang));
+    this.lang$ = this.translate.getLang$();
     this.cart$ = this.store.select(fromRoot.getCart);
     this.order$ = this.store.select(fromRoot.getOrder).pipe(filter(order => !!order));
     this.user$ = this.store.select(fromRoot.getUser);

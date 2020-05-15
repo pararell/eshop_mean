@@ -17,12 +17,12 @@ export class BrowserHttpInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const accessToken = isPlatformBrowser(this._platformId) ? localStorage.getItem('accessToken') : '';
-    const clonedRequest = accessToken
+    const clonedRequest = accessToken && request.url.includes('api/')
       ? request.clone({
           headers: request.headers.set('Authorization', 'Bearer ' + accessToken),
           withCredentials: true
         })
-      : request.clone({ withCredentials: true })
+      : request
 
     if (clonedRequest.method !== 'GET') {
       return next.handle(clonedRequest).pipe(

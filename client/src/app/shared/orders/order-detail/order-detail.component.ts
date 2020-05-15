@@ -25,6 +25,7 @@ export class OrderDetailComponent {
   orderId: string;
   statusOptions = OrderStatus;
   showForm = false;
+  lang$ : Observable<string>;
 
   constructor(
     private store: Store<fromRoot.State>,
@@ -32,6 +33,8 @@ export class OrderDetailComponent {
     private fb: FormBuilder,
     private location: Location,
     public translate: TranslateService) {
+
+    this.lang$ = this.translate.getLang$();
 
     this.statusForm = this.fb.group({
       status: ['', Validators.required ]

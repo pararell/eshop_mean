@@ -40,7 +40,7 @@
         </button>
       </form>
       <a
-        routerLink="/{{lang}}/authorize/signin"
+        [routerLink]="['/' + (lang$ | async) + '/authorize/signin']"
         class="signin-link">
         {{ 'SignIn' | translate | async }}
       </a>

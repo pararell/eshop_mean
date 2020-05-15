@@ -23,6 +23,7 @@
           [sortOptions]="sortOptions"
           [convertVal]="convertVal$ | async"
           [currency]="currency$ | async"
+          [lang]="lang$ | async"
           [choosenSort]="sortBy$ | async"
           (changePrice)="priceRange($event)"
           (changeSort)="changeSort($event)"
