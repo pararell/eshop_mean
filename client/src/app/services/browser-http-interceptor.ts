@@ -4,22 +4,27 @@ import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
 import { TransferState, makeStateKey, StateKey } from '@angular/platform-browser';
 import { isPlatformBrowser } from '@angular/common';
+import { TranslateService } from './translate.service';
 
 @Injectable()
 export class BrowserHttpInterceptor implements HttpInterceptor {
   key  : StateKey<string>;
 
   constructor(
-      private _transferState: TransferState,
+      private transferState: TransferState,
+      private translate: TranslateService,
       @Inject(PLATFORM_ID)
-      private _platformId : Object) {
+      private platformId : Object) {
   }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const accessToken = isPlatformBrowser(this._platformId) ? localStorage.getItem('accessToken') : '';
+    const accessToken = isPlatformBrowser(this.platformId) ? localStorage.getItem('accessToken') : '';
     const clonedRequest = accessToken && request.url.includes('api/')
       ? request.clone({
-          headers: request.headers.set('Authorization', 'Bearer ' + accessToken),
+          setHeaders: {
+            'Authorization': 'Bearer ' + accessToken,
+            'lang': this.translate.lang
+          },
           withCredentials: true
         })
       : request
@@ -33,7 +38,7 @@ export class BrowserHttpInterceptor implements HttpInterceptor {
     }
 
     this.key = makeStateKey<HttpResponse<object>>(clonedRequest.url);
-    const storedResponse: any = this._transferState.get(this.key, null);
+    const storedResponse: any = this.transferState.get(this.key, null);
 
     if (storedResponse) {
       const response = new HttpResponse({ body: storedResponse, status: 200 });

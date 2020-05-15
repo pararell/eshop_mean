@@ -13,6 +13,7 @@ export class TranslateService {
 
   translationsSub$  : BehaviorSubject<any> = new BehaviorSubject({});
   languageSub$      = new BehaviorSubject('');
+  lang: string;
 
   constructor(private injector: Injector) {}
 
@@ -69,6 +70,7 @@ export class TranslateService {
   private setTranslations(lang: string) {
     this.languageSub$.next(lang);
     this.cookie.set('eshop_lang', lang);
+    this.lang = lang;
 
     return this.getTranslationsData(lang);
   }

@@ -40,8 +40,8 @@
                   color="primary">
                   <app-cart-show
                     [items]="items?.cartIds[product?._id]"
-                    (add)="cartEvent(product?._id, lang, 'add')"
-                    (remove)="cartEvent(product?._id, lang, 'remove')">
+                    (add)="cartEvent(product?._id, 'add')"
+                    (remove)="cartEvent(product?._id, 'remove')">
                   </app-cart-show>
                 </button>
               </div>

@@ -16,8 +16,8 @@ export class CartService {
     return cart || new Cart({});
   }
 
-  async addToCart(cart: Cart, getCartChangeDto: GetCartChangeDto) {
-    const {id, lang} = getCartChangeDto;
+  async addToCart(cart: Cart, getCartChangeDto: GetCartChangeDto, lang: string) {
+    const {id} = getCartChangeDto;
     const storeCart = new Cart(cart || {});
     try {
         const product = await this.productModel.findById(id);
@@ -29,8 +29,8 @@ export class CartService {
     }
   }
 
-  async removeFromCart(cart: Cart, getCartChangeDto: GetCartChangeDto) {
-    const {id, lang} = getCartChangeDto;
+  async removeFromCart(cart: Cart, getCartChangeDto: GetCartChangeDto, lang: string) {
+    const {id} = getCartChangeDto;
     const storeCart = new Cart(cart || {});
     try {
         const product = await this.productModel.findById(id);

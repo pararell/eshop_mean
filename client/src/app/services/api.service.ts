@@ -87,8 +87,8 @@ export class ApiService {
     })))
   }
 
-  getCategories(payload) {
-    const categoriesUrl = this.apiUrl + '/api/products/categories?lang=' + payload.lang;
+  getCategories() {
+    const categoriesUrl = this.apiUrl + '/api/products/categories';
     return this.http.get(categoriesUrl)
   }
 
@@ -112,8 +112,8 @@ export class ApiService {
     return this.http.patch(eidtProduct, product);
   }
 
-  getAllProducts(lang: string) {
-    const productUrl = this.apiUrl + '/api/products/all?lang=' + lang;
+  getAllProducts() {
+    const productUrl = this.apiUrl + '/api/products/all';
     return this.http.get(productUrl);
   }
 

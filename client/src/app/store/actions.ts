@@ -189,7 +189,7 @@ export class GetProductsSuccess implements Action {
 
 export class GetCategories implements Action {
   readonly type = EshopActions.GetCategories;
-   constructor(public payload: any) {
+   constructor() {
   }
 }
 
@@ -296,7 +296,7 @@ export class GetUserOrdersSuccess implements Action {
 
 export class GetAllProducts implements Action {
   readonly type = EshopActions.GetAllProducts;
-   constructor(public payload: any) {
+   constructor() {
   }
 }
 

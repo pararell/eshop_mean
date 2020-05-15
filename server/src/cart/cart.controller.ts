@@ -4,6 +4,7 @@ import {
     Query,
     ValidationPipe,
     Session,
+    Headers,
   } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { GetCartChangeDto } from './dto/cart-change.dto';
@@ -22,8 +23,9 @@ import { Cart } from './utils/cart';
     @Get('/add')
     async addToCart(
         @Session() session,
-        @Query(ValidationPipe) getCartChangeDto : GetCartChangeDto): Promise<Cart> {
-        const newCart = await this.cartService.addToCart(session.cart, getCartChangeDto);
+        @Query(ValidationPipe) getCartChangeDto : GetCartChangeDto,
+        @Headers('lang') lang: string): Promise<Cart> {
+        const newCart = await this.cartService.addToCart(session.cart, getCartChangeDto, lang);
         session.cart = newCart;
         return newCart;
     }
@@ -31,8 +33,9 @@ import { Cart } from './utils/cart';
     @Get('/remove')
     async removeFromCart(
         @Session() session,
-        @Query(ValidationPipe) getCartChangeDto : GetCartChangeDto): Promise<Cart> {
-        const newCart = await this.cartService.removeFromCart(session.cart, getCartChangeDto);
+        @Query(ValidationPipe) getCartChangeDto : GetCartChangeDto,
+        @Headers('lang') lang: string): Promise<Cart> {
+        const newCart = await this.cartService.removeFromCart(session.cart, getCartChangeDto, lang);
         session.cart = newCart;
         return newCart;
     }

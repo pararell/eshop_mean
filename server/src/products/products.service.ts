@@ -11,8 +11,8 @@ import { User } from '../auth/models/user.model';
 export class ProductsService {
   constructor(@InjectModel('Product') private productModel: ProductModel) {}
 
-  async getProducts(getProductsDto: GetProductsDto): Promise<ProductsWithPagination> {
-    const { lang, page, sort, category, search } = getProductsDto;
+  async getProducts(getProductsDto: GetProductsDto, lang: string): Promise<ProductsWithPagination> {
+    const { page, sort, category, search } = getProductsDto;
     const searchQuery = search      ? { titleUrl:  new RegExp(search, 'i') }                : {};
     const categoryQuery = category  ? { [`${lang}.categories`] : new RegExp(category, 'i' ) } : {};
 

@@ -86,17 +86,11 @@ export class ProductsComponent implements OnDestroy {
   }
 
   addToCart(id: string): void {
-    this.lang$.pipe(take(1))
-    .subscribe(lang => {
-      this.store.dispatch(new actions.AddToCart('?id=' + id + '&lang=' + lang));
-    });
+    this.store.dispatch(new actions.AddToCart('?id=' + id));
   }
 
   removeFromCart(id: string): void {
-    this.lang$.pipe(take(1))
-    .subscribe(lang => {
-      this.store.dispatch(new actions.RemoveFromCart('?id=' + id + '&lang=' + lang));
-    });
+    this.store.dispatch(new actions.RemoveFromCart('?id=' + id));
   }
 
   priceRange(price: number): void {
@@ -141,7 +135,7 @@ export class ProductsComponent implements OnDestroy {
   }
 
   private _loadCategories(): void {
-    this.categoriesSub = this.lang$.subscribe(lang => this.store.dispatch(new actions.GetCategories({lang})));
+    this.categoriesSub = this.lang$.subscribe(() => this.store.dispatch(new actions.GetCategories()));
   }
 
   private _loadProducts(): void {

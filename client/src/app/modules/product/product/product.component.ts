@@ -65,12 +65,12 @@ export class ProductComponent implements OnDestroy {
     this.currency$ = this.store.select(fromRoot.getCurrency);
   }
 
-  cartEvent(id: string, lang: string, type: string): void {
+  cartEvent(id: string, type: string): void {
     if (type === 'add') {
-      this.store.dispatch(new actions.AddToCart('?id=' + id + '&lang=' + lang));
+      this.store.dispatch(new actions.AddToCart('?id=' + id));
     }
     if (type === 'remove') {
-      this.store.dispatch(new actions.RemoveFromCart('?id=' + id + '&lang=' + lang));
+      this.store.dispatch(new actions.RemoveFromCart('?id=' + id));
     }
   }
 

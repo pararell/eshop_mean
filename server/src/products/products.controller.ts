@@ -10,6 +10,7 @@ import {
     Post,
     Body,
     Patch,
+    Headers,
   } from '@nestjs/common';
   import { ProductsService } from './products.service';
 import { GetProductsDto } from './dto/get-products';
@@ -27,12 +28,12 @@ import { User } from '../auth/models/user.model';
 
     @Get()
     getProducts(
-      @Query(ValidationPipe) getProductsDto: GetProductsDto): Promise<ProductsWithPagination> {
-      return this.productService.getProducts(getProductsDto);
+      @Query(ValidationPipe) getProductsDto: GetProductsDto, @Headers('lang') lang: string): Promise<ProductsWithPagination> {
+      return this.productService.getProducts(getProductsDto, lang);
     }
 
     @Get('/categories')
-    getCategories(@Query('lang') lang: string): Promise<Category[]> {
+    getCategories(@Headers('lang') lang: string): Promise<Category[]> {
       return this.productService.getCategories(lang);
     }
 
@@ -43,7 +44,7 @@ import { User } from '../auth/models/user.model';
 
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Get('/all')
-    getAllProducts(@Query('lang') lang: string): Promise<Product[]> {
+    getAllProducts(@Headers('lang') lang: string): Promise<Product[]> {
       return this.productService.getAllProducts(lang);
     }
 

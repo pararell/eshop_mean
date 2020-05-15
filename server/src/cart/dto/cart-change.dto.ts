@@ -4,6 +4,5 @@ export class GetCartChangeDto {
   @IsNotEmpty()
   id: string;
 
-  @IsNotEmpty()
-  lang: string;
+  lang?: string;
 }

@@ -30,10 +30,7 @@ export class AllProductsComponent implements OnDestroy {
   }
 
   getProducts(): void {
-    this.lang$.pipe(take(1))
-      .subscribe((lang: string) => {
-        this.store.dispatch(new actions.GetAllProducts(lang));
-    });
+    this.store.dispatch(new actions.GetAllProducts());
   }
 
   ngOnDestroy(): void {
@@ -43,7 +40,7 @@ export class AllProductsComponent implements OnDestroy {
   private getAllProducts(): void {
     this.getProductsSub = this.lang$
       .subscribe((lang: string) => {
-        this.store.dispatch(new actions.GetAllProducts(lang));
+        this.store.dispatch(new actions.GetAllProducts());
     });
   }
 
