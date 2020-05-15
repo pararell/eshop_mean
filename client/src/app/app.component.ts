@@ -79,12 +79,11 @@ export class AppComponent {
       }
     });
 
-    this.store.select(fromRoot.getCart).pipe(filter(() => isPlatformBrowser(this.platformId)), take(1))
-      .subscribe(cart => {
-      if (!cart) {
+    this.translate.getLang$()
+      .pipe(filter(lang => !!lang && isPlatformBrowser(this.platformId)))
+      .subscribe(lang => {
         this.store.dispatch(new actions.GetCart());
-      }
-    });
+      })
   }
 
   onScrolling(event: Event): void {

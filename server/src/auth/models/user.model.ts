@@ -1,5 +1,5 @@
 import { Document } from 'mongoose';
-import { Product } from '../../products/models/product.model';
+import { CartModel } from '../../cart/models/cart.model';
 
 export interface User extends Document {
     _id                 : string;
@@ -7,7 +7,7 @@ export interface User extends Document {
     password?           : string;
     name?               : string;
     salt?               : string;
-    cart?               : { items: Product[], totalQty: number; totalPrice: number };
+    cart?               : CartModel;
     images?             : string[];
     roles?              : string[];
     googleId?           : string;

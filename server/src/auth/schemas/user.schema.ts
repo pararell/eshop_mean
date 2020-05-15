@@ -7,7 +7,7 @@ const UserSchema = new Schema({
     password        : String,
     name            : String,
     salt            : String,
-    cart            : { type: Schema.Types.Mixed, default: {items: [], totalQty: 0, totalPrice: 0} },
+    cart            : { type: Schema.Types.Mixed, default: {items: []} },
     images          : [],
     roles           : [],
 });

@@ -1,10 +1,12 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+
 import { GetProductsDto } from './dto/get-products';
 import { Product, ProductModel, ProductsWithPagination } from './models/product.model';
 import { GetProductDto } from './dto/get-product';
 import { Category } from './models/category.model';
 import { User } from '../auth/models/user.model';
+import { prepareProduct } from '../shared/utils/prepareUtils';
 
 
 @Injectable()
@@ -27,7 +29,7 @@ export class ProductsService {
 
     return {
         ...productsWithPagination,
-        all: productsWithPagination.all.map(product => this.prepareProduct(product, lang))
+        all: productsWithPagination.all.map(product => prepareProduct(product, lang))
       }
   }
 
@@ -51,7 +53,7 @@ export class ProductsService {
     }
 
     return lang
-      ? this.prepareProduct(found, lang)
+      ? prepareProduct(found, lang)
       : found;
   }
 
@@ -96,7 +98,7 @@ export class ProductsService {
 
   async getAllProducts(lang: string): Promise<Product[]> {
     const products = await this.productModel.find({});
-    return products.map(product => this.prepareProduct(product, lang));
+    return products.map(product => prepareProduct(product, lang));
   }
 
 
@@ -114,21 +116,6 @@ export class ProductsService {
        return `-${lang}.dateAdded`;
     }
   };
-
-  private prepareProduct = (product, lang: string): Product => ({
-      _id       : product._id,
-      titleUrl  : product.titleUrl,
-      mainImage : product.mainImage,
-      onSale    : product.onSale,
-      stock     : product.stock,
-      visibility: product.visibility,
-      shipping  : product.shipping,
-      images    : product.images,
-      _user     : product._user,
-      dateAdded : product.dateAdded,
-      ...product[lang]
-  });
-
 
   private prepareCategories = (products, lang: string): Category[] => {
     return products

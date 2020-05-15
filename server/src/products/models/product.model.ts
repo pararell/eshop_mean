@@ -1,4 +1,4 @@
-import { Document, Model, DocumentQuery } from "mongoose";
+import { Document, Model, DocumentQuery } from 'mongoose';
 
 export interface Product extends Document {
     _id                 : string;
@@ -7,8 +7,8 @@ export interface Product extends Document {
     descriptionFull     : any;
     categories          : string[];
     tags                : string[];
-    regularPrice        : Number;
-    salePrice           : Number;
+    regularPrice        : number;
+    salePrice           : number;
     titleUrl            : string;
     onSale              : boolean;
     stock               : string;

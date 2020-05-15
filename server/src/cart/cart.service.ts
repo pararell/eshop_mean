@@ -3,67 +3,51 @@ import { InjectModel } from '@nestjs/mongoose';
 
 import { Cart } from './utils/cart';
 import { GetCartChangeDto } from './dto/cart-change.dto';
-import { Product, ProductModel } from '../products/models/product.model';
-
-
+import { ProductModel } from '../products/models/product.model';
+import { CartModel } from './models/cart.model';
+import { prepareCart } from '../shared/utils/prepareUtils';
 
 
 @Injectable()
 export class CartService {
   constructor(@InjectModel('Product') private productModel: ProductModel) {}
 
-  async getCart(cart: Cart) {
-    return cart || new Cart({});
+  async getCart(cart: Cart, lang: string): Promise<CartModel> {
+    const savedCart = cart || new Cart({});
+    return prepareCart(savedCart, lang);
   }
 
-  async addToCart(cart: Cart, getCartChangeDto: GetCartChangeDto, lang: string) {
+  async addToCart(cart: Cart, getCartChangeDto: GetCartChangeDto, lang: string): Promise<{newCart, langCart}> {
     const {id} = getCartChangeDto;
-    const storeCart = new Cart(cart || {});
+    const newCart: any = new Cart(cart || {});
     try {
         const product = await this.productModel.findById(id);
-        const updatedProduct = this.prepareProduct(product, lang);
-        storeCart.add(updatedProduct, id);
-        return storeCart;
+        newCart.add(product, id);
+        return {newCart, langCart: prepareCart(newCart, lang)}
     } catch {
-        return storeCart;
+       return {newCart, langCart: prepareCart(newCart, lang)}
     }
   }
 
-  async removeFromCart(cart: Cart, getCartChangeDto: GetCartChangeDto, lang: string) {
+  async removeFromCart(cart: CartModel, getCartChangeDto: GetCartChangeDto, lang: string): Promise<{newCart, langCart}> {
     const {id} = getCartChangeDto;
-    const storeCart = new Cart(cart || {});
+    const newCart = new Cart(cart || {});
     try {
         const product = await this.productModel.findById(id);
 
         if (!product) {
-          const itIsInCart = storeCart.check(id);
+          const itIsInCart = newCart.check(id);
 
           if (itIsInCart) {
-            return new Cart({});
+            const emptyCart = new Cart({});
+            return {newCart: emptyCart, langCart: emptyCart};
           }
         }
-        const updatedProduct = this.prepareProduct(product, lang);
-        storeCart.remove(updatedProduct, id);
-        return storeCart;
+        newCart.remove(id);
+        return {newCart, langCart: prepareCart(newCart, lang)}
     } catch {
-        return storeCart;
+        return {newCart, langCart: prepareCart(newCart, lang)}
     }
   }
-
-
-  private prepareProduct = (product, lang: string): Product => ({
-      _id       : product._id,
-      titleUrl  : product.titleUrl,
-      mainImage : product.mainImage,
-      onSale    : product.onSale,
-      stock     : product.stock,
-      visibility: product.visibility,
-      shipping  : product.shipping,
-      images    : product.images,
-      _user     : product._user,
-      dateAdded : product.dateAdded,
-      ...product[lang]
-  });
-
 
 }

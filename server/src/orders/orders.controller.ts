@@ -8,6 +8,7 @@ import {
     Param,
     Patch,
     UnprocessableEntityException,
+    Headers
   } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -18,6 +19,8 @@ import { OrderDto } from './dto/order.dto';
 import { Order } from './models/order.model';
 import { RolesGuard } from '../auth/roles.guard';
 import { Cart } from '../cart/utils/cart';
+import { prepareCart } from '../shared/utils/prepareUtils';
+import { CartModel } from '../cart/models/cart.model';
 
 
   @Controller('api/orders')
@@ -31,9 +34,9 @@ import { Cart } from '../cart/utils/cart';
     }
 
     @Post('/add')
-    async addOrder(@Body() orderDto: OrderDto, @Session() session): Promise<{error: string; result: Order, cart: Cart}> {
+    async addOrder(@Body() orderDto: OrderDto, @Session() session, @Headers('lang') lang: string): Promise<{error: string; result: Order, cart: Cart}> {
       try {
-        const successResult = await this.ordersService.addOrder(orderDto, session.cart);
+        const successResult = await this.ordersService.addOrder(orderDto, session.cart, lang);
         if (successResult && !successResult.error) {
           const emptyCart = new Cart({});
           session.cart = emptyCart;
@@ -47,16 +50,16 @@ import { Cart } from '../cart/utils/cart';
     }
 
     @Post('/stripe')
-    async orderWithStripe(@Body() body, @Session() session): Promise<{error: string; result: Order, cart: Cart}> {
+    async orderWithStripe(@Body() body, @Session() session, @Headers('lang') lang: string): Promise<{error: string; result: Order, cart: CartModel}> {
       try {
-        const successResult = await this.ordersService.orderWithStripe(body, session.cart);
+        const successResult = await this.ordersService.orderWithStripe(body, session.cart, lang);
 
         if (successResult && !successResult.error) {
           const emptyCart = new Cart({});
           session.cart = emptyCart;
           return {...successResult, cart: emptyCart}
         } else {
-          return {...successResult, cart: session.cart}
+          return {...successResult, cart: prepareCart(session.cart, lang)}
         }
       } catch (e) {
         throw new UnprocessableEntityException();

@@ -8,6 +8,8 @@ import { User } from '../auth/models/user.model';
 import { OrderDto } from './dto/order.dto';
 import { sendMsg } from '../shared/utils/mailer';
 import { Cart } from '../cart/utils/cart';
+import { prepareCart } from '../shared/utils/prepareUtils';
+import { CartModel } from '../cart/models/cart.model';
 
 
 const secret = process.env.STRIPE_SECRETKEY;
@@ -24,18 +26,19 @@ export class OrdersService {
     return orders;
   }
 
-  async addOrder(orderDto: OrderDto, cart: Cart): Promise<{error: string; result: Order}> {
-    const newOrder = await new this.orderModel(this.createOrder(orderDto, cart, 'PAYMENT_ON_DELIVERY'));
+  async addOrder(orderDto: OrderDto, cart: Cart, lang): Promise<{error: string; result: Order}> {
+    const cartForLang = prepareCart(cart, lang);
+    const newOrder = await new this.orderModel(this.createOrder(orderDto, cartForLang, 'PAYMENT_ON_DELIVERY'));
     newOrder.save();
     try {
-      this.sendmail(newOrder.customerEmail, newOrder, cart);
+      this.sendmail(newOrder.customerEmail, newOrder, cartForLang);
 
       if (process.env.ADMIN_EMAILS) {
         process.env.ADMIN_EMAILS
           .split(',')
           .filter(Boolean)
           .forEach(email => {
-            this.sendmail(email, newOrder, cart);
+            this.sendmail(email, newOrder, cartForLang);
           });
       }
     } catch (error) {
@@ -50,9 +53,10 @@ export class OrdersService {
     return orders;
   }
 
-  async orderWithStripe(body, cart: Cart): Promise<{error: string; result: Order}> {
+  async orderWithStripe(body, cart: Cart, lang: string): Promise<{error: string; result: Order}> {
+    const cartForLang = prepareCart(cart, lang);
     const charge = await stripe.charges.create({
-      amount        : cart.totalPrice * 100,
+      amount        : cartForLang.totalPrice * 100,
       currency      : body.currency,
       description   : 'Credit Card Payment',
       source        : body.token.id,
@@ -62,18 +66,18 @@ export class OrdersService {
 
       if (charge) {
         try {
-          const newOrder = await new this.orderModel(this.createOrder(requestOrder, cart, 'WITH_PAYMENT'));
+          const newOrder = await new this.orderModel(this.createOrder(requestOrder, cartForLang, 'WITH_PAYMENT'));
           const capturePayment = await stripe.charges.capture(charge.id);
           if (capturePayment) {
             newOrder.save();
-            this.sendmail(newOrder.customerEmail, newOrder, cart);
+            this.sendmail(newOrder.customerEmail, newOrder, cartForLang);
 
             if (process.env.ADMIN_EMAILS) {
               process.env.ADMIN_EMAILS
                 .split(',')
                 .filter(Boolean)
                 .forEach(email => {
-                  this.sendmail(email, newOrder, cart);
+                  this.sendmail(email, newOrder, cartForLang);
                 });
             }
         }
@@ -98,7 +102,7 @@ export class OrdersService {
   }
 
 
-  private createOrder = (orderDto: OrderDto, cart: Cart, type: string) => {
+  private createOrder = (orderDto: OrderDto, cart: CartModel, type: string) => {
     const { addresses, currency, email, userId, cardId, notes } = orderDto;
     const orderId = 'order' + new Date().getTime() + 't' + Math.floor(Math.random() * 1000 + 1);
     const date = Date.now();
@@ -125,7 +129,7 @@ export class OrdersService {
   }
 
 
-  private sendmail = async (email: string, order: Order, cart: Cart) => {
+  private sendmail = async (email: string, order: Order, cart: CartModel) => {
       const emailType = {
         subject: 'Order',
         cart,
