@@ -4,40 +4,25 @@ import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
 import { TransferState, makeStateKey, StateKey } from '@angular/platform-browser';
 import { isPlatformBrowser } from '@angular/common';
-import { TranslateService } from './translate.service';
 
 @Injectable()
 export class BrowserHttpInterceptor implements HttpInterceptor {
   key  : StateKey<string>;
 
   constructor(
-      private transferState: TransferState,
-      private translate: TranslateService,
-      @Inject(PLATFORM_ID)
-      private platformId : Object) {
+      private transferState: TransferState) {
   }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const accessToken = isPlatformBrowser(this.platformId) ? localStorage.getItem('accessToken') : '';
-    const clonedRequest = accessToken && request.url.includes('api/')
-      ? request.clone({
-          setHeaders: {
-            'Authorization': 'Bearer ' + accessToken,
-            'lang': this.translate.lang
-          },
-          withCredentials: true
-        })
-      : request
-
-    if (clonedRequest.method !== 'GET') {
-      return next.handle(clonedRequest).pipe(
+    if (request.method !== 'GET') {
+      return next.handle(request).pipe(
         catchError((error: HttpResponse<any>) => {
           this._handleError(error.url, error.status);
           return throwError(error);
         }));
     }
 
-    this.key = makeStateKey<HttpResponse<object>>(clonedRequest.url);
+    this.key = makeStateKey<HttpResponse<object>>(request.url);
     const storedResponse: any = this.transferState.get(this.key, null);
 
     if (storedResponse) {
@@ -45,7 +30,7 @@ export class BrowserHttpInterceptor implements HttpInterceptor {
       return of(response);
     }
 
-    return next.handle(clonedRequest).pipe(
+    return next.handle(request).pipe(
       catchError((error: HttpResponse<any>) => {
         this._handleError(error.url, error.status);
         return throwError(error);

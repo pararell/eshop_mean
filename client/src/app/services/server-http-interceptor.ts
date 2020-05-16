@@ -11,13 +11,13 @@ export class ServerHttpInterceptor implements HttpInterceptor {
 
   constructor(
     @Optional() @Inject('serverUrl') protected serverUrl: string,
-    private _transferState: TransferState) {}
+    private transferState: TransferState) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(tap(event => {
     if (event instanceof HttpResponse && (request.method === 'GET' && !request.url.includes('api/auth') && !request.url.includes('api/eshop/config'))) {
       this.key = makeStateKey<HttpResponse<object>>(request.url);
-      this._transferState.set(this.key, event.body);
+      this.transferState.set(this.key, event.body);
       }
     }));
   }
