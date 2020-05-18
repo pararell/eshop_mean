@@ -48,6 +48,7 @@ export class DashboardComponent implements OnDestroy {
 
   changeTab(tab: number) {
     this.activeTab = tab;
+    this.store.dispatch(new actions.GetAllProducts());
   }
 
   ngOnDestroy(): void {
