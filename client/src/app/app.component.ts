@@ -9,7 +9,7 @@ import { TranslateService } from './services/translate.service';
 import * as fromRoot from './store/reducers';
 import * as actions from './store/actions';
 import { User } from './shared/models';
-import { languages, currency } from './shared/constants';
+import { languages, currency, accessTokenKey } from './shared/constants';
 
 @Component({
   selector    : 'app-root',
@@ -71,7 +71,7 @@ export class AppComponent {
     this.store.select(fromRoot.getUser)
       .subscribe((user: User) => {
       if (user && user.accessToken && isPlatformBrowser(this.platformId)) {
-        localStorage.setItem('accessToken', user.accessToken);
+        localStorage.setItem(accessTokenKey, user.accessToken);
       }
 
       if (user && user.email) {

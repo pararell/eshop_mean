@@ -1,3 +1,5 @@
+import { languages } from './constants';
+
 export interface Translations {
   lang: string;
   keys: {
@@ -99,7 +101,5 @@ export interface Page {
   _id?                : string;
   titleUrl            : string;
   dateAdded?          : Date;
-  en?                 : {title: string; contentHTML: string};
-  sk?                 : {title: string; contentHTML: string};
-  cs?                 : {title: string; contentHTML: string};
+  [lang: string]      : any | { title?: string; contentHTML?: string };
 }

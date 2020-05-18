@@ -1,22 +1,26 @@
 import * as mongoose from 'mongoose';
 const { Schema } = mongoose;
 import * as paginate from '../../shared/utils/paginate';
+import { languages } from '../../shared/constans';
 
-const getProductLangInfo = () => {
-  return {
-    title: String,
-    description: String,
-    descriptionFull: [],
-    categories: [],
-    tags: [],
-    regularPrice: Number,
-    salePrice: Number,
-    onSale: Boolean,
-    stock: String,
-    visibility: Boolean,
-    shipping: String,
-  };
-};
+const getProductLangInfo = (): {[lang: string]: {}} => {
+  return languages
+    .reduce((prev, lang) => ({...prev,
+      [lang]:
+      { title: String,
+        description: String,
+        descriptionFull: [],
+        categories: [],
+        tags: [],
+        regularPrice: Number,
+        salePrice: Number,
+        onSale: Boolean,
+        stock: String,
+        visibility: Boolean,
+        shipping: String
+      }}),
+    {})
+}
 
 const ProductSchema = new Schema({
   titleUrl: String,
@@ -27,9 +31,7 @@ const ProductSchema = new Schema({
   images: [],
   _user: { type: Schema.Types.ObjectId, ref: 'user' },
   dateAdded: Date,
-  sk: getProductLangInfo(),
-  cs: getProductLangInfo(),
-  en: getProductLangInfo(),
+  ...getProductLangInfo()
 });
 
 ProductSchema.plugin(paginate.pagination);

@@ -10,6 +10,7 @@ import { Store } from '@ngrx/store';
 import * as fromRoot from '../store/reducers';
 import { environment } from '../../environments/environment';
 import { Translations, Pagination } from '../shared/models';
+import { countryLang, accessTokenKey } from '../shared/constants';
 
 
 
@@ -214,7 +215,7 @@ export class ApiService {
   setUploader({options, titleUrl}): Observable<any> {
     if (isPlatformBrowser(this.platformId)) {
       const titleUrlQuery = titleUrl ? '?titleUrl=' + titleUrl : '';
-      const accessToken = localStorage.getItem('accessToken');
+      const accessToken = localStorage.getItem(accessTokenKey);
       const authorizationHeader = accessToken ? {name: 'Authorization', value: 'Bearer ' + accessToken } : {};
 
       this.uploaderSub.next(new FileUploader({
@@ -252,21 +253,14 @@ export class ApiService {
     return this.http.get(locationFindUrl)
       .pipe(map((response: any ) => {
         const country = response.country_code ? response.country_code.toLowerCase() : '';
-        if (country === 'sk') {
-          return country;
-        } else if (country === 'cz') {
-          return 'cs';
-        } else {
-          return 'en';
-        }
+        return countryLang[country] || country['default'];
       }))
   }
 
   setHeaders() {
     this.store.select(fromRoot.getLang)
-      .pipe(filter(lang => !!lang))
       .subscribe(lang => {
-        const accessToken = isPlatformBrowser(this.platformId) ? localStorage.getItem('accessToken') : '';
+        const accessToken = isPlatformBrowser(this.platformId) ? localStorage.getItem(accessTokenKey) : '';
         let headers = new HttpHeaders();
         headers = headers.set('Authorization', 'Bearer ' + accessToken).set('lang', lang);
         this.requestOptions = { headers, withCredentials: true };

@@ -9,7 +9,7 @@ import * as fromRoot from '../../store/reducers';
 import * as actions from '../../store/actions';
 import { TranslateService } from '../../services/translate.service';
 import { environment } from '../../../environments/environment';
-import { languages, currency, accessToken } from '../../shared/constants';
+import { languages, currency, accessTokenKey } from '../../shared/constants';
 import { Cart, User, Order } from '../../shared/models';
 
 @Component({
@@ -69,7 +69,7 @@ export class HeaderComponent implements OnInit {
 
   onLogout(): void {
     if (isPlatformBrowser(this._platformId)) {
-      localStorage.removeItem(accessToken);
+      localStorage.removeItem(accessTokenKey);
     }
     this.store.dispatch(new actions.StoreUser(null));
   }

@@ -5,6 +5,7 @@ import * as actions from '../../../store/actions';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../../../store/reducers';
 import { isPlatformBrowser } from '@angular/common';
+import { accessTokenKey } from '../../../shared/constants';
 
 @Component({
   templateUrl: './jwtToken.component.html',
@@ -25,7 +26,7 @@ export class JwtTokenComponent  {
         take(1),
         filter(() => isPlatformBrowser(this.platformId)))
     .subscribe(accessToken => {
-      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem(accessTokenKey, accessToken);
       this.store.dispatch(new actions.GetUser());
       this.router.navigate(['/']);
     })

@@ -1,12 +1,19 @@
 export const languages = ['en', 'sk', 'cs'];
 
 export const currency = {
-  'cs' : 'CZK',
+  'en' : 'EUR',
   'sk' : 'EUR',
-  'en' : 'EUR'
+  'cs' : 'CZK'
 }
 
-export const accessToken = 'accessToken';
+export const countryLang = {
+  default: 'en',
+  'en' : 'en',
+  'sk' : 'sk',
+  'cz' : 'cs',
+}
+
+export const accessTokenKey = 'accessToken';
 
 export const sortOptions = [{
   name: 'Newest',

@@ -5,7 +5,5 @@ export class PageDto {
   @IsString()
   titleUrl: string;
 
-  en?: { title: string; contentHTML: string };
-  sk?: { title: string; contentHTML: string };
-  cs?: { title: string; contentHTML: string };
+  [lang: string]: any | { title: string; contentHTML: string };
 }
