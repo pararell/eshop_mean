@@ -1,3 +1,5 @@
+@import 'variables';
+
 .sidebar {
   padding: 10px;
   background: #fff;
@@ -30,12 +32,12 @@
   }
 
   &-item {
-    color: #064887;
+    color: $primary-color;
     width: 100%;
     padding: 5px 10px;
 
     &.active {
-      background-color: #064887;
+      background-color: $primary-color;
       color: #fff;
     }
   }

@@ -1,7 +1,7 @@
 {
-  "name": "Bluetooth Eshop",
-  "short_name": "BtEshop",
-  "description": "Eshop with bluetoth headphones and widgets",
+  "name": "Eshop",
+  "short_name": "Eshop",
+  "description": "Eshop template",
   "icons": [{
     "src": "assets/icon-128x128.png",
       "sizes": "128x128",
@@ -22,5 +22,5 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#064887"
+  "theme_color": "#000428"
 }

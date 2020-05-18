@@ -5,13 +5,6 @@ body {
   height: 100%;
 }
 
-.full-width {
-  display: flex;
-  min-height: 100vh;
-  flex-direction: column;
-  width: 100%;
-}
-
 .main-scroll-wrap {
   position: absolute;
   scroll-behavior: smooth;
@@ -55,45 +48,15 @@ a:hover {
   font-size: 48px;
 }
 
-@mixin stripes(
-  $color1: #000460,
-  $color2: transparent,
-  $angle: 0deg,
-  $stripe1-width: 25px,
-  $stripe2-width: null
-) {
-  @if ($stripe2-width == null) {
-    $stripe2-width: $stripe1-width;
-  }
-
-  $tile-size: ($stripe1-width + $stripe2-width) * 2;
-  $stripe2-start: ($stripe1-width / $tile-size) * 100%;
-  $stripe3-start: $stripe2-start + (($stripe2-width / $tile-size) * 100%);
-  $stripe4-start: $stripe3-start + (($stripe1-width / $tile-size) * 100%);
-
-  background-size: $tile-size $tile-size;
-  background-image: linear-gradient(
-    $angle,
-    $color1,
-    $color1 $stripe2-start,
-    $color2 $stripe2-start,
-    $color2 $stripe3-start,
-    $color1 $stripe3-start,
-    $color1 $stripe4-start,
-    $color2 $stripe4-start,
-    $color2
-  );
-  background-repeat: repeat;
-}
-
 .main {
   flex: 1 0 auto;
 
-  @include stripes(#000460, #fff, 45deg, 1px, 80px);
+  @include add-main-background($primary-color, #fff, 45deg, 1px, 80px);
 }
 
 .container {
   padding: 15px;
+
   @media screen and (max-width: 600px) {
     padding: 5px !important;
   }
@@ -122,6 +85,7 @@ a:hover {
     .main-wrap {
       grid-area: main;
     }
+
     .sidebar-wrap {
       grid-area: sidebar;
     }
@@ -136,8 +100,4 @@ a:hover {
   opacity: 0.5;
   cursor: not-allowed !important;
   pointer-events: none !important;
-}
-
-.btn {
-  background-color: $secondary-color !important;
 }
