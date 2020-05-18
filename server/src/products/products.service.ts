@@ -82,16 +82,16 @@ export class ProductsService {
     const found = await this.productModel.findOneAndUpdate({ titleUrl }, productReq, {upsert: true});
 
     if (!found) {
-      throw new NotFoundException(`Product with title ${name} not found`);
+      throw new NotFoundException(`Product with title ${titleUrl} not found`);
     }
   }
 
 
-  async deleteProductByName(name: string): Promise<void> {
-      const found = await this.productModel.findOneAndRemove({ titleUrl: name });
+  async deleteProductByName(titleUrl: string): Promise<void> {
+      const found = await this.productModel.findOneAndRemove({ titleUrl });
 
       if (!found) {
-        throw new NotFoundException(`Product with title ${name} not found`);
+        throw new NotFoundException(`Product with title ${titleUrl} not found`);
       }
   }
 

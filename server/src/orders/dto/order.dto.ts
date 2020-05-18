@@ -8,15 +8,15 @@ export class OrderDto {
   @MaxLength(50)
   email: string;
 
-  addresses : Address[];
-  cart      : Cart;
+  addresses: Address[];
+  cart: Cart;
   userId?   : string;
   notes?    : string;
   cardId?   : string;
 
   @IsNotEmpty()
-  amount    : number;
+  amount: number;
 
   @IsNotEmpty()
-  currency  : string;
+  currency: string;
 }

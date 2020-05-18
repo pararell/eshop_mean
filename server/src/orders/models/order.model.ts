@@ -22,19 +22,19 @@ export interface Address {
 
 
 export interface Order extends Document {
-    orderId             : string;
-    amount              : number;
+    orderId: string;
+    amount: number;
     amount_refunded?    : number;
-    currency            : string;
-    cart                : Cart;
-    status              : OrderStatus;
-    customerEmail       : string;
-    addresses           : Address[];
+    currency: string;
+    cart: Cart;
+    status: OrderStatus;
+    customerEmail: string;
+    addresses: Address[];
     notes?              : string;
     type?               : string;
     description?        : string;
-    outcome?            : {seller_message: string; };
-    dateAdded           : any;
+    outcome?            : {seller_message: string };
+    dateAdded: any;
     cardId?             : string;
     _user?              : any;
 }

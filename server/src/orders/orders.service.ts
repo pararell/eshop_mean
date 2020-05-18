@@ -6,7 +6,7 @@ import Stripe from 'stripe';
 import { Order, OrderStatus } from './models/order.model';
 import { User } from '../auth/models/user.model';
 import { OrderDto } from './dto/order.dto';
-import { sendMsg } from '../shared/utils/mailer';
+import { sendMsg } from '../shared/utils/email/mailer';
 import { Cart } from '../cart/utils/cart';
 import { prepareCart } from '../shared/utils/prepareUtils';
 import { CartModel } from '../cart/models/cart.model';
@@ -96,7 +96,7 @@ export class OrdersService {
     return order;
   }
 
-  async updateOrder(reqorder) {
+  async updateOrder(reqorder): Promise<Order> {
     const order = this.orderModel.findOneAndUpdate({orderId: reqorder.orderId}, reqorder, {new: true})
     return order;
   }
@@ -120,6 +120,7 @@ export class OrdersService {
         notes,
         customerEmail : email,
         outcome : {
+            // eslint-disable-next-line @typescript-eslint/camelcase
             seller_message: type
         },
         addresses,

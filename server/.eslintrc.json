@@ -16,5 +16,8 @@
   "plugins": [
     "@typescript-eslint"
   ],
-  "exclude": ["node_modules", "dist"]
+  "rules": {
+    "no-irregular-whitespace": 0,
+    "camelcase": "off"
+  }
 }

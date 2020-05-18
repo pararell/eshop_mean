@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, BadRequestException, HttpService} from '
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { sendMsg } from '../shared/utils/mailer';
+import { sendMsg } from '../shared/utils/email/mailer';
 import { ContactDto } from './dto/contact.dto';
 import { PageDto } from './dto/page.dto';
 import { Cart } from '../cart/utils/cart';

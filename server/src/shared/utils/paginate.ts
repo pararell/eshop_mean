@@ -3,8 +3,10 @@ function paginate(query, options) {
   options = Object.assign({}, options);
 
   const sort = options.sort;
+    // eslint-disable-next-line no-prototype-builtins
   const limit = options.hasOwnProperty('limit') ? options.limit : 10;
   const page = options.page || 1;
+  // eslint-disable-next-line no-prototype-builtins
   const skip = options.hasOwnProperty('page') ? (page - 1) * limit : 0;
   const all = limit
     ? this.find(query).sort(sort).skip(skip).limit(limit).exec()
@@ -22,7 +24,7 @@ function paginate(query, options) {
   });
 }
 
-export const pagination = (schema) => {
+export const pagination = (schema): void => {
   schema.statics.paginate = paginate;
   this.paginate = paginate;
 };

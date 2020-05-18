@@ -39,7 +39,7 @@ export class ProductsController {
   }
 
   @Get('/search')
-  getproductsTtitles(@Query('query') query: string): Promise<String[]> {
+  getproductsTtitles(@Query('query') query: string): Promise<string[]> {
     return this.productService.getProductsTitles(query);
   }
 
