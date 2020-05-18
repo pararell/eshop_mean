@@ -25,7 +25,7 @@ import { CartModel } from '../cart/models/cart.model';
 
   @Controller('api/orders')
   export class OrdersController {
-    constructor(private ordersService : OrdersService) {}
+    constructor(private ordersService: OrdersService) {}
 
     @UseGuards(AuthGuard('jwt'))
     @Get()
@@ -34,7 +34,7 @@ import { CartModel } from '../cart/models/cart.model';
     }
 
     @Post('/add')
-    async addOrder(@Body() orderDto: OrderDto, @Session() session, @Headers('lang') lang: string): Promise<{error: string; result: Order, cart: Cart}> {
+    async addOrder(@Body() orderDto: OrderDto, @Session() session, @Headers('lang') lang: string): Promise<{error: string; result: Order; cart: Cart}> {
       try {
         const successResult = await this.ordersService.addOrder(orderDto, session.cart, lang);
         if (successResult && !successResult.error) {
@@ -50,7 +50,7 @@ import { CartModel } from '../cart/models/cart.model';
     }
 
     @Post('/stripe')
-    async orderWithStripe(@Body() body, @Session() session, @Headers('lang') lang: string): Promise<{error: string; result: Order, cart: CartModel}> {
+    async orderWithStripe(@Body() body, @Session() session, @Headers('lang') lang: string): Promise<{error: string; result: Order; cart: CartModel}> {
       try {
         const successResult = await this.ordersService.orderWithStripe(body, session.cart, lang);
 

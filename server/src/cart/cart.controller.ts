@@ -23,7 +23,7 @@ import { CartModel } from './models/cart.model';
     @Get('/add')
     async addToCart(
         @Session() session,
-        @Query(ValidationPipe) getCartChangeDto : GetCartChangeDto,
+        @Query(ValidationPipe) getCartChangeDto: GetCartChangeDto,
         @Headers('lang') lang: string): Promise<CartModel> {
         const { newCart, langCart } = await this.cartService.addToCart(session.cart, getCartChangeDto, lang);
         session.cart = newCart;
@@ -33,7 +33,7 @@ import { CartModel } from './models/cart.model';
     @Get('/remove')
     async removeFromCart(
         @Session() session,
-        @Query(ValidationPipe) getCartChangeDto : GetCartChangeDto,
+        @Query(ValidationPipe) getCartChangeDto: GetCartChangeDto,
         @Headers('lang') lang: string): Promise<CartModel> {
         const { newCart, langCart } = await this.cartService.removeFromCart(session.cart, getCartChangeDto, lang);
         session.cart = newCart;

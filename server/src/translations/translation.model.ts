@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 
 export interface Translation extends Document {
-  lang: String;
+  lang: string;
   keys: any;
 }

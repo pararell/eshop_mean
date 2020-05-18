@@ -26,7 +26,7 @@ export class AdminService {
         return await images || new Images([]);
       }
 
-      async addImage(images: Images, imageDto : ImageDto, addImageDto: AddProductImageDto):Promise<Images | Product> {
+      async addImage(images: Images, imageDto: ImageDto, addImageDto: AddProductImageDto): Promise<Images | Product> {
         const {image} = imageDto;
         const {titleUrl} = addImageDto;
         const existImages = await new Images(images || []);
@@ -42,7 +42,7 @@ export class AdminService {
         return product || existImages;
       }
 
-      async uploadImage(images: Images, file, addImageDto: AddProductImageDto):Promise<Images | Product> {
+      async uploadImage(images: Images, file, addImageDto: AddProductImageDto): Promise<Images | Product> {
         const {titleUrl} = addImageDto;
         const existImages = await new Images(images || []);
         const uploadedImage = await this.uploadToCloudinary(file);
@@ -61,7 +61,7 @@ export class AdminService {
       }
 
 
-      async removeImage(images: Images, imageDto : ImageDto, addImageDto: AddProductImageDto):Promise<Images | Product> {
+      async removeImage(images: Images, imageDto: ImageDto, addImageDto: AddProductImageDto): Promise<Images | Product> {
         const {image} = imageDto;
         const {titleUrl} = addImageDto;
         const existImages = await new Images(images || []);
@@ -82,7 +82,7 @@ export class AdminService {
       private async uploadToCloudinary(file): Promise<any> {
           return new Promise((resolve, reject) => {
 
-            let cld_upload_stream = cloudinary.v2.uploader.upload_stream(
+            const cld_upload_stream = cloudinary.v2.uploader.upload_stream(
              {
               resource_type: 'auto', use_filename: true
              },
