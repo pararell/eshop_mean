@@ -47,6 +47,11 @@
       font-weight: 500;
     }
 
+    &-before-price {
+      text-decoration: line-through;
+      font-size: 15px;
+    }
+
     &-tags {
       display: flex;
       justify-content: flex-start;

@@ -28,6 +28,9 @@
                   class="product-price"
                   *ngIf="product?.onSale">
                   {{ (product?.salePrice * ((convertVal$ | async) || 1)) | priceFormat }} {{ currency$ | async }}
+                  <span class="product-before-price" *ngIf="product.regularPrice">
+                    {{ (product?.regularPrice * ((convertVal$ | async) || 1)) | priceFormat }} {{ currency$ | async }}
+                  </span>
                 </div>
                 <div
                   class="product-price"

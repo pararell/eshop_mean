@@ -15,6 +15,7 @@
     background: #fff;
     margin: 0.5rem 5% 1rem 0;
     z-index: 1;
+    position: relative;
 
     @media (max-width: 1400px) {
       flex-basis: 30%;
@@ -68,7 +69,7 @@
       background-repeat: no-repeat !important;
       background-position: center !important;
       min-height: 300px;
-      background-size: cover !important;
+      background-size: contain !important;
       cursor: pointer;
       overflow: hidden;
       z-index: 0;
@@ -85,6 +86,18 @@
         transform: scale(1.1);
         overflow: hidden;
       }
+    }
+
+    &-before-price {
+      position: absolute;
+      bottom: 35px;
+      left: 0;
+      text-decoration: line-through;
+      color: #fff;
+      background: $secondary-color;
+      font-weight: 500;
+      font-size: 14px;
+      padding: 0 20px;
     }
 
     &-action-wrap {
