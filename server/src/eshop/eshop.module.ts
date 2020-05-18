@@ -6,14 +6,13 @@ import { EshopController } from './eshop.controller';
 import { EshopService } from './eshop.service';
 import PageSchema from './schemas/page.schema';
 
-
 @Module({
-  imports       : [
-      ConfigModule.forRoot(),
-      MongooseModule.forFeature([{ name: 'Page', schema: PageSchema }]),
-      HttpModule
-    ],
-  controllers   : [EshopController],
-  providers     : [EshopService]
+  imports: [
+    ConfigModule.forRoot(),
+    MongooseModule.forFeature([{ name: 'Page', schema: PageSchema }]),
+    HttpModule,
+  ],
+  controllers: [EshopController],
+  providers: [EshopService],
 })
 export class EshopModule {}

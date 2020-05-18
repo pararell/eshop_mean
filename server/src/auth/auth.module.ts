@@ -11,8 +11,6 @@ import { GoogleStrategy } from './strategy/google.strategy';
 import UserSchema from './schemas/user.schema';
 import { SessionSerializer } from './utils/session.serializer';
 
-
-
 @Module({
   imports: [
     ConfigModule.forRoot(),

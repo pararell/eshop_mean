@@ -6,11 +6,13 @@ import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
-      MongooseModule.forFeature([{ name: 'Translation', schema: TranslationScheme }]),
-      AuthModule
-    ],
-  controllers : [TranslationsController],
-  providers   : [],
-  exports     : [MongooseModule]
+    MongooseModule.forFeature([
+      { name: 'Translation', schema: TranslationScheme },
+    ]),
+    AuthModule,
+  ],
+  controllers: [TranslationsController],
+  providers: [],
+  exports: [MongooseModule],
 })
 export class TranslationsModule {}

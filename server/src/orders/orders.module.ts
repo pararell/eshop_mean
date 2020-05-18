@@ -6,13 +6,12 @@ import { AuthModule } from '../auth/auth.module';
 import { OrdersService } from './orders.service';
 import { ConfigModule } from '@nestjs/config';
 
-
 @Module({
   imports: [
-      ConfigModule.forRoot(),
-      MongooseModule.forFeature([{ name: 'Order', schema: OrderSchema }]),
-      AuthModule
-    ],
+    ConfigModule.forRoot(),
+    MongooseModule.forFeature([{ name: 'Order', schema: OrderSchema }]),
+    AuthModule,
+  ],
   controllers: [OrdersController],
   providers: [OrdersService],
 })

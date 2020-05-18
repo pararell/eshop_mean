@@ -3,8 +3,7 @@ const { Schema } = mongoose;
 
 const TranslationSchema = new Schema({
   lang: String,
-  keys : {type: Schema.Types.Mixed, default: { } }
+  keys: { type: Schema.Types.Mixed, default: {} },
 });
 
 export default TranslationSchema;
-
