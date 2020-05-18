@@ -35,6 +35,7 @@
     color: $primary-color;
     width: 100%;
     padding: 5px 10px;
+    text-transform: capitalize;
 
     &.active {
       background-color: $primary-color;
