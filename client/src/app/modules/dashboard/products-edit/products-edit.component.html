@@ -14,18 +14,32 @@
       </mat-form-field>
     </div>
   </div>
-
   <form class="product_edit-form"
     [formGroup]="productEditForm"
     novalidate>
     <div class="product_edit-full-input">
-      <mat-form-field class="product_edit-field">
+      <mat-form-field class="product_edit-field"
+        *ngIf="(!titles || !titles.length) || action === 'add'">
         <mat-label>Title Url</mat-label>
         <input
           matInput
           formControlName="titleUrl"
           type="text"
-          name="titleUrl">
+          name="titleUrl"
+          (change)="formatTitleUrl($event)">
+      </mat-form-field>
+      <mat-form-field class="product_edit-field"
+        *ngIf="(titles && titles.length) && action !== 'add'">
+        <input matInput
+               placeholder="TitleUrl"
+               aria-label="TitleUrl"
+               [matAutocomplete]="auto"
+               formControlName="titleUrl">
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let title of titles" [value]="title">
+            <span>{{title}}</span>
+          </mat-option>
+        </mat-autocomplete>
       </mat-form-field>
       <button
         mat-raised-button
@@ -264,13 +278,21 @@
   </form>
 </ng-container>
 
-<div class="after-send"
+<div class="product_edit-after-send"
   *ngIf="sendRequest">
-  {{ 'Request_sended' | translate | async }}
+ <span> {{ 'Request_sended' | translate | async }}</span>
   <button
+    class="product_edit-btn-action"
     mat-raised-button
     color="primary"
     (click)="openForm()">
     {{ 'Again' | translate | async }}
+  </button>
+  <button *ngIf="action === 'add'"
+    class="product_edit-btn-action"
+    mat-raised-button
+    color="primary"
+    (click)="changeTab.emit(2)">
+    {{ 'Edit' | translate | async }}
   </button>
 </div>

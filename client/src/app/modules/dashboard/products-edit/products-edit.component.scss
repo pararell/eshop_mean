@@ -44,6 +44,16 @@
     &-add-images {
       margin: 25px 0;
     }
+
+    &-after-send {
+      display: flex;
+      align-items: center;
+      padding: 50px;
+    }
+
+    &-btn-action {
+      margin: 0 10px;
+    }
   }
 
   .full-check {
@@ -80,12 +90,6 @@
 
   .remove-image {
     cursor: pointer;
-  }
-
-  .after-send {
-    display: flex;
-    align-items: center;
-    padding: 50px;
   }
 
   .edit-find-button {

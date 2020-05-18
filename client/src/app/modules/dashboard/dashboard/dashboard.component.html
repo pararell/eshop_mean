@@ -1,5 +1,4 @@
 <div class="main">
-  <div class="container">
     <div class="dashboard-container">
       <div class="orders-menu">
         <h1>Dashboard</h1>
@@ -12,17 +11,24 @@
           Orders
         </button>
       </div>
-      <mat-tab-group backgroundColor="primary">
+      <mat-tab-group backgroundColor="primary" [selectedIndex]="activeTab">
         <mat-tab label="All products">
           <div class="dashboard-tab-content">
-            <app-all-products></app-all-products>
+            <app-all-products
+              [allProducts]="allProducts$ | async"
+              [lang]="lang$ | async"
+              [convertVal]="convertVal$ | async"
+              [currency]="currency$ | async"
+              (getAllProducts)="getProducts()">
+            </app-all-products>
           </div>
         </mat-tab>
         <mat-tab label="Add product">
           <ng-template matTabContent>
             <div class="dashboard-tab-content">
               <app-products-edit
-                [action]="'add'">
+                [action]="'add'"
+                (changeTab)="changeTab($event)">
               </app-products-edit>
             </div>
           </ng-template>
@@ -31,6 +37,7 @@
           <ng-template matTabContent>
             <div class="dashboard-tab-content">
               <app-products-edit
+                [titles]="allProductsTitles$ | async"
                 [action]="'edit'">
               </app-products-edit>
             </div>
@@ -40,6 +47,7 @@
           <ng-template matTabContent>
             <div class="dashboard-tab-content">
               <app-products-edit
+                [titles]="allProductsTitles$ | async"
                 [action]="'remove'">
               </app-products-edit>
             </div>
@@ -63,5 +71,4 @@
         </mat-tab>
       </mat-tab-group>
     </div>
-  </div>
 </div>

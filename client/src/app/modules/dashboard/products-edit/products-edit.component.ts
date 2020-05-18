@@ -1,5 +1,5 @@
 import { filter, first, take, delay } from 'rxjs/operators';
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FileUploader, FileItem, ParsedResponseHeaders } from 'ng2-file-upload';
 import { Store } from '@ngrx/store';
@@ -18,6 +18,9 @@ import { Product } from '../../../shared/models';
 })
 export class ProductsEditComponent implements OnInit, OnDestroy {
   @Input() action: string;
+  @Input() titles: string[];
+
+  @Output() changeTab = new EventEmitter<number>();
 
   productEditForm: FormGroup;
   uploader: FileUploader;
@@ -51,6 +54,34 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
       this.uploader.onErrorItem = (item, response, status, headers) => this.onErrorItem(item, response, status, headers);
       this.uploader.onSuccessItem = (item, response, status, headers) => this.onSuccessItem(item, response, status, headers);
     })
+
+    this.productSub = this.product$.pipe(
+      filter(product => !!product && !!product.titleUrl && !product.title))
+      .subscribe((product) => {
+
+        const newForm = {
+          titleUrl  : product.titleUrl,
+          mainImage : (product.mainImage && product.mainImage.url) ? product.mainImage.url : '',
+          images    : product.images,
+          imageUrl  : '',
+          ...this.prepareLangEditForm(product)
+        };
+
+        const uploaderOptions = {
+          itemAlias: 'file',
+          autoUpload: true
+        }
+
+        this.store.dispatch(new actions.SetUploader({ options: uploaderOptions, titleUrl: product.titleUrl }))
+
+        const prepareDescFull = this.languageOptions
+          .map(lang => ({
+            [lang]: product[lang].descriptionFull.length ? product[lang].descriptionFull[0] : ''
+          })).reduce((prev, curr) => ({ ...prev, ...curr }), {});
+
+        this.descriptionFullSub$.next(prepareDescFull);
+        this.productEditForm.setValue(newForm);
+      });
 
   }
 
@@ -193,35 +224,15 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
     const titleUrl = this.productEditForm.get('titleUrl').value;
     if (titleUrl) {
       this.store.dispatch(new actions.GetProduct(titleUrl));
-
-      this.productSub = this.product$.pipe(
-        filter(product => !!product && !!product.titleUrl))
-        .subscribe((product) => {
-
-          const newForm = {
-            titleUrl  : product.titleUrl,
-            mainImage : (product.mainImage && product.mainImage.url) ? product.mainImage.url : '',
-            images    : product.images,
-            imageUrl  : '',
-            ...this.prepareLangEditForm(product)
-          };
-
-          const uploaderOptions = {
-            itemAlias: 'file',
-            autoUpload: true
-          }
-
-          this.store.dispatch(new actions.SetUploader({ options: uploaderOptions, titleUrl: product.titleUrl }))
-
-          const prepareDescFull = this.languageOptions
-            .map(lang => ({
-              [lang]: product[lang].descriptionFull.length ? product[lang].descriptionFull[0] : ''
-            })).reduce((prev, curr) => ({ ...prev, ...curr }), {});
-
-          this.descriptionFullSub$.next(prepareDescFull);
-          this.productEditForm.setValue(newForm);
-        });
     }
+  }
+
+  formatTitleUrl(e) {
+    if (e.target.value) {
+      const titleUrlFormated = e.target.value.replace(/\s+/g, '-').toLowerCase();
+      this.productEditForm.get('titleUrl').setValue(titleUrlFormated);
+    }
+
   }
 
   private _createLangForm(languageOptions: Array<string>) {

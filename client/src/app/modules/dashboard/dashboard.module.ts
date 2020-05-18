@@ -12,6 +12,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 import { ProductsEditComponent } from './products-edit/products-edit.component';
 import { OrdersEditComponent } from './orders-edit/orders-edit.component';
@@ -62,6 +63,7 @@ const DASHBOARD_ROUTER: Routes = [
     MatTabsModule,
     MatRadioModule,
     MatSelectModule,
+    MatAutocompleteModule,
     MatChipsModule
   ],
   declarations: [ProductsEditComponent, OrdersEditComponent, OrderEditComponent, AllProductsComponent, DashboardComponent, TinyEditorComponent, TranslationsEditComponent, PagesEditComponent]

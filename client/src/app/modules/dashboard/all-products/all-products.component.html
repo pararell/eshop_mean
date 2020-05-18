@@ -1,13 +1,13 @@
 
 <button
-    (click)="getProducts()"
+    (click)="getAllProducts.emit()"
     mat-raised-button
     color="primary">
     {{ 'Refresh' | translate | async }}
 </button>
-<app-products-list *ngIf="(allProduct$ | async) as allProducts"
+<app-products-list *ngIf="allProducts"
   [products]="allProducts"
-  [convertVal]="convertVal$ | async"
-  [lang]="lang$ | async"
-  [currency]="currency$ | async">
+  [convertVal]="convertVal"
+  [lang]="lang"
+  [currency]="currency">
 </app-products-list>
