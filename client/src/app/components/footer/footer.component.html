@@ -1,19 +1,23 @@
-<footer class="page-footer">
+<footer class="footer">
   <div class="container">
-    <div class="row">
-      <div class="col l6 s12">
-        <h3 class="white-text">Eshop</h3>
-        <h4 class="text-lighten-4">Connecting without cables </h4>
+    <div>
+      <div class>
+        <h3 class="footer-title">{{'ESHOP_TITLE' | translate | async}}</h3>
+        <h4 class="footer-subtitle">{{'ESHOP_DESCRIPTION' | translate | async}}</h4>
       </div>
-      <div class="col l4 offset-l2 s12">
-        <h5 class="white-text">Links</h5>
-        <ul class="links-list">
-          <li><a class="text-lighten-3" [routerLink]="['/' + lang + '/eshop/contact']"> CONTACT</a></li>
+      <div class>
+        <h5 class="footer-subtitle">{{'LINKS' | translate | async}}</h5>
+        <ul class="footer-links">
+          <li><a class
+              [routerLink]="['/' + lang + '/eshop/contact']">
+              {{'CONTACT' | translate | async}}
+            </a></li>
           <ng-container *ngFor="let page of (pages$ | async)">
             <li>
-                <a class="text-lighten-3" [routerLink]="['/' + lang + '/eshop/' + page.titleUrl]">
-                  {{ page[lang].title || page.titleUrl }}
-                </a>
+                <a class
+                [routerLink]="['/' + lang + '/eshop/' + page.titleUrl]">
+                {{ page[lang].title || page.titleUrl }}
+              </a>
             </li>
           </ng-container>
         </ul>
@@ -23,7 +27,10 @@
   <div class="footer-copyright">
     <div class="container">
       © {{currentYear}}
-      <a class="right" href="https://github.com/pararell/eshop_mean">More on github</a>
+      <a class
+        href="https://github.com/pararell/eshop_mean">
+        More on github
+      </a>
     </div>
   </div>
 </footer>

@@ -52,7 +52,7 @@
             #stepper>
             <mat-step [stepControl]="orderForm">
               <form [formGroup]="orderForm">
-                <ng-template matStepLabel>Address</ng-template>
+                <ng-template matStepLabel>{{ 'Address' | translate | async }}</ng-template>
                 <mat-form-field class="order-field">
                   <mat-label>
                     {{ 'Firstname' | translate | async }}
@@ -108,7 +108,7 @@
                     name="country">
                 </mat-form-field>
                 <mat-form-field class="order-field">
-                  <mat-label>Notes</mat-label>
+                  <mat-label>{{ 'Notes' | translate | async }}</mat-label>
                   <textarea
                     matInput
                     formControlName="notes"
@@ -120,13 +120,13 @@
                     class="cart-navigation-button"
                     mat-stroked-button
                     matStepperNext>
-                    Next
+                    {{ 'Next' | translate | async }}
                   </button>
                 </div>
               </form>
             </mat-step>
             <mat-step [stepControl]="toggleCard">
-              <ng-template matStepLabel>Payment method</ng-template>
+              <ng-template matStepLabel>{{ 'Payment_method' | translate | async }}</ng-template>
               <mat-radio-group class="delivery-button"
                 *ngIf="orderForm.valid"
                 [(ngModel)]="toggleCard">
@@ -146,17 +146,17 @@
                 <button class="cart-navigation-button"
                   mat-stroked-button
                   matStepperNext>
-                  Next
+                  {{ 'Next' | translate | async }}
                 </button>
                 <button class="cart-navigation-button"
                   mat-stroked-button
                   matStepperPrevious>
-                  Back
+                  {{ 'Back' | translate | async }}
                 </button>
               </div>
             </mat-step>
             <mat-step>
-              <ng-template matStepLabel>Summary and payment</ng-template>
+              <ng-template matStepLabel>{{ 'Summary_and_payment' | translate | async }}</ng-template>
               <app-card
                 *ngIf="toggleCard"
                 [price]="cart?.totalPrice * ((convertVal$ | async) || 1) | priceFormat"
@@ -179,7 +179,7 @@
                 <button class="cart-navigation-button"
                   mat-stroked-button
                   matStepperPrevious>
-                  Back
+                  {{ 'Back' | translate | async }}
                 </button>
               </div>
             </mat-step>

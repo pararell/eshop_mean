@@ -4,7 +4,7 @@
       <div class="pages_edit-top">
         <div>
           <mat-form-field class="pages_edit-field">
-            <mat-label>Add page</mat-label>
+            <mat-label>{{ 'Add_page' | translate | async }}</mat-label>
             <input
               matInput
               [(ngModel)]="newPage">
@@ -18,7 +18,7 @@
           </button>
         </div>
         <mat-form-field class="page-select">
-          <mat-label>Chose page from existing pages</mat-label>
+          <mat-label>{{ 'From_existing_pages' | translate | async }}</mat-label>
           <mat-select
             [(ngModel)]="chosenPage"
             (ngModelChange)="chosePage()">
@@ -30,7 +30,7 @@
           </mat-select>
         </mat-form-field>
         <mat-form-field class="lang-select">
-          <mat-label>Chose language for page content</mat-label>
+          <mat-label>{{ 'Language_for_page' | translate | async }}</mat-label>
           <mat-select
             [ngModel]="chooseLang"
             (ngModelChange)="setLang($event)">

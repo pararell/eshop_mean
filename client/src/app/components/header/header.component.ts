@@ -1,4 +1,4 @@
-import { debounceTime, filter, take, delay } from 'rxjs/operators';
+import { debounceTime, take, delay } from 'rxjs/operators';
 import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { isPlatformBrowser } from '@angular/common';
@@ -9,7 +9,7 @@ import * as fromRoot from '../../store/reducers';
 import * as actions from '../../store/actions';
 import { TranslateService } from '../../services/translate.service';
 import { environment } from '../../../environments/environment';
-import { languages } from '../../shared/constants';
+import { languages, currency, accessToken } from '../../shared/constants';
 import { Cart, User, Order } from '../../shared/models';
 
 @Component({
@@ -22,7 +22,7 @@ export class HeaderComponent implements OnInit {
   cart$             : Observable<Cart>;
   productTitles$    : Observable<string[]>;
   userOrders$       : Observable<Order[]>;
-  showAutocomplete$ : BehaviorSubject<boolean> = new BehaviorSubject(false);
+  showAutocomplete$ = new BehaviorSubject(false);
   languageOptions   = languages;
   lang$             : Observable<string>;
   showMobileNav     = false;
@@ -69,7 +69,7 @@ export class HeaderComponent implements OnInit {
 
   onLogout(): void {
     if (isPlatformBrowser(this._platformId)) {
-      localStorage.removeItem('accessToken');
+      localStorage.removeItem(accessToken);
     }
     this.store.dispatch(new actions.StoreUser(null));
   }
@@ -77,7 +77,7 @@ export class HeaderComponent implements OnInit {
   setLang(lang: string): void {
     const langUpdate = {
       lang,
-      currency: lang === 'cs' ? 'CZK' : 'EUR'
+      currency: currency[lang]
     };
     this.store.dispatch(new actions.ChangeLanguage(langUpdate));
   }

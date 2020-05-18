@@ -2,11 +2,13 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, BehaviorSubject, from } from 'rxjs';
+import { delay, take } from 'rxjs/operators';
 
 import * as fromRoot from '../../../store/reducers';
 import * as actions from '../../../store/actions'
 import { languages } from '../../../shared/constants';
-import { delay, take } from 'rxjs/operators';
+import { Page } from '../../../shared/models';
+
 
 @Component({
   selector: 'app-pages-edit',
@@ -15,10 +17,10 @@ import { delay, take } from 'rxjs/operators';
 })
 export class PagesEditComponent {
 
-  pages$: Observable<any[]>;
+  pages$: Observable<Page[]>;
   pagesEditForm: FormGroup;
   languageOptions = languages;
-  choosenLanguageSub$ = new BehaviorSubject('en');
+  choosenLanguageSub$ = new BehaviorSubject(languages[0]);
   newPage = '';
   chosenPage = '';
 
@@ -35,11 +37,11 @@ export class PagesEditComponent {
 
    }
 
-   onPageEditorChange(content, lang: string) {
+   onPageEditorChange(content, lang: string): void {
     this.pagesEditForm.get(lang).get('contentHTML').setValue(content);
   }
 
-  addPage() {
+  addPage(): void {
     if (this.newPage) {
       this.pagesEditForm.get('titleUrl').setValue(this.newPage);
       this.languageOptions.forEach(lang => {
@@ -48,7 +50,7 @@ export class PagesEditComponent {
     }
   }
 
-  chosePage() {
+  chosePage(): void {
     if (this.chosenPage) {
       this.pagesEditForm.get('titleUrl').setValue(this.chosenPage);
       this.pages$.pipe(take(1)).subscribe(pages => {
@@ -69,7 +71,7 @@ export class PagesEditComponent {
       });
   }
 
-  savePage() {
+  savePage(): void {
     const request = this.pagesEditForm.value;
     this.store.dispatch(new actions.AddOrEditPage(request));
   }

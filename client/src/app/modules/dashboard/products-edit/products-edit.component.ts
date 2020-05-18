@@ -23,11 +23,12 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
   uploader: FileUploader;
   images$: Observable<string[]>;
   sendRequest = false;
-  descriptionFullSub$: BehaviorSubject<{ [x: string]: string }> = new BehaviorSubject({ sk: '', en: '', cs: '' });
+  descriptionFullSub$: BehaviorSubject<{ [x: string]: string }>
+    = new BehaviorSubject(languages.reduce((prev, lang) => ({...prev, [lang]: ''}) , {}));
   product$: Observable<Product>;
   productSub: Subscription;
   languageOptions = languages;
-  choosenLanguageSub$ = new BehaviorSubject('en');
+  choosenLanguageSub$ = new BehaviorSubject(languages[0]);
   testImageUrl: string;
 
   constructor(private fb: FormBuilder, private store: Store<fromRoot.State>, private apiService: ApiService) {
@@ -82,10 +83,10 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
 
   createForm(): void {
     this.productEditForm = this.fb.group({
-      titleUrl: ['', Validators.required],
-      mainImage: '',
-      images: [],
-      imageUrl: '',
+      titleUrl  : ['', Validators.required],
+      mainImage : '',
+      images    : [],
+      imageUrl  : '',
       ...this._createLangForm(this.languageOptions)
     });
   }
@@ -131,7 +132,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
               ...this.productEditForm.value,
 
               mainImage: { url: this.productEditForm.value.mainImage, name: this.productEditForm.value.titleUrl },
-              ...this._prepareProductData(this.languageOptions, this.productEditForm.value)
+              ...this.prepareProductData(this.languageOptions, this.productEditForm.value)
             };
 
             this.store.dispatch(new actions.AddProduct(productPrepare));
@@ -153,7 +154,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
               ...editProduct,
               images: images || [],
               mainImage: { url: this.productEditForm.value.mainImage, name: this.productEditForm.value.titleUrl },
-              ...this._prepareProductData(this.languageOptions, editProduct)
+              ...this.prepareProductData(this.languageOptions, editProduct)
             };
 
             this.store.dispatch(new actions.EditProduct(productPrepare));
@@ -184,7 +185,6 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
     this.testImageUrl = '';
   }
 
-
   openForm(): void {
     this.sendRequest = false;
   }
@@ -199,10 +199,10 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
         .subscribe((product) => {
 
           const newForm = {
-            titleUrl: product.titleUrl,
-            mainImage: (product.mainImage && product.mainImage.url) ? product.mainImage.url : '',
-            images: product.images,
-            imageUrl: '',
+            titleUrl  : product.titleUrl,
+            mainImage : (product.mainImage && product.mainImage.url) ? product.mainImage.url : '',
+            images    : product.images,
+            imageUrl  : '',
             ...this.prepareLangEditForm(product)
           };
 
@@ -246,35 +246,37 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
 
   private prepareLangEditForm(product) {
     return this.languageOptions
-      .map((lang: string) => ({
-        [lang]: {
-          title: product[lang].title || '',
-          description: product[lang].description || '',
-          salePrice: product[lang].salePrice || '',
-          regularPrice: product[lang].regularPrice || '',
-          tags: product[lang].tags
-            ? product[lang].tags.reduce((string, tag) => (string ? string + ',' : string) + tag, '')
-            : '',
-          categories: product[lang].categories
-            ? product[lang].categories.reduce((string, tag) => (string ? string + ',' : string) + tag, '')
-            : '',
-          descriptionFull: product[lang].descriptionFull || '',
-          visibility: product.visibility || true,
-          stock: product.stock || 'onStock',
-          onSale: product.onSale || true,
-          shiping: product.shiping || 'basic'
-        }
-      })
+      .map((lang: string) => {
+        const productLang = product[lang];
+        return {
+          [lang]: {
+            title         : productLang.title || '',
+            description   : productLang.description || '',
+            salePrice     : productLang.salePrice || '',
+            regularPrice  : productLang.regularPrice || '',
+            tags          : productLang.tags
+              ? productLang.tags.reduce((string, tag) => (string ? string + ',' : string) + tag, '')
+              : '',
+            categories    : productLang.categories
+              ? productLang.categories.reduce((string, tag) => (string ? string + ',' : string) + tag, '')
+              : '',
+            descriptionFull : productLang.descriptionFull || '',
+            visibility      : product.visibility || true,
+            stock           : product.stock || 'onStock',
+            onSale          : product.onSale || true,
+            shiping         : product.shiping || 'basic'
+          }
+        }}
       ).reduce((prev, curr) => ({ ...prev, ...curr }), {});
 
   }
 
-  private _prepareProductData(languageOptions: Array<string>, formData) {
+  private prepareProductData(languageOptions: Array<string>, formData) {
     return languageOptions
       .map((lang: string) => ({
         [lang]: {
           ...formData[lang],
-          tags: formData[lang].tags ? formData[lang].tags.split(',') : [],
+          tags      : formData[lang].tags ? formData[lang].tags.split(',') : [],
           categories: formData[lang].categories ? formData[lang].categories.split(',') : []
         }
       })).reduce((prev, curr) => ({ ...prev, ...curr }), {});

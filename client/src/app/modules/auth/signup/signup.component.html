@@ -6,7 +6,7 @@
         class="sign-form"
         [formGroup]="signUpForm">
         <mat-form-field class="sign-field">
-          <mat-label>Name</mat-label>
+          <mat-label>{{ 'Name' | translate | async }}</mat-label>
           <input
             matInput
             formControlName="name"
@@ -22,7 +22,7 @@
             name="email">
         </mat-form-field>
         <mat-form-field class="sign-field">
-          <mat-label>Password</mat-label>
+          <mat-label>{{ 'Password' | translate | async }}</mat-label>
           <input
             matInput
             formControlName="password"

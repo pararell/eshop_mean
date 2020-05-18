@@ -1,7 +1,7 @@
 <div class="main">
   <div class="products-primary-header">
     <div class="container">
-      <h1 class="products-title" *ngIf="!(category$ | async)">Products</h1>
+      <h1 class="products-title" *ngIf="!(category$ | async)">{{ 'Products' | translate | async }} </h1>
       <h1 class="products-title" *ngIf="(category$ | async) as category">{{category}}</h1>
     </div>
   </div>

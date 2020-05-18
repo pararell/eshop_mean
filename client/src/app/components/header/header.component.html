@@ -1,6 +1,6 @@
 <mat-toolbar class="nav navbar-fixed" color="primary">
   <div class="nav-brand-logo">
-    <a [routerLink]="['/']">Eshop</a>
+    <a [routerLink]="['/']">{{'ESHOP_TITLE' | translate | async}}</a>
   </div>
   <div class="nav-part-right">
     <div class="nav-search-form">
@@ -54,9 +54,11 @@
 
 <ng-template #menuItems>
   <ng-container *ngIf="!(user$ | async)">
-    <button mat-menu-item>
+    <button mat-menu-item *ngIf="googleAuthUrl">
       <mat-icon>account_box</mat-icon>
-      <a class="nav-link" href="{{googleAuthUrl}}">{{ 'Login' | translate | async }} {{ 'with' | translate | async }} Google</a>
+      <a class="nav-link" href="{{ googleAuthUrl }}">
+        {{ 'Login' | translate | async }} {{ 'with' | translate | async }} Google
+      </a>
     </button>
     <button mat-menu-item  [routerLink]="['/' + (lang$ | async) + '/authorize/signin']">
       <mat-icon>account_circle</mat-icon>
@@ -66,7 +68,7 @@
   <button mat-menu-item [routerLink]="['/' + (lang$ | async) + '/dashboard']"
      *ngIf="(user$ | async)?.roles?.includes('admin')">
     <mat-icon>dashboard</mat-icon>
-    <a class="nav-link"> Dashboard</a>
+    <a class="nav-link"> {{'Dashboard' | translate | async}}</a>
   </button>
   <button mat-menu-item [routerLink]="['/' + (lang$ | async) + '/orders']"
     *ngIf="(userOrders$ | async)?.length">

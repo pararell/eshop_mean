@@ -7,9 +7,9 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from 
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CartShowComponent {
-  @Input()  items:  number;
-  @Output() add:    EventEmitter<void> = new EventEmitter<void>();
-  @Output() remove: EventEmitter<void> = new EventEmitter<void>();
+  @Input()  items  :  number;
+  @Output() add    = new EventEmitter<void>();
+  @Output() remove = new EventEmitter<void>();
 
   constructor() { }
 

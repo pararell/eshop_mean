@@ -22,11 +22,11 @@
                 <div class="order-edit-toggle"
                   *ngIf="type === 'EDIT'"
                   (click)="toggleForm()">
-                  EDIT
+                  {{ 'Edit' | translate | async }}
                 </div>
               </div>
               <div class="price">
-                Amount: {{ order?.amount }} {{ order.currency }}
+                {{ 'Amount' | translate | async }}: {{ order?.amount }} {{ order.currency }}
               </div>
             </div>
             <div *ngIf="showForm">
@@ -51,26 +51,26 @@
               </form>
             </div>
               <mat-chip-list class="order-tags">
-                <mat-chip>Customer: {{ order?.customerEmail }}</mat-chip>
+                <mat-chip>{{ 'Customer' | translate | async }}: {{ order?.customerEmail }}</mat-chip>
               </mat-chip-list>
           </div>
           <div>
-            <p *ngIf="order?.description">Desc: {{ order?.description }}</p>
-            <p>Customer: {{ order?.customerEmail }}</p>
-            <p>Created: {{ order.dateAdded | date:'dd-MM-yy' }}</p>
-            <p>Paid: {{ order?.outcome?.seller_message }}</p>
-            <p>Total Price: {{ order?.cart?.totalPrice }}</p>
-            <p>Total Quantity: {{ order?.cart?.totalQty }}</p>
+            <p *ngIf="order?.description">{{ 'Description' | translate | async }}: {{ order?.description }}</p>
+            <p>{{ 'Customer' | translate | async }}: {{ order?.customerEmail }}</p>
+            <p>{{ 'Created' | translate | async }}: {{ order.dateAdded | date:'dd-MM-yy' }}</p>
+            <p>{{ 'Paid' | translate | async }}: {{ order?.outcome?.seller_message }}</p>
+            <p>{{ 'Total_price' | translate | async }}: {{ order?.cart?.totalPrice }}</p>
+            <p>{{ 'Total_quantity' | translate | async }}: {{ order?.cart?.totalQty }}</p>
           </div>
         </mat-card-content>
         <mat-card-content class="order-content">
           <div *ngIf="order.addresses[0] as address">
-            <h4>Customer data</h4>
-            <p>CITY: {{ address.city }}</p>
-            <p>COUNTRY: {{ address.country }}</p>
-            <p>ADRESS: {{ address.line1 }}</p>
-            <p>ZIP: {{ address.zip }}</p>
-            <p *ngIf="address.name">Customer Name : {{ address.name }}</p>
+            <h4>{{ 'About_customer' | translate | async }}</h4>
+            <p>{{ 'City' | translate | async }}: {{ address.city }}</p>
+            <p>{{ 'Country' | translate | async }}: {{ address.country }}</p>
+            <p>{{ 'Address' | translate | async }}: {{ address.line1 }}</p>
+            <p>{{ 'Zip' | translate | async }}: {{ address.zip }}</p>
+            <p *ngIf="address.name">{{ 'Name' | translate | async }}: {{ address.name }}</p>
             <br/>
           </div>
           <div>

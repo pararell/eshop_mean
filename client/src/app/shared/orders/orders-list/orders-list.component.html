@@ -5,22 +5,22 @@
       <div class="card scale-transition"
         *ngFor="let order of orders">
         <div class="card-action">
-          <p>Status: {{ order?.status }}</p>
+          <p>{{ 'Status' | translate | async }}: {{ order?.status }}</p>
           <div class="action-wrap">
             <button
               mat-raised-button
               color="primary"
               [routerLink]="[orderUrl + order?.orderId]">
-              Detail
+              {{ 'Detail' | translate | async }}
             </button>
           </div>
           <br/>
-          <div class="price-card">Amount: {{ order?.amount }} {{ order?.currency }}</div>
+          <div class="price-card">{{ 'Amount' | translate | async }}: {{ order?.amount }} {{ order?.currency }}</div>
           <br/>
-          <p>Type: {{ order?.type }}</p>
-          <p>Customer: {{ order?.customerEmail }}</p>
-          <p>Created: {{ order.dateAdded | date:'dd-MM-yy' }}</p>
-          <p>Paid: {{ order?.outcome?.seller_message }}</p>
+          <p>{{ 'Type' | translate | async }}: {{ order?.type }}</p>
+          <p>{{ 'Customer' | translate | async }}: {{ order?.customerEmail }}</p>
+          <p>{{ 'Created' | translate | async }}: {{ order.dateAdded | date:'dd-MM-yy' }}</p>
+          <p>{{ 'Paid' | translate | async }}: {{ order?.outcome?.seller_message }}</p>
         </div>
       </div>
     </div>

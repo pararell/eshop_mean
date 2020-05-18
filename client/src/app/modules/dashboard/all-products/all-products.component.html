@@ -3,7 +3,7 @@
     (click)="getProducts()"
     mat-raised-button
     color="primary">
-    Refresh
+    {{ 'Refresh' | translate | async }}
 </button>
 <app-products-list *ngIf="(allProduct$ | async) as allProducts"
   [products]="allProducts"

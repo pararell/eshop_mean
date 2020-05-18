@@ -1,9 +1,9 @@
 <ng-container *ngIf="!sendRequest && (choosenLanguageSub$ | async) as chooseLang">
   <div class="products-title-wrapp">
-    <h2> {{action | uppercase}} PRODUCT </h2>
+    <h2> {{action | uppercase}} {{ 'Product' | translate | async }} </h2>
     <div>
       <mat-form-field class="browser-default lang-select">
-        <mat-label>Chose language for product detail</mat-label>
+        <mat-label>{{ 'Language_for_product_detail' | translate | async }}</mat-label>
         <mat-select
           [ngModel]="chooseLang"
           (ngModelChange)="setLang($event)">
@@ -20,7 +20,7 @@
     novalidate>
     <div class="product_edit-full-input">
       <mat-form-field class="product_edit-field">
-        <mat-label>TitleUrl</mat-label>
+        <mat-label>Title Url</mat-label>
         <input
           matInput
           formControlName="titleUrl"
@@ -33,7 +33,7 @@
         class="edit-find-button"
         *ngIf="action === 'edit'"
         (click)="findProduct()">
-        Find
+        {{ 'Find' | translate | async }}
       </button>
     </div>
     <ng-container *ngIf="action !== 'remove'">
@@ -41,7 +41,7 @@
       <div [formGroupName]="chooseLang">
         <div class="product_edit-full-input">
           <mat-form-field class="product_edit-field">
-            <mat-label>Title</mat-label>
+            <mat-label>{{ 'Title' | translate | async }}</mat-label>
             <input
               matInput
               formControlName="title"
@@ -51,7 +51,7 @@
         </div>
         <div class="product_edit-full-input">
           <mat-form-field class="product_edit-field">
-            <mat-label>Short Description</mat-label>
+            <mat-label>{{ 'Short_description' | translate | async }}</mat-label>
             <textarea
               matInput
               formControlName="description"
@@ -61,14 +61,14 @@
         </div>
         <div class="product_edit-full-input">
           <mat-form-field class="product_edit-field-small">
-            <mat-label>SalePrice</mat-label>
+            <mat-label>{{ 'Sale_price' | translate | async }}</mat-label>
             <input
               matInput
               formControlName="salePrice"
               name="salePrice">
           </mat-form-field>
           <mat-form-field class="product_edit-field-small">
-            <mat-label>RegularPrice</mat-label>
+            <mat-label>{{ 'Regulat_price' | translate | async }}</mat-label>
             <input
               matInput
               formControlName="regularPrice"
@@ -93,78 +93,78 @@
         </div>
         <div class="product_edit-full-input">
           <div class="product_edit-field-small">
-            <div class="check-title">Visibility</div>
+            <div class="check-title">{{ 'Visibility' | translate | async }}</div>
             <mat-radio-group aria-label="Visibility" formControlName="visibility">
               <mat-radio-button
                 name="visibility"
                 [value]="true"
                 id="visible">
-                Visible
+                {{ 'Visible' | translate | async }}
               </mat-radio-button>
               <mat-radio-button
                 name="visibility"
                 [value]="false"
                 id="hidden">
-                Hidden
+                {{ 'Hidden' | translate | async }}
               </mat-radio-button>
             </mat-radio-group>
           </div>
           <div class="product_edit-field-small">
-            <div class="check-title">On Stock</div>
+            <div class="check-title">{{ 'On_stock' | translate | async }}</div>
             <mat-radio-group aria-label="onStock" formControlName="stock">
               <mat-radio-button
                 value="onStock"
                 name="stock"
                 id="onStock">
-                On Stock
+                {{ 'On_stock' | translate | async }}
               </mat-radio-button>
               <mat-radio-button
                 value="onWaitings"
                 name="stock"
                 id="onWaitings">
-                Avaible in few weeks
+                {{ 'Available_in_few_weeks' | translate | async }}
               </mat-radio-button>
               <mat-radio-button
                 value="unavailable"
                 name="stock"
                 id="inavailable">
-                Unavailable
+                {{ 'Unavailable' | translate | async }}
               </mat-radio-button>
             </mat-radio-group>
           </div>
         </div>
         <div class="product_edit-full-input">
           <div class="product_edit-field-small">
-            <div class="check-title">On Sale</div>
+            <div class="check-title">{{ 'On_sale' | translate | async }}</div>
             <mat-radio-group aria-label="On Sale" formControlName="onSale">
               <mat-radio-button
                 [value]="true"
                 name="onSale"
                 id="onSale">
-                On Sale
+                {{ 'On_sale' | translate | async }}
               </mat-radio-button>
               <mat-radio-button
                 [value]="false"
                 name="onSale"
                 id="normal">
-                Normal
+                {{ 'Normal' | translate | async }}
               </mat-radio-button>
             </mat-radio-group>
           </div>
           <div class="product_edit-field-small">
-            <div class="check-title">Shipping</div>
+            <div class="check-title">{{ 'Shipping' | translate | async }}</div>
             <mat-radio-group aria-label="Shipping" formControlName="shiping">
               <mat-radio-button
                 value="basic"
                 name="shiping"
                 id="basic">
-                Basic
+                {{ 'Basic' | translate | async }}
               </mat-radio-button>
               <mat-radio-button
                 value="extended"
                 name="shiping"
                 id="extended">
-                Extended
+                {{ 'Extended' | translate | async }}
               </mat-radio-button>
             </mat-radio-group>
           </div>
@@ -173,7 +173,7 @@
       <h3 class="product_edit-subtitle">Images (for all languages/markets)</h3>
       <div class="product_edit-full-input">
         <mat-form-field class="product_edit-field">
-          <mat-label>Main Image Url</mat-label>
+          <mat-label>{{ 'Main_image_url' | translate | async }}</mat-label>
           <input
             matInput
             formControlName="mainImage"
@@ -258,7 +258,7 @@
       color="primary"
       (click)="onSubmit()"
       [disabled]="!productEditForm.valid">
-      Save
+      {{ 'Save' | translate | async }}
     </button>
 
   </form>
@@ -266,11 +266,11 @@
 
 <div class="after-send"
   *ngIf="sendRequest">
-  Request was send.
+  {{ 'Request_sended' | translate | async }}
   <button
     mat-raised-button
     color="primary"
     (click)="openForm()">
-    Again
+    {{ 'Again' | translate | async }}
   </button>
 </div>
