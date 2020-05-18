@@ -70,9 +70,7 @@ export class AdminService {
             .findOneAndUpdate({ titleUrl }, { $pull: { images: image } }, { new: true })
           : null;
 
-        if (!product) {
-          existImages.remove(image);
-        }
+        existImages.remove(image);
 
         return product || existImages;
       }
