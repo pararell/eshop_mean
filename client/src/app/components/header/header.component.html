@@ -1,6 +1,6 @@
-<mat-toolbar class="nav navbar-fixed" color="primary">
+<mat-toolbar class="nav nav-fixed" color="primary">
   <div class="nav-brand-logo">
-    <a [routerLink]="['/']">{{'ESHOP_TITLE' | translate | async}}</a>
+    <a (click)="scrollToTop()" [routerLink]="['/']">{{'ESHOP_TITLE' | translate | async}}</a>
   </div>
   <div class="nav-part-right">
     <div class="nav-search-form">

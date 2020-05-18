@@ -15,7 +15,7 @@ export interface State {
     loading: false,
     user: null,
     lang: '',
-    currency: 'EUR',
+    currency: '',
     convertVal: 0,
 };
 

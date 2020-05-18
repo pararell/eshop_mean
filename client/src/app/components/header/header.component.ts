@@ -74,6 +74,12 @@ export class HeaderComponent implements OnInit {
     this.store.dispatch(new actions.StoreUser(null));
   }
 
+  scrollToTop(): void {
+    of('scroll_content').pipe(delay(100), take(1)).subscribe(() => {
+      this.store.dispatch(new actions.UpdatePosition({cartComponent: 0}));
+    });
+  }
+
   setLang(lang: string): void {
     const langUpdate = {
       lang,

@@ -22,11 +22,11 @@ export class TranslationsEditComponent implements OnDestroy {
   translationsSub: Subscription;
   allLanguages = languages;
 
-  constructor(private store: Store<fromRoot.State>, private _fb: FormBuilder) {
+  constructor(private store: Store<fromRoot.State>, private fb: FormBuilder) {
 
      this.store.dispatch(new actions.GetAllTranslations());
 
-     this.languageForm = this._fb.group({
+     this.languageForm = this.fb.group({
         add: ''
      });
 
@@ -36,7 +36,7 @@ export class TranslationsEditComponent implements OnDestroy {
       .subscribe(translations => {
         translations.forEach((translation: Translations) => {
           const keys = translation.keys;
-          const newUsergroup: FormGroup = this._fb.group({});
+          const newUsergroup: FormGroup = this.fb.group({});
           Object.keys(keys).map(key => {
             newUsergroup.addControl(key, new FormControl(keys[key]));
           })

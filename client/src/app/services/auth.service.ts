@@ -17,17 +17,19 @@ export class AuthService {
 
   get isLoggedIn(): Observable<boolean> {
     return this.store.select(fromRoot.getUser).pipe(
-      withLatestFrom(this.store.select(fromRoot.getAuthLoading).pipe(filter(loading => !loading)), (user) => ({user})),
-      take(1),
-      map(({user}: {user: User}) => !!(user && user.email))
+      withLatestFrom(this.store.select(fromRoot.getAuthLoading).pipe(
+        filter(loading => !loading)), (user) => ({user})),
+        take(1),
+        map(({user}: {user: User}) => !!(user && user.email))
     );
   }
 
   get isAdmin(): Observable<boolean> {
     return this.store.select(fromRoot.getUser).pipe(
-      withLatestFrom(this.store.select(fromRoot.getAuthLoading).pipe(filter(loading => !loading)), (user) => ({user})),
-      take(1),
-      map(({user}: {user: User}) => !!(user && user.roles.includes('admin')))
+      withLatestFrom(this.store.select(fromRoot.getAuthLoading).pipe(
+        filter(loading => !loading)), (user) => ({user})),
+        take(1),
+        map(({user}: {user: User}) => !!(user && user.roles.includes('admin')))
     );
   }
 

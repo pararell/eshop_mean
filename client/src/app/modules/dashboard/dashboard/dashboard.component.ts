@@ -14,6 +14,8 @@ export class DashboardComponent  {
   productAction = '';
   lang$: Observable<string>;
 
+  readonly component = 'dashboard';
+
   constructor(private translate: TranslateService) {
     this.lang$ = this.translate.getLang$();
   }

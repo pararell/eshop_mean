@@ -18,6 +18,8 @@ export class OrdersComponent {
   orderUrl : string;
   lang$    : Observable<string>;
 
+  readonly component = 'orders';
+
   constructor(private store: Store<fromRoot.State>, private translate: TranslateService) {
     this.lang$ = this.translate.getLang$();
     this.orders$ = this.store.select(fromRoot.getUserOrders);

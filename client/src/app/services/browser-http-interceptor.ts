@@ -1,9 +1,8 @@
 import { catchError } from 'rxjs/operators';
 import { Observable, of, throwError } from 'rxjs';
-import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
 import { TransferState, makeStateKey, StateKey } from '@angular/platform-browser';
-import { isPlatformBrowser } from '@angular/common';
 
 @Injectable()
 export class BrowserHttpInterceptor implements HttpInterceptor {
