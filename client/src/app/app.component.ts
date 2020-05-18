@@ -9,7 +9,7 @@ import { TranslateService } from './services/translate.service';
 import * as fromRoot from './store/reducers';
 import * as actions from './store/actions';
 import { User } from './shared/models';
-import { languages, currency, accessTokenKey } from './shared/constants';
+import { languages, currencyLang, accessTokenKey } from './shared/constants';
 
 @Component({
   selector    : 'app-root',
@@ -36,7 +36,7 @@ export class AppComponent {
       .subscribe((lang: string) => {
         const langUpdate = {
           lang,
-          currency  : currency[lang]
+          currency  : currencyLang[lang]
         };
         this.store.dispatch(new actions.ChangeLanguage(langUpdate));
     });

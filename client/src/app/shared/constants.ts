@@ -1,6 +1,7 @@
 export const languages = ['en', 'sk', 'cs'];
 
-export const currency = {
+export const currencyLang = {
+  default: 'EUR',
   'en' : 'EUR',
   'sk' : 'EUR',
   'cs' : 'CZK'

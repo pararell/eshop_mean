@@ -9,7 +9,7 @@ import * as fromRoot from '../../store/reducers';
 import * as actions from '../../store/actions';
 import { TranslateService } from '../../services/translate.service';
 import { environment } from '../../../environments/environment';
-import { languages, currency, accessTokenKey } from '../../shared/constants';
+import { languages, currencyLang, accessTokenKey } from '../../shared/constants';
 import { Cart, User, Order } from '../../shared/models';
 
 @Component({
@@ -83,7 +83,7 @@ export class HeaderComponent implements OnInit {
   setLang(lang: string): void {
     const langUpdate = {
       lang,
-      currency: currency[lang]
+      currency: currencyLang[lang]
     };
     this.store.dispatch(new actions.ChangeLanguage(langUpdate));
   }

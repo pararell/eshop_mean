@@ -1,6 +1,7 @@
 
 import { EshopActions } from '../../store/actions';
 import { User } from '../../shared/models';
+import { languages, currencyLang } from '../../shared/constants';
 
 
 export interface State {
@@ -14,8 +15,8 @@ export interface State {
  export const initialState: State = {
     loading: false,
     user: null,
-    lang: '',
-    currency: '',
+    lang: languages[0],
+    currency: currencyLang['default'],
     convertVal: 0,
 };
 

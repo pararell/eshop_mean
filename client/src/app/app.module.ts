@@ -31,6 +31,7 @@ import { routesAll } from './app.routes';
 import { environment } from '../environments/environment';
 import { TranslateService } from './services/translate.service';
 import { EnvConfigurationService } from './services/env-configuration.service';
+import { languages } from './shared/constants';
 
 
 const routes: Routes = routesAll;
@@ -68,7 +69,7 @@ const routes: Routes = routesAll;
     CookieService,
     {
       provide: APP_INITIALIZER,
-      useFactory: (translateService: TranslateService) => () => translateService.use(''),
+      useFactory: (translateService: TranslateService) => () => translateService.use(languages[0]),
       deps: [ TranslateService ],
       multi: true
     },
