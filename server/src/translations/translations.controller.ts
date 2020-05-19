@@ -19,7 +19,7 @@ export class TranslationsController {
     if (!lang) {
       const url = `https://geolocation-db.com/json/${process.env.GEO_LOCATION_API_KEY}`;
       try {
-      const result = await this.httpService.post(url).toPromise();
+      const result = await this.httpService.get(url).toPromise();
       const country = result.data.country_code ? result.data.country_code.toLowerCase() : '';
       const langCode = countryLang[country] || country['default'];
 
