@@ -15,16 +15,12 @@ export const prepareCart = (cart, lang: string): CartModel => {
   const cartLangItems = cart.items
     .map((cartItem: any) => {
       const prepareItem = prepareProduct(cartItem.item, lang);
-      const price = prepareItem.onSale
-        ? prepareItem.salePrice
-        : prepareItem.regularPrice;
+      const price = prepareItem.salePrice;
 
       return { item: prepareItem, id: cartItem.id, qty: cartItem.qty, price };
     })
     .filter(
-      (cartItem: any) =>
-        cartItem.item.visibility &&
-        (cartItem.item.salePrice || cartItem.item.regularPrice),
+      (cartItem: any) =>  cartItem.item.visibility && cartItem.item.salePrice,
     );
   const {
     totalPrice,

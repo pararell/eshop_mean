@@ -15,7 +15,7 @@
       <mat-card
         class="product"
         *ngIf="!(productLoading$ | async) && items.product as product">
-        <ng-container *ngIf="product.visibility && (product.salePrice || product.regularPrice)">
+        <ng-container *ngIf="product.visibility && product.salePrice">
           <mat-card-content class="product-content">
             <div class="product-detail">
               <h1 class="product-title">{{ product?.title }}</h1>
@@ -35,7 +35,7 @@
                 <div
                   class="product-price"
                   *ngIf="!product?.onSale">
-                  {{ (product?.regularPrice * ((convertVal$ | async) || 1)) | priceFormat }} {{ currency$ | async }}
+                  {{ (product?.salePrice * ((convertVal$ | async) || 1)) | priceFormat }} {{ currency$ | async }}
                 </div>
                 <button class="product-cart-wrap"
                   *ngIf="(this.lang$ | async) as lang"

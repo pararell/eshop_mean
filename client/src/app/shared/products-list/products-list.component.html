@@ -23,11 +23,8 @@
     </div>
     <div class="product_card-action">
       <div class="product_card-action-wrap">
-        <div class="product_card-price-info" *ngIf="product.onSale">
+        <div class="product_card-price-info">
           {{ (product?.salePrice * (convertVal || 1)) | priceFormat }} {{ currency }}
-        </div>
-        <div class="product_card-price-info" *ngIf="!product.onSale">
-          {{ (product?.regularPrice * (convertVal || 1)) | priceFormat }} {{ currency }}
         </div>
         <p class="product_card-stock">{{ product?.stock | translate | async }}</p>
         <app-cart-show *ngIf="cartIds"
