@@ -50,7 +50,7 @@
         {{ 'Find' | translate | async }}
       </button>
     </div>
-    <ng-container *ngIf="action !== 'remove'">
+    <ng-container *ngIf="(action === 'add') || (action === 'edit' && !!(product$ | async))">
       <h3 class="product_edit-subtitle">Content (for chosen language/market)</h3>
       <div [formGroupName]="chooseLang">
         <div class="product_edit-full-input">
@@ -236,7 +236,7 @@
         </div>
 
       <div class="images-wrapp"
-        *ngIf="!!(images$ | async)?.length && !(product$ | async)?.images?.length">
+        *ngIf="!!(images$ | async)?.length && action === 'add'">
         <div
           class="image-dash-wrap"
           *ngFor="let image of (images$ | async)">
@@ -249,7 +249,7 @@
         </div>
       </div>
       <div class="images-wrapp"
-        *ngIf="!!(product$ | async)?.images?.length">
+        *ngIf="!!(product$ | async)?.images?.length && action === 'edit'">
         <div
           class="image-dash-wrap"
           *ngFor="let image of (product$ | async)?.images">
@@ -265,14 +265,21 @@
         [description]="(descriptionFullSub$ | async)[chooseLang]"
         (onEditorContentChange)="onEditorChange($event)">
       </app-tiny-editor>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onSubmit()"
+        [disabled]="!productEditForm.valid">
+        {{ 'Save' | translate | async }}
+      </button>
     </ng-container>
 
-    <button
+    <button *ngIf="action === 'remove'"
       mat-raised-button
       color="primary"
       (click)="onSubmit()"
       [disabled]="!productEditForm.valid">
-      {{ 'Save' | translate | async }}
+      {{ 'Remove' | translate | async }}
     </button>
 
   </form>

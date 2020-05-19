@@ -36,7 +36,8 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
 
   constructor(private fb: FormBuilder, private store: Store<fromRoot.State>, private apiService: ApiService) {
     this.createForm();
-    this.product$ = this.store.select(fromRoot.getProduct);
+    this.product$ = this.store.select(fromRoot.getProduct).pipe(
+      filter(product => !!product && !!product.titleUrl && !product.title));
   }
 
   ngOnInit(): void {
@@ -55,8 +56,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
       this.uploader.onSuccessItem = (item, response, status, headers) => this.onSuccessItem(item, response, status, headers);
     })
 
-    this.productSub = this.product$.pipe(
-      filter(product => !!product && !!product.titleUrl && !product.title))
+    this.productSub = this.product$
       .subscribe((product) => {
 
         const newForm = {
@@ -171,25 +171,19 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
         break;
 
       case 'edit':
-        this.images$.pipe(first())
-          .subscribe(images => {
-            if (images && images.length) {
-              this.productEditForm.patchValue({ images: images });
-            }
+        const editProduct = Object.keys(this.productEditForm.value)
+          .filter(key => !!this.productEditForm.value[key])
+          .reduce((prev, curr) => ({ ...prev, [curr]: this.productEditForm.value[curr] }), {});
 
-            const editProduct = Object.keys(this.productEditForm.value)
-              .filter(key => !!this.productEditForm.value[key])
-              .reduce((prev, curr) => ({ ...prev, [curr]: this.productEditForm.value[curr] }), {});
+        const productPrepare = {
+          ...editProduct,
+          images: [],
+          mainImage: { url: this.productEditForm.value.mainImage, name: this.productEditForm.value.titleUrl },
+          ...this.prepareProductData(this.languageOptions, editProduct)
+        };
 
-            const productPrepare = {
-              ...editProduct,
-              images: images || [],
-              mainImage: { url: this.productEditForm.value.mainImage, name: this.productEditForm.value.titleUrl },
-              ...this.prepareProductData(this.languageOptions, editProduct)
-            };
+        this.store.dispatch(new actions.EditProduct(productPrepare));
 
-            this.store.dispatch(new actions.EditProduct(productPrepare));
-          });
         break;
 
       case 'remove':
