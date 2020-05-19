@@ -5,6 +5,8 @@ import { CookieService } from 'ngx-cookie-service';
 
 import { ApiService } from './api.service';
 import { languages } from '../shared/constants';
+import { Translations } from '../shared/models';
+
 
 @Injectable({
   providedIn: 'root'
@@ -25,10 +27,6 @@ export class TranslateService {
     return this.injector.get(CookieService);
   }
 
-  getLocation$() {
-    return this.apiService.getLocation$().pipe(filter(Boolean, take(1)));
-  }
-
   getLang$() {
     return this.languageSub$.asObservable();
   }
@@ -39,8 +37,11 @@ export class TranslateService {
 
   getTranslationsData(lang: string) {
     return this.apiService.getLangTranslations(lang).subscribe(
-      (translation: any) => {
-        const translationKeys = translation && translation['keys'] ? translation['keys'] : {};
+      (translations: Translations) => {
+        if (!lang) {
+          this.setLang(translations.lang);
+        }
+        const translationKeys = translations && translations['keys'] ? translations['keys'] : {};
         this.translationsSub$.next(translationKeys);
         return Object.assign({}, translationKeys);
       },
@@ -53,25 +54,21 @@ export class TranslateService {
   use(lang: string): Promise<{}> {
     return new Promise<{}>((resolve, reject) => {
       const foundLang = lang || this.cookie.get('eshop_lang');
-      if (!foundLang) {
-        this.getLocation$().toPromise()
-          .then((langByIP: string) => {
-            resolve(this.setTranslations(langByIP));
-          }, (error) => {
-            const defaultLang = languages[0];
-            resolve(this.setTranslations(defaultLang));
-        })
-      } else {
-        resolve(this.setTranslations(foundLang));
-      }
+      resolve(this.setTranslations(foundLang));
     });
   }
 
   private setTranslations(lang: string) {
+    if (lang) {
+      this.setLang(lang);
+    }
+
+    return this.getTranslationsData(lang);
+  }
+
+  private setLang(lang: string): void {
     this.languageSub$.next(lang);
     this.cookie.set('eshop_lang', lang);
     this.lang = lang;
-
-    return this.getTranslationsData(lang);
   }
 }

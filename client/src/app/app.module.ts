@@ -69,7 +69,7 @@ const routes: Routes = routesAll;
     CookieService,
     {
       provide: APP_INITIALIZER,
-      useFactory: (translateService: TranslateService) => () => translateService.use(languages[0]),
+      useFactory: (translateService: TranslateService) => () => translateService.use(''),
       deps: [ TranslateService ],
       multi: true
     },

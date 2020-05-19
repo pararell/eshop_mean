@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, HttpModule } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TranslationsController } from './translations.controller';
 import TranslationScheme from './schemas/translation.schema';
@@ -10,6 +10,7 @@ import { AuthModule } from '../auth/auth.module';
       { name: 'Translation', schema: TranslationScheme },
     ]),
     AuthModule,
+    HttpModule
   ],
   controllers: [TranslationsController],
   providers: [],

@@ -248,15 +248,6 @@ export class ApiService {
     return this.http.delete(pageUrl, this.requestOptions);
   }
 
-  getLocation$() {
-    const locationFindUrl = 'https://geolocation-db.com/json/6db070f0-7c27-11ea-8264-e974339fc182';
-    return this.http.get(locationFindUrl)
-      .pipe(map((response: any ) => {
-        const country = response.country_code ? response.country_code.toLowerCase() : '';
-        return countryLang[country] || country['default'];
-      }))
-  }
-
   setHeaders() {
     this.store.select(fromRoot.getLang)
       .subscribe(lang => {

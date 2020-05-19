@@ -1,18 +1,34 @@
-import { Controller, Get, Query, UseGuards, Patch, Body } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards, Patch, Body, HttpService } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Translation } from './translation.model';
 import { AuthGuard } from '@nestjs/passport';
+
+import { Translation } from './translation.model';
 import { RolesGuard } from '../auth/roles.guard';
+import { countryLang, languages } from '../shared/constans';
 
 @Controller('api/translations')
 export class TranslationsController {
   constructor(
     @InjectModel('Translation') private translationModel: Model<Translation>,
+    private httpService: HttpService
   ) {}
 
   @Get()
   async getTranslations(@Query('lang') lang: string): Promise<Translation> {
+    if (!lang) {
+      const url = `https://geolocation-db.com/json/${process.env.GEO_LOCATION_API_KEY}`;
+      try {
+      const result = await this.httpService.post(url).toPromise();
+      const country = result.data.country_code ? result.data.country_code.toLowerCase() : '';
+      const langCode = countryLang [country] || country['default'];
+
+      return await this.translationModel.findOne({ lang: langCode });
+      } catch {
+        return await this.translationModel.findOne({ lang: languages[0] });
+      }
+    }
+
     return await this.translationModel.findOne({ lang });
   }
 
