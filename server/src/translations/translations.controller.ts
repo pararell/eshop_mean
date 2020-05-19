@@ -21,7 +21,7 @@ export class TranslationsController {
       try {
       const result = await this.httpService.post(url).toPromise();
       const country = result.data.country_code ? result.data.country_code.toLowerCase() : '';
-      const langCode = countryLang [country] || country['default'];
+      const langCode = countryLang[country] || country['default'];
 
       return await this.translationModel.findOne({ lang: langCode });
       } catch {
