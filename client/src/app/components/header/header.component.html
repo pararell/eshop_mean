@@ -1,0 +1,83 @@
+<mat-toolbar class="nav nav-fixed" color="primary">
+  <div class="nav-brand-logo">
+    <a (click)="scrollToTop()" [routerLink]="['/']">{{'ESHOP_TITLE' | translate | async}}</a>
+  </div>
+  <div class="nav-part-right">
+    <div class="nav-search-form">
+      <mat-form-field class="nav-search-form-content"
+        [ngClass]="{'focus-active' : (showAutocomplete$ | async)}">
+        <i class="material-icons md-18">search</i>
+        <input type="text"
+               aria-label="Search"
+               matInput
+               [formControl]="query"
+               (focus)="onFocus()"
+               (blur)="onBlur()"
+               [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let title of (productTitles$ | async)"
+              [value]="title"
+              [routerLink]="['/' + (lang$ | async) + '/product/' + title]"
+              (click)="onTitleLink()">
+            <a class="nav-autocomplete-link">{{title}}</a>
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+    <div class="nav-basic">
+      <ng-container *ngIf="(cart$ | async) as cart">
+        <a class="nav-cart-wrap" [routerLink]="['/' + (lang$ | async) + '/cart']">
+          <span>{{ cart?.totalQty }}</span>
+          <i class="nav-cart-icon material-icons md-18">shopping_cart</i>
+        </a>
+      </ng-container>
+      <select class="browser-default nav-lang-select" aria-label="Language"
+        [ngModel]="(lang$ | async)"
+        (ngModelChange)="setLang($event)">
+        <option *ngFor="let option of languageOptions;" [value]="option">{{option}}</option>
+      </select>
+    </div>
+    <div class="nav-mobile">
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu" [overlapTrigger]="false">
+        <ng-container *ngTemplateOutlet="menuItems"></ng-container>
+      </mat-menu>
+    </div>
+    <div class="nav-desktop">
+      <ng-container *ngTemplateOutlet="menuItems"></ng-container>
+    </div>
+  </div>
+</mat-toolbar>
+
+
+<ng-template #menuItems>
+  <ng-container *ngIf="!(user$ | async)">
+    <button mat-menu-item *ngIf="googleAuthUrl">
+      <mat-icon>account_box</mat-icon>
+      <a class="nav-link" href="{{ googleAuthUrl }}">
+        {{ 'Login' | translate | async }} {{ 'with' | translate | async }} Google
+      </a>
+    </button>
+    <button mat-menu-item  [routerLink]="['/' + (lang$ | async) + '/authorize/signin']">
+      <mat-icon>account_circle</mat-icon>
+      <a class="nav-link">{{ 'Login' | translate | async }}</a>
+    </button>
+  </ng-container>
+  <button mat-menu-item [routerLink]="['/' + (lang$ | async) + '/dashboard']"
+     *ngIf="(user$ | async)?.roles?.includes('admin')">
+    <mat-icon>dashboard</mat-icon>
+    <a class="nav-link"> {{'Dashboard' | translate | async}}</a>
+  </button>
+  <button mat-menu-item [routerLink]="['/' + (lang$ | async) + '/orders']"
+    *ngIf="(userOrders$ | async)?.length">
+    <mat-icon>assignment</mat-icon>
+    <a class="nav-link"> {{'Orders' | translate | async}}</a>
+  </button>
+  <button mat-menu-item (click)="onLogout()"
+    *ngIf="(user$ | async)">
+    <mat-icon>exit_to_app</mat-icon>
+    <a class="nav-link" > {{'Logout' | translate | async}}</a>
+  </button>
+</ng-template>

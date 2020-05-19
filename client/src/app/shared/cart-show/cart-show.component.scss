@@ -1,0 +1,22 @@
+:host {
+  display: flex;
+  align-items: center;
+
+  .cart_show {
+    &-wrap {
+      display: flex;
+      align-items: center;
+    }
+
+    &-icon {
+      cursor: pointer;
+      color: #fff;
+      font-size: 25px;
+    }
+
+    &-quantity {
+      color: #fff;
+      line-height: 15px;
+    }
+  }
+}

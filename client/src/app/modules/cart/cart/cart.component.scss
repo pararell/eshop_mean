@@ -1,0 +1,111 @@
+@import 'variables';
+
+:host {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+
+  /deep/ .mat-radio-button ~ .mat-radio-button {
+    margin-left: 16px;
+  }
+
+  .cart {
+    display: flex;
+    flex-flow: wrap;
+
+    &-back {
+      flex: 1;
+    }
+
+    &-with-order {
+      flex: 20;
+      max-width: 100%;
+    }
+
+    &-wrap {
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+      background: rgba(255, 255, 255, 1);
+      padding: 0 10px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    &-items {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    &-title {
+      padding: 0 10px;
+    }
+
+    &-image-wrap {
+      display: flex;
+      align-items: center;
+      width: 50%;
+    }
+
+    &-image {
+      height: 70px;
+    }
+
+    &-remove {
+      color: red;
+      cursor: pointer;
+    }
+
+    &-item-last-down {
+      width: 24px;
+    }
+
+    &-navigation-button {
+      float: right;
+      margin: 5px 2px;
+    }
+  }
+
+  .cart-address-field {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .pay-success {
+    color: #4bb543;
+    font-size: 25px;
+    line-height: 30px;
+    padding: 20px;
+  }
+
+  .order-form-wrap {
+    background: #fff;
+    margin-top: 15px;
+    padding: 10px;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .delivery-button {
+    margin: 20px 0;
+    display: block;
+  }
+
+  .submit-order-button {
+    margin-top: 25px;
+    width: 100%;
+  }
+
+  .order-field {
+    width: 100%;
+    margin: 0 5px;
+  }
+
+  .order-field-small {
+    flex: 1;
+    margin: 0 5px;
+  }
+}

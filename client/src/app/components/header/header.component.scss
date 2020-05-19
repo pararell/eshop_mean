@@ -1,0 +1,130 @@
+@import 'variables';
+
+/deep/ .mat-option .nav-autocomplete-link {
+  color: rgba(0, 0, 0, 0.87) !important;
+}
+
+/deep/ .mat-menu-item .nav-link {
+  color: rgba(0, 0, 0, 0.87) !important;
+}
+
+:host {
+  display: block;
+
+  /deep/ .mat-input-element {
+    padding: 2px 5px !important;
+    font-size: 16px !important;
+  }
+
+  /deep/ .mat-form-field .mat-form-field-underline {
+    display: none;
+  }
+
+  /deep/ .mat-form-field.focus-active .mat-form-field-underline {
+    display: block;
+  }
+
+  .nav {
+    padding: 0 15px;
+    height: 50px;
+    width: 100%;
+    line-height: 50px;
+    background: linear-gradient(to right, $primary-color, $secondary-color);
+    justify-content: space-between;
+    z-index: 5;
+    position: relative;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+
+    &-fixed {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+
+    &-brand-logo {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    &-part-right {
+      display: flex;
+      align-items: center;
+    }
+
+    &-search-form {
+      margin-right: 25px;
+      max-height: 50px;
+      align-items: center;
+      display: flex;
+      flex: 1;
+
+      &-content {
+        width: 100%;
+      }
+
+      @media screen and (max-width: 600px) {
+        max-width: 100px;
+      }
+    }
+
+    &-basic {
+      display: flex;
+      align-items: center;
+      flex: 1;
+    }
+
+    &-cart-wrap {
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      margin-right: 5px;
+    }
+
+    &-cart-icon {
+      margin: 0 5px;
+    }
+
+    &-desktop {
+      display: flex;
+      flex: 1;
+
+      /deep/ button.mat-menu-item {
+        width: initial !important;
+
+        a {
+          color: #fff !important;
+        }
+
+        .mat-icon {
+          color: #fff !important;
+          margin-right: 5px !important;
+        }
+      }
+    }
+
+    &-mobile {
+      display: none;
+    }
+
+    @media screen and (max-width: 1200px) {
+      padding: 0;
+
+      .nav-desktop {
+        display: none;
+      }
+
+      .nav-mobile {
+        display: block;
+        flex: 1;
+      }
+    }
+  }
+
+  select.nav-lang-select {
+    background: $secondary-color;
+    border: none;
+    color: #fff;
+  }
+}

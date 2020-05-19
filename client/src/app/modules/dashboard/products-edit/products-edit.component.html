@@ -1,0 +1,305 @@
+<ng-container *ngIf="!sendRequest && (choosenLanguageSub$ | async) as chooseLang">
+  <div class="products-title-wrapp">
+    <h2> {{action | uppercase}} {{ 'Product' | translate | async }} </h2>
+    <div>
+      <mat-form-field class="browser-default lang-select">
+        <mat-label>{{ 'Language_for_product_detail' | translate | async }}</mat-label>
+        <mat-select
+          [ngModel]="chooseLang"
+          (ngModelChange)="setLang($event)">
+          <mat-option *ngFor="let option of languageOptions;" [value]="option">
+            {{option}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+  <form class="product_edit-form"
+    [formGroup]="productEditForm"
+    novalidate>
+    <div class="product_edit-full-input">
+      <mat-form-field class="product_edit-field"
+        *ngIf="(!titles || !titles.length) || action === 'add'">
+        <mat-label>Title Url</mat-label>
+        <input
+          matInput
+          formControlName="titleUrl"
+          type="text"
+          name="titleUrl"
+          (change)="formatTitleUrl($event)">
+      </mat-form-field>
+      <mat-form-field class="product_edit-field"
+        *ngIf="(titles && titles.length) && action !== 'add'">
+        <input matInput
+               placeholder="TitleUrl"
+               aria-label="TitleUrl"
+               [matAutocomplete]="auto"
+               formControlName="titleUrl">
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let title of titles" [value]="title">
+            <span>{{title}}</span>
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+      <button
+        mat-raised-button
+        color="primary"
+        class="edit-find-button"
+        *ngIf="action === 'edit'"
+        (click)="findProduct()">
+        {{ 'Find' | translate | async }}
+      </button>
+    </div>
+    <ng-container *ngIf="(action === 'add') || (action === 'edit' && !!(product$ | async))">
+      <h3 class="product_edit-subtitle">Content (for chosen language/market)</h3>
+      <div [formGroupName]="chooseLang">
+        <div class="product_edit-full-input">
+          <mat-form-field class="product_edit-field">
+            <mat-label>{{ 'Title' | translate | async }}</mat-label>
+            <input
+              matInput
+              formControlName="title"
+              type="text"
+              name="title">
+          </mat-form-field>
+        </div>
+        <div class="product_edit-full-input">
+          <mat-form-field class="product_edit-field">
+            <mat-label>{{ 'Short_description' | translate | async }}</mat-label>
+            <textarea
+              matInput
+              formControlName="description"
+              name="description">
+            </textarea>
+          </mat-form-field>
+        </div>
+        <div class="product_edit-full-input">
+          <mat-form-field class="product_edit-field-small">
+            <mat-label>{{ 'Sale_price' | translate | async }}</mat-label>
+            <input
+              matInput
+              formControlName="salePrice"
+              name="salePrice">
+          </mat-form-field>
+          <mat-form-field class="product_edit-field-small">
+            <mat-label>{{ 'Regulat_price' | translate | async }}</mat-label>
+            <input
+              matInput
+              formControlName="regularPrice"
+              name="regularPrice">
+          </mat-form-field>
+        </div>
+        <div class="product_edit-full-input">
+          <mat-form-field class="product_edit-field-small">
+            <mat-label>Categories (separate with coma)</mat-label>
+            <input
+              matInput
+              formControlName="categories"
+              name="categories">
+          </mat-form-field>
+          <mat-form-field class="product_edit-field-small">
+            <mat-label>Tags (separate with coma)</mat-label>
+            <input
+              matInput
+              formControlName="tags"
+              name="tags">
+          </mat-form-field>
+        </div>
+        <div class="product_edit-full-input">
+          <div class="product_edit-field-small">
+            <div class="check-title">{{ 'Visibility' | translate | async }}</div>
+            <mat-radio-group aria-label="Visibility" formControlName="visibility">
+              <mat-radio-button
+                name="visibility"
+                [value]="true"
+                id="visible">
+                {{ 'Visible' | translate | async }}
+              </mat-radio-button>
+              <mat-radio-button
+                name="visibility"
+                [value]="false"
+                id="hidden">
+                {{ 'Hidden' | translate | async }}
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <div class="product_edit-field-small">
+            <div class="check-title">{{ 'On_stock' | translate | async }}</div>
+            <mat-radio-group aria-label="onStock" formControlName="stock">
+              <mat-radio-button
+                value="onStock"
+                name="stock"
+                id="onStock">
+                {{ 'On_stock' | translate | async }}
+              </mat-radio-button>
+              <mat-radio-button
+                value="onWaitings"
+                name="stock"
+                id="onWaitings">
+                {{ 'Available_in_few_weeks' | translate | async }}
+              </mat-radio-button>
+              <mat-radio-button
+                value="unavailable"
+                name="stock"
+                id="inavailable">
+                {{ 'Unavailable' | translate | async }}
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+        </div>
+        <div class="product_edit-full-input">
+          <div class="product_edit-field-small">
+            <div class="check-title">{{ 'On_sale' | translate | async }}</div>
+            <mat-radio-group aria-label="On Sale" formControlName="onSale">
+              <mat-radio-button
+                [value]="true"
+                name="onSale"
+                id="onSale">
+                {{ 'On_sale' | translate | async }}
+              </mat-radio-button>
+              <mat-radio-button
+                [value]="false"
+                name="onSale"
+                id="normal">
+                {{ 'Normal' | translate | async }}
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <div class="product_edit-field-small">
+            <div class="check-title">{{ 'Shipping' | translate | async }}</div>
+            <mat-radio-group aria-label="Shipping" formControlName="shiping">
+              <mat-radio-button
+                value="basic"
+                name="shiping"
+                id="basic">
+                {{ 'Basic' | translate | async }}
+              </mat-radio-button>
+              <mat-radio-button
+                value="extended"
+                name="shiping"
+                id="extended">
+                {{ 'Extended' | translate | async }}
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+        </div>
+      </div>
+      <h3 class="product_edit-subtitle">Images (for all languages/markets)</h3>
+      <div class="product_edit-full-input">
+        <mat-form-field class="product_edit-field">
+          <mat-label>{{ 'Main_image_url' | translate | async }}</mat-label>
+          <input
+            matInput
+            formControlName="mainImage"
+            name="mainImage">
+        </mat-form-field>
+      </div>
+      <h4 class="product_edit-infotitle">Upload Images from file or url</h4>
+        <ng-container *ngIf="uploader">
+          <div class="product_edit-add-images"
+            ng2FileDrop
+            [uploader]="uploader">
+            <div class="file-field input-field">
+              <button
+                mat-raised-button
+                color="primary">
+                <input
+                  type="file"
+                  #fileInput
+                  ng2FileSelect
+                  [uploader]="uploader"
+                  multiple>
+              </button>
+            </div>
+          </div>
+        </ng-container>
+        <div class="product_edit-full-input">
+          <mat-form-field class="product_edit-field-small">
+            <mat-label>Add Image Url</mat-label>
+            <input
+              matInput
+              formControlName="imageUrl"
+              name="imageUrl">
+          </mat-form-field>
+          <button
+            mat-raised-button
+            color="primary"
+            class="edit-find-button"
+            (click)="addImageUrl()">
+            Add Image Url
+          </button>
+        </div>
+        <div class="images-wrapp" *ngIf="testImageUrl">
+          <div class="image-dash-wrap">
+            <img [src]="testImageUrl" (load)="checkImageUrl()">
+          </div>
+        </div>
+
+      <div class="images-wrapp"
+        *ngIf="!!(images$ | async)?.length && action === 'add'">
+        <div
+          class="image-dash-wrap"
+          *ngFor="let image of (images$ | async)">
+          <img src="{{image}}">
+          <div
+            class="remove-image"
+            (click)="onRemoveImage(image, 'image')">
+            X
+          </div>
+        </div>
+      </div>
+      <div class="images-wrapp"
+        *ngIf="!!(product$ | async)?.images?.length && action === 'edit'">
+        <div
+          class="image-dash-wrap"
+          *ngFor="let image of (product$ | async)?.images">
+          <img src="{{image}}">
+          <div class="remove-image"
+            (click)="onRemoveImage(image, 'product')">
+            X
+          </div>
+        </div>
+      </div>
+      <h3 class="product_edit-subtitle">Full Description (for chosen language/market)</h3>
+      <app-tiny-editor
+        [description]="(descriptionFullSub$ | async)[chooseLang]"
+        (onEditorContentChange)="onEditorChange($event)">
+      </app-tiny-editor>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onSubmit()"
+        [disabled]="!productEditForm.valid">
+        {{ 'Save' | translate | async }}
+      </button>
+    </ng-container>
+
+    <button *ngIf="action === 'remove'"
+      mat-raised-button
+      color="primary"
+      (click)="onSubmit()"
+      [disabled]="!productEditForm.valid">
+      {{ 'Remove' | translate | async }}
+    </button>
+
+  </form>
+</ng-container>
+
+<div class="product_edit-after-send"
+  *ngIf="sendRequest">
+ <span> {{ 'Request_sended' | translate | async }}</span>
+  <button
+    class="product_edit-btn-action"
+    mat-raised-button
+    color="primary"
+    (click)="openForm()">
+    {{ 'Again' | translate | async }}
+  </button>
+  <button *ngIf="action === 'add'"
+    class="product_edit-btn-action"
+    mat-raised-button
+    color="primary"
+    (click)="changeTab.emit(2)">
+    {{ 'Edit' | translate | async }}
+  </button>
+</div>

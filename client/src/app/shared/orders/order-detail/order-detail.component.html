@@ -1,0 +1,95 @@
+<div class="main">
+  <div class="container">
+    <button
+      (click)="goBack()"
+      mat-raised-button
+      color="primary">
+      <i class="material-icons left">arrow_back</i>
+      {{ 'Back' | translate | async }}
+    </button>
+    <mat-progress-bar
+      mode="indeterminate"
+      *ngIf="!(order$ | async)"></mat-progress-bar>
+
+    <ng-container *ngIf="(order$ | async) as order">
+      <mat-card class="card">
+        <mat-card-content class="order-top-content">
+          <div>
+            <h4>{{ order?.orderId }}</h4>
+            <div class="product-info">
+              <div class="stock">
+                Status: {{ order?.status }}
+                <div class="order-edit-toggle"
+                  *ngIf="type === 'EDIT'"
+                  (click)="toggleForm()">
+                  {{ 'Edit' | translate | async }}
+                </div>
+              </div>
+              <div class="price">
+                {{ 'Amount' | translate | async }}: {{ order?.amount }} {{ order.currency }}
+              </div>
+            </div>
+            <div *ngIf="showForm">
+              <form class="order-form" [formGroup]="statusForm">
+                <mat-select
+                  aria-label="Status"
+                  formControlName="status">
+                  <mat-option
+                    *ngFor="let option of statusOptions | keyvalue;"
+                    [value]="option.value">
+                    {{ option.value }}
+                  </mat-option>
+                </mat-select>
+                <button
+                  type="submit"
+                  mat-raised-button
+                  color="primary"
+                  [disabled]="statusForm.invalid"
+                  (click)="submit()">
+                  OK
+                </button>
+              </form>
+            </div>
+              <mat-chip-list class="order-tags">
+                <mat-chip>{{ 'Customer' | translate | async }}: {{ order?.customerEmail }}</mat-chip>
+              </mat-chip-list>
+          </div>
+          <div>
+            <p *ngIf="order?.description">{{ 'Description' | translate | async }}: {{ order?.description }}</p>
+            <p>{{ 'Customer' | translate | async }}: {{ order?.customerEmail }}</p>
+            <p>{{ 'Created' | translate | async }}: {{ order.dateAdded | date:'dd-MM-yy' }}</p>
+            <p>{{ 'Paid' | translate | async }}: {{ order?.outcome?.seller_message }}</p>
+            <p>{{ 'Total_price' | translate | async }}: {{ order?.cart?.totalPrice }}</p>
+            <p>{{ 'Total_quantity' | translate | async }}: {{ order?.cart?.totalQty }}</p>
+          </div>
+        </mat-card-content>
+        <mat-card-content class="order-content">
+          <div *ngIf="order.addresses[0] as address">
+            <h4>{{ 'About_customer' | translate | async }}</h4>
+            <p>{{ 'City' | translate | async }}: {{ address.city }}</p>
+            <p>{{ 'Country' | translate | async }}: {{ address.country }}</p>
+            <p>{{ 'Address' | translate | async }}: {{ address.line1 }}</p>
+            <p>{{ 'Zip' | translate | async }}: {{ address.zip }}</p>
+            <p *ngIf="address.name">{{ 'Name' | translate | async }}: {{ address.name }}</p>
+            <br/>
+          </div>
+          <div>
+            <h4 class="order-cart-title">Cart</h4>
+            <div *ngFor="let cartItem of order?.cart?.items">
+              <div class="order-cart">
+                <a [routerLink]="['/' + (lang$ | async) + '/product/' + cartItem?.item?.titleUrl]">
+                  <img class="order-cart-img"
+                    src="{{cartItem?.item?.mainImage?.url}}">
+                </a>
+                <div class="order-cart-text">
+                  <span>{{cartItem.qty}} ks </span> {{cartItem?.item.title}}  <br/>
+                  <span>{{cartItem.price}} {{ order.currency }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </ng-container>
+  </div>
+</div>

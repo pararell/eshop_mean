@@ -1,0 +1,73 @@
+<div class="main">
+  <div class="container">
+    <ng-container *ngIf="(choosenLanguageSub$ | async) as chooseLang">
+      <div class="pages_edit-top">
+        <div>
+          <mat-form-field class="pages_edit-field">
+            <mat-label>{{ 'Add_page' | translate | async }}</mat-label>
+            <input
+              matInput
+              [(ngModel)]="newPage">
+          </mat-form-field>
+          <button
+            class="translations-button"
+            mat-flat-button
+            color="accent"
+            (click)="addPage()">
+            +
+          </button>
+        </div>
+        <mat-form-field class="page-select">
+          <mat-label>{{ 'From_existing_pages' | translate | async }}</mat-label>
+          <mat-select
+            [(ngModel)]="chosenPage"
+            (ngModelChange)="chosePage()">
+            <mat-option
+              *ngFor="let option of pages$ | async;"
+              [value]="option.titleUrl">
+              {{option.titleUrl}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field class="lang-select">
+          <mat-label>{{ 'Language_for_page' | translate | async }}</mat-label>
+          <mat-select
+            [ngModel]="chooseLang"
+            (ngModelChange)="setLang($event)">
+            <mat-option
+              *ngFor="let option of languageOptions;"
+              [value]="option">
+              {{option}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <form class="pages_edit-form"
+        [formGroup]="pagesEditForm" *ngIf="pagesEditForm.get('titleUrl').value">
+        <h2>{{ pagesEditForm.get('titleUrl').value }}</h2>
+        <div [formGroupName]="chooseLang">
+          <mat-form-field class="pages_edit-field">
+            <mat-label>Title</mat-label>
+            <input
+              matInput
+              formControlName="title">
+          </mat-form-field>
+        </div>
+        <app-tiny-editor
+          [description]="pagesEditForm.get(chooseLang).value.contentHTML"
+          (onEditorContentChange)="onPageEditorChange($event,chooseLang)">
+        </app-tiny-editor>
+      </form>
+
+      <button
+        mat-flat-button
+        color="primary"
+        [disabled]="pagesEditForm.invalid"
+        (click)="savePage()">
+        Save
+      </button>
+    </ng-container>
+
+  </div>
+</div>

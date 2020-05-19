@@ -1,0 +1,29 @@
+:host {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+
+  .translations-subform {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .translations-button {
+    margin: 0 10px;
+  }
+
+  .translations_edit-wrapper {
+    background: #fff;
+    padding: 20px;
+  }
+
+  .translation-sentence {
+    display: flex;
+  }
+
+  .translation-textarea {
+    min-height: 400px;
+  }
+}

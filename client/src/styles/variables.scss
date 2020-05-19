@@ -1,0 +1,77 @@
+
+$primary-color: #000428;
+$secondary-color: #607d8b;
+$success-color: #4bb543;
+$error-color: red;
+$main-background: '';
+
+@mixin add-main-background(
+  $color1: $primary-color,
+  $color2: transparent,
+  $angle: 0deg,
+  $stripe1-width: 25px,
+  $stripe2-width: null
+) {
+  @if ($stripe2-width == null) {
+    $stripe2-width: $stripe1-width;
+  }
+
+  $tile-size: ($stripe1-width + $stripe2-width) * 2;
+  $stripe2-start: ($stripe1-width / $tile-size) * 100%;
+  $stripe3-start: $stripe2-start + (($stripe2-width / $tile-size) * 100%);
+  $stripe4-start: $stripe3-start + (($stripe1-width / $tile-size) * 100%);
+
+  background-size: $tile-size $tile-size;
+  background-image: linear-gradient(
+    $angle,
+    $color1,
+    $color1 $stripe2-start,
+    $color2 $stripe2-start,
+    $color2 $stripe3-start,
+    $color1 $stripe3-start,
+    $color1 $stripe4-start,
+    $color2 $stripe4-start,
+    $color2
+  );
+  background-repeat: repeat;
+
+  @if ($main-background != '') {
+    background-size: cover;
+    background-image: $main-background;
+    background-repeat: no-repeat;
+  }
+}
+
+// generate pallete from http://mcg.mbitson.com/
+$material-primary-color: (
+  50 : #e0e1e5,
+  100 : #b3b4bf,
+  200 : #808294,
+  300 : #4d4f69,
+  400 : #262a48,
+  500 : #000428,
+  600 : #000324,
+  700 : #00031e,
+  800 : #000218,
+  900 : #00010f,
+  A100 : #5252ff,
+  A200 : #1f1fff,
+  A400 : #0000eb,
+  A700 : #0000d1,
+  contrast: (
+    50 : #000,
+    100 : #000,
+    200 : #000,
+    300 : #fff,
+    400 : #fff,
+    500 : #fff,
+    600 : #fff,
+    700 : #fff,
+    800 : #fff,
+    900 : #fff,
+    A100 : #fff,
+    A200 : #fff,
+    A400 : #fff,
+    A700 : #fff,
+  )
+);

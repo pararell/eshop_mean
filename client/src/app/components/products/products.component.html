@@ -1,0 +1,54 @@
+<div class="main">
+  <div class="products-primary-header">
+    <div class="container">
+      <h1 class="products-title" *ngIf="!(category$ | async)">{{ 'Products' | translate | async }} </h1>
+      <h1 class="products-title" *ngIf="(category$ | async) as category">{{category}}</h1>
+    </div>
+  </div>
+  <div class="container">
+    <mat-progress-bar
+      mode="indeterminate"
+      *ngIf="!(items$ | async)?.products"></mat-progress-bar>
+    <div
+      class="sidebar-layout"
+      *ngIf="(items$ | async) as items">
+      <div class="sidebar-wrap">
+        <app-sidebar
+          [class.disabled]="loadingProducts$ | async"
+          [categories]="categories$ | async"
+          [price]="filterPrice$ | async"
+          [minPrice]="items?.maxPrice"
+          [maxPrice]="items?.minPrice"
+          [activeCategory]="category$ | async"
+          [sortOptions]="sortOptions"
+          [convertVal]="convertVal$ | async"
+          [currency]="currency$ | async"
+          [lang]="lang$ | async"
+          [choosenSort]="sortBy$ | async"
+          (changePrice)="priceRange($event)"
+          (changeSort)="changeSort($event)"
+          (changeCategory)="changeCategory()">
+        </app-sidebar>
+      </div>
+      <div class="main-wrap">
+        <app-products-list
+          [class.disabled]="loadingProducts$ | async"
+          [products]="items?.products"
+          [cartIds]="items?.cartIds"
+          [convertVal]="convertVal$ | async"
+          [currency]="currency$ | async"
+          [lang]="lang$ | async"
+          (addProduct)="addToCart($event)"
+          (removeProduct)="removeFromCart($event)">
+        </app-products-list>
+
+        <app-pagination
+          [class.disabled]="loadingProducts$ | async"
+          *ngIf="(pagination$ | async) as pagination"
+          [pagination]="pagination"
+          (changePage)="changePage($event)">
+        </app-pagination>
+      </div>
+    </div>
+  </div>
+</div>

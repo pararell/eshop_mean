@@ -1,0 +1,48 @@
+<div class="sidebar">
+  <div class="sidebar-header sidebar-header-top">
+    <h3 class="sidebar-title">{{ 'Categories' | translate | async }}</h3>
+  </div>
+  <a class="sidebar-item"
+    [routerLink]="['/' + lang + '/products']"
+    [class.active]="!activeCategory">
+    {{ 'All' | translate | async }} {{ 'products' | translate | async }}
+  </a>
+  <a class="sidebar-item"
+    *ngFor="let category of categories"
+    (click)="changeCategory.emit(category.titleUrl)"
+    [routerLink]="['/' + lang + '/category/' + category.titleUrl]"
+    [class.active]="activeCategory == (category.titleUrl)">
+    {{category.title}}
+  </a>
+  <div class="sidebar-sort-wrap">
+    <div class="sidebar-header">
+      <h3 class="sidebar-title">{{ 'Sorting' | translate | async }}</h3>
+    </div>
+    <mat-form-field class="sidebar-select">
+      <mat-select
+        aria-label="Sort"
+        [ngModel]="choosenSort || 'newest'"
+        (ngModelChange)="onInputChange($event)">
+        <mat-option
+          *ngFor="let option of sortOptions;"
+          [value]="option.id">
+          {{ option.name | translate | async }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="sidebar-header">
+    <h3 class="sidebar-title">{{ 'PriceRange' | translate | async }}</h3>
+  </div>
+  <mat-slider
+    #ref
+    aria-label="Range"
+    class="sidebar-range"
+    [max]="maxPrice"
+    [min]="minPrice"
+    (change)="changePrice.emit(ref.value)"
+    [(ngModel)]="(maxPrice < price) ? maxPrice : price">
+  </mat-slider>
+  {{ 'Price' | translate | async }} {{ 'to' | translate | async }}:
+  {{ (ref.value * (convertVal || 1)) | priceFormat }}{{ currency }}
+</div>

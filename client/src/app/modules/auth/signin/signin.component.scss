@@ -1,0 +1,31 @@
+:host {
+  display: block;
+
+  .sign-form-wrap {
+    margin: 15px auto;
+    max-width: 500px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    background: #fff;
+    padding: 15px;
+
+    h1 {
+      text-align: center;
+    }
+  }
+
+  .sign-form {
+    width: 100%;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sign-field {
+    width: 100%;
+  }
+
+  .signup-link {
+    color: #222;
+  }
+}

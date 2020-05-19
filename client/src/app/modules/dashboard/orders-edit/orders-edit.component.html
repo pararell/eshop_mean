@@ -1,0 +1,4 @@
+<app-orders-list
+  [orders]="orders$ | async"
+  [orderUrl]="'/' + (lang$ | async) + '/dashboard/orders/'">
+</app-orders-list>

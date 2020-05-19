@@ -1,0 +1,49 @@
+<div class="main">
+  <div class="container">
+    <div class="sign-form-wrap">
+      <h1>SignUp</h1>
+      <form
+        class="sign-form"
+        [formGroup]="signUpForm">
+        <mat-form-field class="sign-field">
+          <mat-label>{{ 'Name' | translate | async }}</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            type="text"
+            name="name">
+        </mat-form-field>
+        <mat-form-field class="sign-field">
+          <mat-label>Email</mat-label>
+          <input
+            matInput
+            formControlName="email"
+            type="email"
+            name="email">
+        </mat-form-field>
+        <mat-form-field class="sign-field">
+          <mat-label>{{ 'Password' | translate | async }}</mat-label>
+          <input
+            matInput
+            formControlName="password"
+            type="password"
+            name="password">
+        </mat-form-field>
+        <button
+          type="submit"
+          class="submit-sign-button"
+          mat-raised-button
+          color="primary"
+          [disabled]="signUpForm.invalid"
+          (click)="submit()">
+          {{ 'SignUp' | translate | async }}
+        </button>
+      </form>
+      <a
+        [routerLink]="['/' + (lang$ | async) + '/authorize/signin']"
+        class="signin-link">
+        {{ 'SignIn' | translate | async }}
+      </a>
+    </div>
+  </div>
+</div>

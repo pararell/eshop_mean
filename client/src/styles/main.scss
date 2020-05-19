@@ -1,0 +1,103 @@
+body {
+  overflow: hidden;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.main-scroll-wrap {
+  position: absolute;
+  scroll-behavior: smooth;
+  top: 50px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+a {
+  text-decoration: none;
+  color: #fff;
+  background-color: transparent;
+}
+
+a:hover {
+  text-decoration: none;
+  color: theme-color('secondary');
+}
+
+.material-icons.md-16 {
+  font-size: 16px;
+}
+
+.material-icons.md-18 {
+  font-size: 18px;
+}
+
+.material-icons.md-24 {
+  font-size: 24px;
+}
+
+.material-icons.md-36 {
+  font-size: 36px;
+}
+
+.material-icons.md-48 {
+  font-size: 48px;
+}
+
+.main {
+  flex: 1 0 auto;
+
+  @include add-main-background($primary-color, #fff, 45deg, 1px, 80px);
+}
+
+.container {
+  padding: 15px;
+
+  @media screen and (max-width: 600px) {
+    padding: 5px !important;
+  }
+}
+
+.sidebar-layout {
+  display: grid;
+  display: -ms-grid;
+  grid-template-areas: "sidebar main";
+  grid-template-columns: 200px 1fr;
+  -ms-grid-columns: 200px 1fr;
+  grid-column-gap: 15px;
+
+  .main-wrap {
+    grid-area: main;
+  }
+
+  .sidebar-wrap {
+    grid-area: sidebar;
+  }
+
+  @media screen and (max-width: 600px) {
+    grid-template-areas: "sidebar" "main";
+    grid-template-columns: auto;
+
+    .main-wrap {
+      grid-area: main;
+    }
+
+    .sidebar-wrap {
+      grid-area: sidebar;
+    }
+  }
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}

@@ -1,0 +1,22 @@
+@import 'variables';
+
+:host {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+
+  .products-primary-header {
+    background: linear-gradient(to left, $primary-color, $secondary-color);
+
+    .products-title {
+      font-weight: 500;
+      margin: 0;
+      padding: 0;
+      color: #fff;
+      text-align: center;
+      font-size: 1.2em;
+      line-height: 1.2em;
+      text-transform: capitalize;
+    }
+  }
+}

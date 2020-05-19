@@ -1,0 +1,4 @@
+<app-orders-list
+  [orders]="orders$ | async"
+  [orderUrl]="'/' + (lang$ | async) + '/orders/'">
+</app-orders-list>

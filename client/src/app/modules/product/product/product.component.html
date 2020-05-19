@@ -1,0 +1,82 @@
+<div class="main">
+  <div class="container">
+    <button
+      (click)="goBack()"
+      mat-raised-button
+      color="primary">
+      <i class="material-icons left">arrow_back</i>
+      {{ 'Back' | translate | async }}
+    </button>
+    <mat-progress-bar
+      *ngIf="!(items$ | async)?.product || (productLoading$ | async)"
+      mode="indeterminate">
+    </mat-progress-bar>
+    <ng-container *ngIf="(items$ | async) as items">
+      <mat-card
+        class="product"
+        *ngIf="!(productLoading$ | async) && items.product as product">
+        <ng-container *ngIf="product.visibility && product.salePrice">
+          <mat-card-content class="product-content">
+            <div class="product-detail">
+              <h1 class="product-title">{{ product?.title }}</h1>
+              <h2 class="product-description">{{ product?.description }}</h2>
+              <div class="product-info">
+                <div class="product-stock">
+                  {{ product?.stock | translate | async }}
+                </div>
+                <div
+                  class="product-price"
+                  *ngIf="product?.onSale">
+                  {{ (product?.salePrice * ((convertVal$ | async) || 1)) | priceFormat }} {{ currency$ | async }}
+                  <span class="product-before-price" *ngIf="product.regularPrice">
+                    {{ (product?.regularPrice * ((convertVal$ | async) || 1)) | priceFormat }} {{ currency$ | async }}
+                  </span>
+                </div>
+                <div
+                  class="product-price"
+                  *ngIf="!product?.onSale">
+                  {{ (product?.salePrice * ((convertVal$ | async) || 1)) | priceFormat }} {{ currency$ | async }}
+                </div>
+                <button class="product-cart-wrap"
+                  *ngIf="(this.lang$ | async) as lang"
+                  mat-raised-button
+                  color="primary">
+                  <app-cart-show
+                    [items]="items?.cartIds[product?._id]"
+                    (add)="cartEvent(product?._id, 'add')"
+                    (remove)="cartEvent(product?._id, 'remove')">
+                  </app-cart-show>
+                </button>
+              </div>
+              <mat-chip-list class="product-tags">
+                <mat-chip *ngFor="let tag of product?.tags">{{ tag }}</mat-chip>
+              </mat-chip-list>
+            </div>
+            <div class="product-main-image"
+              [ngStyle]="{'background': 'url(' + product?.mainImage?.url + ') no-repeat'}"></div>
+          </mat-card-content>
+          <mat-tab-group>
+            <mat-tab label="{{ 'Description' | translate | async }}">
+              <mat-card-content class="product-tab-content">
+                <div [innerHTML]="product?.descriptionFull"></div>
+              </mat-card-content>
+            </mat-tab>
+            <mat-tab label="{{ 'Images' | translate | async }}">
+              <mat-card-content class="product-tab-content">
+                <div class="product-images">
+                  <div class="product-images-content"
+                    *ngFor="let imageSrc of product?.images; let i = index; let f = first; let l = last;"
+                    (click)="openDialog(i, product?.images)">
+                    <img class="product-images-image"
+                      [lazySrc]="imageSrc"
+                      lazySrcVisible="visible">
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-tab>
+          </mat-tab-group>
+        </ng-container>
+      </mat-card>
+    </ng-container>
+  </div>
+</div>

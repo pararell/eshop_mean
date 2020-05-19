@@ -1,0 +1,38 @@
+<ng-container *ngFor="let product of products; trackBy: trackById;">
+  <div class="product_card">
+    <div class="product_card-header">
+      <div class="product_card-top">
+          <h2 class="product_card-title"> {{product?.title}} </h2>
+          <a class="product_card-detail"
+            [routerLink]="[ '/' + lang + '/product/' + product?.titleUrl]">
+            {{ 'Detail' | translate | async }}
+          </a>
+      </div>
+      <div class="product_card-info">
+        <p class="product_card-description">{{product?.description}}</p>
+      </div>
+    </div>
+    <a class="product_card-image"
+      [routerLink]="[ '/' + lang + '/product/' + product?.titleUrl]"
+      [attr.aria-labelledby]="product?.titleUrl"
+      lazySrc [lazyBackground]="'url(' + product.mainImage.url + ')'"
+      lazySrcVisible="visible">
+    </a>
+    <div class="product_card-before-price" *ngIf="product.onSale && product.regularPrice">
+      {{(product.regularPrice * (convertVal || 1)) }} {{ currency }}
+    </div>
+    <div class="product_card-action">
+      <div class="product_card-action-wrap">
+        <div class="product_card-price-info">
+          {{ (product?.salePrice * (convertVal || 1)) | priceFormat }} {{ currency }}
+        </div>
+        <p class="product_card-stock">{{ product?.stock | translate | async }}</p>
+        <app-cart-show *ngIf="cartIds"
+          [items]="cartIds[product?._id]"
+          (add)="onAddProduct(product?._id)"
+          (remove)="onRemoveProduct(product?._id)">
+        </app-cart-show>
+      </div>
+    </div>
+  </div>
+</ng-container>

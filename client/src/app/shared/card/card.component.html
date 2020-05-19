@@ -1,0 +1,28 @@
+<div>
+  <form #paymentForm
+    (submit)="handleForm($event)"
+    class="checkout">
+    <label for="card-info">Card</label>
+    <div id="form-field">
+      <div
+        id="card-info"
+        #cardElement></div>
+      <button
+        class="card-button"
+        [disabled]="!!(cardErrorSub$ | async) && !loading"
+        mat-raised-button
+        color="primary"
+        id="submit-button"
+        type="submit">
+        {{ 'MakeOrder' | translate | async }} {{ 'and' | translate | async }} {{'Pay' | translate | async}} {{price}} {{ currency }}
+      </button>
+      <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+      <div class="card-errors"
+        id="card-errors"
+        role="alert"
+        *ngIf="(cardErrorSub$ | async) as cardError">
+        <span *ngIf="cardError !== 'INVALID'">{{ cardError }}</span>
+      </div>
+    </div>
+  </form>
+</div>

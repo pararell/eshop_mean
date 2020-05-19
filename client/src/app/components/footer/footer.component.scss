@@ -1,0 +1,29 @@
+@import 'variables';
+
+:host {
+  color: #fff;
+
+  .footer {
+    background: linear-gradient(to right, $primary-color, $secondary-color);
+
+    &-title {
+      font-size: 20px;
+      margin: 0 0 5px;
+      font-weight: 500;
+    }
+
+    &-subtitle {
+      font-size: 14px;
+    }
+
+    &-copyright {
+      background: linear-gradient(to right, $primary-color, $secondary-color);
+    }
+
+    &-links {
+      text-decoration: none;
+      list-style-type: none;
+      padding: 0;
+    }
+  }
+}

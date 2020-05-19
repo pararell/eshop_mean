@@ -1,0 +1,36 @@
+<footer class="footer">
+  <div class="container">
+    <div>
+      <div class>
+        <h3 class="footer-title">{{'ESHOP_TITLE' | translate | async}}</h3>
+        <h4 class="footer-subtitle">{{'ESHOP_DESCRIPTION' | translate | async}}</h4>
+      </div>
+      <div class>
+        <h5 class="footer-subtitle">{{'LINKS' | translate | async}}</h5>
+        <ul class="footer-links">
+          <li><a class
+              [routerLink]="['/' + lang + '/eshop/contact']">
+              {{'CONTACT' | translate | async}}
+            </a></li>
+          <ng-container *ngFor="let page of (pages$ | async)">
+            <li>
+                <a class
+                [routerLink]="['/' + lang + '/eshop/' + page.titleUrl]">
+                {{ page[lang].title || page.titleUrl }}
+              </a>
+            </li>
+          </ng-container>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-copyright">
+    <div class="container">
+      © {{currentYear}}
+      <a class
+        href="https://github.com/pararell/eshop_mean">
+        More on github
+      </a>
+    </div>
+  </div>
+</footer>

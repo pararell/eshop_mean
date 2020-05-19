@@ -1,0 +1,178 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "eshop": {
+      "root": "client",
+      "sourceRoot": "src",
+      "projectType": "application",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/eshop/browser",
+            "index": "client/src/index.html",
+            "main": "client/src/main.ts",
+            "tsConfig": "client/tsconfig.app.json",
+            "polyfills": "client/src/polyfills.ts",
+            "aot": true,
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "client/src/styles"
+              ]
+            },
+            "assets": [
+              { "glob": "**/*",
+                "input": "client/src/assets",
+                "output": "assets"
+              },
+              {"glob": "favicon.ico",
+                "input": "client/src",
+                "output": "."
+              },
+              {"glob": "manifest.json",
+                "input": "client/src",
+                "output": "."
+              }
+            ],
+            "styles": [
+              "client/src/assets/fonts/material-icons/material-icons.css",
+              "client/src/styles/index.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "serviceWorker": true,
+              "fileReplacements": [
+                {
+                  "replace": "client/src/environments/environment.ts",
+                  "with": "client/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "eshop:build",
+            "port": 3000
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "eshop:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "eshop:build"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "client/tsconfig.app.json"
+            ],
+            "exclude": []
+          }
+        },
+        "server": {
+          "builder": "@angular-devkit/build-angular:server",
+          "options": {
+            "outputPath": "dist/eshop/server",
+            "main": "server-ssr.ts",
+            "tsConfig": "client/tsconfig.server.json",
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "client/src/styles"
+              ]
+            },
+            "externalDependencies": [
+              "@nestjs/microservices",
+              "@nestjs/microservices/microservices-module",
+              "@nestjs/websockets",
+              "@nestjs/websockets/socket-module",
+              "cache-manager"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "media",
+              "fileReplacements": [
+                {
+                  "replace": "client/src/environments/environment.ts",
+                  "with": "client/src/environments/environment.prod.ts"
+                }
+              ],
+              "sourceMap": false,
+              "optimization": false
+            }
+          }
+        },
+        "serve-ssr": {
+          "builder": "@nguniversal/builders:ssr-dev-server",
+          "options": {
+            "browserTarget": "eshop:build",
+            "serverTarget": "eshop:server"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "eshop:build:production",
+              "serverTarget": "eshop:server:production"
+            }
+          }
+        },
+        "prerender": {
+          "builder": "@nguniversal/builders:prerender",
+          "options": {
+            "browserTarget": "eshop:build:production",
+            "serverTarget": "eshop:server:production",
+            "routes": [
+              "/"
+            ]
+          },
+          "configurations": {
+            "production": {}
+          }
+        }
+      }
+    },
+    "eshop-e2e": {
+      "root": "client",
+      "sourceRoot": "src",
+      "projectType": "application"
+    }
+  },
+  "defaultProject": "eshop",
+  "schematics": {
+    "@schematics/angular:component": {
+      "prefix": "app",
+      "style": "scss"
+    },
+    "@schematics/angular:directive": {
+      "prefix": "app"
+    }
+  },
+  "cli": {
+    "analytics": false
+  }
+}
