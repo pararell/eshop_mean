@@ -175,9 +175,10 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
           .filter(key => !!this.productEditForm.value[key])
           .reduce((prev, curr) => ({ ...prev, [curr]: this.productEditForm.value[curr] }), {});
 
+          console.log(editProduct, 'editProduct', this.productEditForm.value)
+
         const productPrepare = {
           ...editProduct,
-          images: [],
           mainImage: { url: this.productEditForm.value.mainImage, name: this.productEditForm.value.titleUrl },
           ...this.prepareProductData(this.languageOptions, editProduct)
         };
