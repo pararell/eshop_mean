@@ -3,18 +3,12 @@
   <div class="container">
     <ng-container *ngIf="cart$ | async as cart">
      <div class="cart">
-      <div class="cart-back">
-        <button mat-raised-button
-          color="primary"
-          (click)="goBack()">
-          <i class="material-icons left">arrow_back</i>
-          {{ 'Back' | translate | async }}
-        </button>
-      </div>
       <div class="cart-with-order">
-        <ul class="cart-wrap">
+        <ul class="cart-wrap" [class.cart-empty]="!cart?.items?.length">
+          <li class="cart-items"><h2>{{ 'Cart_title' | translate | async }}</h2></li>
           <li class="cart-items"
-            *ngFor="let cartItem of cart?.items">
+            *ngFor="let cartItem of cart?.items; let last = last;"
+            [class.cart-last-item]="last">
             <div class="cart-image-wrap">
               <a [routerLink]="[ '/' + (lang$ | async) + '/product/' + cartItem?.item?.titleUrl ]">
                 <img class="cart-image"
@@ -31,7 +25,7 @@
               (click)="removeFromCart(cartItem?.item?._id)"><i class="material-icons cart-icon">remove</i>
             </div>
           </li>
-          <li class="cart-items">
+          <li class="cart-items cart-items-last">
             <div class="cart-image-wrap"><b>{{ 'Summary' | translate | async }}</b>
             </div>
             <div><b>{{ cart?.totalQty }} ks</b>
@@ -47,6 +41,7 @@
 
         <div class="order-form-wrap"
           *ngIf="!!cart?.items?.length && !(loading$ | async)">
+          <h2 class="cart-order-title">{{ 'Make_order' | translate | async }}</h2>
           <mat-horizontal-stepper
             [linear]="true"
             #stepper>

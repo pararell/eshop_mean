@@ -33,8 +33,10 @@ export class EnvConfigurationService {
 
       load(): Observable<Config> {
         if (!this.configuration$) {
-          this.configuration$ = this.apiService.getConfig()
-            .pipe(filter(() => isPlatformBrowser(this.platformId)), map((response: {config: string}) => JSON.parse(atob(response.config))), shareReplay(1));
+          this.configuration$ = this.apiService.getConfig().pipe(
+              filter(() => isPlatformBrowser(this.platformId)),
+              map((response: {config: string}) => response.config ? JSON.parse(atob(response.config)) : {}),
+              shareReplay(1));
           this.configuration$.pipe(take(1), filter(conf => !!conf)).subscribe(conf => { this.config = conf });
         }
         return this.configuration$;

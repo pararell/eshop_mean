@@ -36,28 +36,32 @@ export class TranslateService {
   }
 
   getTranslationsData(lang: string) {
-    return this.apiService.getLangTranslations(lang).subscribe(
-      (translations: Translations) => {
-        if (!lang && translations) {
-          this.setLang(translations.lang);
-        } else if (!lang) {
-          this.setLang(languages[0]);
+    try {
+      return this.apiService.getLangTranslations(lang).subscribe(
+        (translations: Translations) => {
+          if (!lang && translations) {
+            this.setLang(translations.lang);
+          } else if (!lang) {
+            this.setLang(languages[0]);
+          }
+          const translationKeys = translations && translations['keys'] ? translations['keys'] : {};
+          this.translationsSub$.next(translationKeys);
+          return Object.assign({}, translationKeys);
+        },
+        error => {
+          return {};
         }
-        const translationKeys = translations && translations['keys'] ? translations['keys'] : {};
-        this.translationsSub$.next(translationKeys);
-        return Object.assign({}, translationKeys);
-      },
-      error => {
-        return {};
-      }
-    );
+      );
+    } catch {
+      return {};
+    }
+
   }
 
   use(lang: string): Promise<{}> {
     return new Promise<{}>((resolve, reject) => {
       const foundLang = lang || this.cookie.get('eshop_lang');
       resolve(this.setTranslations(foundLang));
-      reject(this.setTranslations(foundLang));
     });
   }
 

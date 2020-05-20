@@ -10,16 +10,14 @@
   }
 
   .cart {
-    display: flex;
-    flex-flow: wrap;
-
-    &-back {
-      flex: 1;
-    }
-
     &-with-order {
-      flex: 20;
-      max-width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      flex: 1 1 100%;
+
+      @media screen and (max-width: 1200px) {
+        display: block;
+      }
     }
 
     &-wrap {
@@ -27,7 +25,11 @@
       background: rgba(255, 255, 255, 1);
       padding: 0 10px;
       max-width: 600px;
-      margin: 0 auto;
+      margin: 0 10px 10px auto;
+
+      @media screen and (max-width: 1200px) {
+        margin: 0 auto;
+      }
     }
 
     &-items {
@@ -36,6 +38,17 @@
       align-items: center;
       padding: 10px;
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    &-items-last {
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+    }
+
+    &-empty {
+      width: 100%;
+      margin: 0 auto 0 auto;
     }
 
     &-title {
@@ -65,6 +78,10 @@
       float: right;
       margin: 5px 2px;
     }
+
+    &-order-title {
+      margin: 0 0 10px 20px;
+    }
   }
 
   .cart-address-field {
@@ -81,12 +98,14 @@
 
   .order-form-wrap {
     background: #fff;
-    margin-top: 15px;
     padding: 10px;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
     max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto 10px 10px;
+
+    @media screen and (max-width: 1200px) {
+      margin: 10px auto;
+    }
   }
 
   .delivery-button {

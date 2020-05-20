@@ -272,9 +272,9 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
               ? productLang.categories.reduce((string, tag) => (string ? string + ',' : string) + tag, '')
               : '',
             descriptionFull : productLang.descriptionFull || '',
-            visibility      : productLang.visibility || true,
+            visibility      : !!productLang.visibility,
             stock           : productLang.stock || 'onStock',
-            onSale          : productLang.onSale || true,
+            onSale          : !!productLang.onSale,
             shiping         : productLang.shiping || 'basic'
           }
         }}
