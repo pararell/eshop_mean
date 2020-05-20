@@ -14,15 +14,18 @@ export class ProductsService {
   constructor(@InjectModel('Product') private productModel: ProductModel) {}
 
   async getProducts(getProductsDto: GetProductsDto, lang: string): Promise<ProductsWithPagination> {
-    const { page, sort, category, search } = getProductsDto;
+    const { page, sort, category, search, maxPrice } = getProductsDto;
     const searchQuery = search      ? { titleUrl:  new RegExp(search, 'i') }                : {};
     const categoryQuery = category  ? { [`${lang}.categories`] : new RegExp(category, 'i' ) } : {};
+    const maxPriceQuery = maxPrice  ? { [`${lang}.salePrice`] : { $lte: maxPrice } } : {};
 
-    const query = {...searchQuery, ...categoryQuery, ...{ [`${lang}.visibility`] : true}}
+    const query = {...searchQuery, ...categoryQuery, ...maxPriceQuery, ...{ [`${lang}.visibility`] : true}}
     const options = {
-        page  : parseFloat(page),
-        sort  : this.prepareSort(sort, lang),
-        limit : 10
+        page      : parseFloat(page),
+        sort      : this.prepareSort(sort, lang),
+        limit     : 10,
+        lang,
+        price  : 'salePrice'
       };
 
     const productsWithPagination = await this.productModel.paginate(query, options);

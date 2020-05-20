@@ -1,4 +1,6 @@
-function paginate(query, options) {
+import { PaginateOptions, Product } from '../../products/models/product.model';
+
+function paginate(query, options: PaginateOptions): Promise<{all: Product[]; pagination; maxPrice: number; minPrice: number}> {
   query = query || {};
   options = Object.assign({}, options);
 
@@ -12,14 +14,20 @@ function paginate(query, options) {
     ? this.find(query).sort(sort).skip(skip).limit(limit).exec()
     : query.exec();
   const countDocuments = this.countDocuments(query).exec();
+  const maxPrice = this.findOne({}).sort(`-${options.lang}.${options.price}`).select(`${options.lang}.${options.price}`)
+  const minPrice = this.findOne({}).sort(`${options.lang}.${options.price}`).select(`${options.lang}.${options.price}`)
 
-  return Promise.all([all, countDocuments]).then(function (values) {
+  return Promise.all([all, countDocuments, maxPrice, minPrice]).then(function (values) {
     return Promise.resolve({
       all: values[0],
-      total: values[1],
-      limit: limit,
-      page: page,
-      pages: Math.ceil(values[1] / limit) || 1,
+      pagination: {
+        total: values[1],
+        limit: limit,
+        page: page,
+        pages: Math.ceil(values[1] / limit) || 1
+      },
+      maxPrice: values[2] ? values[2][options.lang][options.price] : Infinity,
+      minPrice: values[3] ? values[3][options.lang][options.price] : 0,
     });
   });
 }

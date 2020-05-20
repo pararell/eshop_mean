@@ -36,7 +36,7 @@
                [matAutocomplete]="auto"
                formControlName="titleUrl">
         <mat-autocomplete #auto="matAutocomplete">
-          <mat-option *ngFor="let title of titles" [value]="title">
+          <mat-option *ngFor="let title of (filteredTitles$ | async)" [value]="title">
             <span>{{title}}</span>
           </mat-option>
         </mat-autocomplete>

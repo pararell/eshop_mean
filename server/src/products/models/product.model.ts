@@ -20,9 +20,16 @@ export interface Product extends Document {
     dateAdded?          : Date;
 }
 
+export interface PaginateOptions {
+  sort: string;
+  price: string;
+  page: number;
+  limit: number;
+  lang: string;
+}
 
 export interface ProductModel extends Model<Product> {
-    paginate(query: any, options: {sort: string; page: number; limit: number}): DocumentQuery<ProductsWithPagination, Product>;
+    paginate(query: any, options: PaginateOptions): DocumentQuery<ProductsWithPagination, Product>;
 }
 
 export interface ProductsWithPagination {

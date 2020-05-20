@@ -1,6 +1,9 @@
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { of } from 'rxjs';
 
 import { Category } from '../models';
+import { take, delay } from 'rxjs/operators';
+
 
 
 @Component({
@@ -33,6 +36,13 @@ export class SidebarComponent  {
 
   onInputChange($event: string): void {
     this.changeSort.emit($event);
+  }
+
+  onChangePrice(event, value: number): void {
+    of('chane_price').pipe(take(1), delay(200)).subscribe(() => {
+      this.changePrice.emit(value);
+    });
+
   }
 
 

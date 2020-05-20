@@ -1,4 +1,4 @@
-import { filter, first, take, delay } from 'rxjs/operators';
+import { filter, first, take, delay, startWith, map } from 'rxjs/operators';
 import { Component, OnInit, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FileUploader, FileItem, ParsedResponseHeaders } from 'ng2-file-upload';
@@ -33,6 +33,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
   languageOptions = languages;
   choosenLanguageSub$ = new BehaviorSubject(languages[0]);
   testImageUrl: string;
+  filteredTitles$: Observable<string[]>;
 
   constructor(private fb: FormBuilder, private store: Store<fromRoot.State>, private apiService: ApiService) {
     this.createForm();
@@ -42,6 +43,13 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.store.dispatch(new actions.GetImages());
+    this.filteredTitles$ = this.productEditForm.get('titleUrl').valueChanges.pipe(
+      startWith(''),
+      map(value => {
+        const filterValue = value.toLowerCase();
+        return this.titles.filter(option => option.toLowerCase().includes(filterValue))
+      })
+    )
     this.images$ = this.store.select(fromRoot.getProductImages);
 
     const uploaderOptions = {
@@ -175,8 +183,6 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
           .filter(key => !!this.productEditForm.value[key])
           .reduce((prev, curr) => ({ ...prev, [curr]: this.productEditForm.value[curr] }), {});
 
-          console.log(editProduct, 'editProduct', this.productEditForm.value)
-
         const productPrepare = {
           ...editProduct,
           mainImage: { url: this.productEditForm.value.mainImage, name: this.productEditForm.value.titleUrl },
@@ -227,7 +233,6 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
       const titleUrlFormated = e.target.value.replace(/\s+/g, '-').toLowerCase();
       this.productEditForm.get('titleUrl').setValue(titleUrlFormated);
     }
-
   }
 
   private _createLangForm(languageOptions: Array<string>) {
@@ -267,10 +272,10 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
               ? productLang.categories.reduce((string, tag) => (string ? string + ',' : string) + tag, '')
               : '',
             descriptionFull : productLang.descriptionFull || '',
-            visibility      : product.visibility || true,
-            stock           : product.stock || 'onStock',
-            onSale          : product.onSale || true,
-            shiping         : product.shiping || 'basic'
+            visibility      : productLang.visibility || true,
+            stock           : productLang.stock || 'onStock',
+            onSale          : productLang.onSale || true,
+            shiping         : productLang.shiping || 'basic'
           }
         }}
       ).reduce((prev, curr) => ({ ...prev, ...curr }), {});

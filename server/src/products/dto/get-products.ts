@@ -19,4 +19,6 @@ export class GetProductsDto {
   category?: string;
 
   search?: string;
+
+  maxPrice?: number;
 }

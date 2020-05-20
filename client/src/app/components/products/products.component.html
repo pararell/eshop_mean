@@ -1,7 +1,7 @@
 <div class="main">
   <div class="products-primary-header">
     <div class="container">
-      <h1 class="products-title" *ngIf="!(category$ | async)">{{ 'Products' | translate | async }} </h1>
+      <!-- <h1 class="products-title" *ngIf="!(category$ | async)">{{ 'Products' | translate | async }} </h1> -->
       <h1 class="products-title" *ngIf="(category$ | async) as category">{{category}}</h1>
     </div>
   </div>
@@ -17,8 +17,8 @@
           [class.disabled]="loadingProducts$ | async"
           [categories]="categories$ | async"
           [price]="filterPrice$ | async"
-          [minPrice]="items?.maxPrice"
-          [maxPrice]="items?.minPrice"
+          [maxPrice]="maxPrice$ | async"
+          [minPrice]="minPrice$ | async"
           [activeCategory]="category$ | async"
           [sortOptions]="sortOptions"
           [convertVal]="convertVal$ | async"

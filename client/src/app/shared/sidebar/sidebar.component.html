@@ -40,9 +40,9 @@
     class="sidebar-range"
     [max]="maxPrice"
     [min]="minPrice"
-    (change)="changePrice.emit(ref.value)"
+    (change)="onChangePrice($event, ref.value)"
     [(ngModel)]="(maxPrice < price) ? maxPrice : price">
   </mat-slider>
   {{ 'Price' | translate | async }} {{ 'to' | translate | async }}:
-  {{ (ref.value * (convertVal || 1)) | priceFormat }}{{ currency }}
+  {{ (ref.value * (convertVal || 1)) | priceFormat }} {{ currency }}
 </div>

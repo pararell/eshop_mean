@@ -20,6 +20,8 @@ export interface State {
   order: Order;
   productsTitles: Array<string>;
   priceFilter: number;
+  maxPrice: number;
+  minPrice: number;
   position: {[component: string]: number};
   loading: boolean;
   error: string;
@@ -42,6 +44,8 @@ export const initialState: State = {
   order: null,
   productsTitles: [],
   priceFilter: Infinity,
+  maxPrice: Infinity,
+  minPrice: 0,
   position: null,
   loading: false,
   error: ''
@@ -61,6 +65,8 @@ export function productReducer(state = initialState, action): State {
         ...state,
         products: action.payload.products,
         pagination: action.payload.pagination,
+        maxPrice: action.payload.maxPrice,
+        minPrice: action.payload.minPrice,
         loadingProducts: false
       }
     }
@@ -172,4 +178,6 @@ export const userOrders = (state: State) => state.userOrders;
 export const order = (state: State) => state.order;
 export const productsTitles = (state: State) => state.productsTitles;
 export const priceFilter = (state: State) => state.priceFilter;
+export const maxPrice = (state: State) => state.maxPrice;
+export const minPrice = (state: State) => state.minPrice;
 export const position = (state: State) => state.position;

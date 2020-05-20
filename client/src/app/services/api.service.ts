@@ -76,22 +76,19 @@ export class ApiService {
   }
 
   getProducts(req) {
-    const {lang, page, sort, category} = req;
+    const {lang, page, sort, category, maxPrice} = req;
     const addCategory = category ? {category} : {};
     const categoryQuery = category ? '&category=' + category : '';
-    const productsUrl = this.apiUrl + '/api/products?lang=' + lang + '&page=' + page + '&sort=' + sort + categoryQuery;
+    const priceQuery = maxPrice ? '&maxPrice=' + maxPrice : '';
+    const productsUrl = this.apiUrl + '/api/products?lang=' + lang + '&page=' + page + '&sort=' + sort + categoryQuery + priceQuery;
     return this.http.get(productsUrl, this.requestOptions).pipe(map((data: any) => ({
         products : data.all
           .map(product => ({...product,
               categories: product.categories.filter(Boolean).map((cat: string) => cat.toLowerCase()),
               tags: product.tags.map((tag: string) => tag ? tag.toLowerCase() : '')})),
-        pagination: {
-          limit: data.limit,
-          page: data.page,
-          pages: data.pages,
-          total: data.total,
-          range: Array(data.pages).fill(0).map((v, i) => i + 1)
-        } as Pagination,
+        pagination: data.pagination,
+        maxPrice: data.maxPrice,
+        minPrice: data.minPrice,
         ...addCategory
     })))
   }

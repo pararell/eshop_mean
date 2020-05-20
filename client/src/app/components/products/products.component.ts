@@ -21,12 +21,14 @@ import { Product, Category, Pagination, Cart } from '../../shared/models';
 })
 export class ProductsComponent implements OnDestroy {
 
-  items$                : Observable<{ products: Product[]; minPrice: number; maxPrice: number; cartIds: {[productID: string]: number} }>;
+  items$                : Observable<{ products: Product[]; cartIds: {[productID: string]: number} }>;
   loadingProducts$      : Observable<boolean>;
   categories$           : Observable<Category[]>;
   pagination$           : Observable<Pagination>;
   category$             : Observable<string>;
   filterPrice$          : Observable<number>;
+  maxPrice$             : Observable<number>;
+  minPrice$             : Observable<number>;
   page$                 : Observable<number>;
   sortBy$               : Observable<string>;
   convertVal$           : Observable<number>;
@@ -46,13 +48,15 @@ export class ProductsComponent implements OnDestroy {
     private title     : Title,
     private translate : TranslateService ) {
 
-    this.category$ = route.params.pipe(map(params => params['category']), distinctUntilChanged());
-    this.page$     = route.queryParams.pipe(map(params => params['page']), map(page => parseFloat(page)));
-    this.sortBy$   = route.queryParams.pipe(map(params => params['sort']), map(sort => sort));
+    this.category$ = this.route.params.pipe(map(params => params['category']), distinctUntilChanged());
+    this.page$     = this.route.queryParams.pipe(map(params => params['page']), map(page => parseFloat(page)));
+    this.sortBy$   = this.route.queryParams.pipe(map(params => params['sort']), map(sort => sort));
     this.lang$     = this.translate.getLang$().pipe(filter((lang: string) => !!lang));
 
-    this.filterPrice$ = store.select(fromRoot.getPriceFilter);
-    this.loadingProducts$ = store.select(fromRoot.getLoadingProducts);
+    this.maxPrice$  = this.store.select(fromRoot.getMaxPrice);
+    this.minPrice$  = this.store.select(fromRoot.getMinPrice);
+    this.filterPrice$ = this.store.select(fromRoot.getPriceFilter);
+    this.loadingProducts$ = this.store.select(fromRoot.getLoadingProducts);
 
     this._loadCategories();
     this._loadProducts();
@@ -60,15 +64,9 @@ export class ProductsComponent implements OnDestroy {
     this.items$ = combineLatest(
       this.store.select(fromRoot.getProducts).pipe(filter(Boolean)),
       this.store.select(fromRoot.getCart).pipe(filter(Boolean), map((cart: Cart) => cart.items)),
-      this.filterPrice$,
-      (products: Array<Product>, cartItems, filterPrice) => {
+      (products: Array<Product>, cartItems) => {
         return {
-          products: products
-            .filter(product => product.salePrice <= filterPrice),
-          minPrice: products
-            .reduce((price, product) => Math.max(price, product.salePrice), 0),
-          maxPrice: products
-            .reduce((price, product) => Math.min(price, product.salePrice), 0),
+          products,
           cartIds: (cartItems && cartItems.length)
             ? cartItems.reduce((prev, curr) => ( {...prev, [curr.id] : curr.qty } ), {} )
             : {}
@@ -94,7 +92,11 @@ export class ProductsComponent implements OnDestroy {
   }
 
   priceRange(price: number): void {
-    this.store.dispatch(new actions.FilterPrice(price));
+    this.filterPrice$.pipe(take(1)).subscribe(filterPrice => {
+      if (filterPrice !== price) {
+        this.store.dispatch(new actions.FilterPrice(price));
+      }
+    })
   }
 
   changeCategory(): void {
@@ -142,12 +144,13 @@ export class ProductsComponent implements OnDestroy {
     this.productsSub = combineLatest(
         this.lang$.pipe(distinctUntilChanged()),
         this.category$.pipe(distinctUntilChanged()),
+        this.filterPrice$.pipe(distinctUntilChanged()),
         this.route.queryParams.pipe(
             map(params => ({page: params['page'], sort: params['sort']})),
             distinctUntilChanged()),
-        (lang: string, category: string, {page, sort}) => ({lang, category, page, sort}))
-      .subscribe(({lang, category, page, sort}) => {
-        this.store.dispatch(new actions.GetProducts({lang, category, page: page || 1, sort: sort || 'newest' }));
+        (lang: string, category: string, filterPrice: number, {page, sort}) => ({lang, category, filterPrice, page, sort}))
+      .subscribe(({lang, category, filterPrice, page, sort}) => {
+        this.store.dispatch(new actions.GetProducts({lang, category, maxPrice: filterPrice, page: page || 1, sort: sort || 'newest' }));
     });
   }
 
