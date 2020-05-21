@@ -11,8 +11,8 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$eshop-app-primary: mat-palette($material-primary-color);
-$eshop-app-accent:  mat-palette($mat-blue-gray, A400);
+$eshop-app-primary: mat-palette($mat-grey, 800, 700, 900);
+$eshop-app-accent:  mat-palette($mat-gray, A400);
 
 // The warn palette is optional (defaults to red).
 $eshop-app-warn:    mat-palette($mat-red);
