@@ -21,6 +21,7 @@ import { Product, Category, Pagination, Cart } from '../../shared/models';
 })
 export class ProductsComponent implements OnDestroy {
 
+
   items$                : Observable<{ products: Product[]; cartIds: {[productID: string]: number} }>;
   loadingProducts$      : Observable<boolean>;
   categories$           : Observable<Category[]>;
@@ -37,6 +38,7 @@ export class ProductsComponent implements OnDestroy {
   categoriesSub         : Subscription;
   productsSub           : Subscription;
   sortOptions           = sortOptions;
+  sidebarOpened         = false;
 
   readonly component = 'productsComponent';
 
@@ -129,6 +131,10 @@ export class ProductsComponent implements OnDestroy {
         }
       });
       this.store.dispatch(new actions.UpdatePosition({productsComponent: 0}));
+  }
+
+  toggleSidebar() {
+    this.sidebarOpened = !this.sidebarOpened;
   }
 
   ngOnDestroy(): void {

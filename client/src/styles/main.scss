@@ -76,6 +76,7 @@ a:hover {
 
   .sidebar-wrap {
     grid-area: sidebar;
+    position: relative;
   }
 
   @media screen and (max-width: 600px) {

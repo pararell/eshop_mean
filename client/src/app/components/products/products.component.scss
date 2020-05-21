@@ -4,11 +4,18 @@
   display: flex;
   min-height: 100vh;
   flex-direction: column;
+  position: relative;
 
-  .products-primary-header {
-    background: linear-gradient(to left, $primary-color, $secondary-color);
+  .main {
+    min-height: 100vh;
+  }
 
-    .products-title {
+  .products {
+    &-primary-header {
+      background: linear-gradient(to left, $primary-color, $secondary-color);
+    }
+
+    &-title {
       font-weight: 500;
       margin: 0;
       padding: 0;
@@ -17,6 +24,34 @@
       font-size: 1.2em;
       line-height: 1.2em;
       text-transform: capitalize;
+    }
+
+    &-sidebar-toggle {
+      display: none;
+
+      @media screen and (max-width: 600px) {
+        display: block;
+      }
+    }
+
+    &-sidebar-desktop {
+      @media screen and (max-width: 600px) {
+        display: none;
+      }
+    }
+
+    &-mobile-filter {
+      display: none;
+      color: #fff;
+
+      @media screen and (max-width: 600px) {
+        display: block;
+        position: absolute;
+      }
+    }
+
+    &-sidebar {
+      padding: 0 10px;
     }
   }
 }

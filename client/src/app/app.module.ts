@@ -18,6 +18,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 import { AppComponent } from './app.component';
 import { ProductsComponent } from './components/products/products.component';
@@ -31,7 +32,7 @@ import { routesAll } from './app.routes';
 import { environment } from '../environments/environment';
 import { TranslateService } from './services/translate.service';
 import { EnvConfigurationService } from './services/env-configuration.service';
-import { languages } from './shared/constants';
+
 
 
 const routes: Routes = routesAll;
@@ -60,6 +61,7 @@ const routes: Routes = routesAll;
     MatAutocompleteModule,
     MatInputModule,
     MatProgressBarModule,
+    MatSidenavModule,
     EffectsModule.forRoot([ AppEffects ]),
     RouterModule.forRoot(routes, { initialNavigation: 'enabled' }),
     environment.production ? ServiceWorkerModule.register('ngsw-worker.js') : [],
