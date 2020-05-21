@@ -4,7 +4,7 @@
   display: flex;
   flex-wrap: wrap;
 
-  .product_card {
+  .category_card {
     flex-basis: 20%;
     overflow: hidden;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
@@ -34,12 +34,17 @@
 
     &-top {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       font-weight: 500;
       font-size: 16px;
       padding: 15px 15px 5px 15px;
       align-items: flex-start;
+    }
+
+    &-header {
       position: relative;
+      background: #fff;
+      z-index: 1;
     }
 
     &-title {
@@ -48,6 +53,7 @@
       margin: 0 5px 0 0;
       font-weight: 500;
       padding: 0;
+      text-transform: capitalize;
     }
 
     &-info {
@@ -55,16 +61,6 @@
       margin-bottom: 15px;
       max-height: 80px;
       overflow: hidden;
-    }
-
-    &-description {
-      margin: 0;
-      font-size: 13px;
-    }
-
-    &-action {
-      border-top: none;
-      padding: 0;
     }
 
     &-image {
@@ -84,58 +80,10 @@
     &:hover {
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
 
-      .product_card-image {
+      .category_card-image {
         transform: scale(1.1);
         overflow: hidden;
       }
     }
-
-    &-before-price {
-      position: absolute;
-      bottom: 35px;
-      left: 0;
-      text-decoration: line-through;
-      color: rgba(0, 0, 0, 0.6);
-      background: #fff;
-      font-weight: 500;
-      font-size: 14px;
-      padding: 0 20px;
-    }
-
-    &-action-wrap {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      color: $primary-color;
-      padding: 5px 20px;
-      position: relative;
-      box-shadow: 0 0 40px -9px $primary-color;
-      background: #fff;
-      z-index: 2;
-      overflow: visible;
-    }
-
-    &-stock {
-      margin: 0;
-    }
-
-    &-price-info {
-      font-weight: 500;
-      font-size: 18px;
-    }
-
-    &-detail {
-      font-size: 16px;
-      color: $primary-color;
-      margin-top: -5px;
-    }
-  }
-
-  /deep/ .cart_show-icon {
-    color: $primary-color !important;
-  }
-
-  /deep/ .cart_show-quantity {
-    color: $primary-color !important;
   }
 }

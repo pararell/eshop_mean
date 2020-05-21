@@ -1,0 +1,54 @@
+@import 'variables';
+
+:host {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  position: relative;
+
+  .main {
+    min-height: 100vh;
+  }
+
+  .home {
+    &-primary-header {
+      color: $primary-color;
+      background: #fff;
+    }
+
+    &-title {
+      font-weight: 500;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      font-size: 1.2em;
+      line-height: 1.2em;
+      text-transform: capitalize;
+    }
+
+    &-sidebar-toggle {
+      display: none;
+
+      @media screen and (max-width: 600px) {
+        display: block;
+      }
+    }
+
+    &-sidebar-desktop {
+      @media screen and (max-width: 600px) {
+        display: none;
+      }
+    }
+
+    &-mobile-filter {
+      color: $primary-color;
+      position: absolute;
+      display: flex;
+      cursor: pointer;
+    }
+
+    &-sidebar {
+      padding: 0 10px;
+    }
+  }
+}

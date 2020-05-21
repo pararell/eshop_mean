@@ -1,9 +1,8 @@
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { of } from 'rxjs';
-
-import { Category } from '../models';
 import { take, delay } from 'rxjs/operators';
 
+import { Category } from '../models';
 
 
 @Component({

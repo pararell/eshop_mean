@@ -14,6 +14,7 @@
   /deep/ .mat-input-element {
     padding: 2px 5px !important;
     font-size: 16px !important;
+    color: $primary-color;
   }
 
   /deep/ .mat-form-field .mat-form-field-underline {
@@ -29,11 +30,15 @@
     height: 50px;
     width: 100%;
     line-height: 50px;
-    background: linear-gradient(to right, $primary-color, $secondary-color);
+    background: #fff;
     justify-content: space-between;
     z-index: 5;
     position: relative;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+
+    a {
+      color: $primary-color;
+    }
 
     &-fixed {
       position: fixed;
@@ -59,6 +64,7 @@
       align-items: center;
       display: flex;
       flex: 1;
+      color: $primary-color;
 
       &-content {
         width: 100%;
@@ -94,11 +100,11 @@
         width: initial !important;
 
         a {
-          color: #fff !important;
+          color: $primary-color !important;
         }
 
         .mat-icon {
-          color: #fff !important;
+          color: $primary-color !important;
           margin-right: 5px !important;
         }
       }
@@ -118,6 +124,7 @@
       .nav-mobile {
         display: block;
         flex: 1;
+        color: $primary-color;
       }
     }
   }

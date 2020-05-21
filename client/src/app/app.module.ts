@@ -21,7 +21,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 
 import { AppComponent } from './app.component';
-import { ProductsComponent } from './components/products/products.component';
 import { SharedModule } from './shared/shared.module';
 import { PipeModule } from './pipes/pipe.module';
 import { reducers } from './store/reducers/index';
@@ -32,6 +31,7 @@ import { routesAll } from './app.routes';
 import { environment } from '../environments/environment';
 import { TranslateService } from './services/translate.service';
 import { EnvConfigurationService } from './services/env-configuration.service';
+import { HomeComponent } from './components/home/home.component';
 
 
 
@@ -40,7 +40,7 @@ const routes: Routes = routesAll;
 @NgModule({
   declarations: [
     AppComponent,
-    ProductsComponent,
+    HomeComponent,
     HeaderComponent,
     FooterComponent
   ],

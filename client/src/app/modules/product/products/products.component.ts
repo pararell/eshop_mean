@@ -5,11 +5,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 import { Store } from '@ngrx/store';
 
-import { TranslateService } from '../../services/translate.service';
-import { sortOptions } from '../../shared/constants';
-import * as actions from './../../store/actions'
-import * as fromRoot from '../../store/reducers';
-import { Product, Category, Pagination, Cart } from '../../shared/models';
+import { TranslateService } from '../../../services/translate.service';
+import { sortOptions } from '../../../shared/constants';
+import * as actions from './../../../store/actions'
+import * as fromRoot from '../../../store/reducers';
+import { Product, Category, Pagination, Cart } from '../../../shared/models';
 
 
 
@@ -111,9 +111,9 @@ export class ProductsComponent implements OnDestroy {
       .pipe(take(1))
       .subscribe(({category, sortBy, lang}) => {
         if (category) {
-          this.router.navigate(['/' + lang + '/category/' + category], { queryParams: { sort: sortBy || 'newest', page: page || 1 } });
+          this.router.navigate(['/' + lang + '/product/category/' + category], { queryParams: { sort: sortBy || 'newest', page: page || 1 } });
         } else {
-          this.router.navigate(['/' + lang + '/products'], { queryParams: { sort: sortBy || 'newest', page: page || 1 } });
+          this.router.navigate(['/' + lang + '/product/all'], { queryParams: { sort: sortBy || 'newest', page: page || 1 } });
         }
       });
       this.store.dispatch(new actions.UpdatePosition({productsComponent: 0}));
@@ -125,9 +125,9 @@ export class ProductsComponent implements OnDestroy {
       .pipe(take(1))
       .subscribe(({category, page, lang}) => {
         if (category) {
-          this.router.navigate(['/' + lang + '/category/' + category], { queryParams: { sort, page: page || 1 } });
+          this.router.navigate(['/' + lang + '/product/category/' + category], { queryParams: { sort, page: page || 1 } });
         } else {
-          this.router.navigate(['/' + lang + '/products'], { queryParams: { sort, page: page || 1 } });
+          this.router.navigate(['/' + lang + '/product/all'], { queryParams: { sort, page: page || 1 } });
         }
       });
       this.store.dispatch(new actions.UpdatePosition({productsComponent: 0}));

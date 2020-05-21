@@ -12,14 +12,15 @@
 
   .products {
     &-primary-header {
-      background: linear-gradient(to left, $primary-color, $secondary-color);
+      color: $primary-color;
+      background: #fff;
     }
 
     &-title {
       font-weight: 500;
       margin: 0;
       padding: 0;
-      color: #fff;
+      color: $primary-color;
       text-align: center;
       font-size: 1.2em;
       line-height: 1.2em;
@@ -42,11 +43,12 @@
 
     &-mobile-filter {
       display: none;
-      color: #fff;
 
       @media screen and (max-width: 600px) {
-        display: block;
+        color: $primary-color;
         position: absolute;
+        display: flex;
+        cursor: pointer;
       }
     }
 

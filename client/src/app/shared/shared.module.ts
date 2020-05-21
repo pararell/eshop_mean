@@ -23,6 +23,7 @@ import { PaginationComponent } from './pagination/pagination.component';
 import { ImagesDialogComponent } from './images-dialog/images-dialog.component';
 import { OrdersListComponent } from './orders/orders-list/orders-list.component';
 import { OrderDetailComponent } from './orders/order-detail/order-detail.component';
+import { CategoriesListComponent } from './categories-list/categories-list.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { OrderDetailComponent } from './orders/order-detail/order-detail.compone
     CartShowComponent,
     SidebarComponent,
     ProductsListComponent,
+    CategoriesListComponent,
     PaginationComponent,
     ImagesDialogComponent,
     OrdersListComponent,
@@ -58,6 +60,7 @@ import { OrderDetailComponent } from './orders/order-detail/order-detail.compone
     CartShowComponent,
     SidebarComponent,
     ProductsListComponent,
+    CategoriesListComponent,
     PaginationComponent,
     ImagesDialogComponent,
     OrdersListComponent,

@@ -42,6 +42,7 @@ export interface Cart {
 export interface Category {
   title     : string;
   titleUrl  : string;
+  imageUrl? : string;
 }
 
 export interface Pagination {

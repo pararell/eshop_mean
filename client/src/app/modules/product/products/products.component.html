@@ -25,6 +25,7 @@
           <i class="material-icons md-16">filter_list</i>
           <span>{{ 'Filter' | translate | async }}</span>
         </div>
+        <h1 class="products-title" *ngIf="!(category$ | async)">{{'Products' | translate | async}}</h1>
         <h1 class="products-title" *ngIf="(category$ | async) as category">{{category}}</h1>
       </div>
     </div>

@@ -3,14 +3,14 @@
     <h3 class="sidebar-title">{{ 'Categories' | translate | async }}</h3>
   </div>
   <a class="sidebar-item"
-    [routerLink]="['/' + lang + '/products']"
+    [routerLink]="['/' + lang + '/product/all']"
     [class.active]="!activeCategory">
     {{ 'All' | translate | async }} {{ 'products' | translate | async }}
   </a>
   <a class="sidebar-item"
     *ngFor="let category of categories"
     (click)="changeCategory.emit(category.titleUrl)"
-    [routerLink]="['/' + lang + '/category/' + category.titleUrl]"
+    [routerLink]="['/' + lang + '/product/category/' + category.titleUrl]"
     [class.active]="activeCategory == (category.titleUrl)">
     {{category.title}}
   </a>

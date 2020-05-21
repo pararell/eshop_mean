@@ -124,10 +124,17 @@ export class ProductsService {
     return products
       .reduce((catSet, product) => catSet.concat(product[lang].categories) , [])
       .filter((cat, i, arr) => arr.indexOf(cat) === i)
-      .map(category => ({
+      .map(category => {
+        const productWithCategory = products.find(product => product[lang].categories.includes(category));
+        const imageToCategory = productWithCategory && productWithCategory.mainImage.url
+          ? { imageUrl: productWithCategory.mainImage.url }
+          : {};
+        return {
           title: category ,
-          titleUrl: category.replace(/ /g, '_').toLowerCase()
-        })
+          titleUrl: category.replace(/ /g, '_').toLowerCase(),
+          ...imageToCategory
+          }
+        }
       );
   };
 

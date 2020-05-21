@@ -1,8 +1,8 @@
-
-$primary-color: #000428;
-$secondary-color: #607d8b;
+$primary-color: #000;
+$secondary-color: #607252;
 $success-color: #4bb543;
 $error-color: red;
+$background-color: #fcfcfc;
 $main-background: '';
 
 @mixin add-main-background(
@@ -44,34 +44,34 @@ $main-background: '';
 
 // generate pallete from http://mcg.mbitson.com/
 $material-primary-color: (
-  50 : #e0e1e5,
-  100 : #b3b4bf,
-  200 : #808294,
-  300 : #4d4f69,
-  400 : #262a48,
-  500 : #000428,
-  600 : #000324,
-  700 : #00031e,
-  800 : #000218,
-  900 : #00010f,
-  A100 : #5252ff,
-  A200 : #1f1fff,
-  A400 : #0000eb,
-  A700 : #0000d1,
+  50: #eceeea,
+  100: #cfd5cb,
+  200: #b0b9a9,
+  300: #909c86,
+  400: #78876c,
+  500: #607252,
+  600: #586a4b,
+  700: #4e5f41,
+  800: #445538,
+  900: #334228,
+  A100: #bdff8d,
+  A200: #9fff5a,
+  A400: #81ff27,
+  A700: #72ff0e,
   contrast: (
-    50 : #000,
-    100 : #000,
-    200 : #000,
-    300 : #fff,
-    400 : #fff,
-    500 : #fff,
-    600 : #fff,
-    700 : #fff,
-    800 : #fff,
-    900 : #fff,
-    A100 : #fff,
-    A200 : #fff,
-    A400 : #fff,
-    A700 : #fff,
-  )
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: #000000,
+    400: #ffffff,
+    500: #ffffff,
+    600: #ffffff,
+    700: #ffffff,
+    800: #ffffff,
+    900: #ffffff,
+    A100: #000000,
+    A200: #000000,
+    A400: #000000,
+    A700: #000000,
+  ),
 );
