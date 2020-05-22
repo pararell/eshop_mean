@@ -1,15 +1,17 @@
-<ng-container *ngFor="let category of categories; trackBy: trackById;">
-  <div class="category_card">
-    <div class="category_card-header">
-      <div class="category_card-top">
-          <h2 class="category_card-title"> {{category?.title}} </h2>
+<app-carousel>
+    <ng-container *ngFor="let category of categories; trackBy: trackById;">
+      <div class="category_card">
+        <div class="category_card-header">
+          <div class="category_card-top">
+              <h2 class="category_card-title"> {{category?.title}} </h2>
+          </div>
+        </div>
+        <a class="category_card-image"
+          [routerLink]="[ '/' + lang + '/product/category/' + category.titleUrl]"
+          [attr.aria-labelledby]="category.titleUrl"
+          lazySrc [lazyBackground]="'url(' + category.imageUrl + ')'"
+          lazySrcVisible="visible">
+        </a>
       </div>
-    </div>
-    <a class="category_card-image"
-      [routerLink]="[ '/' + lang + '/product/category/' + category.titleUrl]"
-      [attr.aria-labelledby]="category.titleUrl"
-      lazySrc [lazyBackground]="'url(' + category.imageUrl + ')'"
-      lazySrcVisible="visible">
-    </a>
-  </div>
-</ng-container>
+    </ng-container>
+</app-carousel>

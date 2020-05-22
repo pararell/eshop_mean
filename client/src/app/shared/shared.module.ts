@@ -24,6 +24,7 @@ import { ImagesDialogComponent } from './images-dialog/images-dialog.component';
 import { OrdersListComponent } from './orders/orders-list/orders-list.component';
 import { OrderDetailComponent } from './orders/order-detail/order-detail.component';
 import { CategoriesListComponent } from './categories-list/categories-list.component';
+import { CarouselComponent } from './carousel/carousel.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { CategoriesListComponent } from './categories-list/categories-list.compo
     PaginationComponent,
     ImagesDialogComponent,
     OrdersListComponent,
-    OrderDetailComponent
+    OrderDetailComponent,
+    CarouselComponent
   ],
   imports: [
     ReactiveFormsModule,
@@ -64,7 +66,8 @@ import { CategoriesListComponent } from './categories-list/categories-list.compo
     PaginationComponent,
     ImagesDialogComponent,
     OrdersListComponent,
-    OrderDetailComponent
+    OrderDetailComponent,
+    CarouselComponent
   ]
 })
 export class SharedModule { }

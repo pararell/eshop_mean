@@ -1,0 +1,15 @@
+<div class="slider-container" #slideContainer>
+  <button class="slider-arrow" *ngIf="showArrowsSub$ | async"
+    mat-raised-button color="primary"
+    (click)="onClickLeft()">
+    <i class="nav-cart-icon material-icons md-18">keyboard_arrow_left</i>
+  </button>
+  <div class="slides" #slides>
+    <ng-content></ng-content>
+  </div>
+  <button class="slider-arrow" *ngIf="showArrowsSub$ | async"
+    mat-raised-button color="primary"
+    (click)="onClickRight()">
+    <i class="nav-cart-icon material-icons md-24">keyboard_arrow_right</i>
+  </button>
+</div>

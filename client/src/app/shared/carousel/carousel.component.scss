@@ -1,0 +1,31 @@
+:host {
+  width: 100%;
+  position: relative;
+
+  .slider-container {
+    display: flex;
+    position: relative;
+    width: 100%;
+  }
+
+  /deep/ .mat-raised-button {
+    min-width: 40px;
+    padding: 10px;
+  }
+
+  .slider-arrow {
+    max-width: 40px;
+  }
+
+  .slides {
+    display: flex;
+    overflow-x: scroll;
+    scroll-behavior: smooth;
+    width: 100%;
+
+    &::-webkit-scrollbar {
+      width: 0;
+      background: transparent;
+    }
+  }
+}

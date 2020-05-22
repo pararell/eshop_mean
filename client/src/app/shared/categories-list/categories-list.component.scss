@@ -3,6 +3,27 @@
 :host {
   display: flex;
   flex-wrap: wrap;
+  width: 100%;
+
+  .categories-mobile {
+    display: none;
+
+    @media (max-width: 1000px) {
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+  }
+
+  .categories-desktop {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+
+    @media (max-width: 1000px) {
+      display: none;
+    }
+  }
 
   .category_card {
     flex-basis: 21%;
@@ -16,6 +37,7 @@
     margin: 0.5rem 2% 1rem 2%;
     z-index: 1;
     position: relative;
+    min-width: 250px;
 
     @media (max-width: 1400px) {
       flex-basis: 31%;
