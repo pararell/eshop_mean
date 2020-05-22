@@ -30,9 +30,7 @@
       </div>
     </div>
     <div class="container products-content">
-      <mat-progress-bar
-        mode="indeterminate"
-        *ngIf="!(items$ | async)?.products"></mat-progress-bar>
+      <mat-spinner class="products-spinner" *ngIf="!(items$ | async)?.products"></mat-spinner>
       <div class="sidebar-layout"
         *ngIf="(items$ | async) as items">
         <div class="sidebar-wrap">

@@ -10,6 +10,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { ProductComponent } from './product/product.component';
 import { LazyModule } from '../../utils/lazyLoadImg/lazy.module';
@@ -33,6 +34,7 @@ import { ProductsComponent } from './products/products.component';
     MatTabsModule,
     MatChipsModule,
     MatProgressBarModule,
+    MatProgressSpinnerModule,
     MatDialogModule,
     MatSidenavModule,
     RouterModule.forChild([

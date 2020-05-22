@@ -1,3 +1,5 @@
+@import 'variables';
+
 :host {
   display: flex;
   min-height: 100vh;
@@ -6,10 +8,18 @@
   .orders-menu {
     display: flex;
     justify-content: space-between;
+    align-items: center;
   }
 
   .orders-button {
     margin: 10px;
+  }
+
+  .dashboard-title {
+    margin: 0;
+    background: $primary-color;
+    color: #fff;
+    padding: 0 5px;
   }
 
   .dashboard-tab-content {

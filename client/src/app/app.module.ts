@@ -19,6 +19,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
@@ -61,6 +62,7 @@ const routes: Routes = routesAll;
     MatAutocompleteModule,
     MatInputModule,
     MatProgressBarModule,
+    MatProgressSpinnerModule,
     MatSidenavModule,
     EffectsModule.forRoot([ AppEffects ]),
     RouterModule.forRoot(routes, { initialNavigation: 'enabled' }),

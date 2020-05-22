@@ -7,7 +7,7 @@ sgMail.setApiKey(process.env.SENDGRID_KEY);
 export const sendMsg = async (email: string, emailType) => {
   const msg = {
     to: email,
-    from: 'no-reply@bluetooh-eshop.sk',
+    from: 'no-reply@eshop.sk',
     subject: emailType.subject,
     html: getContent(emailType),
   };

@@ -26,7 +26,7 @@
     </div>
     <div class="nav-basic">
       <ng-container *ngIf="(cart$ | async) as cart">
-        <a class="nav-cart-wrap" [routerLink]="['/' + (lang$ | async) + '/cart']">
+        <a class="nav-cart-wrap" [routerLink]="['/' + (lang$ | async) + '/cart']"  routerLinkActive="nav-active-link">
           <span>{{ cart?.totalQty }}</span>
           <i class="nav-cart-icon material-icons md-18">shopping_cart</i>
         </a>
@@ -60,17 +60,23 @@
         {{ 'Login' | translate | async }} {{ 'with' | translate | async }} Google
       </a>
     </button>
-    <button mat-menu-item  [routerLink]="['/' + (lang$ | async) + '/authorize/signin']">
+    <button mat-menu-item  
+      [routerLink]="['/' + (lang$ | async) + '/authorize/signin']"
+      routerLinkActive="nav-active-link">
       <mat-icon>account_circle</mat-icon>
       <a class="nav-link">{{ 'Login' | translate | async }}</a>
     </button>
   </ng-container>
-  <button mat-menu-item [routerLink]="['/' + (lang$ | async) + '/dashboard']"
+  <button mat-menu-item 
+      [routerLink]="['/' + (lang$ | async) + '/dashboard']"
+      routerLinkActive="nav-active-link"
      *ngIf="(user$ | async)?.roles?.includes('admin')">
     <mat-icon>dashboard</mat-icon>
     <a class="nav-link"> {{'Dashboard' | translate | async}}</a>
   </button>
-  <button mat-menu-item [routerLink]="['/' + (lang$ | async) + '/orders']"
+  <button mat-menu-item 
+    [routerLink]="['/' + (lang$ | async) + '/orders']"
+    routerLinkActive="nav-active-link"
     *ngIf="(userOrders$ | async)?.length">
     <mat-icon>assignment</mat-icon>
     <a class="nav-link"> {{'Orders' | translate | async}}</a>

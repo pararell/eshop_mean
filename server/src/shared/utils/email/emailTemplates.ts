@@ -334,7 +334,7 @@ const emailTemplates = (cart, order) => {
                                                       <div style="color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;line-height:120%; padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 10px;">
                                                           <div style="font-size:12px;line-height:14px;text-align:center;color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;">
                                                               <p style="margin: 0;font-size: 12px;line-height: 14px;text-align: center">
-                                                                  <a style="font-size: 26px; line-height: 31px; color: rgb(153, 153, 153);" href="https://angular-un-ngrx-node-eshop.herokuapp.com/">Bluetooth Eshop
+                                                                  <a style="font-size: 26px; line-height: 31px; color: rgb(153, 153, 153);" href="https://angular-un-ngrx-node-eshop.herokuapp.com/">Eshop
                                                                   </a>
                                                               </p>
                                                           </div>
@@ -418,7 +418,7 @@ const emailTemplates = (cart, order) => {
                                                               <strong>
                                                                   <a
                                                                       style="font-size: 16px; line-height: 32px;"
-                                                                      data-mce-style="font-size: 16px; line-height: 32px;" href="https://angular-un-ngrx-node-eshop.herokuapp.com/en/order/${
+                                                                      data-mce-style="font-size: 16px; line-height: 32px;" href="http://eshop.miroslavsmrtic.sk/en/orders/${
                                                                         order.orderId
                                                                       }">
                                                                       ${'VIEW ORDER STATUS'}
@@ -514,7 +514,10 @@ const emailTemplates = (cart, order) => {
                                                                   <span style="font-size: 16px; line-height: 24px;">
                                                                   ${
                                                                     order.adress
-                                                                      .adress
+                                                                      .line1
+                                                                  }   ${
+                                                                    order.adress
+                                                                      .line2
                                                                   }</span>
                                                               </p>
                                                               <p style="margin: 0;font-size: 12px;line-height: 18px">
@@ -832,7 +835,7 @@ const emailTemplates = (cart, order) => {
                                                               <p style="margin: 0;font-size: 12px;line-height: 14px;text-align: center">
                                                                   <span style="color: rgb(255, 255, 255); font-size: 16px; line-height: 19px;">
                                                                   ${'send mail to'}
-                                                                      <strong>${'mail'}</strong>
+                                                                      <strong>${process.env.ADMIN_EMAILS}</strong>
                                                                   </span>
                                                               </p>
                                                           </div>
@@ -907,12 +910,12 @@ const emailTemplates = (cart, order) => {
                                                               </p>
                                                               <p style="margin: 0;font-size: 12px;line-height: 14px;text-align: center">
                                                                   <span style="font-size: 11px; line-height: 13px;">
-                                                                      This email was sent by Bluetooth Eshop.
+                                                                      This email was sent by Eshop.
                                                                   </span>
                                                               </p>
                                                               <p style="margin: 0;font-size: 12px;line-height: 14px;text-align: center">
                                                                   <span style="font-size: 11px; line-height: 13px;">
-                                                                      ©2018 Bluetooth Eshop, All rgihts reserved   |  Privacy Policy.
+                                                                      ©2020 Eshop, All rgihts reserved   |  Privacy Policy.
                                                                   </span>
                                                               </p>
                                                           </div>

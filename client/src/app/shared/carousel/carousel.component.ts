@@ -12,13 +12,15 @@ export class CarouselComponent implements AfterViewInit {
   @ViewChild('slides') slides: ElementRef<HTMLDivElement>;
   @ViewChild('slideContainer') slideContainer: ElementRef<HTMLDivElement>;
 
-  showArrowsSub$ = new BehaviorSubject(true);
+  showArrowsSub$ = new BehaviorSubject(false);
 
   ngAfterViewInit(): void {
     of('slidesChildren').pipe(delay(200))
       .subscribe(() => {
-        if (this.slides.nativeElement.children) {
+        if (this.slides.nativeElement.children && this.slides.nativeElement.children[0]) {
           this.showArrowsSub$.next(this.slides.nativeElement.offsetWidth < (this.slides.nativeElement.children[0].clientWidth * this.slides.nativeElement.children.length));
+        } else {
+          this.showArrowsSub$.next(true);
         }
       })
   }

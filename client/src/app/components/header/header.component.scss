@@ -75,6 +75,10 @@
       }
     }
 
+    &-active-link {
+      background: rgba(0,0,0,0.1);
+    }
+
     &-basic {
       display: flex;
       align-items: center;
@@ -86,6 +90,7 @@
       display: flex;
       align-items: center;
       margin-right: 5px;
+      padding: 0 5px;
     }
 
     &-cart-icon {

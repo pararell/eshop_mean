@@ -36,9 +36,7 @@
         </div>
       </div>
       <div class="container">
-        <mat-progress-bar
-          mode="indeterminate"
-          *ngIf="!(items$ | async)?.products"></mat-progress-bar>
+        <mat-spinner class="home-spinner" *ngIf="!(items$ | async)?.products"></mat-spinner>
         <div *ngIf="(categories$ | async) as categories">
           <app-categories-list
             [categories]="categories"
