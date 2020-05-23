@@ -108,9 +108,9 @@ export class ProductsService {
   private prepareSort = (sortParams, lang: string): string => {
     switch (sortParams) {
       case 'newest':
-        return `dateAdded`
+        return `-dateAdded`
       case 'oldest':
-        return `-dateAdded`;
+        return `dateAdded`;
       case 'priceasc':
         return `${lang}.salePrice`
       case 'pricedesc':
