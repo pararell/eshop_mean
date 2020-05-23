@@ -9,7 +9,7 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$eshop-app-primary: mat-palette($material-primary-color, 500);
+$eshop-app-primary: mat-palette($material-primary-color, 400);
 $eshop-app-accent:  mat-palette($mat-gray, A400);
 
 // The warn palette is optional (defaults to red).
@@ -18,6 +18,15 @@ $eshop-app-warn:    mat-palette($mat-red);
 // Create the theme object (a Sass map containing all of the palettes).
 $eshop-app-theme: mat-light-theme($eshop-app-primary, $eshop-app-accent, $eshop-app-warn);
 
+$custom-typography: mat-typography-config(
+  $font-family: 'Kanit, sans-serif',
+  $headline: mat-typography-level(32px, 48px, 700),
+  $body-1: mat-typography-level(16px, 24px, 500)
+);
+
+@include mat-base-typography($custom-typography);
+
+@include mat-menu-typography($custom-typography);
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.

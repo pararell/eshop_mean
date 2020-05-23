@@ -34,7 +34,7 @@ $material-primary-color: (
     )
 );
 
-$eshop-primary: mat-palette($material-primary-color, 500);
+$eshop-primary: mat-palette($material-primary-color, 400);
 $eshop-accent:  mat-palette($mat-gray, A400);
 $eshop-warn:    mat-palette($mat-red);
 
