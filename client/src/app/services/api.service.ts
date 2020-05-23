@@ -93,9 +93,9 @@ export class ApiService {
     })))
   }
 
-  getCategories() {
-    const categoriesUrl = this.apiUrl + '/api/products/categories';
-    return this.http.get(categoriesUrl, this.requestOptions)
+  getCategories(lang: string) {
+    const categoriesUrl = this.apiUrl + '/api/products/categories?lang=' + lang;
+    return this.http.get(categoriesUrl, this.requestOptions);
   }
 
   getProductsSearch(query: string) {

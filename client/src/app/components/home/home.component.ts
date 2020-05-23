@@ -135,7 +135,8 @@ export class HomeComponent implements OnDestroy {
   }
 
   private _loadCategories(): void {
-    this.categoriesSub = this.lang$.subscribe(() => this.store.dispatch(new actions.GetCategories()));
+    this.categoriesSub = this.lang$.pipe(distinctUntilChanged())
+      .subscribe((lang) => {  console.log(lang); this.store.dispatch(new actions.GetCategories(lang))  });
   }
 
   private _loadProducts(): void {

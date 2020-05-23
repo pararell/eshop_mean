@@ -1,4 +1,3 @@
-import { filter, take } from 'rxjs/operators';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Injectable, Injector } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';

@@ -67,6 +67,14 @@
         (click)="savePage()">
         Save
       </button>
+      
+      <button
+        mat-flat-button
+        color="primary"
+        [disabled]="pagesEditForm.invalid"
+        (click)="removePage()">
+        Remove
+      </button>
     </ng-container>
 
   </div>

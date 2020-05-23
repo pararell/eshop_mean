@@ -65,7 +65,7 @@ export class AppEffects {
 
   @Effect() getCategories$: Observable<Action> = this._actions.pipe(
     ofType(EshopActions.GetCategories),
-      switchMap((action: actions.GetCategories) => this.apiService.getCategories()),
+      switchMap((action: actions.GetCategories) => this.apiService.getCategories(action.payload)),
       map(res => new actions.GetCategoriesSuccess(res))
   );
 

@@ -76,6 +76,10 @@ export class PagesEditComponent {
     this.store.dispatch(new actions.AddOrEditPage(request));
   }
 
+  removePage(): void {
+    this.store.dispatch(new actions.RemovePage(this.chosenPage));
+  }
+
   private createLangForm(languageOptions: Array<string>) {
     return languageOptions
       .map((lang: string) => ({
