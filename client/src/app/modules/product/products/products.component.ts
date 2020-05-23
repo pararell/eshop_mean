@@ -21,8 +21,8 @@ import { Product, Category, Pagination, Cart } from '../../../shared/models';
 })
 export class ProductsComponent implements OnDestroy {
 
-
-  items$                : Observable<{ products: Product[]; cartIds: {[productID: string]: number} }>;
+  products$             : Observable<Product[]>;
+  cartIds$             : Observable<{ [productID: string]: number }>;
   loadingProducts$      : Observable<boolean>;
   categories$           : Observable<Category[]>;
   pagination$           : Observable<Pagination>;
@@ -59,22 +59,15 @@ export class ProductsComponent implements OnDestroy {
     this.minPrice$  = this.store.select(fromRoot.getMinPrice);
     this.filterPrice$ = this.store.select(fromRoot.getPriceFilter);
     this.loadingProducts$ = this.store.select(fromRoot.getLoadingProducts);
+    this.products$ = this.store.select(fromRoot.getProducts).pipe(filter(products => !!products));
+    this.cartIds$  = this.store.select(fromRoot.getCart).pipe(
+        filter(cart => !!cart), 
+        map((cart: Cart) => (cart.items && cart.items.length)
+          ? cart.items.reduce((prev, curr) => ( {...prev, [curr.id] : curr.qty } ), {} )
+          : {} ));
 
     this._loadCategories();
     this._loadProducts();
-
-    this.items$ = combineLatest(
-      this.store.select(fromRoot.getProducts).pipe(filter(Boolean)),
-      this.store.select(fromRoot.getCart).pipe(filter(Boolean), map((cart: Cart) => cart.items)),
-      (products: Array<Product>, cartItems) => {
-        return {
-          products,
-          cartIds: (cartItems && cartItems.length)
-            ? cartItems.reduce((prev, curr) => ( {...prev, [curr.id] : curr.qty } ), {} )
-            : {}
-        }
-      }
-    )
 
     this.title.setTitle('Products');
     this.meta.updateTag({ name: 'description', content: 'Products description' });

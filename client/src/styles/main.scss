@@ -25,7 +25,6 @@ a {
 
 a:hover {
   text-decoration: none;
-  color: theme-color('secondary');
 }
 
 .material-icons.md-16 {
@@ -51,7 +50,7 @@ a:hover {
 .main {
   flex: 1 0 auto;
 
-  @include add-main-background($primary-color, $background-color, 45deg, 10px, 10px);
+  // @include add-main-background($primary-color, $background-color, 45deg, 100px, 30px);
 }
 
 .container {

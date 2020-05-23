@@ -1,7 +1,47 @@
-$primary-color: #000;
-$secondary-color: #607252;
+@import '~@angular/material/theming';
+
+// generate pallete from http://mcg.mbitson.com/
+$material-primary-color: (
+    50 : #e0e0e0,
+    100 : #b3b3b3,
+    200 : #808080,
+    300 : #4d4d4d,
+    400 : #262626,
+    500 : #000000,
+    600 : #000000,
+    700 : #000000,
+    800 : #000000,
+    900 : #000000,
+    A100 : #a6a6a6,
+    A200 : #8c8c8c,
+    A400 : #737373,
+    A700 : #666666,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #ffffff,
+        400 : #ffffff,
+        500 : #ffffff,
+        600 : #ffffff,
+        700 : #ffffff,
+        800 : #ffffff,
+        900 : #ffffff,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #ffffff,
+        A700 : #ffffff,
+    )
+);
+
+$eshop-primary: mat-palette($material-primary-color, 500);
+$eshop-accent:  mat-palette($mat-gray, A400);
+$eshop-warn:    mat-palette($mat-red);
+
+$primary-color: mat-color($eshop-primary);
+$secondary-color: mat-color($eshop-accent);
 $success-color: #4bb543;
-$error-color: red;
+$error-color:  mat-color($eshop-warn);
 $background-color: #fcfcfc;
 $main-background: '';
 
@@ -42,36 +82,5 @@ $main-background: '';
   }
 }
 
-// generate pallete from http://mcg.mbitson.com/
-$material-primary-color: (
-  50: #eceeea,
-  100: #cfd5cb,
-  200: #b0b9a9,
-  300: #909c86,
-  400: #78876c,
-  500: #607252,
-  600: #586a4b,
-  700: #4e5f41,
-  800: #445538,
-  900: #334228,
-  A100: #bdff8d,
-  A200: #9fff5a,
-  A400: #81ff27,
-  A700: #72ff0e,
-  contrast: (
-    50: #000000,
-    100: #000000,
-    200: #000000,
-    300: #000000,
-    400: #ffffff,
-    500: #ffffff,
-    600: #ffffff,
-    700: #ffffff,
-    800: #ffffff,
-    900: #ffffff,
-    A100: #000000,
-    A200: #000000,
-    A400: #000000,
-    A700: #000000,
-  ),
-);
+
+

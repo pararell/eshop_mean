@@ -1,3 +1,5 @@
+@import 'variables';
+
 :host {
   width: 100%;
   position: relative;
@@ -11,6 +13,7 @@
   /deep/ .mat-raised-button {
     min-width: 40px;
     padding: 10px;
+    border: 1px solid rgba(0,0,0,0.2);
   }
 
   .slider-arrow {

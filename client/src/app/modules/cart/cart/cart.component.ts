@@ -71,12 +71,12 @@ export class CartComponent {
     this.user$.pipe(take(1)).subscribe((user: User) => {
       const userToOrder = user ? { userId: user.id } : {};
       const addresses = [{
-        name                : this.orderForm.value.name,
-        address_city        : this.orderForm.value.city,
-        address_country     : this.orderForm.value.country,
-        address_line1       : this.orderForm.value.adress,
-        address_line2       : '',
-        address_zip         : this.orderForm.value.zip,
+        name        : this.orderForm.value.name,
+        city        : this.orderForm.value.city,
+        country     : this.orderForm.value.country,
+        line1       : this.orderForm.value.adress,
+        line2       : '',
+        zip         : this.orderForm.value.zip,
       }]
       const paymentRequest = {...payment, ...this.orderForm.value, ...userToOrder, addresses};
       this.store.dispatch(new actions.MakeOrderWithPayment(paymentRequest));

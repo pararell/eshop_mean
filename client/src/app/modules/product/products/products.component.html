@@ -20,7 +20,7 @@
   <mat-drawer-content>
   <div class="main">
     <div class="products-primary-header">
-      <div class="container">
+      <div class="products-primary-container">
         <div class="products-mobile-filter" (click)="toggleSidebar()">
           <i class="material-icons md-16">filter_list</i>
           <span>{{ 'Filter' | translate | async }}</span>
@@ -30,9 +30,9 @@
       </div>
     </div>
     <div class="container products-content">
-      <mat-spinner class="products-spinner" *ngIf="!(items$ | async)?.products"></mat-spinner>
+      <mat-progress-bar mode="indeterminate" *ngIf="loadingProducts$ | async"></mat-progress-bar>
       <div class="sidebar-layout"
-        *ngIf="(items$ | async) as items">
+        *ngIf="(products$ | async) as products">
         <div class="sidebar-wrap">
           <app-sidebar class="products-sidebar-desktop"
             [class.disabled]="loadingProducts$ | async"
@@ -54,8 +54,8 @@
         <div class="main-wrap">
           <app-products-list
             [class.disabled]="loadingProducts$ | async"
-            [products]="items?.products"
-            [cartIds]="items?.cartIds"
+            [products]="products"
+            [cartIds]="cartIds$ | async"
             [convertVal]="convertVal$ | async"
             [currency]="currency$ | async"
             [lang]="lang$ | async"

@@ -28,7 +28,7 @@
     <div class="main">
       <div class="home-primary-header"
         *ngIf="(categories$ | async)?.length">
-        <div class="container">
+        <div class="home-primary-container">
           <span class="home-mobile-filter" (click)="toggleSidebar()">
             <i class="material-icons md-16">filter_list</i>
           </span>
@@ -36,7 +36,7 @@
         </div>
       </div>
       <div class="container">
-        <mat-spinner class="home-spinner" *ngIf="!(items$ | async)?.products"></mat-spinner>
+        <mat-progress-bar mode="indeterminate" *ngIf="loadingProducts$ | async"></mat-progress-bar>
         <div *ngIf="(categories$ | async) as categories">
           <app-categories-list
             [categories]="categories"
@@ -46,17 +46,18 @@
       </div>
       <div
         class="home-primary-header"
-        *ngIf="(items$ | async)">
-        <div class="container">
+        *ngIf="(products$ | async)">
+        <div class="home-primary-container">
           <h1 class="home-title">{{'Products' | translate | async}}</h1>
         </div>
       </div>
       <div class="container">
-        <div *ngIf="(items$ | async) as items">
+        <mat-spinner class="home-spinner" *ngIf="loadingProducts$ | async"></mat-spinner>
+        <div *ngIf="(products$ | async) as products">
           <app-products-list
             [class.disabled]="loadingProducts$ | async"
-            [products]="items?.products"
-            [cartIds]="items?.cartIds"
+            [products]="products"
+            [cartIds]="cartIds$ | async"
             [convertVal]="convertVal$ | async"
             [currency]="currency$ | async"
             [lang]="lang$ | async"
