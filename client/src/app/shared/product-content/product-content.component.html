@@ -1,0 +1,39 @@
+<div class="product-content">
+    <div class="product-detail">
+      <h1 class="product-title">{{ product?.title }}</h1>
+      <h2 class="product-description">{{ product?.description }}</h2>
+      <div class="product-info">
+        <div class="product-stock">
+          {{ product?.stock | translate | async }}
+        </div>
+        <div
+          class="product-price"
+          *ngIf="product?.onSale">
+          {{ (product?.salePrice * (convertVal || 1)) | priceFormat }} {{ currency }}
+          <span class="product-before-price" *ngIf="product.regularPrice">
+            {{ (product?.regularPrice * (convertVal || 1)) | priceFormat }} {{ currency }}
+          </span>
+        </div>
+        <div
+          class="product-price"
+          *ngIf="!product?.onSale">
+          {{ (product?.salePrice * (convertVal || 1)) | priceFormat }} {{ currency }}
+        </div>
+        <button class="product-cart-wrap"
+          *ngIf="lang"
+          mat-raised-button
+          color="primary">
+          <app-cart-show
+            [items]="cartIds[product?._id]"
+            (add)="onAddProduct(product?._id)"
+            (remove)="onRemoveProduct(product?._id)">
+          </app-cart-show>
+        </button>
+      </div>
+      <mat-chip-list class="product-tags">
+        <mat-chip *ngFor="let tag of product?.tags">{{ tag }}</mat-chip>
+      </mat-chip-list>
+    </div>
+    <div class="product-main-image"
+      [ngStyle]="{'background': 'url(' + product?.mainImage?.url + ') no-repeat'}"></div>
+  </div>

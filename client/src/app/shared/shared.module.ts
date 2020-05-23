@@ -25,6 +25,7 @@ import { OrdersListComponent } from './orders/orders-list/orders-list.component'
 import { OrderDetailComponent } from './orders/order-detail/order-detail.component';
 import { CategoriesListComponent } from './categories-list/categories-list.component';
 import { CarouselComponent } from './carousel/carousel.component';
+import { ProductContentComponent } from './product-content/product-content.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { CarouselComponent } from './carousel/carousel.component';
     CartShowComponent,
     SidebarComponent,
     ProductsListComponent,
+    ProductContentComponent,
     CategoriesListComponent,
     PaginationComponent,
     ImagesDialogComponent,
@@ -62,6 +64,7 @@ import { CarouselComponent } from './carousel/carousel.component';
     CartShowComponent,
     SidebarComponent,
     ProductsListComponent,
+    ProductContentComponent,
     CategoriesListComponent,
     PaginationComponent,
     ImagesDialogComponent,

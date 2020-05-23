@@ -16,45 +16,15 @@
         class="product"
         *ngIf="!(productLoading$ | async) && items.product as product">
         <ng-container *ngIf="product.visibility && product.salePrice">
-          <mat-card-content class="product-content">
-            <div class="product-detail">
-              <h1 class="product-title">{{ product?.title }}</h1>
-              <h2 class="product-description">{{ product?.description }}</h2>
-              <div class="product-info">
-                <div class="product-stock">
-                  {{ product?.stock | translate | async }}
-                </div>
-                <div
-                  class="product-price"
-                  *ngIf="product?.onSale">
-                  {{ (product?.salePrice * ((convertVal$ | async) || 1)) | priceFormat }} {{ currency$ | async }}
-                  <span class="product-before-price" *ngIf="product.regularPrice">
-                    {{ (product?.regularPrice * ((convertVal$ | async) || 1)) | priceFormat }} {{ currency$ | async }}
-                  </span>
-                </div>
-                <div
-                  class="product-price"
-                  *ngIf="!product?.onSale">
-                  {{ (product?.salePrice * ((convertVal$ | async) || 1)) | priceFormat }} {{ currency$ | async }}
-                </div>
-                <button class="product-cart-wrap"
-                  *ngIf="(this.lang$ | async) as lang"
-                  mat-raised-button
-                  color="primary">
-                  <app-cart-show
-                    [items]="items?.cartIds[product?._id]"
-                    (add)="cartEvent(product?._id, 'add')"
-                    (remove)="cartEvent(product?._id, 'remove')">
-                  </app-cart-show>
-                </button>
-              </div>
-              <mat-chip-list class="product-tags">
-                <mat-chip *ngFor="let tag of product?.tags">{{ tag }}</mat-chip>
-              </mat-chip-list>
-            </div>
-            <div class="product-main-image"
-              [ngStyle]="{'background': 'url(' + product?.mainImage?.url + ') no-repeat'}"></div>
-          </mat-card-content>
+          <app-product-content
+            [product]="product"
+            [cartIds]="items?.cartIds"
+            [currency]="currency$ | async"
+            [convertVal]="convertVal$ | async"
+            [lang]="lang$ | async"
+            (addProduct)="cartEvent($event, 'add')"
+            (removeProduct)="cartEvent($event, 'remove')">
+          </app-product-content>
           <mat-tab-group>
             <mat-tab label="{{ 'Description' | translate | async }}">
               <mat-card-content class="product-tab-content">
