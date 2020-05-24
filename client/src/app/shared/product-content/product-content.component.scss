@@ -1,4 +1,7 @@
 :host {
+  width: 100%;
+  min-width: 100%;
+
     .product {
         &-content {
             display: flex;
@@ -8,11 +11,19 @@
               flex-flow: wrap;
             }
           }
+
+          &-detail {
+            margin: auto;
+          }
       
           &-title {
-            font-size: 2.92rem;
+            font-size: 2.6rem;
             line-height: 110%;
-            margin: 1.94666667rem 0 1.168rem;
+            margin: 0.5rem 0 1rem;
+
+            @media screen and (max-width: 600px) {
+              font-size: 2rem;
+            }
           }
       
           &-description {
@@ -35,9 +46,11 @@
           }
       
           &-price {
-            padding: 0 15px;
+            padding: 10px 15px 0 15px;
             font-size: 25px;
             font-weight: 500;
+            display: flex;
+            flex-flow: column;
           }
       
           &-before-price {
@@ -52,6 +65,10 @@
             margin: 20px 0;
             font-size: 16px;
           }
+
+          &-more {
+            color: #ddd;
+          }
       
           &-cart-wrap {
             padding: 5px;
@@ -65,6 +82,10 @@
             min-width: 20%;
             background-size: contain !important;
             min-height: 300px;
+
+            @media screen and (max-width: 600px) {
+              min-height: 100px;
+            }
           }
     }
 }

@@ -14,6 +14,7 @@ export class ProductContentComponent {
   @Input()  convertVal  : number;
   @Input()  currency    : string;
   @Input()  lang        : string;
+  @Input()  withLink      = false;
   @Output() addProduct     = new EventEmitter<string>();
   @Output() removeProduct  = new EventEmitter<string>();
 

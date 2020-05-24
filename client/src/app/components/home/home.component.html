@@ -26,16 +26,21 @@
   </mat-drawer>
   <mat-drawer-content>
     <div class="main">
-      <div class="home-prodcut">
-        <app-product-content *ngIf="(products$ | async) as products"
-        [product]="products[0]"
-        [cartIds]="cartIds$ | async"
-        [currency]="currency$ | async"
-        [convertVal]="convertVal$ | async"
-        [lang]="lang$ | async"
-        (addProduct)="addToCart($event)"
-        (removeProduct)="removeFromCart($event)">
-      </app-product-content>
+      <div class="home-product" *ngIf="(products$ | async) as products">
+        <app-carousel>
+          <ng-container *ngFor="let product of products | slice:0:3">
+            <app-product-content
+              [product]="product"
+              [cartIds]="cartIds$ | async"
+              [currency]="currency$ | async"
+              [convertVal]="convertVal$ | async"
+              [lang]="lang$ | async"
+              [withLink]="true"
+              (addProduct)="addToCart($event)"
+              (removeProduct)="removeFromCart($event)">
+            </app-product-content>
+          </ng-container>
+        </app-carousel>
       </div>
       <div class="home-primary-header"
         *ngIf="(categories$ | async)?.length">

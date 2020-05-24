@@ -35,14 +35,14 @@ $material-primary-color: (
 );
 
 $eshop-primary: mat-palette($material-primary-color, 400);
-$eshop-accent:  mat-palette($mat-gray, A400);
+$eshop-accent:  mat-palette($mat-gray, 50);
 $eshop-warn:    mat-palette($mat-red);
 
 $primary-color: mat-color($eshop-primary);
 $secondary-color: mat-color($eshop-accent);
 $success-color: #4bb543;
 $error-color:  mat-color($eshop-warn);
-$background-color: #fcfcfc;
+$background-color: $secondary-color;
 $main-background: '';
 
 @mixin add-main-background(

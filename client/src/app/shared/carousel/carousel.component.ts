@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, AfterViewInit, AfterContentInit } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { BehaviorSubject, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
 
@@ -26,12 +26,16 @@ export class CarouselComponent implements AfterViewInit {
   }
 
   onClickLeft() {
-    this.slides.nativeElement.scrollLeft
-      -= (this.slides.nativeElement.offsetWidth / this.slides.nativeElement.children.length);
+    this.slides.nativeElement.scrollLeft -= this.slides.nativeElement.offsetWidth;
+    if (!this.slides.nativeElement.scrollLeft) {
+      this.slides.nativeElement.scrollLeft += (this.slides.nativeElement.offsetWidth * this.slides.nativeElement.children.length - 1)
+    }
   }
 
   onClickRight() {
-    this.slides.nativeElement.scrollLeft
-      += (this.slides.nativeElement.offsetWidth / this.slides.nativeElement.children.length);
+    this.slides.nativeElement.scrollLeft += this.slides.nativeElement.offsetWidth;
+    if ((this.slides.nativeElement.scrollWidth - this.slides.nativeElement.scrollLeft).toFixed() === this.slides.nativeElement.offsetWidth.toFixed()) {
+      this.slides.nativeElement.scrollLeft = 0;
+    }
   }
 }

@@ -22,9 +22,13 @@
       padding: 10px;
     }
 
-    &-prodcut {
+    &-product {
       padding: 15px;
       background: #fff;
+
+      @media screen and (max-width: 600px) {
+        padding: 0;
+      }
     }
 
     &-title {

@@ -11,15 +11,12 @@
     align-items:  center;
   }
 
-  /deep/ .mat-raised-button {
+  /deep/ .mat-raised-button.slider-arrow  {
+    max-width: 40px;
     min-width: 40px;
     padding: 10px;
     min-height: 100px;
     border: 1px solid rgba(0,0,0,0.2);
-  }
-
-  .slider-arrow {
-    max-width: 40px;
   }
 
   .slides {

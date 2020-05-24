@@ -7,17 +7,11 @@
           {{ product?.stock | translate | async }}
         </div>
         <div
-          class="product-price"
-          *ngIf="product?.onSale">
-          {{ (product?.salePrice * (convertVal || 1)) | priceFormat }} {{ currency }}
+          class="product-price">
+          <span>{{ (product?.salePrice * (convertVal || 1)) | priceFormat }} {{ currency }}</span>
           <span class="product-before-price" *ngIf="product.regularPrice">
             {{ (product?.regularPrice * (convertVal || 1)) | priceFormat }} {{ currency }}
           </span>
-        </div>
-        <div
-          class="product-price"
-          *ngIf="!product?.onSale">
-          {{ (product?.salePrice * (convertVal || 1)) | priceFormat }} {{ currency }}
         </div>
         <button class="product-cart-wrap"
           *ngIf="lang"
@@ -33,6 +27,9 @@
       <mat-chip-list class="product-tags">
         <mat-chip *ngFor="let tag of product?.tags">{{ tag }}</mat-chip>
       </mat-chip-list>
+      <a class="product-more" *ngIf="withLink" [routerLink]="[ '/' + lang + '/product/' + product.titleUrl]">
+        {{ "More" | translate | async }}
+      </a>
     </div>
     <div class="product-main-image"
       [ngStyle]="{'background': 'url(' + product?.mainImage?.url + ') no-repeat'}"></div>

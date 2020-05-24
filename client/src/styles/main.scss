@@ -50,7 +50,7 @@ a:hover {
 .main {
   flex: 1 0 auto;
 
-  @include add-main-background($primary-color, $background-color, 45deg, 1px, 80px);
+  @include add-main-background(#fff, $background-color, 45deg, 1px, 80px);
 }
 
 .container {
