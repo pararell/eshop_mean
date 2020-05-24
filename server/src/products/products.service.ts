@@ -1,22 +1,26 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 import { GetProductsDto } from './dto/get-products';
 import { Product, ProductModel, ProductsWithPagination } from './models/product.model';
 import { GetProductDto } from './dto/get-product';
-import { Category } from './models/category.model';
+import { Category, CategoryModel } from './models/category.model';
 import { User } from '../auth/models/user.model';
 import { prepareProduct } from '../shared/utils/prepareUtils';
+import { languages } from '../shared/constans';
 
 
 @Injectable()
 export class ProductsService {
-  constructor(@InjectModel('Product') private productModel: ProductModel) {}
+  constructor(
+    @InjectModel('Product') private productModel: ProductModel,
+    @InjectModel('Category') private categoryModel: Model<CategoryModel>) {}
 
   async getProducts(getProductsDto: GetProductsDto, lang: string): Promise<ProductsWithPagination> {
     const { page, sort, category, search, maxPrice } = getProductsDto;
     const searchQuery = search      ? { titleUrl:  new RegExp(search, 'i') }                : {};
-    const categoryQuery = category  ? { [`${lang}.categories`] : new RegExp(category, 'i' ) } : {};
+    const categoryQuery = category  ? { [`${lang}.tags`] : new RegExp(category, 'i' ) } : {};
     const maxPriceQuery = maxPrice  ? { [`${lang}.salePrice`] : { $lte: maxPrice } } : {};
 
     const query = {...searchQuery, ...categoryQuery, ...maxPriceQuery, ...{ [`${lang}.visibility`] : true}}
@@ -37,9 +41,9 @@ export class ProductsService {
   }
 
   async getCategories(lang: string): Promise<Category[]> {
-    const categoriesLang = `${lang}.categories`;
-    const products = await this.productModel.find( {[categoriesLang]: { $gt: [] }} );
-    return this.prepareCategories(products, lang);
+    const query = { [`${lang}.visibility`] : true};
+    const categories = await this.categoryModel.find(query);
+    return this.prepareCategories(categories, lang);
   }
 
   async getProductsTitles(search: string): Promise<string[]> {
@@ -74,6 +78,7 @@ export class ProductsService {
     try {
       const product = await new this.productModel(newProduct);
       product.save();
+      this.addCategory(product);
     } catch {
       throw new BadRequestException();
     }
@@ -86,6 +91,8 @@ export class ProductsService {
 
     if (!found) {
       throw new NotFoundException(`Product with title ${titleUrl} not found`);
+    } else {
+      this.addCategory(found);
     }
   }
 
@@ -120,22 +127,41 @@ export class ProductsService {
     }
   };
 
-  private prepareCategories = (products, lang: string): Category[] => {
-    return products
-      .reduce((catSet, product) => catSet.concat(product[lang].categories) , [])
-      .filter((cat, i, arr) => arr.indexOf(cat) === i)
-      .map(category => {
-        const productWithCategory = products.find(product => product[lang].categories.includes(category));
-        const imageToCategory = productWithCategory && productWithCategory.mainImage.url
-          ? { imageUrl: productWithCategory.mainImage.url }
-          : {};
-        return {
-          title: category ,
-          titleUrl: category.replace(/ /g, '_').toLowerCase(),
-          ...imageToCategory
-          }
-        }
-      );
+  private prepareCategories = (categories, lang: string): Category[] => {
+    return categories.map(category => ({
+      titleUrl: category.titleUrl,
+      imageUrl: category.mainImage.url,
+      dateAdded: category.dateAdded,
+      title: category[lang] ? category[lang].title : category.titleUrl,
+      description: category[lang] ? category[lang].description : '',
+      visibility: category[lang] ? category[lang].visibility : false,
+    }))
   };
+
+  private addCategory = (product): void => {
+    languages
+      .reduce((prev, lang) => prev.concat(product[lang].tags) ,[])
+      .filter((cat, i, arr) => arr.indexOf(cat) === i)
+      .map(async(category: string) => {
+        const titleUrl = category.replace(/ /g, '_').toLowerCase();
+        const addCategory = {
+          titleUrl,
+          mainImage: { url: product.mainImage.url, name: product.mainImage.name },
+          dateAdded : Date.now(),
+          ...languages.reduce((prev, lang) => ({...prev, 
+            [lang]: {
+              title: category,
+              description: '',
+              visibility: product[lang].tags.includes(category)
+            }})
+          ,{})
+        }
+        const found = await this.categoryModel.findOne({ titleUrl });
+        if (!found) {
+          const category = await new this.categoryModel(addCategory);
+          category.save();
+        }
+      })
+  }
 
 }

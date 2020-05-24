@@ -9,7 +9,7 @@ import * as fromRoot from '../../../store/reducers';
 import * as actions from '../../../store/actions'
 import { ApiService } from '../../../services/api.service';
 import { languages } from '../../../shared/constants';
-import { Product } from '../../../shared/models';
+import { Product, Category } from '../../../shared/models';
 
 @Component({
   selector: 'app-products-edit',
@@ -29,16 +29,20 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
   descriptionFullSub$: BehaviorSubject<{ [x: string]: string }>
     = new BehaviorSubject(languages.reduce((prev, lang) => ({...prev, [lang]: ''}) , {}));
   product$: Observable<Product>;
+  categories$: Observable<Category[]>;
   productSub: Subscription;
   languageOptions = languages;
   choosenLanguageSub$ = new BehaviorSubject(languages[0]);
   testImageUrl: string;
   filteredTitles$: Observable<string[]>;
+  tag: string;
 
   constructor(private fb: FormBuilder, private store: Store<fromRoot.State>, private apiService: ApiService) {
     this.createForm();
     this.product$ = this.store.select(fromRoot.getProduct).pipe(
       filter(product => !!product && !!product.titleUrl && !product.title));
+    this.categories$ = this.store.select(fromRoot.getCategories);
+    this.store.dispatch(new actions.GetCategories(languages[0]));
   }
 
   ngOnInit(): void {
@@ -202,6 +206,20 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
 
   }
 
+  addTag(lang: string): void {
+    if (this.tag) {
+      const formTags = this.productEditForm.get(lang).value.tags.filter(tag => tag !== this.tag);
+      const tags = [...formTags, this.tag.replace(/ /g, '_').toLowerCase()];
+      this.productEditForm.get(lang).get('tags').setValue(tags);
+      this.tag = '';
+    }
+  }
+
+  removeTag(lang: string, tagToRemove: string): void {
+    const formTags = this.productEditForm.get(lang).value.tags.filter(tag => tag !== tagToRemove);
+    this.productEditForm.get(lang).get('tags').setValue(formTags);
+  }
+
   addImageUrl(): void {
     const imageUrl = this.productEditForm.get('imageUrl').value;
     const titleUrl = this.productEditForm.get('titleUrl').value;
@@ -243,8 +261,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
           description: '',
           salePrice: '',
           regularPrice: '',
-          tags: '',
-          categories: '',
+          tags: [[]],
           descriptionFull: '',
           visibility: false,
           stock: 'onStock',
@@ -265,12 +282,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
             description   : productLang.description || '',
             salePrice     : productLang.salePrice || '',
             regularPrice  : productLang.regularPrice || '',
-            tags          : productLang.tags
-              ? productLang.tags.reduce((string, tag) => (string ? string + ',' : string) + tag, '')
-              : '',
-            categories    : productLang.categories
-              ? productLang.categories.reduce((string, tag) => (string ? string + ',' : string) + tag, '')
-              : '',
+            tags          : productLang.tags,
             descriptionFull : productLang.descriptionFull || '',
             visibility      : !!productLang.visibility,
             stock           : productLang.stock || 'onStock',
@@ -286,9 +298,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
     return languageOptions
       .map((lang: string) => ({
         [lang]: {
-          ...formData[lang],
-          tags      : formData[lang].tags ? formData[lang].tags.split(',') : [],
-          categories: formData[lang].categories ? formData[lang].categories.split(',') : []
+          ...formData[lang]
         }
       })).reduce((prev, curr) => ({ ...prev, ...curr }), {});
   }

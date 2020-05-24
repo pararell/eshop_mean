@@ -83,9 +83,10 @@ export class ApiService {
     const productsUrl = this.apiUrl + '/api/products?lang=' + lang + '&page=' + page + '&sort=' + sort + categoryQuery + priceQuery;
     return this.http.get(productsUrl, this.requestOptions).pipe(map((data: any) => ({
         products : data.all
-          .map(product => ({...product,
-              categories: product.categories.filter(Boolean).map((cat: string) => cat.toLowerCase()),
-              tags: product.tags.map((tag: string) => tag ? tag.toLowerCase() : '')})),
+          .map(product => 
+            ({...product,
+              tags: product.tags.filter(Boolean).map((cat: string) => cat.toLowerCase())
+          })),
         pagination: data.pagination,
         maxPrice: data.maxPrice,
         minPrice: data.minPrice,

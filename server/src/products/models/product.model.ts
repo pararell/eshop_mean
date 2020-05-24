@@ -5,7 +5,6 @@ export interface Product extends Document {
     title: string;
     description: string;
     descriptionFull: any;
-    categories: string[];
     tags: string[];
     regularPrice: number;
     salePrice: number;
@@ -17,7 +16,7 @@ export interface Product extends Document {
     mainImage: { url: string; name: string };
     images: string[];
     _user: any;
-    dateAdded?          : Date;
+    dateAdded?: Date;
 }
 
 export interface PaginateOptions {

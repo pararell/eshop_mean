@@ -10,7 +10,6 @@ const getProductLangInfo = (): {[lang: string]: {}} => {
       { title: String,
         description: String,
         descriptionFull: [],
-        categories: [],
         tags: [],
         regularPrice: Number,
         salePrice: Number,

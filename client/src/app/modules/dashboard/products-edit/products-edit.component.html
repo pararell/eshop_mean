@@ -82,7 +82,7 @@
               name="salePrice">
           </mat-form-field>
           <mat-form-field class="product_edit-field-small">
-            <mat-label>{{ 'Regulat_price' | translate | async }}</mat-label>
+            <mat-label>{{ 'Regular_price' | translate | async }}</mat-label>
             <input
               matInput
               formControlName="regularPrice"
@@ -91,20 +91,36 @@
         </div>
         <div class="product_edit-full-input">
           <mat-form-field class="product_edit-field-small">
-            <mat-label>Categories (separate with coma)</mat-label>
+            <mat-label>Tags (it will create Category)</mat-label>
             <input
               matInput
-              formControlName="categories"
-              name="categories">
+              [(ngModel)]="tag" 
+              [ngModelOptions]="{standalone: true}"
+              name="tag"
+              [matAutocomplete]="autoTags">
+              <mat-autocomplete #autoTags="matAutocomplete">
+                <mat-option *ngFor="let category of (categories$ | async)" [value]="category.titleUrl">
+                  <span>{{category.titleUrl}}</span>
+                </mat-option>
+              </mat-autocomplete>
           </mat-form-field>
-          <mat-form-field class="product_edit-field-small">
-            <mat-label>Tags (separate with coma)</mat-label>
-            <input
-              matInput
-              formControlName="tags"
-              name="tags">
-          </mat-form-field>
+          <button
+            mat-raised-button
+            color="primary"
+            class="edit-find-button"
+            (click)="addTag(chooseLang)">
+            Add Tag
+          </button>
         </div>
+        <mat-chip-list class="product-tags" *ngIf="(productEditForm.get(chooseLang).get('tags').value) as allTags">
+          <ng-container *ngIf="allTags && allTags.length">
+            <mat-chip class="clickable"
+            *ngFor="let tag of allTags"
+            (click)="removeTag(chooseLang, tag)">
+            <span *ngIf="tag">{{ tag }} x</span>
+          </mat-chip>
+          </ng-container>
+        </mat-chip-list>
         <div class="product_edit-full-input">
           <div class="product_edit-field-small">
             <div class="check-title">{{ 'Visibility' | translate | async }}</div>

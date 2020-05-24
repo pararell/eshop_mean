@@ -1,0 +1,98 @@
+<ng-container *ngIf="!sendRequest && (choosenLanguageSub$ | async) as chooseLang">
+    <div class="categories-title-wrapp">
+      <h2> {{ 'Categories_edit' | translate | async }} </h2>
+      <div>
+        <mat-form-field class="browser-default lang-select">
+          <mat-label>{{ 'Language_for_product_detail' | translate | async }}</mat-label>
+          <mat-select
+            [ngModel]="chooseLang"
+            (ngModelChange)="setLang($event)">
+            <mat-option *ngFor="let option of languageOptions;" [value]="option">
+              {{option}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <form class="category_edit-form"
+      [formGroup]="categoryEditForm"
+      novalidate>
+      <div class="category_edit-full-input">
+        <mat-form-field class="category_edit-field">
+          <input matInput
+                 placeholder="TitleUrl"
+                 aria-label="TitleUrl"
+                 [matAutocomplete]="auto"
+                 formControlName="titleUrl">
+          <mat-autocomplete #auto="matAutocomplete">
+            <mat-option *ngFor="let category of (categories$ | async)" [value]="category.titleUrl">
+              <span>{{category.titleUrl}}</span>
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <button
+          mat-raised-button
+          color="primary"
+          class="edit-find-button"
+          (click)="findCategory()">
+          {{ 'Find' | translate | async }}
+        </button>
+      </div>
+      <ng-container>
+        <h3 class="category_edit-subtitle">Content (for chosen language/market)</h3>
+        <div [formGroupName]="chooseLang">
+          <div class="category_edit-full-input">
+            <mat-form-field class="category_edit-field">
+              <mat-label>{{ 'Title' | translate | async }}</mat-label>
+              <input
+                matInput
+                formControlName="title"
+                type="text"
+                name="title">
+            </mat-form-field>
+          </div>
+          <div class="category_edit-full-input">
+            <mat-form-field class="category_edit-field">
+              <mat-label>{{ 'Short_description' | translate | async }}</mat-label>
+              <textarea
+                matInput
+                formControlName="description"
+                name="description">
+              </textarea>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="category_edit-full-input">
+          <mat-form-field class="category_edit-field">
+            <mat-label>{{ 'Main_image_url' | translate | async }}</mat-label>
+            <input
+              matInput
+              formControlName="mainImage"
+              name="mainImage">
+          </mat-form-field>
+        </div>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="onSubmit()"
+          [disabled]="!categoryEditForm.valid">
+          {{ 'Save' | translate | async }}
+        </button>
+      </ng-container>
+  
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onSubmit()"
+        [disabled]="!categoryEditForm.valid">
+        {{ 'Remove' | translate | async }}
+      </button>
+  
+    </form>
+  </ng-container>
+  
+  <div class="category_edit-after-send"
+    *ngIf="sendRequest">
+   <span> {{ 'Request_sended' | translate | async }}</span>
+  </div>
+  

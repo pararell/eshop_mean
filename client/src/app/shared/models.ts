@@ -14,7 +14,6 @@ export interface Product {
   titleUrl            : string;
   description         : string;
   descriptionFull     : string;
-  categories          : string[];
   tags                : string[];
   regularPrice        : number;
   salePrice           : number;
