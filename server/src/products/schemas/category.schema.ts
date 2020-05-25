@@ -19,6 +19,7 @@ const CategorySchema = new Schema({
   mainImage: {
     url: { type: String, trim: true },
     name: { type: String, trim: true },
+    type: { type: Boolean }
   },
   _user: { type: Schema.Types.ObjectId, ref: 'user' },
   dateAdded: Date,

@@ -43,8 +43,7 @@ export interface Category {
   title?        : string;
   description?  : string;
   visibility?   : boolean;
-  imageUrl?     : string;
-  mainImage?    : {url: string; name: string};
+  mainImage?    : {url: string; name: string; type?: boolean};
   [lang: string]: any | { title?: string; description?: string; visibility? : boolean; };
 }
 

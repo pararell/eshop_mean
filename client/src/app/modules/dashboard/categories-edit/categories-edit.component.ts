@@ -22,6 +22,7 @@ export class CategoriesEditComponent {
   languageOptions = languages;
   choosenLanguageSub$ = new BehaviorSubject(languages[0]);
   categoryProductsTitlesUrl: string[] = [];
+  mainImageType = false;
 
   constructor(private fb: FormBuilder, private store: Store<fromRoot.State>) {
     this.createForm();
@@ -66,7 +67,11 @@ export class CategoriesEditComponent {
   onSubmit(): void {
     const categoryPrepare = {
       ...this.categoryEditForm.value,
-      mainImage: { url: this.categoryEditForm.value.mainImage, name: this.categoryEditForm.value.titleUrl },
+      mainImage: {
+        url: this.categoryEditForm.value.mainImage,
+        name: this.categoryEditForm.value.titleUrl,
+        type: this.mainImageType
+      },
     }
     this.store.dispatch(new actions.EditCategory(categoryPrepare));
     this.sendRequest = true;

@@ -32,3 +32,5 @@ export const sortOptions = [{
     name: 'Price-decs',
     id: 'pricedesc',
 }];
+
+export const imageTypes = ['contain', 'cover'];

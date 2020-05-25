@@ -29,10 +29,10 @@
       <div class="home-product" *ngIf="(products$ | async) as products">
         <app-carousel>
           <ng-container *ngFor="let product of products | slice:0:3">
-            <app-product-content
+            <app-product-content *ngIf="(cartIds$ | async) as cartIds"
               [product]="product"
               [categories]="categories$ | async"
-              [cartIds]="cartIds$ | async"
+              [cartIds]="cartIds"
               [currency]="currency$ | async"
               [convertVal]="convertVal$ | async"
               [lang]="lang$ | async"

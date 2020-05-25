@@ -90,7 +90,7 @@ export class ProductsService {
     if (!found) {
       throw new NotFoundException(`Product with title ${titleUrl} not found`);
     } else {
-      this.addCategory(found);
+      this.addCategory(productReq);
     }
   }
 
@@ -153,7 +153,7 @@ export class ProductsService {
   private prepareCategories = (categories, lang: string): Category[] => {
     return categories.map(category => ({
       titleUrl: category.titleUrl,
-      imageUrl: category.mainImage.url,
+      mainImage: category.mainImage,
       dateAdded: category.dateAdded,
       title: category[lang] ? category[lang].title : category.titleUrl,
       description: category[lang] ? category[lang].description : '',
@@ -164,7 +164,7 @@ export class ProductsService {
   private addCategory = (product): void => {
     product.tags
       .filter((cat, i, arr) => arr.indexOf(cat) === i)
-      .map(async(category: string) => {
+      .forEach(async(category: string) => {
         const titleUrl = category.replace(/ /g, '_').toLowerCase();
         const addCategory = {
           titleUrl,

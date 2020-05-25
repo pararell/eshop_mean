@@ -1,10 +1,10 @@
 <app-carousel>
     <ng-container *ngFor="let category of categories; trackBy: trackById;">
       <div class="category_card">
-        <a class="category_card-image"
+        <a class="category_card-image" [ngClass]="category.mainImage?.type ? 'category_card-image-cover' : ''"
           [routerLink]="[ '/' + lang + '/product/category/' + category.titleUrl]"
           [attr.aria-labelledby]="category.titleUrl"
-          lazySrc [lazyBackground]="'url(' + category.imageUrl + ')'"
+          lazySrc [lazyBackground]="'url(' + category.mainImage?.url + ')'"
           lazySrcVisible="visible">
           <span class="category_card-overlay">
             <h2 class="category_card-title"> {{category?.title}} </h2>
