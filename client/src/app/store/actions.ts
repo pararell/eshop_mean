@@ -40,6 +40,8 @@ export enum EshopActions {
 
   GetAllProducts = '[Dashboard] GetAllProducts',
   GetAllProductsSuccess = '[Dashboard] GetAllProductsSuccess',
+  GetAllCategories = '[Dashboard] GetAllCategories',
+  GetAllCategoriesSuccess = '[Dashboard] GetAllCategoriesSuccess',
   GetAllTranslations = '[Dashboard] GetAllTranslations',
   GetAllTranslationsSuccess = '[Dashboard] GetAllTranslationsSuccess',
   EditTranslation = '[Dashboard] EditTranslation',
@@ -53,6 +55,10 @@ export enum EshopActions {
   AddProductSuccess = '[Dashboard] AddProductSuccess',
   EditProduct = '[Dashboard] EditProduct',
   EditProductSuccess  = '[Dashboard] EditProductSuccess',
+  RemoveCategory = '[Dashboard] RemoveCategoryCategory',
+  RemoveCategorySuccess = '[Dashboard] RemoveCategorySuccess',
+  EditCategory = '[Dashboard] EditCategory',
+  EditCategorySuccess  = '[Dashboard] EditCategorySuccess',
   RemoveProduct = '[Dashboard] RemoveProduct',
   RemoveProductSuccess = '[Dashboard] RemoveProductSuccess',
   GetImages = '[Dashboard] GetImages',
@@ -306,6 +312,19 @@ export class GetAllProductsSuccess implements Action {
   }
 }
 
+
+export class GetAllCategories implements Action {
+  readonly type = EshopActions.GetAllCategories;
+   constructor() {
+  }
+}
+
+export class GetAllCategoriesSuccess implements Action {
+  readonly type = EshopActions.GetAllCategoriesSuccess;
+   constructor(public payload: any) {
+  }
+}
+
 export class GetAllTranslations implements Action {
   readonly type = EshopActions.GetAllTranslations;
   constructor( ) {
@@ -394,6 +413,30 @@ export class RemoveProduct implements Action {
 
 export class RemoveProductSuccess implements Action {
   readonly type = EshopActions.RemoveProductSuccess;
+  constructor(public payload: any ) {
+  }
+}
+
+export class EditCategory implements Action {
+  readonly type = EshopActions.EditCategory;
+  constructor(public payload: any ) {
+  }
+}
+
+export class EditCategorySuccess implements Action {
+readonly type = EshopActions.EditCategorySuccess;
+constructor(public payload: any ) {
+}
+}
+
+export class RemoveCategory implements Action {
+  readonly type = EshopActions.RemoveCategory;
+  constructor(public payload: any ) {
+  }
+}
+
+export class RemoveCategorySuccess implements Action {
+  readonly type = EshopActions.RemoveCategorySuccess;
   constructor(public payload: any ) {
   }
 }

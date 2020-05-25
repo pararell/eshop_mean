@@ -1,6 +1,6 @@
 
 import { EshopActions } from '../../store/actions';
-import { Product, Translations, Order } from '../../shared/models';
+import { Product, Translations, Order, Category } from '../../shared/models';
 
 
 export interface State {
@@ -9,6 +9,7 @@ export interface State {
   productImages: Array<string>;
   translations: Array<Translations>;
   allProducts: Array<Product>;
+  allCategories: Array<{category: Category, productsWithCategory: string[]}>;
 }
 
 export const initialState: State = {
@@ -16,7 +17,8 @@ export const initialState: State = {
   order: null,
   productImages: [],
   translations: [],
-  allProducts: []
+  allProducts: [],
+  allCategories: []
 };
 
 
@@ -56,6 +58,11 @@ export function dashboardReducer(state = initialState, action): State {
       return { ...state, allProducts: action.payload }
     }
 
+    case EshopActions.GetAllCategoriesSuccess: {
+      return { ...state, allCategories: action.payload }
+    }
+
+
     case EshopActions.EditTranslationSuccess: {
       return { ...state, translations: state.translations
           .map(trans => trans._id === action.payload._id ? action.payload : trans)}
@@ -72,3 +79,4 @@ export const order = (state: State) => state.order;
 export const productImages = (state: State) => state.productImages;
 export const translations = (state: State) => state.translations;
 export const allProducts = (state: State) => state.allProducts;
+export const allCategories = (state: State) => state.allCategories;

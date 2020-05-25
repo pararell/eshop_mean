@@ -74,4 +74,22 @@ export class ProductsController {
   editProduct(@Body() productReq): Promise<void> {
     return this.productService.editProduct(productReq);
   }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Get('/categories/all')
+  getAllCategories(@Headers('lang') lang: string): Promise<any> {
+    return this.productService.getAllCategories(lang);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Patch('/categories/edit')
+  editCategory(@Body() categoryReq): Promise<void> {
+    return this.productService.editCategory(categoryReq);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Delete('/categories/:name')
+  deleteCategoryByName(@Param('name') name: string): Promise<void> {
+    return this.productService.deleteCategoryByName(name);
+  }
 }

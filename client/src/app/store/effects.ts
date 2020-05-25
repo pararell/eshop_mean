@@ -151,6 +151,24 @@ export class AppEffects {
       map(res => new actions.GetAllProductsSuccess(res))
   );
 
+  @Effect() getAllCategories$: Observable<Action> = this._actions.pipe(
+    ofType(EshopActions.GetAllCategories),
+      switchMap((action: actions.GetAllCategories) => this.apiService.getAllCategories()),
+      map(res => new actions.GetAllCategoriesSuccess(res))
+  );
+
+  @Effect() editCategory$: Observable<Action> = this._actions.pipe(
+    ofType(EshopActions.EditCategory),
+      switchMap((action: actions.EditCategory) => this.apiService.editCategory(action.payload)),
+      map(res => new actions.EditCategorySuccess(res))
+  );
+
+  @Effect() removeCategory$: Observable<Action> = this._actions.pipe(
+    ofType(EshopActions.RemoveCategory),
+      switchMap((action: actions.RemoveCategory) => this.apiService.removeCategory(action.payload)),
+      map(res => new actions.RemoveCategorySuccess(res))
+  );
+
   @Effect() getImages$: Observable<Action> = this._actions.pipe(
    ofType(EshopActions.GetImages),
       switchMap((action: actions.GetImages) => this.apiService.getImages()),

@@ -83,7 +83,7 @@ export class ApiService {
     const productsUrl = this.apiUrl + '/api/products?lang=' + lang + '&page=' + page + '&sort=' + sort + categoryQuery + priceQuery;
     return this.http.get(productsUrl, this.requestOptions).pipe(map((data: any) => ({
         products : data.all
-          .map(product => 
+          .map(product =>
             ({...product,
               tags: product.tags.filter(Boolean).map((cat: string) => cat.toLowerCase())
           })),
@@ -127,6 +127,21 @@ export class ApiService {
   removeProduct(name: string) {
     const removeProduct = this.apiUrl + '/api/products/' + name;
     return this.http.delete(removeProduct, this.requestOptions);
+  }
+
+  getAllCategories() {
+    const categoriesUrl = this.apiUrl + '/api/products/categories/all';
+    return this.http.get(categoriesUrl, this.requestOptions);
+  }
+
+  editCategory(category) {
+    const eidtCategory = this.apiUrl + '/api/products/categories/edit';
+    return this.http.patch(eidtCategory, category, this.requestOptions);
+  }
+
+  removeCategory(name: string) {
+    const removeCategory = this.apiUrl + '/api/products/categories/' + name;
+    return this.http.delete(removeCategory, this.requestOptions);
   }
 
   getUserOrders() {

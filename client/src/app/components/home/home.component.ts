@@ -21,7 +21,7 @@ import { Product, Category, Pagination, Cart } from '../../shared/models';
 export class HomeComponent implements OnDestroy {
 
   products$             : Observable<Product[]>;
-  cartIds$             : Observable<{ [productID: string]: number }>;
+  cartIds$              : Observable<{ [productID: string]: number }>;
   loadingProducts$      : Observable<boolean>;
   categories$           : Observable<Category[]>;
   pagination$           : Observable<Pagination>;
@@ -60,7 +60,7 @@ export class HomeComponent implements OnDestroy {
     this.loadingProducts$ = this.store.select(fromRoot.getLoadingProducts);
     this.products$ = this.store.select(fromRoot.getProducts).pipe(filter(products => !!products));
     this.cartIds$  = this.store.select(fromRoot.getCart).pipe(
-        filter(cart => !!cart), 
+        filter(cart => !!cart),
         map((cart: Cart) => (cart.items && cart.items.length)
           ? cart.items.reduce((prev, curr) => ( {...prev, [curr.id] : curr.qty } ), {} )
           : {} ));

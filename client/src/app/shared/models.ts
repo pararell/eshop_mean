@@ -39,9 +39,13 @@ export interface Cart {
 }
 
 export interface Category {
-  title     : string;
-  titleUrl  : string;
-  imageUrl? : string;
+  titleUrl      : string;
+  title?        : string;
+  description?  : string;
+  visibility?   : boolean;
+  imageUrl?     : string;
+  mainImage?    : {url: string; name: string};
+  [lang: string]: any | { title?: string; description?: string; visibility? : boolean; };
 }
 
 export interface Pagination {

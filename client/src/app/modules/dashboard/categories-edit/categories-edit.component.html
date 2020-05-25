@@ -25,8 +25,8 @@
                  [matAutocomplete]="auto"
                  formControlName="titleUrl">
           <mat-autocomplete #auto="matAutocomplete">
-            <mat-option *ngFor="let category of (categories$ | async)" [value]="category.titleUrl">
-              <span>{{category.titleUrl}}</span>
+            <mat-option *ngFor="let all of (categories$ | async)" [value]="all.category.titleUrl">
+              <span>{{all.category.titleUrl}}</span>
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>
@@ -34,10 +34,16 @@
           mat-raised-button
           color="primary"
           class="edit-find-button"
-          (click)="findCategory()">
-          {{ 'Find' | translate | async }}
+          (click)="editCategory()">
+          {{ 'Edit' | translate | async }}
         </button>
       </div>
+      <mat-chip-list class="category-tags" *ngIf="categoryProductsTitlesUrl.length">
+        <mat-chip class="clickable"
+          *ngFor="let productTitleUrl of categoryProductsTitlesUrl">
+          <span>{{ productTitleUrl }}</span>
+        </mat-chip>
+      </mat-chip-list>
       <ng-container>
         <h3 class="category_edit-subtitle">Content (for chosen language/market)</h3>
         <div [formGroupName]="chooseLang">
@@ -61,6 +67,25 @@
               </textarea>
             </mat-form-field>
           </div>
+          <div class="category_edit-full-input">
+            <div class="category_edit-field-small">
+              <div class="check-title">{{ 'Visibility' | translate | async }}</div>
+              <mat-radio-group aria-label="Visibility" formControlName="visibility">
+                <mat-radio-button
+                  name="visibility"
+                  [value]="true"
+                  id="visible">
+                  {{ 'Visible' | translate | async }}
+                </mat-radio-button>
+                <mat-radio-button
+                  name="visibility"
+                  [value]="false"
+                  id="hidden">
+                  {{ 'Hidden' | translate | async }}
+                </mat-radio-button>
+              </mat-radio-group>
+            </div>
+          </div>
         </div>
         <div class="category_edit-full-input">
           <mat-form-field class="category_edit-field">
@@ -71,6 +96,7 @@
               name="mainImage">
           </mat-form-field>
         </div>
+
         <button
           mat-raised-button
           color="primary"
@@ -79,20 +105,25 @@
           {{ 'Save' | translate | async }}
         </button>
       </ng-container>
-  
+
       <button
         mat-raised-button
         color="primary"
-        (click)="onSubmit()"
+        (click)="onRemove()"
         [disabled]="!categoryEditForm.valid">
         {{ 'Remove' | translate | async }}
       </button>
-  
+
     </form>
   </ng-container>
-  
-  <div class="category_edit-after-send"
-    *ngIf="sendRequest">
-   <span> {{ 'Request_sended' | translate | async }}</span>
+
+  <div class="category_edit-after-send" *ngIf="sendRequest">
+    <span> {{ 'Request_sended' | translate | async }}</span>
+    <button
+      class="product_edit-btn-action"
+      mat-raised-button
+      color="primary"
+      (click)="sendRequest = !sendRequest">
+      {{ 'Again' | translate | async }}
+    </button>
   </div>
-  

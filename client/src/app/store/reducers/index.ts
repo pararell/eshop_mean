@@ -50,7 +50,7 @@ export const getOrders = createSelector(Dashboard, fromDashboard.orders);
 export const getProductImages = createSelector(Dashboard, fromDashboard.productImages);
 export const getAllTranslations = createSelector(Dashboard, fromDashboard.translations);
 export const getAllProducts = createSelector(Dashboard, fromDashboard.allProducts);
-
+export const getAllCategories = createSelector(Dashboard, fromDashboard.allCategories);
 
 export const getPages = createSelector(Eshop, fromEshop.pages);
 export const getEshopLoading = createSelector(Eshop, fromEshop.loading);

@@ -64,7 +64,6 @@ export class ProductsService {
       : found;
   }
 
-
   async addProduct(productReq, user: User): Promise<void> {
     const found = await this.productModel.findOne({ titleUrl: productReq.titleUrl });
     if (found) {
@@ -84,7 +83,6 @@ export class ProductsService {
     }
   }
 
-
   async editProduct(productReq): Promise<void> {
     const {titleUrl} = productReq;
     const found = await this.productModel.findOneAndUpdate({ titleUrl }, productReq, {upsert: true});
@@ -96,7 +94,6 @@ export class ProductsService {
     }
   }
 
-
   async deleteProductByName(titleUrl: string): Promise<void> {
       const found = await this.productModel.findOneAndRemove({ titleUrl });
 
@@ -105,11 +102,37 @@ export class ProductsService {
       }
   }
 
-
   async getAllProducts(lang: string): Promise<Product[]> {
     const products = await this.productModel.find({});
     return products.map(product => prepareProduct(product, lang));
   }
+
+  async getAllCategories(lang: string) {
+    const categories = await this.categoryModel.find({});
+    const products = await this.productModel.find({});
+    return this.prepareAllCategories(categories, products);
+  }
+
+  async editCategory(categoryReq): Promise<void> {
+    const {titleUrl} = categoryReq;
+    const found = await this.categoryModel.findOneAndUpdate({ titleUrl }, categoryReq, {upsert: true});
+
+    if (!found) {
+      throw new NotFoundException(`Category with title ${titleUrl} not found`);
+    }
+  }
+
+  async deleteCategoryByName(titleUrl: string): Promise<void> {
+    const found = await this.categoryModel.findOneAndRemove({ titleUrl });
+
+    if (!found) {
+      throw new NotFoundException(`Category with title ${titleUrl} not found`);
+    } else {
+      const products = await this.productModel.find({});
+      this.removeCategoryFromProducts(titleUrl, products);
+    }
+}
+
 
 
   private prepareSort = (sortParams, lang: string): string => {
@@ -140,7 +163,7 @@ export class ProductsService {
 
   private addCategory = (product): void => {
     languages
-      .reduce((prev, lang) => prev.concat(product[lang].tags) ,[])
+      .reduce((prev, lang) => prev.concat(product[lang].tags), [])
       .filter((cat, i, arr) => arr.indexOf(cat) === i)
       .map(async(category: string) => {
         const titleUrl = category.replace(/ /g, '_').toLowerCase();
@@ -148,20 +171,44 @@ export class ProductsService {
           titleUrl,
           mainImage: { url: product.mainImage.url, name: product.mainImage.name },
           dateAdded : Date.now(),
-          ...languages.reduce((prev, lang) => ({...prev, 
+          ...languages.reduce((prev, lang) => ({...prev,
             [lang]: {
               title: category,
               description: '',
               visibility: product[lang].tags.includes(category)
-            }})
-          ,{})
-        }
+            }}), {})
+          }
         const found = await this.categoryModel.findOne({ titleUrl });
         if (!found) {
-          const category = await new this.categoryModel(addCategory);
-          category.save();
+          const newCategory = await new this.categoryModel(addCategory);
+          newCategory.save();
         }
       })
+  }
+
+  private prepareAllCategories = (categories, products) => {
+    return categories.map(category => {
+      const productsWithCategory = products.filter(product => {
+        return !!languages.find(lang => product[lang].tags.includes(category.titleUrl));
+      }).map(product => product.titleUrl);
+      return {category, productsWithCategory};
+    });
+  }
+
+  private removeCategoryFromProducts = (category: string, products) => {
+    products.forEach(async(product) => {
+      const productHasCategory = languages.find(lang => product[lang].tags.includes(category));
+      if (!productHasCategory) {
+        return;
+      }
+      const productReq = {
+        ...product.toObject(),
+        ...languages.reduce((prev, lang) => ({...prev,
+            [lang] : {...product[lang], tags: product[lang].tags.filter(tag => tag !== category)
+            } }) , {})
+      }
+      const found = await this.productModel.findOneAndUpdate({ titleUrl: product.titleUrl }, productReq, {upsert: true});
+    })
   }
 
 }
