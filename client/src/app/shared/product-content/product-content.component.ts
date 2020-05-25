@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 
-import { Product } from '../models';
+import { Product, Category } from '../models';
 
 @Component({
   selector: 'app-product-content',
@@ -9,12 +9,18 @@ import { Product } from '../models';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductContentComponent {
+  categoriesToShow = {};
   @Input()  product    : Product;
+  @Input()
+  set categories(categories: Category[]) {
+    this.categoriesToShow = categories.reduce((prev, cat) => ({...prev, [cat.titleUrl]: cat.title }), {});
+  }
   @Input()  cartIds     : {[productId: string]: number};
   @Input()  convertVal  : number;
   @Input()  currency    : string;
   @Input()  lang        : string;
   @Input()  withLink      = false;
+
   @Output() addProduct     = new EventEmitter<string>();
   @Output() removeProduct  = new EventEmitter<string>();
 

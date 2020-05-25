@@ -90,38 +90,6 @@
           </mat-form-field>
         </div>
         <div class="product_edit-full-input">
-          <mat-form-field class="product_edit-field-small">
-            <mat-label>Tags (it will create Category)</mat-label>
-            <input
-              matInput
-              [(ngModel)]="tag" 
-              [ngModelOptions]="{standalone: true}"
-              name="tag"
-              [matAutocomplete]="autoTags">
-              <mat-autocomplete #autoTags="matAutocomplete">
-                <mat-option *ngFor="let category of (categories$ | async)" [value]="category.titleUrl">
-                  <span>{{category.titleUrl}}</span>
-                </mat-option>
-              </mat-autocomplete>
-          </mat-form-field>
-          <button
-            mat-raised-button
-            color="primary"
-            class="edit-find-button"
-            (click)="addTag(chooseLang)">
-            Add Tag
-          </button>
-        </div>
-        <mat-chip-list class="product-tags" *ngIf="(productEditForm.get(chooseLang).get('tags').value) as allTags">
-          <ng-container *ngIf="allTags && allTags.length">
-            <mat-chip class="clickable"
-            *ngFor="let tag of allTags"
-            (click)="removeTag(chooseLang, tag)">
-            <span *ngIf="tag">{{ tag }} x</span>
-          </mat-chip>
-          </ng-container>
-        </mat-chip-list>
-        <div class="product_edit-full-input">
           <div class="product_edit-field-small">
             <div class="check-title">{{ 'Visibility' | translate | async }}</div>
             <mat-radio-group aria-label="Visibility" formControlName="visibility">
@@ -200,6 +168,38 @@
           </div>
         </div>
       </div>
+      <div class="product_edit-full-input">
+        <mat-form-field class="product_edit-field-small">
+          <mat-label>Tags (for all languages/markets, it will create Category - manage in Categories)</mat-label>
+          <input
+            matInput
+            [(ngModel)]="tag"
+            [ngModelOptions]="{standalone: true}"
+            name="tag"
+            [matAutocomplete]="autoTags">
+            <mat-autocomplete #autoTags="matAutocomplete">
+              <mat-option *ngFor="let category of (categories$ | async)" [value]="category.titleUrl">
+                <span>{{category.titleUrl}}</span>
+              </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+        <button
+          mat-raised-button
+          color="primary"
+          class="edit-find-button"
+          (click)="addTag()">
+          Add Tag
+        </button>
+      </div>
+      <mat-chip-list class="product-tags" *ngIf="(productEditForm.get('tags').value) as allTags">
+        <ng-container *ngIf="allTags && allTags.length">
+          <mat-chip class="clickable"
+          *ngFor="let tag of allTags"
+          (click)="removeTag(tag)">
+          <span *ngIf="tag">{{ tag }} x</span>
+        </mat-chip>
+        </ng-container>
+      </mat-chip-list>
       <h3 class="product_edit-subtitle">Images (for all languages/markets)</h3>
       <div class="product_edit-full-input">
         <mat-form-field class="product_edit-field">

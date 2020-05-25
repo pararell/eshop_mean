@@ -18,6 +18,7 @@
         <ng-container *ngIf="product.visibility && product.salePrice">
           <app-product-content
             [product]="product"
+            [categories]="categories$ | async"
             [cartIds]="items?.cartIds"
             [currency]="currency$ | async"
             [convertVal]="convertVal$ | async"

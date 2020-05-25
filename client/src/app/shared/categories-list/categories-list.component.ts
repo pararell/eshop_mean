@@ -14,7 +14,7 @@ export class CategoriesListComponent {
 
   constructor() {}
 
-  trackById(index: number) {
-    return index;
+  trackById(_index: number, item: Category) {
+    return item.titleUrl;
   }
 }

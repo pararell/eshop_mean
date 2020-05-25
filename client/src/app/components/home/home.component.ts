@@ -1,4 +1,4 @@
-import { map, distinctUntilChanged, filter, take } from 'rxjs/operators';
+import { map, distinctUntilChanged, filter, take, skip } from 'rxjs/operators';
 import { Component, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
 import { Observable, combineLatest, Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -65,9 +65,6 @@ export class HomeComponent implements OnDestroy {
           ? cart.items.reduce((prev, curr) => ( {...prev, [curr.id] : curr.qty } ), {} )
           : {} ));
 
-    this._loadCategories();
-    this._loadProducts();
-
     this.title.setTitle('Products');
     this.meta.updateTag({ name: 'description', content: 'Products description' });
 
@@ -75,6 +72,9 @@ export class HomeComponent implements OnDestroy {
     this.pagination$  = this.store.select(fromRoot.getPagination);
     this.convertVal$  = this.store.select(fromRoot.getConvertVal);
     this.currency$    = this.store.select(fromRoot.getCurrency);
+
+    this._loadCategories();
+    this._loadProducts();
   }
 
   addToCart(id: string): void {
@@ -94,7 +94,7 @@ export class HomeComponent implements OnDestroy {
   }
 
   changeCategory(): void {
-      this.store.dispatch(new actions.UpdatePosition({productsComponent: 0}));
+    this.store.dispatch(new actions.UpdatePosition({productsComponent: 0}));
   }
 
   changePage(page: number): void {
@@ -135,8 +135,21 @@ export class HomeComponent implements OnDestroy {
   }
 
   private _loadCategories(): void {
-    this.categoriesSub = this.lang$.pipe(distinctUntilChanged())
-      .subscribe((lang) => {  console.log(lang); this.store.dispatch(new actions.GetCategories(lang))  });
+    combineLatest(
+      this.categories$.pipe(take(1)),
+      this.lang$.pipe(take(1)),
+      (categories, lang) => ({ categories, lang })
+      ).pipe(take(1))
+      .subscribe(({categories, lang}) => {
+        if (!categories.length) {
+          this.store.dispatch(new actions.GetCategories(lang));
+        }
+      })
+
+    this.categoriesSub = this.lang$.pipe(distinctUntilChanged(), skip(1))
+      .subscribe((lang: string) => {
+        this.store.dispatch(new actions.GetCategories(lang));
+      });
   }
 
   private _loadProducts(): void {

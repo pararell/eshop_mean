@@ -1,4 +1,4 @@
-import { filter, map, take } from 'rxjs/operators';
+import { filter, map, take, distinctUntilChanged, skip } from 'rxjs/operators';
 import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, combineLatest, Subscription } from 'rxjs';
@@ -9,7 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 
 import * as actions from '../../../store/actions';
 import * as fromRoot from '../../../store/reducers';
-import { Cart, Product } from '../../../shared/models';
+import { Cart, Product, Category } from '../../../shared/models';
 import { ImagesDialogComponent } from '../../../shared/images-dialog/images-dialog.component';
 import { TranslateService } from '../../../services/translate.service';
 
@@ -22,11 +22,13 @@ import { TranslateService } from '../../../services/translate.service';
 export class ProductComponent implements OnDestroy {
 
   items$          : Observable<{ product: Product; cartIds: {[productId: string]: number} }>;
+  categories$     : Observable<Category[]>;
   productLoading$ : Observable<boolean>;
   convertVal$     : Observable<number>;
   currency$       : Observable<string>;
   lang$           : Observable<string>;
   routeSub        : Subscription;
+  categoriesSub   : Subscription;
 
   constructor(
     private route   : ActivatedRoute,
@@ -38,11 +40,31 @@ export class ProductComponent implements OnDestroy {
     private translate : TranslateService) {
 
     this.lang$ = this.translate.getLang$();
+    this.categories$ = this.store.select(fromRoot.getCategories);
 
     this.routeSub = combineLatest(
-        this.lang$,
-        this.route.params.pipe(map(params => params['id'])), (lang, id) => ({ lang, id }))
-      .subscribe(({ lang, id }) => this.store.dispatch(new actions.GetProduct(id + '?lang=' + lang)));
+      this.lang$,
+      this.route.params.pipe(map(params => params['id'])),
+      (lang, id) => ({ lang, id }))
+      .subscribe(({ lang, id }) => {
+        this.store.dispatch(new actions.GetProduct(id + '?lang=' + lang));
+      });
+
+      combineLatest(
+        this.categories$.pipe(take(1)),
+        this.lang$.pipe(take(1)),
+        (categories, lang) => ({ categories, lang })
+      ).pipe(take(1))
+      .subscribe(({categories, lang}) => {
+        if (!categories.length) {
+          this.store.dispatch(new actions.GetCategories(lang));
+        }
+      })
+
+    this.categoriesSub = this.lang$.pipe(distinctUntilChanged(), skip(1))
+      .subscribe((lang: string) => {
+        this.store.dispatch(new actions.GetCategories(lang));
+      });
 
     this.setMetaData();
     this.productLoading$ = this.store.select(fromRoot.getProductLoading);
@@ -92,6 +114,7 @@ export class ProductComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.routeSub.unsubscribe();
+    this.categoriesSub.unsubscribe();
   }
 
   private setMetaData(): void {

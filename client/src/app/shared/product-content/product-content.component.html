@@ -25,7 +25,11 @@
         </button>
       </div>
       <mat-chip-list class="product-tags">
-        <mat-chip *ngFor="let tag of product?.tags">{{ tag }}</mat-chip>
+        <mat-chip class="clickable"
+          *ngFor="let tag of product.tags"
+          [routerLink]="[ '/' + lang + '/product/category/' + tag]">
+          {{ categoriesToShow[tag] || tag }}
+        </mat-chip>
       </mat-chip-list>
       <a class="product-more" *ngIf="withLink" [routerLink]="[ '/' + lang + '/product/' + product.titleUrl]">
         {{ "More" | translate | async }}

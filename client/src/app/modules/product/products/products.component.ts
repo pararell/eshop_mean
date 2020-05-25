@@ -1,4 +1,4 @@
-import { map, distinctUntilChanged, filter, take } from 'rxjs/operators';
+import { map, distinctUntilChanged, filter, switchMap, take, skip } from 'rxjs/operators';
 import { Component, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
 import { Observable, combineLatest, Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -21,24 +21,25 @@ import { Product, Category, Pagination, Cart } from '../../../shared/models';
 })
 export class ProductsComponent implements OnDestroy {
 
-  products$             : Observable<Product[]>;
+  products$            : Observable<Product[]>;
   cartIds$             : Observable<{ [productID: string]: number }>;
-  loadingProducts$      : Observable<boolean>;
-  categories$           : Observable<Category[]>;
-  pagination$           : Observable<Pagination>;
-  category$             : Observable<string>;
-  filterPrice$          : Observable<number>;
-  maxPrice$             : Observable<number>;
-  minPrice$             : Observable<number>;
-  page$                 : Observable<number>;
-  sortBy$               : Observable<string>;
-  convertVal$           : Observable<number>;
-  currency$             : Observable<string>;
-  lang$                 : Observable<string>;
-  categoriesSub         : Subscription;
-  productsSub           : Subscription;
-  sortOptions           = sortOptions;
-  sidebarOpened         = false;
+  loadingProducts$     : Observable<boolean>;
+  categories$          : Observable<Category[]>;
+  pagination$          : Observable<Pagination>;
+  category$            : Observable<string>;
+  categoryTitle$       : Observable<string>;
+  filterPrice$         : Observable<number>;
+  maxPrice$            : Observable<number>;
+  minPrice$            : Observable<number>;
+  page$                : Observable<number>;
+  sortBy$              : Observable<string>;
+  convertVal$          : Observable<number>;
+  currency$            : Observable<string>;
+  lang$                : Observable<string>;
+  categoriesSub        : Subscription;
+  productsSub          : Subscription;
+  sortOptions          = sortOptions;
+  sidebarOpened        = false;
 
   readonly component = 'productsComponent';
 
@@ -61,13 +62,10 @@ export class ProductsComponent implements OnDestroy {
     this.loadingProducts$ = this.store.select(fromRoot.getLoadingProducts);
     this.products$ = this.store.select(fromRoot.getProducts).pipe(filter(products => !!products));
     this.cartIds$  = this.store.select(fromRoot.getCart).pipe(
-        filter(cart => !!cart), 
-        map((cart: Cart) => (cart.items && cart.items.length)
-          ? cart.items.reduce((prev, curr) => ( {...prev, [curr.id] : curr.qty } ), {} )
-          : {} ));
-
-    this._loadCategories();
-    this._loadProducts();
+      filter(cart => !!cart),
+      map((cart: Cart) => (cart.items && cart.items.length)
+        ? cart.items.reduce((prev, curr) => ( {...prev, [curr.id] : curr.qty } ), {} )
+        : {} ));
 
     this.title.setTitle('Products');
     this.meta.updateTag({ name: 'description', content: 'Products description' });
@@ -76,6 +74,14 @@ export class ProductsComponent implements OnDestroy {
     this.pagination$  = this.store.select(fromRoot.getPagination);
     this.convertVal$  = this.store.select(fromRoot.getConvertVal);
     this.currency$    = this.store.select(fromRoot.getCurrency);
+    this.categoryTitle$ = this.category$.pipe(
+      switchMap(category => this.categories$.pipe(map(categories => {
+        const foundCategory = categories.find(cat => cat.titleUrl === category);
+        return foundCategory ? foundCategory.title : category;
+      })))
+    )
+    this._loadCategories();
+    this._loadProducts();
   }
 
   addToCart(id: string): void {
@@ -136,8 +142,21 @@ export class ProductsComponent implements OnDestroy {
   }
 
   private _loadCategories(): void {
-    this.categoriesSub = this.lang$.pipe(distinctUntilChanged())
-      .subscribe((lang) => {  console.log(lang); this.store.dispatch(new actions.GetCategories(lang))  });
+    combineLatest(
+      this.categories$.pipe(take(1)),
+      this.lang$.pipe(take(1)),
+      (categories, lang) => ({ categories, lang })
+      ).pipe(take(1))
+      .subscribe(({categories, lang}) => {
+        if (!categories.length) {
+          this.store.dispatch(new actions.GetCategories(lang));
+        }
+      })
+
+    this.categoriesSub = this.lang$.pipe(distinctUntilChanged(), skip(1))
+      .subscribe((lang: string) => {
+        this.store.dispatch(new actions.GetCategories(lang));
+      });
   }
 
   private _loadProducts(): void {

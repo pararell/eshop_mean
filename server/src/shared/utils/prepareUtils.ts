@@ -6,6 +6,7 @@ export const prepareProduct = (product, lang: string): Product => ({
   titleUrl: product.titleUrl,
   mainImage: product.mainImage,
   images: product.images,
+  tags: product.tags,
   _user: product._user,
   dateAdded: product.dateAdded,
   ...product[lang],

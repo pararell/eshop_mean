@@ -74,6 +74,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
         const newForm = {
           titleUrl  : product.titleUrl,
           mainImage : (product.mainImage && product.mainImage.url) ? product.mainImage.url : '',
+          tags      : product.tags,
           images    : product.images,
           imageUrl  : '',
           ...this.prepareLangEditForm(product)
@@ -128,6 +129,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
     this.productEditForm = this.fb.group({
       titleUrl  : ['', Validators.required],
       mainImage : '',
+      tags      : [[]],
       images    : [],
       imageUrl  : '',
       ...this._createLangForm(this.languageOptions)
@@ -206,18 +208,18 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
 
   }
 
-  addTag(lang: string): void {
+  addTag(): void {
     if (this.tag) {
-      const formTags = this.productEditForm.get(lang).value.tags.filter(tag => tag !== this.tag);
+      const formTags = this.productEditForm.value.tags.filter(tag => tag !== this.tag);
       const tags = [...formTags, this.tag.replace(/ /g, '_').toLowerCase()];
-      this.productEditForm.get(lang).get('tags').setValue(tags);
+      this.productEditForm.get('tags').setValue(tags);
       this.tag = '';
     }
   }
 
-  removeTag(lang: string, tagToRemove: string): void {
-    const formTags = this.productEditForm.get(lang).value.tags.filter(tag => tag !== tagToRemove);
-    this.productEditForm.get(lang).get('tags').setValue(formTags);
+  removeTag(tagToRemove: string): void {
+    const formTags = this.productEditForm.value.tags.filter(tag => tag !== tagToRemove);
+    this.productEditForm.get('tags').setValue(formTags);
   }
 
   addImageUrl(): void {
@@ -261,7 +263,6 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
           description: '',
           salePrice: '',
           regularPrice: '',
-          tags: [[]],
           descriptionFull: '',
           visibility: false,
           stock: 'onStock',
@@ -282,7 +283,6 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
             description   : productLang.description || '',
             salePrice     : productLang.salePrice || '',
             regularPrice  : productLang.regularPrice || '',
-            tags          : productLang.tags,
             descriptionFull : productLang.descriptionFull || '',
             visibility      : !!productLang.visibility,
             stock           : productLang.stock || 'onStock',

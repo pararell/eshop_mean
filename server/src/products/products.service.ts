@@ -20,7 +20,7 @@ export class ProductsService {
   async getProducts(getProductsDto: GetProductsDto, lang: string): Promise<ProductsWithPagination> {
     const { page, sort, category, search, maxPrice } = getProductsDto;
     const searchQuery = search      ? { titleUrl:  new RegExp(search, 'i') }                : {};
-    const categoryQuery = category  ? { [`${lang}.tags`] : new RegExp(category, 'i' ) } : {};
+    const categoryQuery = category  ? { [`tags`] : new RegExp(category, 'i' ) } : {};
     const maxPriceQuery = maxPrice  ? { [`${lang}.salePrice`] : { $lte: maxPrice } } : {};
 
     const query = {...searchQuery, ...categoryQuery, ...maxPriceQuery, ...{ [`${lang}.visibility`] : true}}
@@ -162,8 +162,7 @@ export class ProductsService {
   };
 
   private addCategory = (product): void => {
-    languages
-      .reduce((prev, lang) => prev.concat(product[lang].tags), [])
+    product.tags
       .filter((cat, i, arr) => arr.indexOf(cat) === i)
       .map(async(category: string) => {
         const titleUrl = category.replace(/ /g, '_').toLowerCase();
@@ -175,7 +174,7 @@ export class ProductsService {
             [lang]: {
               title: category,
               description: '',
-              visibility: product[lang].tags.includes(category)
+              visibility: product.tags.includes(category)
             }}), {})
           }
         const found = await this.categoryModel.findOne({ titleUrl });
@@ -189,7 +188,7 @@ export class ProductsService {
   private prepareAllCategories = (categories, products) => {
     return categories.map(category => {
       const productsWithCategory = products.filter(product => {
-        return !!languages.find(lang => product[lang].tags.includes(category.titleUrl));
+        return !!product.tags.includes(category.titleUrl);
       }).map(product => product.titleUrl);
       return {category, productsWithCategory};
     });
@@ -197,15 +196,13 @@ export class ProductsService {
 
   private removeCategoryFromProducts = (category: string, products) => {
     products.forEach(async(product) => {
-      const productHasCategory = languages.find(lang => product[lang].tags.includes(category));
+      const productHasCategory = product.tags.includes(category);
       if (!productHasCategory) {
         return;
       }
       const productReq = {
         ...product.toObject(),
-        ...languages.reduce((prev, lang) => ({...prev,
-            [lang] : {...product[lang], tags: product[lang].tags.filter(tag => tag !== category)
-            } }) , {})
+        tags: product.tags.filter(tag => tag !== category)
       }
       const found = await this.productModel.findOneAndUpdate({ titleUrl: product.titleUrl }, productReq, {upsert: true});
     })

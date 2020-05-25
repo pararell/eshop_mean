@@ -1,21 +1,21 @@
 <mat-drawer-container class="products-sidebar-container" autosize hasBackdrop >
   <mat-drawer #sideBar [(opened)]="sidebarOpened"  class="products-sidebar" mode="over">
-      <app-sidebar
-        [class.disabled]="loadingProducts$ | async"
-        [categories]="categories$ | async"
-        [price]="filterPrice$ | async"
-        [maxPrice]="maxPrice$ | async"
-        [minPrice]="minPrice$ | async"
-        [activeCategory]="category$ | async"
-        [sortOptions]="sortOptions"
-        [convertVal]="convertVal$ | async"
-        [currency]="currency$ | async"
-        [lang]="lang$ | async"
-        [choosenSort]="sortBy$ | async"
-        (changePrice)="priceRange($event)"
-        (changeSort)="changeSort($event)"
-        (changeCategory)="changeCategory()">
-      </app-sidebar>
+    <app-sidebar
+      [class.disabled]="loadingProducts$ | async"
+      [categories]="categories$ | async"
+      [price]="filterPrice$ | async"
+      [maxPrice]="maxPrice$ | async"
+      [minPrice]="minPrice$ | async"
+      [activeCategory]="category$ | async"
+      [sortOptions]="sortOptions"
+      [convertVal]="convertVal$ | async"
+      [currency]="currency$ | async"
+      [lang]="lang$ | async"
+      [choosenSort]="sortBy$ | async"
+      (changePrice)="priceRange($event)"
+      (changeSort)="changeSort($event)"
+      (changeCategory)="changeCategory()">
+    </app-sidebar>
   </mat-drawer>
   <mat-drawer-content>
   <div class="main">
@@ -25,8 +25,8 @@
           <i class="material-icons md-16">filter_list</i>
           <span>{{ 'Filter' | translate | async }}</span>
         </div>
-        <h1 class="products-title" *ngIf="!(category$ | async)">{{'Products' | translate | async}}</h1>
-        <h1 class="products-title" *ngIf="(category$ | async) as category">{{category}}</h1>
+        <h1 class="products-title" *ngIf="!(categoryTitle$ | async)">{{'Products' | translate | async}}</h1>
+        <h1 class="products-title" *ngIf="(categoryTitle$ | async) as categoryTitle">{{categoryTitle}}</h1>
       </div>
     </div>
     <div class="container products-content">
@@ -62,7 +62,6 @@
             (addProduct)="addToCart($event)"
             (removeProduct)="removeFromCart($event)">
           </app-products-list>
-
           <app-pagination
             [class.disabled]="loadingProducts$ | async"
             *ngIf="(pagination$ | async) as pagination"
