@@ -30,6 +30,8 @@ export interface Product {
 export interface Cart {
   totalQty    : number;
   totalPrice  : number;
+  shippingCost?: number;
+  shippingType?: string;
   items       : {
     id? : string;
     item: Product

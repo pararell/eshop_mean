@@ -71,6 +71,10 @@
       cursor: pointer;
     }
 
+    &-item-part {
+      min-width: 10%;
+    }
+
     &-item-last-down {
       width: 24px;
     }

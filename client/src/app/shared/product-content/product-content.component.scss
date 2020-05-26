@@ -85,7 +85,8 @@
       min-height: 300px;
 
       @media screen and (max-width: 600px) {
-        min-height: 100px;
+        min-height: 180px;
+        width: 100%;
       }
     }
   }

@@ -267,7 +267,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
           visibility: false,
           stock: 'onStock',
           onSale: false,
-          shiping: 'basic'
+          shipping: 'basic'
         })
       })
       ).reduce((prev, curr) => ({ ...prev, ...curr }), {});
@@ -287,7 +287,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
             visibility      : !!productLang.visibility,
             stock           : productLang.stock || 'onStock',
             onSale          : !!productLang.onSale,
-            shiping         : productLang.shiping || 'basic'
+            shipping         : productLang.shipping || 'basic'
           }
         }}
       ).reduce((prev, curr) => ({ ...prev, ...curr }), {});

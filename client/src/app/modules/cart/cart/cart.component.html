@@ -16,8 +16,8 @@
               </a>
               <div class="cart-title">{{ cartItem?.item.title }}</div>
             </div>
-            <div>{{ cartItem.qty }} ks</div>
-            <div>
+            <div class="cart-item-part">{{ cartItem.qty }} ks</div>
+            <div class="cart-item-part">
               {{ cartItem.price * ((convertVal$ | async) || 1) | priceFormat }}
               {{ currency$ | async }}
             </div>
@@ -25,12 +25,24 @@
               (click)="removeFromCart(cartItem?.item?._id)"><i class="material-icons cart-icon">remove</i>
             </div>
           </li>
+          <li class="cart-items" *ngIf="cart.shippingType">
+            <div class="cart-image-wrap">{{ 'Shipping' | translate | async }}
+              ({{ cart.shippingType | translate | async }})
+            </div>
+            <div class="cart-item-part">&nbsp;
+            </div>
+            <div class="cart-item-part">
+                {{ cart.shippingCost * ((convertVal$ | async) || 1) | priceFormat }}
+                {{ currency$ | async }}
+            </div>
+            <div class="cart-item-last-down"></div>
+          </li>
           <li class="cart-items cart-items-last">
             <div class="cart-image-wrap"><b>{{ 'Summary' | translate | async }}</b>
             </div>
-            <div><b>{{ cart?.totalQty }} ks</b>
+            <div class="cart-item-part"><b>{{ cart?.totalQty }} ks</b>
             </div>
-            <div><b>
+            <div class="cart-item-part"><b>
                 {{ cart?.totalPrice * ((convertVal$ | async) || 1) | priceFormat }}
                 {{ currency$ | async }}
               </b>

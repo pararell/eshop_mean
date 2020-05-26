@@ -17,48 +17,23 @@ body {
   width: 100%;
 }
 
-a {
-  text-decoration: none;
-  color: #fff;
-  background-color: transparent;
-}
-
-a:hover {
-  text-decoration: none;
-}
-
-.material-icons.md-16 {
-  font-size: 16px;
-}
-
-.material-icons.md-18 {
-  font-size: 18px;
-}
-
-.material-icons.md-24 {
-  font-size: 24px;
-}
-
-.material-icons.md-36 {
-  font-size: 36px;
-}
-
-.material-icons.md-48 {
-  font-size: 48px;
-}
-
 .main {
   flex: 1 0 auto;
 
   @include add-main-background(#fff, $background-color, 45deg, 1px, 80px);
 }
 
-.container {
+.container, .container-mid {
   padding: 15px;
 
   @media screen and (max-width: 600px) {
     padding: 5px !important;
   }
+}
+
+.container-mid {
+  max-width: 1000px;
+  margin: auto;
 }
 
 .sidebar-layout {
@@ -92,6 +67,16 @@ a:hover {
   }
 }
 
+a {
+  text-decoration: none;
+  color: #fff;
+  background-color: transparent;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
 .clickable {
   cursor: pointer !important;
 }
@@ -100,4 +85,24 @@ a:hover {
   opacity: 0.5;
   cursor: not-allowed !important;
   pointer-events: none !important;
+}
+
+.material-icons.md-16 {
+  font-size: 16px;
+}
+
+.material-icons.md-18 {
+  font-size: 18px;
+}
+
+.material-icons.md-24 {
+  font-size: 24px;
+}
+
+.material-icons.md-36 {
+  font-size: 36px;
+}
+
+.material-icons.md-48 {
+  font-size: 48px;
 }
