@@ -43,24 +43,6 @@
             </div>
           </ng-template>
         </mat-tab>
-        <mat-tab label="Remove product">
-          <ng-template matTabContent>
-            <div class="dashboard-tab-content">
-              <app-products-edit
-                [titles]="allProductsTitles$ | async"
-                [action]="'remove'">
-              </app-products-edit>
-            </div>
-          </ng-template>
-        </mat-tab>
-        <mat-tab label="Translations">
-          <ng-template matTabContent>
-            <div class="dashboard-tab-content">
-              <app-translations-edit>
-              </app-translations-edit>
-            </div>
-          </ng-template>
-        </mat-tab>
         <mat-tab label="Categories">
           <ng-template matTabContent>
             <div class="dashboard-tab-content">
@@ -74,6 +56,14 @@
             <div class="dashboard-tab-content">
               <app-pages-edit>
               </app-pages-edit>
+            </div>
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="Translations">
+          <ng-template matTabContent>
+            <div class="dashboard-tab-content">
+              <app-translations-edit>
+              </app-translations-edit>
             </div>
           </ng-template>
         </mat-tab>

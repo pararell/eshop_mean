@@ -23,6 +23,7 @@ export class PagesEditComponent {
   choosenLanguageSub$ = new BehaviorSubject(languages[0]);
   newPage = '';
   chosenPage = '';
+  sendRequest = false;
 
   constructor(private store: Store<fromRoot.State>, private fb: FormBuilder) {
 
@@ -74,10 +75,12 @@ export class PagesEditComponent {
   savePage(): void {
     const request = this.pagesEditForm.value;
     this.store.dispatch(new actions.AddOrEditPage(request));
+    this.sendRequest = true;
   }
 
   removePage(): void {
     this.store.dispatch(new actions.RemovePage(this.chosenPage));
+    this.sendRequest = true;
   }
 
   private createLangForm(languageOptions: Array<string>) {

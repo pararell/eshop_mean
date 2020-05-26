@@ -5,11 +5,16 @@
 
   @media screen and (max-width: 600px) {
     /deep/ .mat-radio-button ~ .mat-radio-button {
-      margin-left: 0;
+      margin-left: 4px;
     }
   }
 
   .product_edit {
+    &-title-wrapp {
+      display: flex;
+      justify-content: space-between;
+    }
+
     &-form {
       width: 100%;
     }
@@ -33,7 +38,7 @@
 
     &-subtitle {
       font-weight: 500;
-      margin: 40px 5px 20px 5px;
+      margin: 20px 5px;
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
 
@@ -54,16 +59,10 @@
     &-btn-action {
       margin: 0 10px;
     }
-  }
 
-  .full-check {
-    margin-bottom: 5px;
-    margin-top: 20px;
-    display: flex;
-    border-bottom: 1px solid #ccc;
-    flex-flow: column;
-    padding: 10px 20px;
-    justify-content: space-between;
+    &-btn-remove {
+      margin: 0 100px;
+    }
   }
 
   .check-title {
@@ -90,10 +89,5 @@
 
   .remove-image {
     cursor: pointer;
-  }
-
-  .products-title-wrapp {
-    display: flex;
-    justify-content: space-between;
   }
 }

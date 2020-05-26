@@ -196,16 +196,16 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
         };
 
         this.store.dispatch(new actions.EditProduct(productPrepare));
-
-        break;
-
-      case 'remove':
-        this.store.dispatch(new actions.RemoveProduct(this.productEditForm.get('titleUrl').value));
         break;
     }
 
     this.sendRequest = true;
 
+  }
+
+  onRemoveSubmit(): void {
+    this.store.dispatch(new actions.RemoveProduct(this.productEditForm.get('titleUrl').value));
+    this.sendRequest = true;
   }
 
   addTag(): void {
