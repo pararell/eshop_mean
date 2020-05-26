@@ -1,10 +1,11 @@
 import { Component, Inject, PLATFORM_ID } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { map, take, filter } from 'rxjs/operators';
-import * as actions from '../../../store/actions';
-import { Store } from '@ngrx/store';
-import * as fromRoot from '../../../store/reducers';
 import { isPlatformBrowser } from '@angular/common';
+import { map, take, filter } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+
+import * as actions from '../../../store/actions';
+import * as fromRoot from '../../../store/reducers';
 import { accessTokenKey } from '../../../shared/constants';
 
 @Component({
@@ -13,23 +14,23 @@ import { accessTokenKey } from '../../../shared/constants';
 })
 export class JwtTokenComponent  {
 
-
   constructor(
-      private _route  : ActivatedRoute,
-      private router  : Router,
+      private route  : ActivatedRoute,
+      private router : Router,
       private store: Store<fromRoot.State>,
       @Inject(PLATFORM_ID)
       private platformId : Object) {
 
-    this._route.params.pipe(
+    this.route.params.pipe(
         map(params => params['accessToken']),
         take(1),
         filter(() => isPlatformBrowser(this.platformId)))
-    .subscribe(accessToken => {
-      localStorage.setItem(accessTokenKey, accessToken);
-      this.store.dispatch(new actions.GetUser());
-      this.router.navigate(['/']);
-    })
+      .subscribe(accessToken => {
+        localStorage.setItem(accessTokenKey, accessToken);
+        this.store.dispatch(new actions.StoreUser({accessToken: accessToken}));
+        this.store.dispatch(new actions.GetUser());
+        this.router.navigate(['/']);
+      })
   }
 
 

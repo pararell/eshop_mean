@@ -35,7 +35,11 @@
         [routerLink]="['/' + (lang$ | async) + '/authorize/signup']">
         {{ 'SignUp' | translate | async }}
       </a>
+      <div *ngIf="(sendRequestSub$ | async)">
+       <span class="sign-success" *ngIf="(user$ | async)">
+         {{'SIGNIN_SUCCESS' | translate | async }}
+       </span>
+     </div>
     </div>
-
   </div>
 </div>

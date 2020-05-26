@@ -36,8 +36,12 @@ export function appReducer(state = initialState, action): State {
       return { ...state, user: action.payload, loading: false };
     }
 
+    case EshopActions.SignIn: {
+      return { ...state, loading: true};
+    }
+
     case EshopActions.SignInSuccess: {
-      return { ...state, user: action.payload };
+      return { ...state, user: action.payload, loading: false };
     }
 
     case EshopActions.ChangeLanguage: {

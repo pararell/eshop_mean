@@ -1,17 +1,16 @@
 import { WindowService } from './window.service';
-import { map, filter } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { Inject, Injectable, Optional, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { FileUploader } from 'ng2-file-upload';
-import { Observable, BehaviorSubject} from 'rxjs';
+import { Observable, BehaviorSubject, combineLatest} from 'rxjs';
 import { Store } from '@ngrx/store';
 
 import * as fromRoot from '../store/reducers';
 import { environment } from '../../environments/environment';
-import { Translations, Pagination } from '../shared/models';
-import { countryLang, accessTokenKey } from '../shared/constants';
-
+import { Translations } from '../shared/models';
+import { accessTokenKey } from '../shared/constants';
 
 
 @Injectable({
@@ -262,8 +261,14 @@ export class ApiService {
   }
 
   setHeaders() {
-    this.store.select(fromRoot.getLang)
-      .subscribe(lang => {
+    combineLatest(
+      this.store.select(fromRoot.getLang),
+      this.store.select(fromRoot.getUser),
+      (lang, user) => ({lang, user})
+      ).subscribe(({lang, user}) => {
+        if (user && user.accessToken && isPlatformBrowser(this.platformId)) {
+          localStorage.setItem(accessTokenKey, user.accessToken);
+        }
         const accessToken = isPlatformBrowser(this.platformId) ? localStorage.getItem(accessTokenKey) : '';
         let headers = new HttpHeaders();
         headers = headers.set('Authorization', 'Bearer ' + accessToken).set('lang', lang);

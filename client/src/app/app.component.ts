@@ -68,12 +68,8 @@ export class AppComponent {
         }
     });
 
-    this.store.select(fromRoot.getUser)
+    this.store.select(fromRoot.getUser).pipe(delay(100))
       .subscribe((user: User) => {
-      if (user && user.accessToken && isPlatformBrowser(this.platformId)) {
-        localStorage.setItem(accessTokenKey, user.accessToken);
-      }
-
       if (user && user.email) {
         this.store.dispatch(new actions.GetUserOrders());
       }
