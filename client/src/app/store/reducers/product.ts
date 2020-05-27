@@ -1,18 +1,13 @@
 
 import { EshopActions } from '../../store/actions';
-import { Product, Cart, Category, Order } from '../../shared/models';
+import { Product, Cart, Category, Order, Pagination } from '../../shared/models';
 
 
 export interface State {
   products: Product[];
   loadingProducts: boolean;
   categories: Array<Category>;
-  pagination: {
-    page: number;
-    pages: number;
-    limit: number;
-    total: number;
-  };
+  pagination: Pagination;
   product: Product;
   loadingProduct: boolean;
   cart: Cart;
@@ -34,7 +29,6 @@ export const initialState: State = {
   pagination: {
     page: 1,
     pages: 1,
-    limit: 10,
     total: 0
   },
   product: null,

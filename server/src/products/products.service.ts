@@ -8,7 +8,7 @@ import { GetProductDto } from './dto/get-product';
 import { Category, CategoryModel } from './models/category.model';
 import { User } from '../auth/models/user.model';
 import { prepareProduct } from '../shared/utils/prepareUtils';
-import { languages } from '../shared/constans';
+import { languages, paginationLimit } from '../shared/constans';
 
 @Injectable()
 export class ProductsService {
@@ -27,7 +27,7 @@ export class ProductsService {
     const options = {
       page: parseFloat(page),
       sort: this.prepareSort(sort, lang),
-      limit: 10,
+      limit: paginationLimit,
       lang,
       price: 'salePrice',
     };

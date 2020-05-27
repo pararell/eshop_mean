@@ -52,7 +52,7 @@ export interface Category {
 
 export interface Pagination {
   total     : number;
-  limit     : number;
+  limit?    : number;
   page      : number;
   pages     : number;
   range?    : number[]

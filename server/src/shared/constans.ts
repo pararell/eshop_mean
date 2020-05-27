@@ -21,3 +21,5 @@ export const shippingCost = {
     'cs' : {cost: 300, limit: 600},
   }
 }
+
+export const paginationLimit = 12;
