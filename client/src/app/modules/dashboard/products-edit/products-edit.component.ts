@@ -27,7 +27,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
   images$: Observable<string[]>;
   sendRequest = false;
   descriptionFullSub$: BehaviorSubject<{ [x: string]: string }>
-    = new BehaviorSubject(languages.reduce((prev, lang) => ({...prev, [lang]: ''}) , {}));
+    = new BehaviorSubject(languages.reduce((prev, lang) => ({ ...prev, [lang]: '' }), {}));
   product$: Observable<Product>;
   categories$: Observable<Category[]>;
   productSub: Subscription;
@@ -72,11 +72,11 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
       .subscribe((product) => {
 
         const newForm = {
-          titleUrl  : product.titleUrl,
-          mainImage : (product.mainImage && product.mainImage.url) ? product.mainImage.url : '',
-          tags      : product.tags,
-          images    : product.images,
-          imageUrl  : '',
+          titleUrl: product.titleUrl,
+          mainImage: (product.mainImage && product.mainImage.url) ? product.mainImage.url : '',
+          tags: product.tags,
+          images: product.images,
+          imageUrl: '',
           ...this.prepareLangEditForm(product)
         };
 
@@ -127,12 +127,12 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
 
   createForm(): void {
     this.productEditForm = this.fb.group({
-      titleUrl  : ['', Validators.required],
-      mainImage : '',
-      tags      : [[]],
-      images    : [],
-      imageUrl  : '',
-      ...this._createLangForm(this.languageOptions)
+      titleUrl: ['', Validators.required],
+      mainImage: '',
+      tags: [[]],
+      images: [],
+      imageUrl: '',
+      ...this.createLangForm(this.languageOptions)
     });
   }
 
@@ -156,10 +156,11 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
       .map(language => {
         const descriptionFull = this.productEditForm.get([language]).value.descriptionFull;
         return {
-        [language]: typeof descriptionFull === 'string'
-          ? descriptionFull
-          : descriptionFull.length ? descriptionFull[0] : ''
-      }}).reduce((prev, curr) => ({ ...prev, ...curr }), {});
+          [language]: typeof descriptionFull === 'string'
+            ? descriptionFull
+            : descriptionFull.length ? descriptionFull[0] : ''
+        }
+      }).reduce((prev, curr) => ({ ...prev, ...curr }), {});
     this.descriptionFullSub$.next(prepareDescFull);
   }
 
@@ -255,7 +256,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
     }
   }
 
-  private _createLangForm(languageOptions: Array<string>) {
+  private createLangForm(languageOptions: Array<string>) {
     return languageOptions
       .map((lang: string) => ({
         [lang]: this.fb.group({
@@ -279,17 +280,18 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
         const productLang = product[lang];
         return {
           [lang]: {
-            title         : productLang.title || '',
-            description   : productLang.description || '',
-            salePrice     : productLang.salePrice || '',
-            regularPrice  : productLang.regularPrice || '',
-            descriptionFull : productLang.descriptionFull || '',
-            visibility      : !!productLang.visibility,
-            stock           : productLang.stock || 'onStock',
-            onSale          : !!productLang.onSale,
-            shipping         : productLang.shipping || 'basic'
+            title: productLang.title || '',
+            description: productLang.description || '',
+            salePrice: productLang.salePrice || '',
+            regularPrice: productLang.regularPrice || '',
+            descriptionFull: productLang.descriptionFull || '',
+            visibility: !!productLang.visibility,
+            stock: productLang.stock || 'onStock',
+            onSale: !!productLang.onSale,
+            shipping: productLang.shipping || 'basic'
           }
-        }}
+        }
+      }
       ).reduce((prev, curr) => ({ ...prev, ...curr }), {});
 
   }

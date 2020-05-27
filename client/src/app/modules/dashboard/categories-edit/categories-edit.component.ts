@@ -1,4 +1,4 @@
-import { delay, map, take } from 'rxjs/operators';
+import { delay, map, take, startWith, switchMap } from 'rxjs/operators';
 import { Component} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
@@ -22,12 +22,24 @@ export class CategoriesEditComponent {
   languageOptions = languages;
   choosenLanguageSub$ = new BehaviorSubject(languages[0]);
   categoryProductsTitlesUrl: string[] = [];
+  filteredTitles$: Observable<string[]>;
   mainImageType = false;
 
   constructor(private fb: FormBuilder, private store: Store<fromRoot.State>) {
     this.createForm();
     this.categories$ = this.store.select(fromRoot.getAllCategories);
     this.store.dispatch(new actions.GetAllCategories());
+
+    this.filteredTitles$ = this.categoryEditForm.get('titleUrl').valueChanges.pipe(
+      startWith(''),
+      switchMap((query: string) => {
+        const filterValue = query.toLowerCase();
+        return this.categories$.pipe(map(categories => categories
+          .map(({category}) => category.titleUrl)
+          .filter((titleUrl: string) => titleUrl.toLowerCase().includes(filterValue)))
+          )
+      })
+    )
   }
 
   createForm(): void {
@@ -54,6 +66,7 @@ export class CategoriesEditComponent {
       .subscribe(all => {
         const category = all.category;
         this.categoryProductsTitlesUrl = all.productsWithCategory;
+        this.mainImageType = !!category.mainImage.type;
         const newForm = {
           titleUrl  : category.titleUrl,
           mainImage : (category.mainImage && category.mainImage.url) ? category.mainImage.url : '',
@@ -90,6 +103,7 @@ export class CategoriesEditComponent {
         [lang]: this.fb.group({
           title: '',
           description: '',
+          position: 0,
           visibility: false,
         })
       })
@@ -104,6 +118,7 @@ export class CategoriesEditComponent {
           [lang]: {
             title         : categoryLang.title || '',
             description   : categoryLang.description || '',
+            position      : categoryLang.position || 0,
             visibility    : !!categoryLang.visibility,
           }
         }}

@@ -67,6 +67,16 @@ const DASHBOARD_ROUTER: Routes = [
     MatAutocompleteModule,
     MatChipsModule
   ],
-  declarations: [ProductsEditComponent, CategoriesEditComponent,  OrdersEditComponent, OrderEditComponent, AllProductsComponent, DashboardComponent, TinyEditorComponent, TranslationsEditComponent, PagesEditComponent]
+  declarations: [
+    ProductsEditComponent,
+    CategoriesEditComponent,
+    OrdersEditComponent,
+    OrderEditComponent,
+    AllProductsComponent,
+    DashboardComponent,
+    TinyEditorComponent,
+    TranslationsEditComponent,
+    PagesEditComponent
+  ]
 })
 export class DashboardModule { }

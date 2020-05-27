@@ -42,7 +42,7 @@ export class ProductsService {
 
   async getCategories(lang: string): Promise<Category[]> {
     const query = { [`${lang}.visibility`] : true};
-    const categories = await this.categoryModel.find(query);
+    const categories = await this.categoryModel.find(query).sort(`${lang}.position`);
     return this.prepareCategories(categories, lang);
   }
 

@@ -9,6 +9,7 @@ const getCategoryLangInfo = (): {[lang: string]: {}} => {
       [lang]:
       { title: String,
         description: String,
+        position: Number,
         visibility: Boolean
       }}),
     {})

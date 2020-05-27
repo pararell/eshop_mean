@@ -24,9 +24,9 @@
                  aria-label="TitleUrl"
                  [matAutocomplete]="auto"
                  formControlName="titleUrl">
-          <mat-autocomplete #auto="matAutocomplete">
-            <mat-option *ngFor="let all of (categories$ | async)" [value]="all.category.titleUrl">
-              <span>{{all.category.titleUrl}}</span>
+          <mat-autocomplete #auto="matAutocomplete" (optionSelected)="editCategory()">
+            <mat-option *ngFor="let title of filteredTitles$ | async" [value]="title">
+              <span>{{title}}</span>
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>
@@ -84,6 +84,16 @@
                   {{ 'Hidden' | translate | async }}
                 </mat-radio-button>
               </mat-radio-group>
+            </div>
+            <div class="category_edit-field-small">
+              <mat-form-field class="category_edit-field">
+                <mat-label>{{ 'Position' | translate | async }}</mat-label>
+                <input
+                  matInput
+                  formControlName="position"
+                  type="number"
+                  name="position">
+              </mat-form-field>
             </div>
           </div>
         </div>
