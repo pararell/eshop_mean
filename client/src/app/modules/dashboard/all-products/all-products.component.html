@@ -9,5 +9,7 @@
   [products]="allProducts"
   [convertVal]="convertVal"
   [lang]="lang"
-  [currency]="currency">
+  [showEdit]="true"
+  [currency]="currency"
+  (editProduct)="editProduct.emit($event)">
 </app-products-list>

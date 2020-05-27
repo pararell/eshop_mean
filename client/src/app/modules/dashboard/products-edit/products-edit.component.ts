@@ -19,6 +19,7 @@ import { Product, Category } from '../../../shared/models';
 export class ProductsEditComponent implements OnInit, OnDestroy {
   @Input() action: string;
   @Input() titles: string[];
+  @Input() productToEditTitleUrl: string;
 
   @Output() changeTab = new EventEmitter<number>();
 
@@ -49,6 +50,9 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.store.dispatch(new actions.GetImages());
+    if (this.productToEditTitleUrl) {
+      this.store.dispatch(new actions.GetProduct(this.productToEditTitleUrl));
+    }
     this.filteredTitles$ = this.productEditForm.get('titleUrl').valueChanges.pipe(
       startWith(''),
       map((value) => {
@@ -162,6 +166,53 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
     this.descriptionFullSub$.next(prepareDescFull);
   }
 
+  addTag(): void {
+    if (this.tag) {
+      const formTags = this.productEditForm.value.tags.filter((tag) => tag !== this.tag);
+      const tags = [...formTags, this.tag.replace(/ /g, '_').toLowerCase()];
+      this.productEditForm.get('tags').setValue(tags);
+      this.tag = '';
+    }
+  }
+
+  removeTag(tagToRemove: string): void {
+    const formTags = this.productEditForm.value.tags.filter((tag) => tag !== tagToRemove);
+    this.productEditForm.get('tags').setValue(formTags);
+  }
+
+  addImageUrl(): void {
+    const imageUrl = this.productEditForm.get('imageUrl').value;
+    const titleUrl = this.productEditForm.get('titleUrl').value;
+    if (imageUrl && titleUrl) {
+      this.testImageUrl = imageUrl;
+    }
+  }
+
+  checkImageUrl() {
+    const imageUrl = this.productEditForm.get('imageUrl').value;
+    const titleUrl = this.productEditForm.get('titleUrl').value;
+    this.store.dispatch(new actions.AddProductImagesUrl({ image: imageUrl, titleUrl }));
+    this.testImageUrl = '';
+  }
+
+  openForm(): void {
+    this.sendRequest = false;
+  }
+
+  findProduct(): void {
+    const titleUrl = this.productEditForm.get('titleUrl').value;
+    if (titleUrl) {
+      this.store.dispatch(new actions.GetProduct(titleUrl));
+    }
+  }
+
+  formatTitleUrl(e) {
+    if (e.target.value) {
+      const titleUrlFormated = e.target.value.replace(/\s+/g, '-').toLowerCase();
+      this.productEditForm.get('titleUrl').setValue(titleUrlFormated);
+    }
+  }
+
   onSubmit(): void {
     switch (this.action) {
       case 'add':
@@ -208,53 +259,6 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
   onRemoveSubmit(): void {
     this.store.dispatch(new actions.RemoveProduct(this.productEditForm.get('titleUrl').value));
     this.sendRequest = true;
-  }
-
-  addTag(): void {
-    if (this.tag) {
-      const formTags = this.productEditForm.value.tags.filter((tag) => tag !== this.tag);
-      const tags = [...formTags, this.tag.replace(/ /g, '_').toLowerCase()];
-      this.productEditForm.get('tags').setValue(tags);
-      this.tag = '';
-    }
-  }
-
-  removeTag(tagToRemove: string): void {
-    const formTags = this.productEditForm.value.tags.filter((tag) => tag !== tagToRemove);
-    this.productEditForm.get('tags').setValue(formTags);
-  }
-
-  addImageUrl(): void {
-    const imageUrl = this.productEditForm.get('imageUrl').value;
-    const titleUrl = this.productEditForm.get('titleUrl').value;
-    if (imageUrl && titleUrl) {
-      this.testImageUrl = imageUrl;
-    }
-  }
-
-  checkImageUrl() {
-    const imageUrl = this.productEditForm.get('imageUrl').value;
-    const titleUrl = this.productEditForm.get('titleUrl').value;
-    this.store.dispatch(new actions.AddProductImagesUrl({ image: imageUrl, titleUrl }));
-    this.testImageUrl = '';
-  }
-
-  openForm(): void {
-    this.sendRequest = false;
-  }
-
-  findProduct(): void {
-    const titleUrl = this.productEditForm.get('titleUrl').value;
-    if (titleUrl) {
-      this.store.dispatch(new actions.GetProduct(titleUrl));
-    }
-  }
-
-  formatTitleUrl(e) {
-    if (e.target.value) {
-      const titleUrlFormated = e.target.value.replace(/\s+/g, '-').toLowerCase();
-      this.productEditForm.get('titleUrl').setValue(titleUrlFormated);
-    }
   }
 
   private createLangForm(languageOptions: Array<string>) {

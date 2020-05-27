@@ -22,6 +22,7 @@ export class AllProductsComponent {
   @Input() currency: string;
 
   @Output() getAllProducts = new EventEmitter();
+  @Output() editProduct = new EventEmitter<string>();
 
   constructor() {
   }

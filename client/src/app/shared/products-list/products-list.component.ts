@@ -14,8 +14,10 @@ export class ProductsListComponent {
   @Input()  convertVal  : number;
   @Input()  currency    : string;
   @Input()  lang        : string;
+  @Input()  showEdit    = false;
   @Output() addProduct     = new EventEmitter<string>();
   @Output() removeProduct  = new EventEmitter<string>();
+  @Output() editProduct    = new EventEmitter<string>();
 
 
   constructor() {}
@@ -26,6 +28,10 @@ export class ProductsListComponent {
 
   onRemoveProduct(id: string): void {
     this.removeProduct.emit(id);
+  }
+
+  onEditProduct(id: string): void {
+    this.editProduct.emit(id);
   }
 
   trackById(_index: number, item: Product) {

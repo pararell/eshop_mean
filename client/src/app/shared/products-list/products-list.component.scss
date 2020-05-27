@@ -44,6 +44,11 @@
       position: relative;
     }
 
+    &-top-links {
+      display: flex;
+      flex-flow: column;
+    }
+
     &-title {
       font-size: 18px;
       line-height: 20px;
@@ -132,6 +137,7 @@
       font-size: 16px;
       color: $primary-color;
       margin-top: -5px;
+      cursor: pointer;
     }
   }
 

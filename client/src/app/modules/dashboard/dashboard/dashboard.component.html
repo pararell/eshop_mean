@@ -11,9 +11,8 @@
         Orders
       </button>
     </div>
-    <mat-tab-group
+    <mat-tab-group #MatTabGroup
       backgroundColor="primary"
-      [selectedIndex]="activeTab"
       animationDuration="0ms">
       <mat-tab label="All products">
         <div class="dashboard-tab-content">
@@ -22,7 +21,8 @@
             [lang]="lang$ | async"
             [convertVal]="convertVal$ | async"
             [currency]="currency$ | async"
-            (getAllProducts)="getProducts()">
+            (getAllProducts)="getProducts()"
+            (editProduct)="setToEditProduct($event)">
           </app-all-products>
         </div>
       </mat-tab>
@@ -41,6 +41,7 @@
           <div class="dashboard-tab-content">
             <app-products-edit
               [titles]="allProductsTitles$ | async"
+              [productToEditTitleUrl]="productToEditTitleUrl"
               [action]="'edit'">
             </app-products-edit>
           </div>

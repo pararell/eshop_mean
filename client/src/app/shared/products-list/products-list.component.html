@@ -3,10 +3,15 @@
     <div class="product_card-header">
       <div class="product_card-top">
           <h2 class="product_card-title"> {{product?.title}} </h2>
-          <a class="product_card-detail"
-            [routerLink]="[ '/' + lang + '/product/' + product?.titleUrl]">
-            {{ 'Detail' | translate | async }}
-          </a>
+          <span class="product_card-top-links">
+            <a class="product_card-detail"
+              [routerLink]="[ '/' + lang + '/product/' + product?.titleUrl]">
+              {{ 'Detail' | translate | async }}
+            </a>
+            <a class="product_card-detail" *ngIf="showEdit" (click)="onEditProduct(product?.titleUrl)">
+              {{ 'Edit' | translate | async }}
+            </a>
+          </span>
       </div>
       <div class="product_card-info">
         <p class="product_card-description">{{product?.description}}</p>
