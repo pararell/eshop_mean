@@ -2,46 +2,59 @@
   <div class="container">
     <div class="contact-form-wrap">
       <h1 class="contact-title">{{'Contact' | translate | async }}</h1>
-            <form class="contact-form" [formGroup]="contactForm">
-              <mat-form-field class="contact-field">
-                <mat-label>
-                  {{'Firstname' | translate | async }} {{ 'and' | translate | async }} {{ 'Surname' | translate | async }}
-                </mat-label>
-                <input matInput
-                  formControlName="name"
-                  type="text"
-                  name="contantName">
-              </mat-form-field>
-              <mat-form-field class="contact-field">
-                <mat-label>Email</mat-label>
-                <input matInput
-                  formControlName="email"
-                  type="email"
-                  name="email">
-              </mat-form-field>
-              <mat-form-field class="contact-field">
-                <mat-label>{{'Notes' | translate | async }}</mat-label>
-                <textarea matInput
-                  formControlName="notes"
-                  name="notes">
-                </textarea>
-              </mat-form-field>
-            <button type="submit" class="submit-contact-button"
-              mat-raised-button color="primary"
-              [disabled]="contactForm.invalid"
-              (click)="submit()">
-            {{ 'SendContact' | translate | async }}
-          </button>
-          <mat-progress-bar *ngIf="(loading$ | async)" mode="indeterminate"></mat-progress-bar>
-        </form>
-        <div *ngIf="(sendRequestSub$ | async)">
-           <span class="contact-error" *ngIf="(error$ | async) as error">
+      <form class="contact-form"
+        [formGroup]="contactForm">
+        <mat-form-field class="contact-field">
+          <mat-label>
+            {{'Firstname' | translate | async }} {{ 'and' | translate | async }} {{ 'Surname' | translate | async }}
+          </mat-label>
+          <input
+            matInput
+            formControlName="name"
+            type="text"
+            name="contantName">
+        </mat-form-field>
+        <mat-form-field class="contact-field">
+          <mat-label>Email</mat-label>
+          <input
+            matInput
+            formControlName="email"
+            type="email"
+            name="email">
+        </mat-form-field>
+        <mat-form-field class="contact-field">
+          <mat-label>{{'Notes' | translate | async }}</mat-label>
+          <textarea
+            matInput
+            formControlName="notes"
+            name="notes">
+          </textarea>
+        </mat-form-field>
+        <button
+          type="submit"
+          class="submit-contact-button"
+          mat-raised-button
+          color="primary"
+          [disabled]="contactForm.invalid"
+          (click)="submit()">
+          {{ 'SendContact' | translate | async }}
+        </button>
+        <mat-progress-bar
+          *ngIf="(loading$ | async)"
+          mode="indeterminate"></mat-progress-bar>
+      </form>
+      <div *ngIf="(sendRequestSub$ | async)">
+        <span
+          class="contact-error"
+          *ngIf="(error$ | async) as error">
             {{error | translate | async }}
            </span>
-          <span class="contact-success" *ngIf="!(error$ | async)">
+        <span
+          class="contact-success"
+          *ngIf="!(error$ | async)">
             {{'CONTACT_SEND_SUCCESS' | translate | async }}
           </span>
-        </div>
+      </div>
     </div>
   </div>
 </div>

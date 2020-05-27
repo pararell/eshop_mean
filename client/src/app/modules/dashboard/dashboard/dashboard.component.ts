@@ -9,7 +9,6 @@ import { TranslateService } from '../../../services/translate.service';
 import { Product } from '../../../shared/models';
 
 
-
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',

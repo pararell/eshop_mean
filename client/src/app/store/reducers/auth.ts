@@ -12,12 +12,12 @@ export interface State {
   convertVal: number;
 }
 
- export const initialState: State = {
-    loading: false,
-    user: null,
-    lang: languages[0],
-    currency: currencyLang['default'],
-    convertVal: 0,
+export const initialState: State = {
+  loading: false,
+  user: null,
+  lang: languages[0],
+  currency: currencyLang['default'],
+  convertVal: 0,
 };
 
 

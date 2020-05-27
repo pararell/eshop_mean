@@ -1,157 +1,178 @@
 <ng-container *ngIf="!sendRequest && (choosenLanguageSub$ | async) as chooseLang">
-    <div class="categories-title-wrapp">
-      <h2> {{ 'Categories_edit' | translate | async }} </h2>
-      <div>
-        <mat-form-field class="browser-default lang-select">
-          <mat-label>{{ 'Language_for_product_detail' | translate | async }}</mat-label>
-          <mat-select
-            [ngModel]="chooseLang"
-            (ngModelChange)="setLang($event)">
-            <mat-option *ngFor="let option of languageOptions;" [value]="option">
-              {{option}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
+  <div class="categories-title-wrapp">
+    <h2>{{ 'Categories_edit' | translate | async }}</h2>
+    <div>
+      <mat-form-field class="browser-default lang-select">
+        <mat-label>
+          {{ 'Language_for_product_detail' | translate | async }}
+        </mat-label>
+        <mat-select
+          [ngModel]="chooseLang"
+          (ngModelChange)="setLang($event)">
+          <mat-option
+            *ngFor="let option of languageOptions"
+            [value]="option">
+            {{ option }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
-    <form class="category_edit-form"
-      [formGroup]="categoryEditForm"
-      novalidate>
-      <div class="category_edit-full-input">
-        <mat-form-field class="category_edit-field">
-          <input matInput
-                 placeholder="TitleUrl"
-                 aria-label="TitleUrl"
-                 [matAutocomplete]="auto"
-                 formControlName="titleUrl">
-          <mat-autocomplete #auto="matAutocomplete" (optionSelected)="editCategory()">
-            <mat-option *ngFor="let title of filteredTitles$ | async" [value]="title">
-              <span>{{title}}</span>
-            </mat-option>
-          </mat-autocomplete>
-        </mat-form-field>
-        <button
-          mat-raised-button
-          color="primary"
-          class="edit-find-button"
-          (click)="editCategory()">
-          {{ 'Edit' | translate | async }}
-        </button>
-      </div>
-      <mat-chip-list class="category-tags" *ngIf="categoryProductsTitlesUrl.length">
-        <mat-chip class="clickable"
-          *ngFor="let productTitleUrl of categoryProductsTitlesUrl">
-          <span>{{ productTitleUrl }}</span>
-        </mat-chip>
-      </mat-chip-list>
-      <ng-container>
-        <h3 class="category_edit-subtitle">Content (for chosen language/market)</h3>
-        <div [formGroupName]="chooseLang">
-          <div class="category_edit-full-input">
-            <mat-form-field class="category_edit-field">
-              <mat-label>{{ 'Title' | translate | async }}</mat-label>
-              <input
-                matInput
-                formControlName="title"
-                type="text"
-                name="title">
-            </mat-form-field>
-          </div>
-          <div class="category_edit-full-input">
-            <mat-form-field class="category_edit-field">
-              <mat-label>{{ 'Short_description' | translate | async }}</mat-label>
-              <textarea
-                matInput
-                formControlName="description"
-                name="description">
-              </textarea>
-            </mat-form-field>
-          </div>
-          <div class="category_edit-full-input">
-            <div class="category_edit-field-small">
-              <div class="check-title">{{ 'Visibility' | translate | async }}</div>
-              <mat-radio-group aria-label="Visibility" formControlName="visibility">
-                <mat-radio-button
-                  name="visibility"
-                  [value]="true"
-                  id="visible">
-                  {{ 'Visible' | translate | async }}
-                </mat-radio-button>
-                <mat-radio-button
-                  name="visibility"
-                  [value]="false"
-                  id="hidden">
-                  {{ 'Hidden' | translate | async }}
-                </mat-radio-button>
-              </mat-radio-group>
-            </div>
-            <div class="category_edit-field-small">
-              <mat-form-field class="category_edit-field">
-                <mat-label>{{ 'Position' | translate | async }}</mat-label>
-                <input
-                  matInput
-                  formControlName="position"
-                  type="number"
-                  name="position">
-              </mat-form-field>
-            </div>
-          </div>
-        </div>
-        <div class="category_edit-full-input">
-          <mat-form-field class="category_edit-field">
-            <mat-label>{{ 'Main_image_url' | translate | async }}</mat-label>
-            <input
-              matInput
-              formControlName="mainImage"
-              name="mainImage">
-          </mat-form-field>
-          <div class="category_edit-field-small">
-            <div class="check-title">{{ 'Image_type' | translate | async }}</div>
-            <mat-radio-group aria-label="Image type"
-              [(ngModel)]="mainImageType"
-              [ngModelOptions]="{standalone: true}">
-              <mat-radio-button
-                name="Contain"
-                [value]="false"
-                id="Contain">
-                {{ "Contain" | translate | async }}
-              </mat-radio-button>
-              <mat-radio-button
-                name="Cover"
-                [value]="true"
-                id="Cover">
-                {{ "Cover" | translate | async }}
-            </mat-radio-button>
-            </mat-radio-group>
-          </div>
-        </div>
-        <button
-          mat-raised-button
-          color="primary"
-          (click)="onSubmit()"
-          [disabled]="!categoryEditForm.valid">
-          {{ 'Save' | translate | async }}
-        </button>
-      </ng-container>
-
+  </div>
+  <form
+    class="category_edit-form"
+    [formGroup]="categoryEditForm"
+    novalidate>
+    <div class="category_edit-full-input">
+      <mat-form-field class="category_edit-field">
+        <input
+          matInput
+          placeholder="TitleUrl"
+          aria-label="TitleUrl"
+          [matAutocomplete]="auto"
+          formControlName="titleUrl">
+        <mat-autocomplete
+          #auto="matAutocomplete"
+          (optionSelected)="editCategory()">
+          <mat-option
+            *ngFor="let title of filteredTitles$ | async"
+            [value]="title">
+            <span>{{ title }}</span>
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
       <button
         mat-raised-button
         color="primary"
-        (click)="onRemove()"
-        [disabled]="!categoryEditForm.valid">
-        {{ 'Remove' | translate | async }}
+        class="edit-find-button"
+        (click)="editCategory()">
+        {{ 'Edit' | translate | async }}
       </button>
+    </div>
+    <mat-chip-list
+      class="category-tags"
+      *ngIf="categoryProductsTitlesUrl.length">
+      <mat-chip
+        class="clickable"
+        *ngFor="let productTitleUrl of categoryProductsTitlesUrl">
+        <span>{{ productTitleUrl }}</span>
+      </mat-chip>
+    </mat-chip-list>
+    <ng-container>
+      <h3 class="category_edit-subtitle">Content (for chosen language/market)</h3>
+      <div [formGroupName]="chooseLang">
+        <div class="category_edit-full-input">
+          <mat-form-field class="category_edit-field">
+            <mat-label>{{ 'Title' | translate | async }}</mat-label>
+            <input
+              matInput
+              formControlName="title"
+              type="text"
+              name="title">
+          </mat-form-field>
+        </div>
+        <div class="category_edit-full-input">
+          <mat-form-field class="category_edit-field">
+            <mat-label>
+              {{ 'Short_description' | translate | async }}
+            </mat-label>
+            <textarea
+              matInput
+              formControlName="description"
+              name="description">
+            </textarea>
+          </mat-form-field>
+        </div>
+        <div class="category_edit-full-input">
+          <div class="category_edit-field-small">
+            <div class="check-title">{{ 'Visibility' | translate | async }}</div>
+            <mat-radio-group
+              aria-label="Visibility"
+              formControlName="visibility">
+              <mat-radio-button
+                name="visibility"
+                [value]="true"
+                id="visible">
+                {{ 'Visible' | translate | async }}
+              </mat-radio-button>
+              <mat-radio-button
+                name="visibility"
+                [value]="false"
+                id="hidden">
+                {{ 'Hidden' | translate | async }}
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <div class="category_edit-field-small">
+            <mat-form-field class="category_edit-field">
+              <mat-label>{{ 'Position' | translate | async }}</mat-label>
+              <input
+                matInput
+                formControlName="position"
+                type="number"
+                name="position">
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+      <div class="category_edit-full-input">
+        <mat-form-field class="category_edit-field">
+          <mat-label>
+            {{ 'Main_image_url' | translate | async }}
+          </mat-label>
+          <input
+            matInput
+            formControlName="mainImage"
+            name="mainImage">
+        </mat-form-field>
+        <div class="category_edit-field-small">
+          <div class="check-title">{{ 'Image_type' | translate | async }}</div>
+          <mat-radio-group
+            aria-label="Image type"
+            [(ngModel)]="mainImageType"
+            [ngModelOptions]="{ standalone: true }">
+            <mat-radio-button
+              name="Contain"
+              [value]="false"
+              id="Contain">
+              {{ 'Contain' | translate | async }}
+            </mat-radio-button>
+            <mat-radio-button
+              name="Cover"
+              [value]="true"
+              id="Cover">
+              {{ 'Cover' | translate | async }}
+            </mat-radio-button>
+          </mat-radio-group>
+        </div>
+      </div>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onSubmit()"
+        [disabled]="!categoryEditForm.valid">
+        {{ 'Save' | translate | async }}
+      </button>
+    </ng-container>
 
-    </form>
-  </ng-container>
-
-  <div class="category_edit-after-send" *ngIf="sendRequest">
-    <span> {{ 'Request_sended' | translate | async }}</span>
     <button
-      class="product_edit-btn-action"
       mat-raised-button
       color="primary"
-      (click)="sendRequest = !sendRequest">
-      {{ 'Again' | translate | async }}
+      (click)="onRemove()"
+      [disabled]="!categoryEditForm.valid">
+      {{ 'Remove' | translate | async }}
     </button>
-  </div>
+  </form>
+</ng-container>
+
+<div
+  class="category_edit-after-send"
+  *ngIf="sendRequest">
+  <span> {{ 'Request_sended' | translate | async }}</span>
+  <button
+    class="product_edit-btn-action"
+    mat-raised-button
+    color="primary"
+    (click)="sendRequest = !sendRequest">
+    {{ 'Again' | translate | async }}
+  </button>
+</div>

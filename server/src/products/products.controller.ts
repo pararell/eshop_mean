@@ -12,6 +12,7 @@ import {
   Patch,
   Headers,
 } from '@nestjs/common';
+
 import { ProductsService } from './products.service';
 import { GetProductsDto } from './dto/get-products';
 import { ProductsWithPagination, Product } from './models/product.model';

@@ -1,16 +1,17 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { AuthCredentialDto } from './dto/auth-credential.dto';
 import { JwtService } from '@nestjs/jwt';
-import { JwtPayload } from './models/jwt-payload.interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User } from './models/user.model';
 import * as bcrypt from 'bcryptjs';
 import {
   ConflictException,
   InternalServerErrorException,
 } from '@nestjs/common';
+
 import { GoogleUserDto } from './dto/google-user.dto';
+import { User } from './models/user.model';
+import { JwtPayload } from './models/jwt-payload.interface';
+import { AuthCredentialDto } from './dto/auth-credential.dto';
 
 @Injectable()
 export class AuthService {

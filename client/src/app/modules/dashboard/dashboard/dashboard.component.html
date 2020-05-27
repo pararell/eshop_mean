@@ -1,72 +1,72 @@
 <div class="main">
-    <div class="dashboard-container">
-      <div class="orders-menu">
-        <h1 class="dashboard-title">Dashboard</h1>
-        <button
-          class="orders-button"
-          [routerLink]="['/' + (lang$ | async) + '/dashboard/orders']"
-          mat-raised-button
-          color="primary"
-          aria-label="Orders">
-          Orders
-        </button>
-      </div>
-      <mat-tab-group backgroundColor="primary" [selectedIndex]="activeTab" animationDuration="0ms">
-        <mat-tab label="All products">
-          <div class="dashboard-tab-content">
-            <app-all-products
-              [allProducts]="allProducts$ | async"
-              [lang]="lang$ | async"
-              [convertVal]="convertVal$ | async"
-              [currency]="currency$ | async"
-              (getAllProducts)="getProducts()">
-            </app-all-products>
-          </div>
-        </mat-tab>
-        <mat-tab label="Add product">
-          <ng-template matTabContent>
-            <div class="dashboard-tab-content">
-              <app-products-edit
-                [action]="'add'"
-                (changeTab)="changeTab($event)">
-              </app-products-edit>
-            </div>
-          </ng-template>
-        </mat-tab>
-        <mat-tab label="Edit product">
-          <ng-template matTabContent>
-            <div class="dashboard-tab-content">
-              <app-products-edit
-                [titles]="allProductsTitles$ | async"
-                [action]="'edit'">
-              </app-products-edit>
-            </div>
-          </ng-template>
-        </mat-tab>
-        <mat-tab label="Categories">
-          <ng-template matTabContent>
-            <div class="dashboard-tab-content">
-              <app-categories-edit>
-              </app-categories-edit>
-            </div>
-          </ng-template>
-        </mat-tab>
-        <mat-tab label="Pages">
-          <ng-template matTabContent>
-            <div class="dashboard-tab-content">
-              <app-pages-edit>
-              </app-pages-edit>
-            </div>
-          </ng-template>
-        </mat-tab>
-        <mat-tab label="Translations">
-          <ng-template matTabContent>
-            <div class="dashboard-tab-content">
-              <app-translations-edit>
-              </app-translations-edit>
-            </div>
-          </ng-template>
-        </mat-tab>
-      </mat-tab-group>
+  <div class="dashboard-container">
+    <div class="orders-menu">
+      <h1 class="dashboard-title">Dashboard</h1>
+      <button
+        class="orders-button"
+        [routerLink]="['/' + (lang$ | async) + '/dashboard/orders']"
+        mat-raised-button
+        color="primary"
+        aria-label="Orders">
+        Orders
+      </button>
     </div>
+    <mat-tab-group
+      backgroundColor="primary"
+      [selectedIndex]="activeTab"
+      animationDuration="0ms">
+      <mat-tab label="All products">
+        <div class="dashboard-tab-content">
+          <app-all-products
+            [allProducts]="allProducts$ | async"
+            [lang]="lang$ | async"
+            [convertVal]="convertVal$ | async"
+            [currency]="currency$ | async"
+            (getAllProducts)="getProducts()">
+          </app-all-products>
+        </div>
+      </mat-tab>
+      <mat-tab label="Add product">
+        <ng-template matTabContent>
+          <div class="dashboard-tab-content">
+            <app-products-edit
+              [action]="'add'"
+              (changeTab)="changeTab($event)">
+            </app-products-edit>
+          </div>
+        </ng-template>
+      </mat-tab>
+      <mat-tab label="Edit product">
+        <ng-template matTabContent>
+          <div class="dashboard-tab-content">
+            <app-products-edit
+              [titles]="allProductsTitles$ | async"
+              [action]="'edit'">
+            </app-products-edit>
+          </div>
+        </ng-template>
+      </mat-tab>
+      <mat-tab label="Categories">
+        <ng-template matTabContent>
+          <div class="dashboard-tab-content">
+            <app-categories-edit></app-categories-edit>
+          </div>
+        </ng-template>
+      </mat-tab>
+      <mat-tab label="Pages">
+        <ng-template matTabContent>
+          <div class="dashboard-tab-content">
+            <app-pages-edit></app-pages-edit>
+          </div>
+        </ng-template>
+      </mat-tab>
+      <mat-tab label="Translations">
+        <ng-template matTabContent>
+          <div class="dashboard-tab-content">
+            <app-translations-edit></app-translations-edit>
+          </div>
+        </ng-template>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
 </div>

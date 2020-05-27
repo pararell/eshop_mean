@@ -1,11 +1,11 @@
-
 <button
-    (click)="getAllProducts.emit()"
-    mat-raised-button
-    color="primary">
-    {{ 'Refresh' | translate | async }}
+  (click)="getAllProducts.emit()"
+  mat-raised-button
+  color="primary">
+  {{ 'Refresh' | translate | async }}
 </button>
-<app-products-list *ngIf="allProducts"
+<app-products-list
+  *ngIf="allProducts"
   [products]="allProducts"
   [convertVal]="convertVal"
   [lang]="lang"

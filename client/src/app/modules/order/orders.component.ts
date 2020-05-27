@@ -1,4 +1,3 @@
-import { filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';

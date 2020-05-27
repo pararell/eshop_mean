@@ -1,74 +1,74 @@
 :host {
+  /deep/ .mat-radio-button ~ .mat-radio-button {
+    margin-left: 16px;
+  }
+
+  @media screen and (max-width: 600px) {
     /deep/ .mat-radio-button ~ .mat-radio-button {
-      margin-left: 16px;
-    }
-
-    @media screen and (max-width: 600px) {
-      /deep/ .mat-radio-button ~ .mat-radio-button {
-        margin-left: 0;
-      }
-    }
-
-    .category_edit {
-      &-form {
-        width: 100%;
-      }
-
-      &-field {
-        width: 100%;
-        margin: 0 5px;
-      }
-
-      &-field-small {
-        margin: 0 5px;
-        flex: 1;
-      }
-
-      &-full-input {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-        flex-flow: wrap;
-      }
-
-      &-subtitle {
-        font-weight: 500;
-        margin: 40px 5px 20px 5px;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-      }
-
-      &-infotitle {
-        font-weight: 500;
-      }
-
-      &-add-images {
-        margin: 25px 0;
-      }
-
-      &-after-send {
-        display: flex;
-        align-items: center;
-        padding: 50px;
-      }
-
-      &-btn-action {
-        margin: 0 10px;
-      }
-    }
-
-    .check-title {
-      color: #9e9e9e;
-      font-size: 0.8rem;
-      padding: 5px 0;
-      margin-top: 15px;
-    }
-
-    .file-field .btn {
-      float: none !important;
-    }
-
-    .categories-title-wrapp {
-      display: flex;
-      justify-content: space-between;
+      margin-left: 0;
     }
   }
+
+  .category_edit {
+    &-form {
+      width: 100%;
+    }
+
+    &-field {
+      width: 100%;
+      margin: 0 5px;
+    }
+
+    &-field-small {
+      margin: 0 5px;
+      flex: 1;
+    }
+
+    &-full-input {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-flow: wrap;
+    }
+
+    &-subtitle {
+      font-weight: 500;
+      margin: 40px 5px 20px 5px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    &-infotitle {
+      font-weight: 500;
+    }
+
+    &-add-images {
+      margin: 25px 0;
+    }
+
+    &-after-send {
+      display: flex;
+      align-items: center;
+      padding: 50px;
+    }
+
+    &-btn-action {
+      margin: 0 10px;
+    }
+  }
+
+  .check-title {
+    color: #9e9e9e;
+    font-size: 0.8rem;
+    padding: 5px 0;
+    margin-top: 15px;
+  }
+
+  .file-field .btn {
+    float: none !important;
+  }
+
+  .categories-title-wrapp {
+    display: flex;
+    justify-content: space-between;
+  }
+}

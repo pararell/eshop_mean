@@ -9,10 +9,10 @@ export interface State {
   pages: Page[];
 }
 
- export const initialState: State = {
-    loading: false,
-    error: '',
-    pages: null
+export const initialState: State = {
+  loading: false,
+  error: '',
+  pages: null
 };
 
 

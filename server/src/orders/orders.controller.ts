@@ -1,15 +1,15 @@
 import {
-    Controller,
-    Get,
-    Post,
-    Body,
-    UseGuards,
-    Session,
-    Param,
-    Patch,
-    UnprocessableEntityException,
-    Headers
-  } from '@nestjs/common';
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Session,
+  Param,
+  Patch,
+  UnprocessableEntityException,
+  Headers,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import { OrdersService } from './orders.service';
@@ -22,66 +22,72 @@ import { Cart } from '../cart/utils/cart';
 import { prepareCart } from '../shared/utils/prepareUtils';
 import { CartModel } from '../cart/models/cart.model';
 
+@Controller('api/orders')
+export class OrdersController {
+  constructor(private ordersService: OrdersService) {}
 
-  @Controller('api/orders')
-  export class OrdersController {
-    constructor(private ordersService: OrdersService) {}
-
-    @UseGuards(AuthGuard('jwt'))
-    @Get()
-    getOrders(@GetUser() user: User) {
-      return this.ordersService.getOrders(user);
-    }
-
-    @Post('/add')
-    async addOrder(@Body() orderDto: OrderDto, @Session() session, @Headers('lang') lang: string): Promise<{error: string; result: Order; cart: Cart}> {
-      try {
-        const successResult = await this.ordersService.addOrder(orderDto, session.cart, lang);
-        if (successResult && !successResult.error) {
-          const emptyCart = new Cart({});
-          session.cart = emptyCart;
-          return {...successResult, cart: emptyCart}
-        } else {
-          return {...successResult, cart: session.cart}
-        }
-      } catch (e) {
-        throw new UnprocessableEntityException();
-      }
-    }
-
-    @Post('/stripe')
-    async orderWithStripe(@Body() body, @Session() session, @Headers('lang') lang: string): Promise<{error: string; result: Order; cart: CartModel}> {
-      try {
-        const successResult = await this.ordersService.orderWithStripe(body, session.cart, lang);
-
-        if (successResult && !successResult.error) {
-          const emptyCart = new Cart({});
-          session.cart = emptyCart;
-          return {...successResult, cart: emptyCart}
-        } else {
-          return {...successResult, cart: prepareCart(session.cart, lang)}
-        }
-      } catch (e) {
-        throw new UnprocessableEntityException();
-      }
-    }
-
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Get('/all')
-    getAllOrders() {
-      return this.ordersService.getAllOrders();
-    }
-
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Get('/:id')
-    getOrderById(@Param('id') id: string) {
-      return this.ordersService.getOrderById(id);
-    }
-
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Patch()
-    updateOrder(@Body() order) {
-      return this.ordersService.updateOrder(order);
-    }
-
+  @UseGuards(AuthGuard('jwt'))
+  @Get()
+  getOrders(@GetUser() user: User) {
+    return this.ordersService.getOrders(user);
   }
+
+  @Post('/add')
+  async addOrder(
+    @Body() orderDto: OrderDto,
+    @Session() session,
+    @Headers('lang') lang: string
+  ): Promise<{ error: string; result: Order; cart: Cart }> {
+    try {
+      const successResult = await this.ordersService.addOrder(orderDto, session.cart, lang);
+      if (successResult && !successResult.error) {
+        const emptyCart = new Cart({});
+        session.cart = emptyCart;
+        return { ...successResult, cart: emptyCart };
+      } else {
+        return { ...successResult, cart: session.cart };
+      }
+    } catch (e) {
+      throw new UnprocessableEntityException();
+    }
+  }
+
+  @Post('/stripe')
+  async orderWithStripe(
+    @Body() body,
+    @Session() session,
+    @Headers('lang') lang: string
+  ): Promise<{ error: string; result: Order; cart: CartModel }> {
+    try {
+      const successResult = await this.ordersService.orderWithStripe(body, session.cart, lang);
+
+      if (successResult && !successResult.error) {
+        const emptyCart = new Cart({});
+        session.cart = emptyCart;
+        return { ...successResult, cart: emptyCart };
+      } else {
+        return { ...successResult, cart: prepareCart(session.cart, lang) };
+      }
+    } catch (e) {
+      throw new UnprocessableEntityException();
+    }
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Get('/all')
+  getAllOrders() {
+    return this.ordersService.getAllOrders();
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Get('/:id')
+  getOrderById(@Param('id') id: string) {
+    return this.ordersService.getOrderById(id);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Patch()
+  updateOrder(@Body() order) {
+    return this.ordersService.updateOrder(order);
+  }
+}
