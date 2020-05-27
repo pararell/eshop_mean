@@ -37,12 +37,12 @@ export class SignUpComponent  {
 
 
   submit() {
-    this.signUpForm.reset();
     this.lang$.pipe(take(1))
       .subscribe(lang => {
         this.store.dispatch(new actions.SignUp(this.signUpForm.value));
+        this.signUpForm.reset();
         this.router.navigate([lang + '/authorize/signin']);
-      })
+      });
   }
 
 }
