@@ -27,7 +27,7 @@
   <mat-drawer-content>
     <div class="main">
       <div class="home-product" *ngIf="(products$ | async) as products">
-        <app-carousel>
+        <app-carousel [intervalForSlider]="20000">
           <ng-container *ngFor="let product of products | slice:0:3">
             <app-product-content *ngIf="(cartIds$ | async) as cartIds"
               [product]="product"

@@ -1,4 +1,4 @@
-<app-carousel>
+<app-carousel [intervalForSlider]="8000">
   <ng-container *ngFor="let category of categories; trackBy: trackById;">
     <div class="category_card">
       <a class="category_card-image"
