@@ -54,7 +54,7 @@ export class ConfigEditComponent {
                 basicShippingCost: foundConfig[lang].shippingCost.basic.cost || 0,
                 basicShippingLimit: foundConfig[lang].shippingCost.basic.limit || 0,
                 extendedShippingCost: foundConfig[lang].shippingCost.extended.cost || 0,
-                extendedShippingLimit: foundConfig[lang].shippingCost.extended.cost || 0,
+                extendedShippingLimit: foundConfig[lang].shippingCost.extended.limit || 0,
               }
             }))
             .reduce((prev, curr) => ({ ...prev, ...curr }), {}),
