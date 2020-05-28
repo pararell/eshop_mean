@@ -13,9 +13,8 @@ export interface Config {
   [name: string]: any;
 }
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class EnvConfigurationService {
   public configuration$: Observable<Config>;
@@ -25,43 +24,57 @@ export class EnvConfigurationService {
     private apiService: ApiService,
     private themeService: ThemeService,
     @Inject(PLATFORM_ID)
-    private platformId : Object) {
-      }
+    private platformId: Object
+  ) {}
 
-      getConfigType$(type: string): Observable<string> {
-        return this.configuration$.pipe(map((configuration: Config) => configuration[type]));
-      }
+  getConfigType$(type: string): Observable<string> {
+    return this.configuration$.pipe(map((configuration: Config) => configuration[type]));
+  }
 
-      setTheme(conf: Config) {
-        if (conf.styles) {
-          Object.keys(conf.styles).map(style => {
-            const styleValue = conf.styles[style];
+  setTheme(conf: Config) {
+    if (conf.styles) {
+      Object.keys(conf.styles).map((style) => {
+        const styleValue = conf.styles[style];
+        if (styleValue) {
+          const varName = style
+            .split(/(?=[A-Z])/)
+            .join('-')
+            .toLowerCase();
+          if (style.includes('Background')) {
+            this.themeService.setCSSVariable(`url(${styleValue})`, `${varName}-url`);
+          }
+          this.themeService.setCSSVariable(styleValue, varName);
+          if (style.includes('Color')) {
+            if (style.includes('primary')) {
+              this.themeService.setThemeColor(styleValue, 'theme-primary');
+            }
 
-            if (style.includes('Color')) {
-              const colorName = style.split(/(?=[A-Z])/).join('-').toLowerCase();
-              this.themeService.setColor(styleValue, colorName);
-
-              if (style.includes('primary')) {
-                this.themeService.setThemeColor(styleValue, 'theme-primary');
-              }
-
-              if (style.includes('secondary')) {
-                this.themeService.setThemeColor(styleValue, 'theme-secondary');
-              }
-            };
-          });
+            if (style.includes('secondary')) {
+              this.themeService.setThemeColor(styleValue, 'theme-secondary');
+            }
+          }
         }
-      }
+      });
+    }
+  }
 
-      load(): Observable<Config> {
-        if (!this.configuration$) {
-          this.configuration$ = this.apiService.getConfig().pipe(
-              filter(() => isPlatformBrowser(this.platformId)),
-              map((response: {config: string}) => response.config ? JSON.parse(atob(response.config)) : {}),
-              shareReplay(1));
-          this.configuration$.pipe(take(1), filter(conf => !!conf))
-            .subscribe(conf => { this.config = conf; this.setTheme(conf) });
-        }
-        return this.configuration$;
-      }
+  load(): Observable<Config> {
+    if (!this.configuration$) {
+      this.configuration$ = this.apiService.getConfig().pipe(
+        filter(() => isPlatformBrowser(this.platformId)),
+        map((response: { config: string }) => (response.config ? JSON.parse(atob(response.config)) : {})),
+        shareReplay(1)
+      );
+      this.configuration$
+        .pipe(
+          filter((conf) => !!conf),
+          take(1)
+        )
+        .subscribe((conf) => {
+          this.config = conf;
+          this.setTheme(conf);
+        });
+    }
+    return this.configuration$;
+  }
 }

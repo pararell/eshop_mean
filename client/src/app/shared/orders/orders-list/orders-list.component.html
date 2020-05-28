@@ -1,7 +1,7 @@
 <div class="main">
   <div class="container">
     <mat-progress-bar *ngIf="!orders" mode="indeterminate"></mat-progress-bar>
-    <div class="orders-edit-wrapper" *ngIf="orders">
+    <div class="orders-list-wrapper" *ngIf="orders">
       <div class="card scale-transition"
         *ngFor="let order of orders">
         <div class="card-action">

@@ -43,11 +43,15 @@ export class ThemeEditComponent {
     this.themes$ = this.store.select(fromRoot.getThemes);
 
     this.themesEditForm.valueChanges.subscribe(values => {
-      this.themeService.setColor(values.primaryColor, 'primary-color');
-      this.themeService.setColor(values.secondaryColor, 'secondary-color');
-      this.themeService.setColor(values.backgroundColor, 'background-color');
+      this.themeService.setCSSVariable(values.primaryColor, 'primary-color');
+      this.themeService.setCSSVariable(values.secondaryColor, 'secondary-color');
+      this.themeService.setCSSVariable(values.backgroundColor, 'background-color');
       this.themeService.setThemeColor(values.primaryColor, 'theme-primary');
       this.themeService.setThemeColor(values.secondaryColor, 'theme-secondary');
+      if (values.mainBackground) {
+        this.themeService.setCSSVariable(values.mainBackground, 'main-background');
+        this.themeService.setCSSVariable(`url(${values.mainBackground})`, 'main-background-url');
+      }
     })
   }
 

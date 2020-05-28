@@ -5,6 +5,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { ApiService } from './api.service';
 import { languages } from '../shared/constants';
 import { Translations } from '../shared/models';
+import { take } from 'rxjs/operators';
 
 
 @Injectable({
@@ -36,7 +37,8 @@ export class TranslateService {
 
   getTranslationsData(lang: string) {
     try {
-      return this.apiService.getLangTranslations(lang).subscribe(
+      return this.apiService.getLangTranslations(lang).pipe(take(1))
+       .subscribe(
         (translations: Translations) => {
           if (!lang && translations) {
             this.setLang(translations.lang);

@@ -73,14 +73,14 @@ const routes: Routes = routesAll;
     CookieService,
     {
       provide: APP_INITIALIZER,
-      useFactory: (translateService: TranslateService) => () => translateService.use(''),
-      deps: [ TranslateService ],
+      useFactory: (envConfigService: EnvConfigurationService) => () => envConfigService.load().toPromise(),
+      deps: [EnvConfigurationService],
       multi: true
     },
     {
       provide: APP_INITIALIZER,
-      useFactory: (envConfigService: EnvConfigurationService) => () => envConfigService.load().toPromise(),
-      deps: [EnvConfigurationService],
+      useFactory: (translateService: TranslateService) => () => translateService.use(''),
+      deps: [ TranslateService ],
       multi: true
     }
   ]

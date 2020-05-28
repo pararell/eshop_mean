@@ -23,7 +23,7 @@ export class ThemeService {
     ) {}
 
 
-  setColor(color, type: string): void {
+  setCSSVariable(color, type: string): void {
     this.document.documentElement.style.setProperty(`--${type}`, color);
   }
 

@@ -18,9 +18,21 @@ body {
 }
 
 .main {
+  position: relative;
   flex: 1 0 auto;
-
   @include add-main-background(#fff, var(--background-color), 45deg, 1px, 80px);
+}
+
+.main::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-image: var(--main-background-url);
+  background-repeat: no-repeat;
 }
 
 .container, .container-mid {

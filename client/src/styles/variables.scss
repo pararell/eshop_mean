@@ -79,7 +79,9 @@ $eshop-background:  mat-palette($material-secondary-color, 50);
   --error-color: #{mat-color($eshop-warn)};
   --background-color: #{mat-color($eshop-background)};
   --main-background: '';
+  --main-background-url: url("/");
 }
+
 
 @mixin add-main-background(
   $color1: var(--primary-color),
@@ -113,7 +115,7 @@ $eshop-background:  mat-palette($material-secondary-color, 50);
 
   @if (variable-exists(var(--main-background))) {
     background-size: cover;
-    background-image: var(--main-background);
+    background-image: var(--main-background-url);
     background-repeat: no-repeat;
   }
 }
