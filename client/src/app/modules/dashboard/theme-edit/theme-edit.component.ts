@@ -33,11 +33,7 @@ export class ThemeEditComponent {
 
     this.themesEditForm = this.fb.group({
       titleUrl: ['', Validators.required],
-      active  : false,
-      primaryColor: '#222222',
-      secondaryColor: '#cccccc',
-      backgroundColor: '#eeeeee',
-      mainBackground: ''
+      ...this.startFormValues()
     });
 
     this.themes$ = this.store.select(fromRoot.getThemes);
@@ -58,6 +54,11 @@ export class ThemeEditComponent {
   addTheme(): void {
     if (this.newTheme) {
       this.themesEditForm.get('titleUrl').setValue(this.newTheme);
+      const newForm = {
+        titleUrl:  this.newTheme,
+        ...this.startFormValues()
+      }
+      this.themesEditForm.setValue(newForm);
     }
   }
 
@@ -94,6 +95,16 @@ export class ThemeEditComponent {
   removeTheme(): void {
     this.store.dispatch(new actions.RemoveTheme(this.chosenTheme));
     this.sendRequest = true;
+  }
+
+  private startFormValues() {
+    return {
+      active  : false,
+      primaryColor: '#222222',
+      secondaryColor: '#cccccc',
+      backgroundColor: '#eeeeee',
+      mainBackground: ''
+    }
   }
 
 }
