@@ -260,6 +260,22 @@ export class ApiService {
     return this.http.delete(pageUrl, this.requestOptions);
   }
 
+  getThemes() {
+    const themesUrl = this.apiUrl + '/api/eshop/theme/all';
+    return this.http.get(themesUrl, this.requestOptions);
+  }
+
+  addOrEditTheme(themeReq) {
+    const themeUrl = this.apiUrl + '/api/eshop/theme';
+    return this.http.post(themeUrl, themeReq, this.requestOptions);
+  }
+
+  removeTheme(titleUrl: string) {
+    const themeUrl = this.apiUrl + '/api/eshop/theme/' + titleUrl;
+    return this.http.delete(themeUrl, this.requestOptions);
+  }
+
+
   setHeaders() {
     combineLatest(
       this.store.select(fromRoot.getLang),

@@ -6,26 +6,15 @@ import { ContactDto } from './dto/contact.dto';
 import { PageDto } from './dto/page.dto';
 import { RolesGuard } from '../auth/roles.guard';
 import { Page } from './models/page.model';
+import { Theme } from './models/theme.model';
 
 @Controller('api/eshop')
 export class EshopController {
   constructor(private eshopService: EshopService) {}
 
   @Get('/config')
-  getConfig(): { config: string } {
-    try {
-      return {
-        config: Buffer.from(
-          JSON.stringify(
-            Object.keys(process.env)
-              .filter((key) => key.includes('FE_'))
-              .reduce((prev, curr) => ({ ...prev, [curr]: process.env[curr] }), {})
-          )
-        ).toString('base64'),
-      };
-    } catch {
-      return { config: '' };
-    }
+  getConfig(): Promise<{ config: string }> {
+    return this.eshopService.getConfig();
   }
 
   @Post('/contact')
@@ -54,5 +43,22 @@ export class EshopController {
   @Delete('/page/:titleUrl')
   deletePage(@Param('titleUrl') titleUrl: string): Promise<void> {
     return this.eshopService.deletePage(titleUrl);
+  }
+
+  @Get('/theme/all')
+  getThemes(): Promise<Theme[]> {
+    return this.eshopService.getThemes();
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Post('/theme')
+  addOrEditTheme(@Body() themeDto: any): Promise<Theme> {
+    return this.eshopService.addOrEditTheme(themeDto);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Delete('/theme/:titleUrl')
+  deleteTheme(@Param('titleUrl') titleUrl: string): Promise<void> {
+    return this.eshopService.deleteTheme(titleUrl);
   }
 }

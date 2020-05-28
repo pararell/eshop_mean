@@ -55,6 +55,27 @@ export class AppEffects {
       catchError(() => of(new actions.RemovePageFail()))
   );
 
+  @Effect() getThemes$: Observable<Action> = this._actions.pipe(
+    ofType(EshopActions.GetThemes),
+      switchMap((action: actions.GetUser) => this.apiService.getThemes()),
+      map(res => new actions.GetThemesSuccess(res)),
+      catchError(() => of(new actions.GetThemesFail()))
+  );
+
+  @Effect() addOrEditTheme$: Observable<Action> = this._actions.pipe(
+    ofType(EshopActions.AddOrEditTheme),
+      switchMap((action: actions.AddOrEditTheme) => this.apiService.addOrEditTheme(action.payload)),
+      map(res => new actions.AddOrEditThemeSuccess(res)),
+      catchError(() => of(new actions.AddOrEditThemeFail()))
+  );
+
+  @Effect() removeTheme$: Observable<Action> = this._actions.pipe(
+    ofType(EshopActions.RemoveTheme),
+      switchMap((action: actions.RemoveTheme) => this.apiService.removeTheme(action.payload)),
+      map(res => new actions.RemoveThemeSuccess(res)),
+      catchError(() => of(new actions.RemoveThemeFail()))
+  );
+
   // PRODUCT
 
   @Effect() getProducts$: Observable<Action> = this._actions.pipe(

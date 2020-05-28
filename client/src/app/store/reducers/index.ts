@@ -53,5 +53,6 @@ export const getAllProducts = createSelector(Dashboard, fromDashboard.allProduct
 export const getAllCategories = createSelector(Dashboard, fromDashboard.allCategories);
 
 export const getPages = createSelector(Eshop, fromEshop.pages);
+export const getThemes = createSelector(Eshop, fromEshop.themes);
 export const getEshopLoading = createSelector(Eshop, fromEshop.loading);
 export const getEshopError = createSelector(Eshop, fromEshop.error);

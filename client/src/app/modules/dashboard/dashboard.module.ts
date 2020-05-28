@@ -25,6 +25,7 @@ import { PipeModule } from '../../pipes/pipe.module';
 import { TranslationsEditComponent } from './translations-edit/translations-edit.component';
 import { AllProductsComponent } from './all-products/all-products.component';
 import { PagesEditComponent } from './pages-edit/pages-edit.component';
+import { ThemeEditComponent } from './theme-edit/theme-edit.component';
 import { CategoriesEditComponent } from './categories-edit/categories-edit.component';
 
 
@@ -76,7 +77,8 @@ const DASHBOARD_ROUTER: Routes = [
     DashboardComponent,
     TinyEditorComponent,
     TranslationsEditComponent,
-    PagesEditComponent
+    PagesEditComponent,
+    ThemeEditComponent
   ]
 })
 export class DashboardModule { }

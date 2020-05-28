@@ -51,7 +51,7 @@ export class CarouselComponent implements AfterViewInit, OnDestroy {
             this.showArrowsSub$.next(true);
           }
       });
-      this.autoSlideSub = timer(0, this.intervalForSlider).subscribe(() => { this.onClickRight(); })
+      this.autoSlideSub = timer(this.intervalForSlider, this.intervalForSlider).subscribe(() => { this.onClickRight(); })
     }
   }
 

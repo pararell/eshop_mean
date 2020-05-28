@@ -1,10 +1,8 @@
-@import 'variables';
-
 :host {
   color: #fff;
 
   .footer {
-    background: linear-gradient(to right, $primary-color, $secondary-color);
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
 
     &-title {
       font-size: 20px;
@@ -17,7 +15,7 @@
     }
 
     &-copyright {
-      background: linear-gradient(to right, $primary-color, $secondary-color);
+      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
     }
 
     &-links {

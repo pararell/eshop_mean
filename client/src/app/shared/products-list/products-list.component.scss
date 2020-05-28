@@ -1,5 +1,3 @@
-@import 'variables';
-
 :host {
   display: flex;
   flex-wrap: wrap;
@@ -115,10 +113,10 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      color: $primary-color;
+      color: var(--primary-color);
       padding: 5px 20px;
       position: relative;
-      box-shadow: 0 0 40px -9px $primary-color;
+      box-shadow: 0 0 40px -9px var(--primary-color);
       background: #fff;
       z-index: 2;
       overflow: visible;
@@ -135,17 +133,17 @@
 
     &-detail {
       font-size: 16px;
-      color: $primary-color;
+      color: var(--primary-color);
       margin-top: -5px;
       cursor: pointer;
     }
   }
 
   /deep/ .cart_show-icon {
-    color: $primary-color !important;
+    color: var(--primary-color) !important;
   }
 
   /deep/ .cart_show-quantity {
-    color: $primary-color !important;
+    color: var(--primary-color) !important;
   }
 }

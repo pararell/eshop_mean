@@ -1,5 +1,3 @@
-@import 'variables';
-
 :host {
   display: block;
 
@@ -29,11 +27,11 @@
     }
 
     &-success {
-      color: $success-color;
+      color: var(--success-color);
     }
 
     &-error {
-      color: $error-color;
+      color: var(--error-color);
     }
   }
 }

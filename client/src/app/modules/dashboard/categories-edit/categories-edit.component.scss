@@ -5,7 +5,7 @@
 
   @media screen and (max-width: 600px) {
     /deep/ .mat-radio-button ~ .mat-radio-button {
-      margin-left: 0;
+      margin-left: 4px;
     }
   }
 

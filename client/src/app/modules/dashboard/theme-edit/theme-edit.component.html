@@ -1,0 +1,110 @@
+<ng-container *ngIf="!sendRequest">
+  <div class="theme_edit-top">
+    <div>
+      <mat-form-field class="theme_edit-field">
+        <mat-label>{{ 'Add_theme' | translate | async }}</mat-label>
+        <input
+          matInput
+          [(ngModel)]="newTheme">
+      </mat-form-field>
+      <button
+        class="translations-button"
+        mat-flat-button
+        color="accent"
+        (click)="addTheme()">
+        +
+      </button>
+    </div>
+    <mat-form-field class="theme-select">
+      <mat-label>
+        {{ 'From_existing_themes' | translate | async }}
+      </mat-label>
+      <mat-select
+        [(ngModel)]="chosenTheme"
+        (ngModelChange)="choseTheme()">
+        <mat-option
+          *ngFor="let option of themes$ | async;"
+          [value]="option.titleUrl">
+          {{option.titleUrl}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <form class="theme_edit-form"
+    [formGroup]="themesEditForm"
+    *ngIf="themesEditForm.get('titleUrl').value">
+    <h2>{{ themesEditForm.get('titleUrl').value }}</h2>
+    <mat-form-field class="theme_edit-field">
+      <mat-label>Primary color</mat-label>
+      <input
+        matInput
+        type="color"
+        formControlName="primaryColor">
+    </mat-form-field>
+    <mat-form-field class="theme_edit-field">
+      <mat-label>Secondary color</mat-label>
+      <input
+        matInput
+        type="color"
+        formControlName="secondaryColor">
+    </mat-form-field>
+    <mat-form-field class="theme_edit-field">
+      <mat-label>Background color</mat-label>
+      <input
+        matInput
+        type="color"
+        formControlName="backgroundColor">
+    </mat-form-field>
+    <mat-form-field class="theme_edit-field-full">
+      <mat-label>Main Background</mat-label>
+      <input
+        matInput
+        formControlName="mainBackground">
+    </mat-form-field>
+    <mat-radio-group
+      aria-label="Active"
+      formControlName="active">
+      <mat-radio-button
+        name="active"
+        [value]="true"
+        id="active">
+        {{ 'Active' | translate | async }}
+      </mat-radio-button>
+      <mat-radio-button
+        name="inactive"
+        [value]="false"
+        id="inactive">
+        {{ 'Inactive' | translate | async }}
+      </mat-radio-button>
+    </mat-radio-group>
+  </form>
+  <div class="theme_edit-cta">
+    <button
+    mat-flat-button
+    color="primary"
+    [disabled]="themesEditForm.invalid"
+    (click)="saveTheme()">
+    Save
+  </button>
+  <button
+    mat-flat-button
+    color="primary"
+    [disabled]="themesEditForm.invalid"
+    (click)="removeTheme()">
+    Remove
+  </button>
+  </div>
+
+</ng-container>
+<div
+  class="theme_edit-after-send"
+  *ngIf="sendRequest">
+  <span> {{ 'Request_sended' | translate | async }}</span>
+  <button
+    class="product_edit-btn-action"
+    mat-raised-button
+    color="primary"
+    (click)="sendRequest = !sendRequest">
+    {{ 'Again' | translate | async }}
+  </button>
+</div>

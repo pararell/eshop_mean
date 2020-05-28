@@ -1,5 +1,3 @@
-@import 'variables';
-
 :host {
   display: flex;
   min-height: 100vh;
@@ -12,7 +10,7 @@
 
   .home {
     &-primary-header {
-      color: $primary-color;
+      color: var(--primary-color);
       background: #fff;
       border-top: 1px solid rgba(0, 0, 0, 0.1);
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -60,7 +58,7 @@
     }
 
     &-mobile-filter {
-      color: $primary-color;
+      color: var(--primary-color);
       position: absolute;
       display: flex;
       cursor: pointer;

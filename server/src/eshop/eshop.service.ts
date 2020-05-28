@@ -7,11 +7,38 @@ import { ContactDto } from './dto/contact.dto';
 import { PageDto } from './dto/page.dto';
 import { Cart } from '../cart/utils/cart';
 import { Page } from './models/page.model';
-
+import { Theme } from './models/theme.model';
 
 @Injectable()
 export class EshopService {
-  constructor(@InjectModel('Page') private pageModel: Model<Page>, private httpService: HttpService) {}
+  constructor(
+    @InjectModel('Page') private pageModel: Model<Page>,
+    @InjectModel('Theme') private themeModel: Model<Theme>,
+    private httpService: HttpService) {}
+
+
+  async getConfig() {
+    try {
+      const theme = await this.themeModel.findOne({active: true});
+      const configFomEnvToFE = Object.keys(process.env)
+        .filter((key) => key.includes('FE_'))
+        .reduce((prev, curr) => ({ ...prev, [curr]: process.env[curr] }), {});
+      const themeStyles = theme && Object.keys(theme.styles).length
+        ? { styles: theme.styles }
+        : {};
+
+      return {
+        config: Buffer.from(
+          JSON.stringify(
+          {...configFomEnvToFE, ...themeStyles}
+          )
+        ).toString('base64'),
+      };
+    } catch {
+      return { config: '' };
+    }
+  }
+
 
   async sendContact(contactDto: ContactDto, cart: Cart): Promise<void> {
     const { token } = contactDto;
@@ -86,7 +113,48 @@ export class EshopService {
     const found = await this.pageModel.findOneAndRemove({ titleUrl });
 
       if (!found) {
-        throw new NotFoundException(`Product with title ${titleUrl} not found`);
+        throw new NotFoundException(`Page with title ${titleUrl} not found`);
+      }
+  }
+
+  async getThemes(): Promise<Theme[]> {
+    const themes = await this.themeModel.find({ });
+    return themes;
+  }
+
+  async addOrEditTheme(themeDto: any): Promise<Theme> {
+    const {titleUrl} = themeDto;
+    const found = await this.themeModel.findOne({ titleUrl });
+
+    if (!found) {
+      const newTheme = Object.assign(themeDto, {
+        dateAdded : Date.now()
+      });
+
+      try {
+        const theme = await new this.themeModel(newTheme);
+        theme.save();
+        return theme;
+      } catch {
+        throw new BadRequestException();
+      }
+    }
+
+    if (found) {
+      try {
+        const theme = await found.updateOne(themeDto, {upsert: true});
+        return theme;
+      } catch {
+        throw new BadRequestException();
+      }
+    }
+  }
+
+  async deleteTheme(titleUrl: string) {
+    const found = await this.themeModel.findOneAndRemove({ titleUrl });
+
+      if (!found) {
+        throw new NotFoundException(`Theme with title ${titleUrl} not found`);
       }
   }
 

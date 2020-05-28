@@ -7,12 +7,14 @@ export interface State {
   loading: boolean;
   error: string;
   pages: Page[];
+  themes: any[];
 }
 
 export const initialState: State = {
   loading: false,
   error: '',
-  pages: null
+  pages: null,
+  themes: null
 };
 
 
@@ -21,6 +23,10 @@ export function eshopReducer(state = initialState, action): State {
 
     case EshopActions.GetPagesSuccess: {
       return { ...state, pages: action.payload };
+    }
+
+    case EshopActions.GetThemesSuccess: {
+      return { ...state, themes: action.payload };
     }
 
     case EshopActions.SendContact: {
@@ -44,3 +50,4 @@ export function eshopReducer(state = initialState, action): State {
 export const loading = (state: State) => state.loading;
 export const error = (state: State) => state.error;
 export const pages = (state: State) => state.pages;
+export const themes = (state: State) => state.themes;
