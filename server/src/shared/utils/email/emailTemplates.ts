@@ -1,5 +1,5 @@
 const emailTemplates = (cart, order) => {
-  function prepareCartItems(items) {
+  function prepareCartItems(items, currency) {
     return items.map((product) => {
       return `<div style="background-color:transparent;">
         <div
@@ -7,20 +7,20 @@ const emailTemplates = (cart, order) => {
             class="block-grid four-up"
         >
             <div style="border-collapse: collapse;display: table;width: 100%;background-color:#ffffff;">
-  
+
                 <div
                     class="col num3"
                     style="max-width: 320px;min-width: 125px;display: table-cell;vertical-align: top;"
                 >
                     <div style="background-color: transparent; width: 100% !important;">
-  
-  
+
+
                             <div
                                 align="center"
                                 class="img-container center  autowidth  fullwidth"
                                 style="padding-right: 0px;  padding-left: 20px;"
                             >
-  
+
                                 <div style="line-height:10px;font-size:1px"></div>
                                 <img
                                     class="center  autowidth  fullwidth"
@@ -38,23 +38,23 @@ const emailTemplates = (cart, order) => {
                                     style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: 0;height: auto;float: none;width: 100%;max-width: 105px"
                                     width="105"
                                 >
-  
+
                             </div>
-  
+
                         </div>
-  
+
                     </div>
                 </div>
-  
+
                 <div
                     class="col num3"
                     style="max-width: 320px;min-width: 125px;display: table-cell;vertical-align: top;"
                 >
                     <div style="background-color: transparent; width: 100% !important;">
-  
-  
+
+
                             <div class>
-  
+
                                 <div style="color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;line-height:120%; padding-right: 0px; padding-left: 20px; padding-top: 30px; padding-bottom: 0px;">
                                     <div style="font-size:12px;line-height:14px;color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;text-align:left;">
                                         <p style="margin: 0;font-size: 12px;line-height: 14px">
@@ -64,22 +64,22 @@ const emailTemplates = (cart, order) => {
                                         </p>
                                     </div>
                                 </div>
-  
+
                             </div>
-  
-  
+
+
                     </div>
                 </div>
-  
+
                 <div
                     class="col num3"
                     style="max-width: 320px;min-width: 125px;display: table-cell;vertical-align: top;"
                 >
                     <div style="background-color: transparent; width: 100% !important;">
-  
-  
+
+
                             <div class>
-  
+
                                 <div style="color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;line-height:120%; padding-right: 10px; padding-left: 10px; padding-top: 30px; padding-bottom: 10px; float: right;">
                                     <div style="font-size:12px;line-height:14px;color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;text-align:left;">
                                         <p style="margin: 0;font-size: 12px;line-height: 14px;text-align: right">
@@ -89,28 +89,28 @@ const emailTemplates = (cart, order) => {
                                         </p>
                                     </div>
                                 </div>
-  
+
                             </div>
-  
-  
+
+
                     </div>
                 </div>
-  
+
                 <div
                     class="col num3"
                     style="max-width: 320px;min-width: 125px;display: table-cell;vertical-align: top;"
                 >
                     <div style="background-color: transparent; width: 100% !important;">
-  
-  
+
+
                             <div class>
-  
+
                                 <div style="color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;line-height:120%; padding-right: 25px; padding-left: 10px; padding-top: 25px; padding-bottom: 10px; float: right;">
                                     <div style="font-size:12px;line-height:14px;color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;text-align:left;">
                                         <p style="margin: 0;font-size: 12px;line-height: 14px;text-align: right">
                                             <span style="font-size: 16px; line-height: 19px;">${
                                               product.price
-                                            }€ </span>
+                                            } ${currency} </span>
                                         </p>
                                     </div>
                                 </div>
@@ -142,36 +142,36 @@ const emailTemplates = (cart, order) => {
         body {
     margin: 0;
     padding: 0; }
-  
+
   table, tr, td {
     vertical-align: top;
     border-collapse: collapse; }
-  
+
   * {
     line-height: inherit; }
-  
+
   a[x-apple-data-detectors=true] {
     color: inherit !important;
     text-decoration: none !important; }
-  
+
   [owa] .img-container div, [owa] .img-container button {
     display: block !important; }
-  
+
   [owa] .fullwidth button {
     width: 100% !important; }
-  
+
   [owa] .block-grid .col {
     display: table-cell;
     float: none !important;
     vertical-align: top; }
-  
+
   .ie-browser .num12, .ie-browser .block-grid, [owa] .num12, [owa] .block-grid {
     width: 500px !important; }
-  
+
   .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {
     line-height: 100%; }
-  
-  
+
+
   @media only screen and (min-width: 520px) {
     .block-grid {
       width: 500px !important; }
@@ -205,7 +205,7 @@ const emailTemplates = (cart, order) => {
       width: 45px !important; }
     .block-grid.twelve-up .col {
       width: 41px !important; } }
-  
+
   @media (max-width: 520px) {
     .block-grid, .col {
       min-width: 320px !important;
@@ -239,7 +239,7 @@ const emailTemplates = (cart, order) => {
       display: none;
       overflow: hidden;
       font-size: 0px; } }
-  
+
       </style>
       </head>
       <body
@@ -257,18 +257,18 @@ const emailTemplates = (cart, order) => {
           width: 100%!important;
           display: block!important;
         }
-  
+
         .col {
           min-width: 320px!important;
           max-width: 100%!important;
           width: 100%!important;
           display: block!important;
         }
-  
+
           .col > div {
             margin: 0 auto;
           }
-  
+
         img.fullwidth {
           max-width: 100%!important;
         }
@@ -313,24 +313,24 @@ const emailTemplates = (cart, order) => {
               <tbody>
                   <tr style="vertical-align: top">
                       <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
-  
-  
+
+
                           <div style="background-color:transparent;">
                               <div
                                   style="Margin: 0 auto;min-width: 320px;max-width: 500px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: #ffffff;"
                                   class="block-grid"
                               >
                                   <div style="border-collapse: collapse;display: table;width: 100%;background-color:#ffffff;">
-  
+
                                       <div
                                           class="col num12"
                                           style="min-width: 320px;max-width: 500px;display: table-cell;vertical-align: top;"
                                       >
                                           <div style="background-color: transparent; width: 100% !important;">
-  
-  
+
+
                                                   <div class>
-  
+
                                                       <div style="color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;line-height:120%; padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 10px;">
                                                           <div style="font-size:12px;line-height:14px;text-align:center;color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;">
                                                               <p style="margin: 0;font-size: 12px;line-height: 14px;text-align: center">
@@ -340,7 +340,7 @@ const emailTemplates = (cart, order) => {
                                                           </div>
                                                       </div>
                                                   </div>
-  
+
                                                   <table
                                                       border="0"
                                                       cellpadding="0"
@@ -406,13 +406,13 @@ const emailTemplates = (cart, order) => {
                                                           </div>
                                                       </div>
                                                   </div>
-  
+
                                                   <div
                                                       align="center"
                                                       class="button-container center"
                                                       style="padding-right: 15px; padding-left: 15px; padding-top:15px; padding-bottom:15px;"
                                                   >
-  
+
                                                       <div style="color: #ffffff; background-color: #3AAEE0; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; max-width: 205px; width: 165px;width: auto; border-top: 0px solid transparent; border-right: 0px solid transparent; border-bottom: 0px solid transparent; border-left: 0px solid transparent; padding-top: 15px; padding-right: 20px; padding-bottom: 15px; padding-left: 20px; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; text-align: center; mso-border-alt: none;">
                                                           <span style="font-size:12px;line-height:24px;">
                                                               <strong>
@@ -422,18 +422,18 @@ const emailTemplates = (cart, order) => {
                                                                         order.orderId
                                                                       }">
                                                                       ${'VIEW ORDER STATUS'}
-  
+
                                                                   </a>
                                                               </strong>
                                                           </span>
                                                       </div>
-  
+
                                                   </div>
-  
-  
+
+
                                           </div>
                                       </div>
-  
+
                                   </div>
                               </div>
                           </div>
@@ -443,16 +443,16 @@ const emailTemplates = (cart, order) => {
                                   class="block-grid two-up"
                               >
                                   <div style="border-collapse: collapse;display: table;width: 100%;background-color:#e2e2e2;">
-  
+
                                       <div
                                           class="col num6"
                                           style="max-width: 320px;min-width: 250px;display: table-cell;vertical-align: top;"
                                       >
                                           <div style="width: 100% !important;">
-  
-  
+
+
                                                   <div class>
-  
+
                                                       <div style="color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;line-height:150%; padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 10px;">
                                                           <div style="line-height:18px;font-size:12px;color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;text-align:left;">
                                                               <p style="margin: 0;font-size: 12px;line-height: 18px">
@@ -487,21 +487,21 @@ const emailTemplates = (cart, order) => {
                                                               </p>
                                                           </div>
                                                       </div>
-  
+
                                                   </div>
-  
+
                                           </div>
                                       </div>
-  
+
                                       <div
                                           class="col num6"
                                           style="max-width: 320px;min-width: 250px;display: table-cell;vertical-align: top;"
                                       >
                                           <div style="width: 100% !important;">
-  
-  
+
+
                                                   <div class>
-  
+
                                                       <div style="color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;line-height:150%; padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 10px;">
                                                           <div style="font-size:12px;line-height:18px;color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;text-align:left;">
                                                               <p style="margin: 0;font-size: 12px;line-height: 18px">
@@ -545,7 +545,7 @@ const emailTemplates = (cart, order) => {
                                                               </p>
                                                           </div>
                                                       </div>
-  
+
                                                   </div>
                                           </div>
                                       </div>
@@ -558,13 +558,13 @@ const emailTemplates = (cart, order) => {
                                   class="block-grid"
                               >
                                   <div style="border-collapse: collapse;display: table;width: 100%;background-color:#ffffff;">
-  
+
                                       <div
                                           class="col num12"
                                           style="min-width: 320px;max-width: 500px;display: table-cell;vertical-align: top;"
                                       >
                                           <div style="background-color: transparent; width: 100% !important;">
-  
+
                                                   <table
                                                       border="0"
                                                       cellpadding="0"
@@ -600,11 +600,11 @@ const emailTemplates = (cart, order) => {
                                                           </tr>
                                                       </tbody>
                                                   </table>
-  
-  
+
+
                                           </div>
                                       </div>
-  
+
                                   </div>
                               </div>
                           </div>
@@ -614,15 +614,15 @@ const emailTemplates = (cart, order) => {
                                   class="block-grid mixed-two-up"
                               >
                                   <div style="border-collapse: collapse;display: table;width: 100%;background-color:#ffffff;">
-  
+
                                       <div
                                           class="col num4"
                                           style="display: table-cell;vertical-align: top;max-width: 320px;min-width: 164px;"
                                       >
                                           <div style="background-color: #F5F5F5; width: 100% !important;">
-  
+
                                                   <div class>
-  
+
                                                       <div style="color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;line-height:120%; padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 10px;">
                                                           <div style="font-size:12px;line-height:14px;color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;text-align:left;">
                                                               <p style="margin: 0;font-size: 12px;line-height: 14px">
@@ -633,55 +633,55 @@ const emailTemplates = (cart, order) => {
                                                               </p>
                                                           </div>
                                                       </div>
-  
+
                                                   </div>
-  
-  
+
+
                                           </div>
                                       </div>
-  
+
                                       <div
                                           class="col num8"
                                           style="display: table-cell;vertical-align: top;min-width: 320px;max-width: 328px;"
                                       >
                                           <div style="background-color: #F5F5F5; width: 100% !important;">
-  
+
                                                   <div class>
-  
+
                                                       <div style="color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;line-height:120%; padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 10px;">
                                                           <div style="font-size:12px;line-height:14px;color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;text-align:left;">
                                                               <p style="margin: 0;font-size: 12px;line-height: 14px;text-align: right">
-  
+
                                                                   <br>
                                                               </p>
                                                           </div>
                                                       </div>
-  
+
                                                   </div>
-  
-  
+
+
                                           </div>
                                       </div>
-  
+
                                   </div>
                               </div>
                           </div>
-                          ${prepareCartItems(cart.items)}
-  
+                          ${prepareCartItems(cart.items, order.currency)}
+
                           <div style="background-color:transparent;">
                               <div
                                   style="Margin: 0 auto;min-width: 320px;max-width: 500px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: #ffffff;"
                                   class="block-grid"
                               >
                                   <div style="border-collapse: collapse;display: table;width: 100%;background-color:#ffffff;">
-  
+
                                       <div
                                           class="col num12"
                                           style="min-width: 320px;max-width: 500px;display: table-cell;vertical-align: top;"
                                       >
                                           <div style="background-color: transparent; width: 100% !important;">
-  
-  
+
+
                                                   <table
                                                       border="0"
                                                       cellpadding="0"
@@ -717,7 +717,7 @@ const emailTemplates = (cart, order) => {
                                                           </tr>
                                                       </tbody>
                                                   </table>
-  
+
                                           </div>
                                       </div>
                                   </div>
@@ -729,16 +729,16 @@ const emailTemplates = (cart, order) => {
                                   class="block-grid mixed-two-up"
                               >
                                   <div style="border-collapse: collapse;display: table;width: 100%;background-color:#ffffff;">
-  
+
                                       <div
                                           class="col num8"
                                           style="display: table-cell;vertical-align: top;min-width: 320px;max-width: 328px;"
                                       >
                                           <div style="background-color: transparent; width: 100% !important;">
-  
-  
+
+
                                                   <div class>
-  
+
                                                       <div style="color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;line-height:200%; padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 10px;">
                                                           <div style="font-size:12px;line-height:24px;color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;text-align:left;">
                                                               <p style="margin: 0;font-size: 14px;line-height: 28px;text-align: right">
@@ -749,7 +749,7 @@ const emailTemplates = (cart, order) => {
                                                               <p style="margin: 0;font-size: 14px;line-height: 28px;text-align: right">
                                                                   <span style="font-size: 16px; line-height: 32px;"> ${'Shipping'}:</span>
                                                               </p>
-  
+
                                                               <p style="margin: 0;font-size: 14px;line-height: 28px;text-align: right">
                                                                   <span style="font-size: 16px; line-height: 32px;"> ${'Tax'}:</span>
                                                               </p>
@@ -761,20 +761,20 @@ const emailTemplates = (cart, order) => {
                                                           </div>
                                                       </div>
                                                   </div>
-  
-  
+
+
                                           </div>
                                       </div>
-  
+
                                       <div
                                           class="col num4"
                                           style="display: table-cell;vertical-align: top;max-width: 320px;min-width: 164px;"
                                       >
                                           <div style="background-color: transparent; width: 100% !important;">
-  
-  
+
+
                                                   <div class>
-  
+
                                                       <div style="color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;line-height:200%; padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 10px;">
                                                           <div style="font-size:12px;line-height:24px;color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;text-align:left;">
                                                               <p style="margin: 0;font-size: 12px;line-height: 24px;text-align: right">
@@ -820,16 +820,16 @@ const emailTemplates = (cart, order) => {
                                   class="block-grid"
                               >
                                   <div style="border-collapse: collapse;display: table;width: 100%;background-color:#ffffff;">
-  
+
                                       <div
                                           class="col num12"
                                           style="min-width: 320px;max-width: 500px;display: table-cell;vertical-align: top;"
                                       >
                                           <div style="background-color: #3AAEE0; width: 100% !important;">
-  
-  
+
+
                                                   <div class>
-  
+
                                                       <div style="color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;line-height:120%; padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 10px;">
                                                           <div style="font-size:12px;line-height:14px;color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;text-align:left;">
                                                               <p style="margin: 0;font-size: 12px;line-height: 14px;text-align: center">
@@ -841,28 +841,28 @@ const emailTemplates = (cart, order) => {
                                                           </div>
                                                       </div>
                                                   </div>
-  
-  
+
+
                                           </div>
                                       </div>
                                   </div>
                               </div>
                           </div>
-  
+
                           <div style="background-color:transparent;">
                               <div
                                   style="Margin: 0 auto;min-width: 320px;max-width: 500px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"
                                   class="block-grid"
                               >
                                   <div style="border-collapse: collapse;display: table;width: 100%;background-color:transparent;">
-  
+
                                       <div
                                           class="col num12"
                                           style="min-width: 320px;max-width: 500px;display: table-cell;vertical-align: top;"
                                       >
                                           <div style="background-color: transparent; width: 100% !important;">
-  
-  
+
+
                                                   <table
                                                       border="0"
                                                       cellpadding="0"
@@ -898,9 +898,9 @@ const emailTemplates = (cart, order) => {
                                                           </tr>
                                                       </tbody>
                                                   </table>
-  
+
                                                   <div class>
-  
+
                                                       <div style="color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;line-height:120%; padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 10px;">
                                                           <div style="font-size:12px;line-height:14px;color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;text-align:left;">
                                                               <p style="margin: 0;font-size: 12px;line-height: 14px;text-align: center">
@@ -921,7 +921,7 @@ const emailTemplates = (cart, order) => {
                                                           </div>
                                                       </div>
                                                   </div>
-  
+
                                           </div>
                                       </div>
                                   </div>
@@ -931,7 +931,7 @@ const emailTemplates = (cart, order) => {
                   </tr>
               </tbody>
           </table>
-  
+
       </body>
   </html>`;
 };
