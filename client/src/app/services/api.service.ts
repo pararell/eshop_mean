@@ -275,6 +275,20 @@ export class ApiService {
     return this.http.delete(themeUrl, this.requestOptions);
   }
 
+  getConfigs() {
+    const configsUrl = this.apiUrl + '/api/eshop/config/all';
+    return this.http.get(configsUrl, this.requestOptions);
+  }
+
+  addOrEditConfig(configReq) {
+    const configUrl = this.apiUrl + '/api/eshop/config';
+    return this.http.post(configUrl, configReq, this.requestOptions);
+  }
+
+  removeConfig(titleUrl: string) {
+    const configUrl = this.apiUrl + '/api/eshop/config/' + titleUrl;
+    return this.http.delete(configUrl, this.requestOptions);
+  }
 
   setHeaders() {
     combineLatest(

@@ -27,21 +27,23 @@
   <mat-drawer-content>
     <div class="main">
       <div class="home-product" *ngIf="(products$ | async) as products">
-        <app-carousel [intervalForSlider]="20000">
-          <ng-container *ngFor="let product of products | slice:0:3">
-            <app-product-content *ngIf="(cartIds$ | async) as cartIds"
-              [product]="product"
-              [categories]="categories$ | async"
-              [cartIds]="cartIds"
-              [currency]="currency$ | async"
-              [convertVal]="convertVal$ | async"
-              [lang]="lang$ | async"
-              [withLink]="true"
-              (addProduct)="addToCart($event)"
-              (removeProduct)="removeFromCart($event)">
-            </app-product-content>
-          </ng-container>
-        </app-carousel>
+        <div class="container">
+          <app-carousel [intervalForSlider]="20000">
+            <ng-container *ngFor="let product of products | slice:0:3">
+              <app-product-content *ngIf="(cartIds$ | async) as cartIds"
+                [product]="product"
+                [categories]="categories$ | async"
+                [cartIds]="cartIds"
+                [currency]="currency$ | async"
+                [convertVal]="convertVal$ | async"
+                [lang]="lang$ | async"
+                [withLink]="true"
+                (addProduct)="addToCart($event)"
+                (removeProduct)="removeFromCart($event)">
+              </app-product-content>
+            </ng-container>
+          </app-carousel>
+        </div>
       </div>
       <div class="home-primary-header"
         *ngIf="(categories$ | async)?.length">

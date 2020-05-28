@@ -47,6 +47,8 @@ export class ThemeEditComponent {
       if (values.mainBackground) {
         this.themeService.setCSSVariable(values.mainBackground, 'main-background');
         this.themeService.setCSSVariable(`url(${values.mainBackground})`, 'main-background-url');
+      } else {
+        this.themeService.setCSSVariable(`url(/)`, 'main-background-url');
       }
     })
   }

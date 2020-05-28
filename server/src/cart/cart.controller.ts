@@ -10,7 +10,7 @@ export class CartController {
 
   @Get()
   getCart(@Session() session, @Headers('lang') lang: string): Promise<CartModel> {
-    return this.cartService.getCart(session.cart, lang);
+    return this.cartService.getCart(session, lang);
   }
 
   @Get('/add')
@@ -19,7 +19,7 @@ export class CartController {
     @Query(ValidationPipe) getCartChangeDto: GetCartChangeDto,
     @Headers('lang') lang: string
   ): Promise<CartModel> {
-    const { newCart, langCart } = await this.cartService.addToCart(session.cart, getCartChangeDto, lang);
+    const { newCart, langCart } = await this.cartService.addToCart(session, getCartChangeDto, lang);
     session.cart = newCart;
     return langCart;
   }
@@ -30,7 +30,7 @@ export class CartController {
     @Query(ValidationPipe) getCartChangeDto: GetCartChangeDto,
     @Headers('lang') lang: string
   ): Promise<CartModel> {
-    const { newCart, langCart } = await this.cartService.removeFromCart(session.cart, getCartChangeDto, lang);
+    const { newCart, langCart } = await this.cartService.removeFromCart(session, getCartChangeDto, lang);
     session.cart = newCart;
     return langCart;
   }

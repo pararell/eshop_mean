@@ -14,6 +14,7 @@
       background: #fff;
       border-top: 1px solid rgba(0, 0, 0, 0.1);
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      position: relative;
     }
 
     &-primary-container {
@@ -21,13 +22,8 @@
     }
 
     &-product {
-      padding: 15px;
       background: #fff;
       position: relative;
-
-      @media screen and (max-width: 600px) {
-        padding: 0;
-      }
     }
 
     &-title {

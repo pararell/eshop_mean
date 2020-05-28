@@ -1,6 +1,6 @@
-<div class="slider-container" #slideContainer>
+<div class="slider-container" [class.slider-with-background]="withBackground" #slideContainer>
   <button class="slider-arrow" *ngIf="showArrowsSub$ | async"
-     mat-raised-button 
+     mat-raised-button
     (click)="onClickLeft()">
     <i class="nav-cart-icon material-icons md-18">keyboard_arrow_left</i>
   </button>

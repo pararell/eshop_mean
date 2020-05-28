@@ -76,6 +76,27 @@ export class AppEffects {
       catchError(() => of(new actions.RemoveThemeFail()))
   );
 
+  @Effect() getConfigs$: Observable<Action> = this._actions.pipe(
+    ofType(EshopActions.GetConfigs),
+      switchMap((action: actions.GetUser) => this.apiService.getConfigs()),
+      map(res => new actions.GetConfigsSuccess(res)),
+      catchError(() => of(new actions.GetConfigsFail()))
+  );
+
+  @Effect() addOrEditConfig$: Observable<Action> = this._actions.pipe(
+    ofType(EshopActions.AddOrEditConfig),
+      switchMap((action: actions.AddOrEditConfig) => this.apiService.addOrEditConfig(action.payload)),
+      map(res => new actions.AddOrEditConfigSuccess(res)),
+      catchError(() => of(new actions.AddOrEditConfigFail()))
+  );
+
+  @Effect() removeConfig$: Observable<Action> = this._actions.pipe(
+    ofType(EshopActions.RemoveConfig),
+      switchMap((action: actions.RemoveConfig) => this.apiService.removeConfig(action.payload)),
+      map(res => new actions.RemoveConfigSuccess(res)),
+      catchError(() => of(new actions.RemoveConfigFail()))
+  );
+
   // PRODUCT
 
   @Effect() getProducts$: Observable<Action> = this._actions.pipe(

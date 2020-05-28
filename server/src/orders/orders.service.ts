@@ -26,8 +26,9 @@ export class OrdersService {
     return orders;
   }
 
-  async addOrder(orderDto: OrderDto, cart: Cart, lang): Promise<{error: string; result: Order}> {
-    const cartForLang = prepareCart(cart, lang);
+  async addOrder(orderDto: OrderDto, session, lang): Promise<{error: string; result: Order}> {
+    const { cart, config } = session;
+    const cartForLang = prepareCart(cart, lang, config);
     const newOrder = await new this.orderModel(this.createOrder(orderDto, cartForLang, 'PAYMENT_ON_DELIVERY'));
     newOrder.save();
     try {
@@ -53,8 +54,9 @@ export class OrdersService {
     return orders;
   }
 
-  async orderWithStripe(body, cart: Cart, lang: string): Promise<{error: string; result: Order}> {
-    const cartForLang = prepareCart(cart, lang);
+  async orderWithStripe(body, session, lang: string): Promise<{error: string; result: Order}> {
+    const { cart, config } = session;
+    const cartForLang = prepareCart(cart, lang, config);
     const charge = await stripe.charges.create({
       amount        : cartForLang.totalPrice * 100,
       currency      : body.currency,
@@ -136,7 +138,7 @@ export class OrdersService {
         cart,
         currency  : order.currency,
         orderId   : order.orderId,
-        adress    : order.addresses[0],
+        address    : order.addresses[0],
         notes     : order.notes,
         date      : new Date()
       };

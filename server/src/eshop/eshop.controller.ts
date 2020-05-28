@@ -7,14 +7,15 @@ import { PageDto } from './dto/page.dto';
 import { RolesGuard } from '../auth/roles.guard';
 import { Page } from './models/page.model';
 import { Theme } from './models/theme.model';
+import { Config } from './models/config.model';
 
 @Controller('api/eshop')
 export class EshopController {
   constructor(private eshopService: EshopService) {}
 
   @Get('/config')
-  getConfig(): Promise<{ config: string }> {
-    return this.eshopService.getConfig();
+  getConfig(@Session() session): Promise<{ config: string }> {
+    return this.eshopService.getConfig(session);
   }
 
   @Post('/contact')
@@ -60,5 +61,22 @@ export class EshopController {
   @Delete('/theme/:titleUrl')
   deleteTheme(@Param('titleUrl') titleUrl: string): Promise<void> {
     return this.eshopService.deleteTheme(titleUrl);
+  }
+
+  @Get('/config/all')
+  getConfigs(): Promise<Config[]> {
+    return this.eshopService.getConfigs();
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Post('/config')
+  addOrEditConfig(@Body() configDto: any): Promise<Config> {
+    return this.eshopService.addOrEditConfig(configDto);
+  }
+
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Delete('/config/:titleUrl')
+  deleteConfig(@Param('titleUrl') titleUrl: string): Promise<void> {
+    return this.eshopService.deleteConfig(titleUrl);
   }
 }

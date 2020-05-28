@@ -46,7 +46,7 @@ export class CartComponent {
     this.orderForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', Validators.required],
-      adress: ['', Validators.required],
+      address: ['', Validators.required],
       city: ['', Validators.required],
       country: ['', Validators.required],
       zip: ['', Validators.required],
@@ -74,7 +74,7 @@ export class CartComponent {
         name        : this.orderForm.value.name,
         city        : this.orderForm.value.city,
         country     : this.orderForm.value.country,
-        line1       : this.orderForm.value.adress,
+        line1       : this.orderForm.value.address,
         line2       : '',
         zip         : this.orderForm.value.zip,
       }]
@@ -94,7 +94,7 @@ export class CartComponent {
         name        : this.orderForm.value.name,
         city        : this.orderForm.value.city,
         country     : this.orderForm.value.country,
-        line1       : this.orderForm.value.adress,
+        line1       : this.orderForm.value.address,
         line2       : '',
         zip         : this.orderForm.value.zip,
       }];

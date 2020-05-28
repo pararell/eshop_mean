@@ -8,16 +8,22 @@ import { PageDto } from './dto/page.dto';
 import { Cart } from '../cart/utils/cart';
 import { Page } from './models/page.model';
 import { Theme } from './models/theme.model';
+import { Config } from './models/config.model';
 
 @Injectable()
 export class EshopService {
   constructor(
     @InjectModel('Page') private pageModel: Model<Page>,
     @InjectModel('Theme') private themeModel: Model<Theme>,
+    @InjectModel('Config') private configModel: Model<Config>,
     private httpService: HttpService) {}
 
+  async getConfig(session) {
+    const activeConfig = await this.configModel.findOne({active: true});
 
-  async getConfig() {
+    if (activeConfig) {
+      session.config = activeConfig
+    }
     try {
       const theme = await this.themeModel.findOne({active: true});
       const configFomEnvToFE = Object.keys(process.env)
@@ -155,6 +161,48 @@ export class EshopService {
 
       if (!found) {
         throw new NotFoundException(`Theme with title ${titleUrl} not found`);
+      }
+  }
+
+
+  async getConfigs(): Promise<Config[]> {
+    const configs = await this.configModel.find({ });
+    return configs;
+  }
+
+  async addOrEditConfig(configDto: any): Promise<Config> {
+    const {titleUrl} = configDto;
+    const found = await this.configModel.findOne({ titleUrl });
+
+    if (!found) {
+      const newConfig = Object.assign(configDto, {
+        dateAdded : Date.now()
+      });
+
+      try {
+        const config = await new this.configModel(newConfig);
+        config.save();
+        return config;
+      } catch {
+        throw new BadRequestException();
+      }
+    }
+
+    if (found) {
+      try {
+        const config = await found.updateOne(configDto, {upsert: true});
+        return config;
+      } catch {
+        throw new BadRequestException();
+      }
+    }
+  }
+
+  async deleteConfig(titleUrl: string) {
+    const found = await this.configModel.findOneAndRemove({ titleUrl });
+
+      if (!found) {
+        throw new NotFoundException(`Config with title ${titleUrl} not found`);
       }
   }
 

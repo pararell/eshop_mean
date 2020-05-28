@@ -7,6 +7,11 @@
     position: relative;
     width: 100%;
     align-items:  center;
+    border-radius: 3px;
+
+    &.slider-with-background {
+      background: #fdfdfd;
+    }
   }
 
   /deep/ .mat-raised-button.slider-arrow  {

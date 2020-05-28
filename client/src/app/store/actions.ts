@@ -92,7 +92,16 @@ export enum EshopActions {
   AddOrEditThemeFail = '[Eshop] AddOrEditThemeFail',
   RemoveTheme = '[Eshop] RemoveTheme',
   RemoveThemeSuccess = '[Eshop] RemoveThemeSuccess',
-  RemoveThemeFail = '[Eshop] RemoveThemeFail'
+  RemoveThemeFail = '[Eshop] RemoveThemeFail',
+  GetConfigs = '[Eshop] GetConfigs',
+  GetConfigsSuccess = '[Eshop] GetConfigsSuccess',
+  GetConfigsFail = '[Eshop] GetConfigsFail',
+  AddOrEditConfig = '[Eshop] AddOrEditConfig',
+  AddOrEditConfigSuccess = '[Eshop] AddOrEditConfigSuccess',
+  AddOrEditConfigFail = '[Eshop] AddOrEditConfigFail',
+  RemoveConfig = '[Eshop] RemoveConfig',
+  RemoveConfigSuccess = '[Eshop] RemoveConfigSuccess',
+  RemoveConfigFail = '[Eshop] RemoveConfigFail'
 }
 
 
@@ -636,6 +645,61 @@ export class RemoveThemeSuccess implements Action {
 
 export class RemoveThemeFail implements Action {
   readonly type = EshopActions.RemoveThemeFail;
+   constructor() {
+   }
+}
+
+
+export class GetConfigs implements Action {
+  readonly type = EshopActions.GetConfigs;
+   constructor() {
+   }
+}
+
+export class GetConfigsSuccess implements Action {
+  readonly type = EshopActions.GetConfigsSuccess;
+   constructor(public payload: any) {
+   }
+}
+
+export class GetConfigsFail implements Action {
+  readonly type = EshopActions.GetConfigsFail;
+   constructor() {
+   }
+}
+
+export class AddOrEditConfig implements Action {
+  readonly type = EshopActions.AddOrEditConfig;
+   constructor(public payload: any) {
+   }
+}
+
+export class AddOrEditConfigSuccess implements Action {
+  readonly type = EshopActions.AddOrEditConfigSuccess;
+   constructor(public payload: any) {
+   }
+}
+
+export class AddOrEditConfigFail implements Action {
+  readonly type = EshopActions.AddOrEditConfigFail;
+   constructor() {
+   }
+}
+
+export class RemoveConfig implements Action {
+  readonly type = EshopActions.RemoveConfig;
+   constructor(public payload: any) {
+   }
+}
+
+export class RemoveConfigSuccess implements Action {
+  readonly type = EshopActions.RemoveConfigSuccess;
+   constructor(public payload: any) {
+   }
+}
+
+export class RemoveConfigFail implements Action {
+  readonly type = EshopActions.RemoveConfigFail;
    constructor() {
    }
 }

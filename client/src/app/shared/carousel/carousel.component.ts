@@ -13,6 +13,7 @@ export class CarouselComponent implements AfterViewInit, OnDestroy {
   @ViewChild('slideContainer') slideContainer: ElementRef<HTMLDivElement>;
 
   @Input() intervalForSlider = 10000;
+  @Input() withBackground = false;
 
   showArrowsSub$ = new BehaviorSubject(false);
   autoSlideSub: Subscription;

@@ -1,0 +1,127 @@
+<ng-container *ngIf="!sendRequest && (choosenLanguageSub$ | async) as chooseLang">
+  <div class="config_edit-top">
+    <div>
+      <mat-form-field class="config_edit-field">
+        <mat-label>{{ 'Add_Config' | translate | async }}</mat-label>
+        <input
+          matInput
+          [(ngModel)]="newConfig">
+      </mat-form-field>
+      <button
+        class="translations-button"
+        mat-flat-button
+        color="accent"
+        (click)="addConfig()">
+        +
+      </button>
+    </div>
+    <mat-form-field class="config-select">
+      <mat-label>
+        {{ 'From_existing_config' | translate | async }}
+      </mat-label>
+      <mat-select
+        [(ngModel)]="chosenConfig"
+        (ngModelChange)="choseConfig()">
+        <mat-option
+          *ngFor="let option of configs$ | async;"
+          [value]="option.titleUrl">
+          {{option.titleUrl}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field class="lang-select">
+      <mat-label>
+        {{ 'Language_for_config' | translate | async }}
+      </mat-label>
+      <mat-select
+        [ngModel]="chooseLang"
+        (ngModelChange)="setLang($event)">
+        <mat-option
+          *ngFor="let option of languageOptions;"
+          [value]="option">
+          {{option}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <form
+    class="config_edit-form"
+    [formGroup]="configEditForm"
+    *ngIf="configEditForm.get('titleUrl').value">
+    <h2>{{ configEditForm.get('titleUrl').value }}</h2>
+    <div [formGroupName]="chooseLang">
+      <mat-form-field class="config_edit-field">
+        <mat-label>BasicShippingCost</mat-label>
+        <input
+          matInput
+          type="number"
+          formControlName="basicShippingCost">
+      </mat-form-field>
+      <mat-form-field class="config_edit-field">
+        <mat-label>BasicShippingLimit</mat-label>
+        <input
+          matInput
+          type="number"
+          formControlName="basicShippingLimit">
+      </mat-form-field>
+      <mat-form-field class="config_edit-field">
+        <mat-label>ExtendedShippingCost</mat-label>
+        <input
+          matInput
+          type="number"
+          formControlName="extendedShippingCost">
+      </mat-form-field>
+      <mat-form-field class="config_edit-field">
+        <mat-label>ExtendedShippingLimit</mat-label>
+        <input
+          matInput
+          type="number"
+          formControlName="extendedShippingLimit">
+      </mat-form-field>
+    </div>
+    <mat-radio-group
+      aria-label="Active"
+      formControlName="active">
+      <mat-radio-button
+        name="active"
+        [value]="true"
+        id="active">
+        {{ 'Active' | translate | async }}
+      </mat-radio-button>
+      <mat-radio-button
+        name="inactive"
+        [value]="false"
+        id="inactive">
+        {{ 'Inactive' | translate | async }}
+      </mat-radio-button>
+    </mat-radio-group>
+  </form>
+  <div class="config_edit-cta">
+    <button
+      mat-flat-button
+      color="primary"
+      [disabled]="configEditForm.invalid"
+      (click)="saveConfig()">
+      Save
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      [disabled]="configEditForm.invalid"
+      (click)="removeConfig()">
+      Remove
+    </button>
+  </div>
+</ng-container>
+<div
+  class="config_edit-after-send"
+  *ngIf="sendRequest">
+  <span> {{ 'Request_sended' | translate | async }}</span>
+  <button
+    class="product_edit-btn-action"
+    mat-raised-button
+    color="primary"
+    (click)="sendRequest = !sendRequest">
+    {{ 'Again' | translate | async }}
+  </button>
+</div>

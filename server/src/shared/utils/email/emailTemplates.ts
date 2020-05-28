@@ -476,8 +476,8 @@ const emailTemplates = (cart, order) => {
                                                               <p style="margin: 0;font-size: 12px;line-height: 18px">
                                                                   <span style="font-size: 16px; line-height: 24px;">
                                                                   ${'Order Total'}:        ${
-    cart.totalPrice + ' ' + order.currency
-  }</span>
+                                                                    cart.totalPrice + ' ' + order.currency
+                                                                  }</span>
                                                               </p>
                                                               <p style="margin: 0;font-size: 12px;line-height: 18px"> 
                                                                   <br>
@@ -513,28 +513,23 @@ const emailTemplates = (cart, order) => {
                                                               <p style="margin: 0;font-size: 12px;line-height: 18px">
                                                                   <span style="font-size: 16px; line-height: 24px;">
                                                                   ${
-                                                                    order.adress
-                                                                      .line1
+                                                                    order.address.line1
                                                                   }   ${
-                                                                    order.adress
-                                                                      .line2
+                                                                    order.address.line2
                                                                   }</span>
                                                               </p>
                                                               <p style="margin: 0;font-size: 12px;line-height: 18px">
                                                                   <span style="font-size: 16px; line-height: 24px;">
                                                                   ${
-                                                                    (order
-                                                                      .adress
-                                                                      .city,
-                                                                    order.adress
-                                                                      .zip)
+                                                                    order.address.city
+                                                                  },${
+                                                                    order.address.zip
                                                                   }</span>
                                                               </p>
                                                               <p style="margin: 0;font-size: 12px;line-height: 18px">
                                                                   <span style="font-size: 16px; line-height: 24px;">
                                                                   ${
-                                                                    order.adress
-                                                                      .country
+                                                                    order.address.country
                                                                   }</span>
                                                               </p>
                                                               <p style="margin: 0;font-size: 12px;line-height: 18px">
@@ -779,14 +774,16 @@ const emailTemplates = (cart, order) => {
                                                           <div style="font-size:12px;line-height:24px;color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;text-align:left;">
                                                               <p style="margin: 0;font-size: 12px;line-height: 24px;text-align: right">
                                                                   <span style="font-size: 16px; line-height: 32px;">${
-                                                                    cart.totalPrice +
+                                                                    (cart.totalPrice - cart.shippingCost) +
                                                                     ' ' +
                                                                     order.currency
                                                                   }</span>
                                                               </p>
                                                               <p style="margin: 0;font-size: 12px;line-height: 24px;text-align: right">
                                                                   <strong>
-                                                                      <span style="font-size: 16px; line-height: 32px; color: rgb(128, 0, 0);">${'FREE'}</span>
+                                                                      <span style="font-size: 16px; line-height: 32px; color: rgb(128, 0, 0);">${cart.shippingCost +
+                                                                        ' ' +
+                                                                        order.currency}</span>
                                                                   </strong>
                                                               </p>
                                                               <p style="margin: 0;font-size: 12px;line-height: 24px;text-align: right">
