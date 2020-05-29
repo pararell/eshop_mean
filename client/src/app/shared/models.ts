@@ -110,3 +110,30 @@ export interface Page {
   dateAdded?          : Date;
   [lang: string]      : any | { title?: string; contentHTML?: string };
 }
+
+export interface Theme {
+  _id?                : string;
+  titleUrl            : string;
+  dateAdded?          : Date;
+  active              : boolean;
+  styles: any | {
+    primaryColor: string;
+    secondaryColor: string;
+    backgroundColor: string;
+    mainBackground: string;
+    freeShippingPromo: string;
+  };
+}
+
+export interface Config {
+  _id?                : string;
+  titleUrl            : string;
+  dateAdded?          : Date;
+  active              : boolean;
+  [lang: string]      : any | {
+    shippingCost: {
+      basic: { cost: number; limit: number; },
+      extended: { cost: number; limit: number; }
+    }
+  }
+}

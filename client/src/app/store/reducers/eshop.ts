@@ -1,14 +1,14 @@
 
 import { EshopActions } from '../../store/actions';
-import { Page } from '../../shared/models';
+import { Page, Theme, Config } from '../../shared/models';
 
 
 export interface State {
   loading: boolean;
   error: string;
   pages: Page[];
-  themes: any[];
-  configs: any[];
+  themes: Theme[];
+  configs: Config[];
 }
 
 export const initialState: State = {

@@ -22,7 +22,7 @@ export class OrdersService {
       @InjectModel('Order') private orderModel: Model<Order>) {}
 
   async getOrders(user: User): Promise<Order[]> {
-    const orders = await this.orderModel.find({ _user: user._id });
+    const orders = await this.orderModel.find({ _user: user._id }).sort('-dateAdded');
     return orders;
   }
 
@@ -50,7 +50,7 @@ export class OrdersService {
   }
 
   async getAllOrders(): Promise<Order[]> {
-    const orders = await this.orderModel.find({ });
+    const orders = await this.orderModel.find({ }).sort('-dateAdded');
     return orders;
   }
 

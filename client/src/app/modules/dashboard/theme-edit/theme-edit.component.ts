@@ -8,6 +8,7 @@ import * as fromRoot from '../../../store/reducers';
 import * as actions from '../../../store/actions';
 import { languages } from '../../../shared/constants';
 import { ThemeService } from '../../../services/theme.service';
+import { Theme } from '../../../shared/models';
 
 
 @Component({
@@ -16,7 +17,7 @@ import { ThemeService } from '../../../services/theme.service';
   styleUrls: ['./theme-edit.component.scss'],
 })
 export class ThemeEditComponent {
-  themes$: Observable<any>;
+  themes$: Observable<Theme[]>;
   themesEditForm: FormGroup;
   languageOptions = languages;
   choosenLanguageSub$ = new BehaviorSubject(languages[0]);

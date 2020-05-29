@@ -7,6 +7,7 @@ import { delay, take } from 'rxjs/operators';
 import * as fromRoot from '../../../store/reducers';
 import * as actions from '../../../store/actions';
 import { languages } from '../../../shared/constants';
+import { Config } from '../../../shared/models';
 
 
 @Component({
@@ -15,7 +16,7 @@ import { languages } from '../../../shared/constants';
   styleUrls: ['./config-edit.component.scss'],
 })
 export class ConfigEditComponent {
-  configs$: Observable<any>;
+  configs$: Observable<Config[]>;
   configEditForm: FormGroup;
   languageOptions = languages;
   choosenLanguageSub$ = new BehaviorSubject(languages[0]);

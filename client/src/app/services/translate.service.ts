@@ -13,7 +13,7 @@ import { take } from 'rxjs/operators';
 })
 export class TranslateService {
 
-  translationsSub$  : BehaviorSubject<any> = new BehaviorSubject({});
+  translationsSub$  : BehaviorSubject<{[key: string]: string}> = new BehaviorSubject({});
   languageSub$      = new BehaviorSubject('');
   lang: string;
 
@@ -31,7 +31,7 @@ export class TranslateService {
     return this.languageSub$.asObservable();
   }
 
-  getTranslations$(): Observable<any> {
+  getTranslations$(): Observable<{[key: string]: string}> {
     return this.translationsSub$.asObservable();
   }
 

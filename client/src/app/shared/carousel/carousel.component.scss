@@ -27,6 +27,7 @@
     overflow-x: scroll;
     scroll-behavior: smooth;
     width: 100%;
+    scrollbar-color: transparent transparent;
 
     &::-webkit-scrollbar {
       width: 0;

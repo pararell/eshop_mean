@@ -24,7 +24,7 @@ export class CartService {
   ): Promise<{ newCart; langCart }> {
     const { cart, config } = session;
     const { id } = getCartChangeDto;
-    const newCart: any = new Cart(cart || {});
+    const newCart: Cart = new Cart(cart || {});
     try {
       const product = await this.productModel.findById(id);
       newCart.add(product, id);

@@ -16,7 +16,7 @@
             <li>
                 <a class
                 [routerLink]="['/' + lang + '/eshop/' + page.titleUrl]">
-                {{ page[lang].title || page.titleUrl }}
+                {{ page[lang]?.title || page.titleUrl }}
               </a>
             </li>
           </ng-container>

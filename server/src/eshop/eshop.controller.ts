@@ -53,7 +53,7 @@ export class EshopController {
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Post('/theme')
-  addOrEditTheme(@Body() themeDto: any): Promise<Theme> {
+  addOrEditTheme(@Body() themeDto): Promise<Theme> {
     return this.eshopService.addOrEditTheme(themeDto);
   }
 
@@ -70,7 +70,7 @@ export class EshopController {
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Post('/config')
-  addOrEditConfig(@Body() configDto: any): Promise<Config> {
+  addOrEditConfig(@Body() configDto): Promise<Config> {
     return this.eshopService.addOrEditConfig(configDto);
   }
 
