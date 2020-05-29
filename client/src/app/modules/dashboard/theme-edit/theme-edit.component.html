@@ -61,6 +61,22 @@
         matInput
         formControlName="mainBackground">
     </mat-form-field>
+    <mat-form-field class="theme_edit-field-full">
+      <mat-label>
+        {{ 'Show_shipping_promo' | translate | async }}
+      </mat-label>
+      <mat-select
+        formControlName="freeShippingPromo">
+        <mat-option
+          [value]="'none'">
+          {{ 'Hide' | translate | async }}
+        </mat-option>
+        <mat-option
+          [value]="'block'">
+          {{ 'Show' | translate | async }}
+      </mat-option>
+      </mat-select>
+    </mat-form-field>
     <mat-radio-group
       aria-label="Active"
       formControlName="active">

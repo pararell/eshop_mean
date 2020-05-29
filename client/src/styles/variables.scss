@@ -80,6 +80,7 @@ $eshop-background:  mat-palette($material-secondary-color, 50);
   --background-color: #{mat-color($eshop-background)};
   --main-background: '';
   --main-background-url: url("/");
+  ---free-shipping-promo: 'none';
 }
 
 

@@ -26,6 +26,9 @@
   </mat-drawer>
   <mat-drawer-content>
     <div class="main">
+      <div class="home-promo" *ngIf="(cart$ | async) as cart">
+        {{ 'Free_shipping_limit' | translate | async }}  {{ cart.shippingLimit }} {{ currency$ | async }}
+      </div>
       <div class="home-product" *ngIf="(products$ | async) as products">
         <div class="container">
           <app-carousel [intervalForSlider]="20000">

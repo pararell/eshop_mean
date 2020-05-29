@@ -21,6 +21,18 @@
       padding: 10px;
     }
 
+    &-promo {
+      position: fixed;
+      top: 50px;
+      left: 0;
+      display: var(--free-shipping-promo, none);
+      width: 100%;
+      background: #eee;
+      color: #222;
+      z-index: 2;
+      text-align: center;
+    }
+
     &-product {
       background: #fff;
       position: relative;

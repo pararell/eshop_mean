@@ -22,6 +22,7 @@ export class HomeComponent implements OnDestroy {
 
   products$             : Observable<Product[]>;
   cartIds$              : Observable<{ [productID: string]: number }>;
+  cart$                 : Observable<Cart>;
   loadingProducts$      : Observable<boolean>;
   categories$           : Observable<Category[]>;
   pagination$           : Observable<Pagination>;
@@ -53,13 +54,14 @@ export class HomeComponent implements OnDestroy {
     this.page$     = this.route.queryParams.pipe(map(params => params['page']), map(page => parseFloat(page)));
     this.sortBy$   = this.route.queryParams.pipe(map(params => params['sort']), map(sort => sort));
     this.lang$     = this.translate.getLang$().pipe(filter((lang: string) => !!lang));
+    this.cart$     = this.store.select(fromRoot.getCart);
 
     this.maxPrice$  = this.store.select(fromRoot.getMaxPrice);
     this.minPrice$  = this.store.select(fromRoot.getMinPrice);
     this.filterPrice$ = this.store.select(fromRoot.getPriceFilter);
     this.loadingProducts$ = this.store.select(fromRoot.getLoadingProducts);
     this.products$ = this.store.select(fromRoot.getProducts).pipe(filter(products => !!products));
-    this.cartIds$  = this.store.select(fromRoot.getCart).pipe(
+    this.cartIds$  = this.cart$.pipe(
         filter(cart => !!cart),
         map((cart: Cart) => (cart.items && cart.items.length)
           ? cart.items.reduce((prev, curr) => ( {...prev, [curr.id] : curr.qty } ), {} )

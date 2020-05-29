@@ -50,6 +50,7 @@ export class ThemeEditComponent {
       } else {
         this.themeService.setCSSVariable(`url(/)`, 'main-background-url');
       }
+      this.themeService.setCSSVariable(values.freeShippingPromo, 'free-shipping-promo');
     })
   }
 
@@ -70,6 +71,7 @@ export class ThemeEditComponent {
       this.themes$.pipe(take(1)).subscribe((themes) => {
         const foundTheme = themes.find((theme) => theme.titleUrl === this.chosenTheme);
         this.themesEditForm.get('active').setValue(!!foundTheme.active);
+        this.themesEditForm.get('freeShippingPromo').setValue(foundTheme.styles.freeShippingPromo || 'none');
         this.themesEditForm.get('primaryColor').setValue(foundTheme.styles.primaryColor || '');
         this.themesEditForm.get('secondaryColor').setValue(foundTheme.styles.secondaryColor || '');
         this.themesEditForm.get('backgroundColor').setValue(foundTheme.styles.backgroundColor || '');
@@ -88,6 +90,7 @@ export class ThemeEditComponent {
         secondaryColor: formValues.secondaryColor,
         backgroundColor: formValues.backgroundColor,
         mainBackground: formValues.mainBackground,
+        freeShippingPromo: formValues.freeShippingPromo
       }
     }
     this.store.dispatch(new actions.AddOrEditTheme(request));
@@ -102,6 +105,7 @@ export class ThemeEditComponent {
   private startFormValues() {
     return {
       active  : false,
+      freeShippingPromo: 'none',
       primaryColor: '#222222',
       secondaryColor: '#cccccc',
       backgroundColor: '#eeeeee',

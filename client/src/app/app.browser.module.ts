@@ -1,5 +1,5 @@
 import { AppModule } from './app.module';
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
@@ -7,6 +7,7 @@ import { WindowService } from './services/window.service';
 import { BrowserHttpInterceptor } from './services/browser-http-interceptor';
 import { LazyModule } from './utils/lazyLoadImg/lazy.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { EnvConfigurationService } from './services/env-configuration.service';
 
 
 export function WindowFactory() {
@@ -28,6 +29,12 @@ export function WindowFactory() {
     {
       provide    : WindowService,
       useFactory : (WindowFactory)
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (envConfigService: EnvConfigurationService) => () => envConfigService.load().toPromise(),
+      deps: [EnvConfigurationService],
+      multi: true
     }
   ],
   bootstrap: [AppComponent]

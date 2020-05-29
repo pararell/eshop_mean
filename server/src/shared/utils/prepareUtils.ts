@@ -41,6 +41,7 @@ export const prepareCart = (cart, lang: string, config): CartModel => {
   return {
     items: cartLangItems,
     shippingCost: totalPrice ? shippingTypeCost : 0,
+    shippingLimit: shippingByLang.limit,
     shippingType: totalPrice ? (shippingTypeCost ? shippingType : 'free') : '',
     totalPrice: totalPrice ? totalPrice + shippingTypeCost : totalPrice,
     totalQty,

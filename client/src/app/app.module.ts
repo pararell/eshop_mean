@@ -31,7 +31,6 @@ import { FooterComponent } from './components/footer/footer.component';
 import { routesAll } from './app.routes';
 import { environment } from '../environments/environment';
 import { TranslateService } from './services/translate.service';
-import { EnvConfigurationService } from './services/env-configuration.service';
 import { HomeComponent } from './components/home/home.component';
 
 
@@ -71,12 +70,6 @@ const routes: Routes = routesAll;
   ],
   providers: [
     CookieService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: (envConfigService: EnvConfigurationService) => () => envConfigService.load().toPromise(),
-      deps: [EnvConfigurationService],
-      multi: true
-    },
     {
       provide: APP_INITIALIZER,
       useFactory: (translateService: TranslateService) => () => translateService.use(''),
