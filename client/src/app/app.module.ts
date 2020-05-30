@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { BrowserModule, BrowserTransferStateModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -30,6 +30,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { routesAll } from './app.routes';
 import { environment } from '../environments/environment';
+import { TranslateService } from './services/translate.service';
 import { HomeComponent } from './components/home/home.component';
 
 
@@ -64,11 +65,17 @@ const routes: Routes = routesAll;
     MatSidenavModule,
     EffectsModule.forRoot([ AppEffects ]),
     RouterModule.forRoot(routes, { initialNavigation: 'enabled' }),
-    environment.production ? ServiceWorkerModule.register('ngsw-worker.js') : [],
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
     !environment.production ? StoreDevtoolsModule.instrument() : []
   ],
   providers: [
-    CookieService
+    CookieService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (translateService: TranslateService) => () => translateService.use('en'),
+      deps: [ TranslateService ],
+      multi: true
+    }
   ]
 })
 export class AppModule { }
