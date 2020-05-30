@@ -36,7 +36,7 @@ export class ProductsService {
 
     return {
       ...productsWithPagination,
-      all: productsWithPagination.all.map((product) => prepareProduct(product, lang)),
+      all: productsWithPagination.all.map((product) => prepareProduct(product, lang, true)),
     };
   }
 

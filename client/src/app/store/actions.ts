@@ -78,6 +78,9 @@ export enum EshopActions {
   GetPages = '[Eshop] GetPages',
   GetPagesSuccess = '[Eshop] GetPagesSuccess',
   GetPagesFail = '[Eshop] GetPagesFail',
+  GetPage = '[Eshop] GetPage',
+  GetPageSuccess = '[Eshop] GetPageSuccess',
+  GetPageFail = '[Eshop] GetPageFail',
   AddOrEditPage = '[Eshop] AddOrEditPage',
   AddOrEditPageSuccess = '[Eshop] AddOrEditPageSuccess',
   AddOrEditPageFail = '[Eshop] AddOrEditPageFail',
@@ -167,12 +170,12 @@ export class FilterPrice implements Action {
 
 export class UpdatePosition implements Action {
 readonly type = EshopActions.UpdatePosition;
-  constructor(public payload: any ) {
- }
+  constructor(public payload: any ) {}
 }
 
 export class GetCart implements Action {
   readonly type = EshopActions.GetCart;
+  constructor(public payload?: any ) {}
 }
 
 export class GetCartSuccess implements Action {
@@ -542,7 +545,7 @@ export class SendContactFail implements Action {
 
 export class GetPages implements Action {
   readonly type = EshopActions.GetPages;
-   constructor() {
+   constructor(public payload?: any) {
    }
 }
 
@@ -554,6 +557,24 @@ export class GetPagesSuccess implements Action {
 
 export class GetPagesFail implements Action {
   readonly type = EshopActions.GetPagesFail;
+   constructor() {
+   }
+}
+
+export class GetPage implements Action {
+  readonly type = EshopActions.GetPage;
+   constructor(public payload?: any) {
+   }
+}
+
+export class GetPageSuccess implements Action {
+  readonly type = EshopActions.GetPageSuccess;
+   constructor(public payload: any) {
+   }
+}
+
+export class GetPageFail implements Action {
+  readonly type = EshopActions.GetPageFail;
    constructor() {
    }
 }

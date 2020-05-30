@@ -2,7 +2,7 @@ import { CartModel } from '../../cart/models/cart.model';
 import { Product } from '../../products/models/product.model';
 import { shippingCost, shippingTypes } from '../constans';
 
-export const prepareProduct = (product, lang: string): Product => ({
+export const prepareProduct = (product, lang: string, light?: boolean): Product => ({
   _id: product._id,
   titleUrl: product.titleUrl,
   mainImage: product.mainImage,
@@ -10,13 +10,13 @@ export const prepareProduct = (product, lang: string): Product => ({
   tags: product.tags,
   _user: product._user,
   dateAdded: product.dateAdded,
-  ...product[lang],
+  ...{...product[lang], descriptionFull: !light ? product[lang].descriptionFull : []},
 });
 
 export const prepareCart = (cart, lang: string, config): CartModel => {
   const cartLangItems = cart.items
     .map((cartItem: any) => {
-      const prepareItem = prepareProduct(cartItem.item, lang);
+      const prepareItem = prepareProduct(cartItem.item, lang, true);
       const price: number = prepareItem.salePrice;
       const shipingCostType: string = prepareItem.shipping;
       return { item: prepareItem, id: cartItem.id, qty: cartItem.qty, price, shipingCostType };

@@ -8,7 +8,7 @@ import { BrowserHttpInterceptor } from './services/browser-http-interceptor';
 import { LazyModule } from './utils/lazyLoadImg/lazy.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EnvConfigurationService } from './services/env-configuration.service';
-
+import { TranslateService } from './services/translate.service';
 
 export function WindowFactory() {
   return typeof window !== 'undefined' ? window : {};
@@ -34,6 +34,12 @@ export function WindowFactory() {
       provide: APP_INITIALIZER,
       useFactory: (envConfigService: EnvConfigurationService) => () => envConfigService.load().toPromise(),
       deps: [EnvConfigurationService],
+      multi: true
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (translateService: TranslateService) => () => translateService.use(''),
+      deps: [ TranslateService ],
       multi: true
     }
   ],

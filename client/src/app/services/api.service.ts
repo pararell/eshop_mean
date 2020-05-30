@@ -168,8 +168,9 @@ export class ApiService {
     return this.http.post(stripeSessionUrl, req, this.requestOptions);
   }
 
-  getCart() {
-    const cartUrl = this.apiUrl + '/api/cart/';
+  getCart(lang?: string) {
+    const withLangQuery = lang ? '?lang=' + lang : '';
+    const cartUrl = this.apiUrl + '/api/cart' + withLangQuery;
     return this.http.get(cartUrl, this.requestOptions);
   }
 
@@ -245,9 +246,15 @@ export class ApiService {
     return this.http.post(sendContact, req, this.requestOptions);
   }
 
-  getPages() {
-    const pagesUrl = this.apiUrl + '/api/eshop/page/all';
+  getPages(query?) {
+    const titlesQueryParams = query ? `?titles=${query.titles}&lang=${query.lang}` : '';
+    const pagesUrl = this.apiUrl + '/api/eshop/page/all' + titlesQueryParams;
     return this.http.get(pagesUrl, this.requestOptions);
+  }
+
+  getPage(query) {
+    const pageUrl = this.apiUrl + '/api/eshop/page/' + query.titleUrl + '?lang=' + query.lang;
+    return this.http.get(pageUrl, this.requestOptions);
   }
 
   addOrEditPage(pageReq) {

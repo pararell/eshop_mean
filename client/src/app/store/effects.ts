@@ -36,9 +36,16 @@ export class AppEffects {
 
   @Effect() getPages$: Observable<Action> = this._actions.pipe(
     ofType(EshopActions.GetPages),
-      switchMap((action: actions.GetUser) => this.apiService.getPages()),
+      switchMap((action: actions.GetPages) => this.apiService.getPages(action.payload)),
       map(res => new actions.GetPagesSuccess(res)),
       catchError(() => of(new actions.GetPagesFail()))
+  );
+
+  @Effect() getPage$: Observable<Action> = this._actions.pipe(
+    ofType(EshopActions.GetPage),
+      switchMap((action: actions.GetPage) => this.apiService.getPage(action.payload)),
+      map(res => new actions.GetPageSuccess(res)),
+      catchError(() => of(new actions.GetPageFail()))
   );
 
   @Effect() addOrEditPage$: Observable<Action> = this._actions.pipe(
@@ -57,7 +64,7 @@ export class AppEffects {
 
   @Effect() getThemes$: Observable<Action> = this._actions.pipe(
     ofType(EshopActions.GetThemes),
-      switchMap((action: actions.GetUser) => this.apiService.getThemes()),
+      switchMap((action: actions.GetThemes) => this.apiService.getThemes()),
       map(res => new actions.GetThemesSuccess(res)),
       catchError(() => of(new actions.GetThemesFail()))
   );
@@ -78,7 +85,7 @@ export class AppEffects {
 
   @Effect() getConfigs$: Observable<Action> = this._actions.pipe(
     ofType(EshopActions.GetConfigs),
-      switchMap((action: actions.GetUser) => this.apiService.getConfigs()),
+      switchMap((action: actions.GetConfigs) => this.apiService.getConfigs()),
       map(res => new actions.GetConfigsSuccess(res)),
       catchError(() => of(new actions.GetConfigsFail()))
   );
@@ -138,7 +145,7 @@ export class AppEffects {
 
   @Effect() getCart$: Observable<Action> = this._actions.pipe(
     ofType(EshopActions.GetCart),
-      switchMap((action: actions.GetCart) => this.apiService.getCart()),
+      switchMap((action: actions.GetCart) => this.apiService.getCart(action.payload)),
       map(res => new actions.GetCartSuccess(res))
   );
 

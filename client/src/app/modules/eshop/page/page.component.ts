@@ -1,12 +1,14 @@
 import { Location } from '@angular/common';
 import { Component } from '@angular/core';
-import { Observable, combineLatest } from 'rxjs';
+import { Observable, combineLatest, Subscription } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 
+import * as actions from '../../../store/actions';
 import * as fromRoot from '../../../store/reducers';
 import { TranslateService } from '../../../services/translate.service';
+import { Page } from '../../../shared/models';
 
 
 @Component({
@@ -18,7 +20,8 @@ export class PageComponent {
 
   lang$: Observable<string>;
   titleUrl$: Observable<string>;
-  page$: Observable<{title: string; contentHTML: string}>;
+  page$: Observable<Page>;
+  pageSub: Subscription;
 
   constructor(
     private location: Location,
@@ -29,18 +32,15 @@ export class PageComponent {
 
     this.lang$ = this.translate.getLang$().pipe(filter((lang: string) => !!lang));
     this.titleUrl$ = this.route.params.pipe(map(params => params['titleUrl']));
-    this.page$ = combineLatest(
+    this.page$ = this.store.select(fromRoot.getPage).pipe(filter(page => !!page));
+
+    this.pageSub = combineLatest(
       this.titleUrl$,
       this.lang$,
-      this.store.select(fromRoot.getPages).pipe(filter(pages => !!pages)),
-      (titleUrl: string, lang: string, pages: any[]) => {
-        const foundPage = pages.find(page => page.titleUrl === titleUrl);
-        if (!foundPage) {
-          this.router.navigate(['/']);
-          return;
-        }
-        return { title: foundPage[lang].title, contentHTML: foundPage[lang].contentHTML }
-      })
+      (titleUrl: string, lang: string) => ({ titleUrl, lang })
+    ).subscribe(({ titleUrl, lang }) => {
+      this.store.dispatch(new actions.GetPage({ titleUrl, lang }));
+    })
   }
 
   goBack(): void {

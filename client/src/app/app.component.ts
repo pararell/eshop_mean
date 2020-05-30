@@ -41,8 +41,6 @@ export class AppComponent {
         this.store.dispatch(new actions.ChangeLanguage(langUpdate));
     });
 
-    this.store.dispatch(new actions.GetPages());
-
     this.store.select(fromRoot.getLang)
       .pipe(filter(Boolean), skip(1))
       .subscribe((lang: string) => {
@@ -78,7 +76,8 @@ export class AppComponent {
     this.translate.getLang$()
       .pipe(filter(lang => !!lang && isPlatformBrowser(this.platformId)))
       .subscribe(lang => {
-        this.store.dispatch(new actions.GetCart());
+        this.store.dispatch(new actions.GetCart(lang));
+        this.store.dispatch(new actions.GetPages({lang, titles: true}));
       })
   }
 

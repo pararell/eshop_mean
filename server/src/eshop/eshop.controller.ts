@@ -1,4 +1,4 @@
-import { Controller, Body, Session, Post, Get, UseGuards, Param, Delete } from '@nestjs/common';
+import { Controller, Body, Session, Post, Get, UseGuards, Param, Delete, Headers, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import { EshopService } from './eshop.service';
@@ -24,8 +24,8 @@ export class EshopController {
   }
 
   @Get('/page/all')
-  getPages(): Promise<Page[]> {
-    return this.eshopService.getPages();
+  getPages(@Headers('lang') lang: string, @Query('titles') titles: boolean): Promise<Page[]> {
+    return this.eshopService.getPages(lang, titles);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -36,8 +36,8 @@ export class EshopController {
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Get('/page/:titleUrl')
-  getPage(@Param('titleUrl') titleUrl: string): Promise<Page> {
-    return this.eshopService.getPage(titleUrl);
+  getPage(@Param('titleUrl') titleUrl: string, @Headers('lang') lang: string): Promise<Page> {
+    return this.eshopService.getPage(titleUrl, lang);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)

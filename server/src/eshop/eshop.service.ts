@@ -72,13 +72,14 @@ export class EshopService {
 
   }
 
-  async getPages(): Promise<Page[]> {
-    const pages = await this.pageModel.find({ });
+  async getPages(lang: string, titles?: boolean): Promise<Page[]> {
+    const selectQuery = titles ? {'titleUrl': 1, [`${lang}.title`]: 1 } : {};
+    const pages = await this.pageModel.find({ }, selectQuery);
     return pages;
   }
 
-  async getPage(titleUrl: string): Promise<Page> {
-    const found = await this.pageModel.findOne({ titleUrl });
+  async getPage(titleUrl: string, lang: string): Promise<Page> {
+    const found = await this.pageModel.findOne({ titleUrl }, {'titleUrl': 1, [lang]: 1});
 
     if (!found) {
       throw new NotFoundException(`Product with title ${titleUrl} not found`);
