@@ -12,10 +12,12 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { CartComponent } from './cart/cart.component';
 import { SharedModule } from '../../shared/shared.module';
 import { PipeModule } from '../../pipes/pipe.module';
+import { CardComponent } from './card/card.component';
 
 @NgModule({
   declarations: [
-    CartComponent
+    CartComponent,
+    CardComponent
   ],
   imports: [
     CommonModule,

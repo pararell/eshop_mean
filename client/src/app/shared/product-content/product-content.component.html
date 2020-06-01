@@ -17,10 +17,10 @@
           *ngIf="lang"
           mat-raised-button
           color="primary">
-          <app-cart-show
-            [items]="cartIds[product?._id]"
-            (add)="onAddProduct(product?._id)"
-            (remove)="onRemoveProduct(product?._id)">
+          <app-cart-show *ngIf="cartIds && product"
+            [items]="cartIds[product._id]"
+            (add)="onAddProduct(product._id)"
+            (remove)="onRemoveProduct(product._id)">
           </app-cart-show>
         </button>
       </div>

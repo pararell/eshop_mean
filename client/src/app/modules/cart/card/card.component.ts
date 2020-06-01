@@ -5,7 +5,7 @@ import { isPlatformServer, DOCUMENT } from '@angular/common';
 import { take } from 'rxjs/operators';
 import { BehaviorSubject } from 'rxjs';
 
-import { EnvConfigurationService } from '../../services/env-configuration.service';
+import { EnvConfigurationService } from '../../../services/env-configuration.service';
 
 
 @Component({
