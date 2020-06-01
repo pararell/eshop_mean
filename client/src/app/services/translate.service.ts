@@ -69,9 +69,13 @@ export class TranslateService {
   private setTranslations(lang: string) {
     if (lang) {
       this.setLang(lang);
+    } else {
+      this.setLang(languages[0]);
     }
 
-    return this.getTranslationsData(lang);
+    const langToSend = lang || languages[0];
+
+    return this.getTranslationsData(langToSend);
   }
 
   private setLang(lang: string): void {

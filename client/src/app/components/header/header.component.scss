@@ -1,25 +1,25 @@
-/deep/ .mat-option .nav-autocomplete-link {
+:host ::ng-deep .mat-option .nav-autocomplete-link {
   color: rgba(0, 0, 0, 0.87) !important;
 }
 
-/deep/ .mat-menu-item .nav-link {
+:host ::ng-deep .mat-menu-item .nav-link {
   color: rgba(0, 0, 0, 0.87) !important;
 }
 
 :host {
   display: block;
 
-  /deep/ .mat-input-element {
+  ::ng-deep .mat-input-element {
     padding: 2px 5px !important;
     font-size: 16px !important;
     color: var(--primary-color);
   }
 
-  /deep/ .mat-form-field .mat-form-field-underline {
+  ::ng-deep .mat-form-field .mat-form-field-underline {
     display: none;
   }
 
-  /deep/ .mat-form-field.focus-active .mat-form-field-underline {
+  ::ng-deep .mat-form-field.focus-active .mat-form-field-underline {
     display: block;
   }
 
@@ -99,7 +99,7 @@
       display: flex;
       flex: 1;
 
-      /deep/ button.mat-menu-item {
+      ::ng-deep button.mat-menu-item {
         width: initial !important;
 
         a {

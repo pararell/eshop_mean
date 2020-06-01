@@ -5,9 +5,10 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { WindowService } from './services/window.service';
 import { BrowserHttpInterceptor } from './services/browser-http-interceptor';
-import { LazyModule } from './utils/lazyLoadImg/lazy.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EnvConfigurationService } from './services/env-configuration.service';
+import { BrowserTransferStateModule } from '@angular/platform-browser';
+
 
 export function WindowFactory() {
   return typeof window !== 'undefined' ? window : {};
@@ -16,8 +17,8 @@ export function WindowFactory() {
 @NgModule({
   imports: [
     AppModule,
-    LazyModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    BrowserTransferStateModule
   ],
   providers: [
     {
@@ -34,7 +35,9 @@ export function WindowFactory() {
       useFactory: (envConfigService: EnvConfigurationService) => () => envConfigService.load().toPromise(),
       deps: [EnvConfigurationService],
       multi: true
-    }
+    },
+
+      { provide: 'ORIGIN_URL', useValue: location.origin },
   ],
   bootstrap: [AppComponent]
 })

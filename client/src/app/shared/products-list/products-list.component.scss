@@ -139,11 +139,11 @@
     }
   }
 
-  /deep/ .cart_show-icon {
+  ::ng-deep .cart_show-icon {
     color: var(--primary-color) !important;
   }
 
-  /deep/ .cart_show-quantity {
+  ::ng-deep .cart_show-quantity {
     color: var(--primary-color) !important;
   }
 }

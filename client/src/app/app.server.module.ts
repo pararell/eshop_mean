@@ -6,6 +6,7 @@ import {AppComponent} from './app.component';
 import { ServerHttpInterceptor } from './services/server-http-interceptor';
 
 
+
 @NgModule({
   imports: [
     // The AppServerModule should import your AppModule followed
@@ -14,7 +15,6 @@ import { ServerHttpInterceptor } from './services/server-http-interceptor';
     ServerModule,
     ServerTransferStateModule
 ],
-  bootstrap: [AppComponent],
   providers: [
     {
     provide: HTTP_INTERCEPTORS,
@@ -24,6 +24,7 @@ import { ServerHttpInterceptor } from './services/server-http-interceptor';
   ],
   // Since the bootstrapped component is not inherited from your
   // imported AppModule, it needs to be repeated here.
+  bootstrap: [AppComponent]
 
 })
 export class AppServerModule { }

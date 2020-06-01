@@ -54,16 +54,6 @@ export class ApiService {
     return this.http.get(userUrl, this.requestOptions);
   }
 
-  handleToken(token) {
-    const tokenUrl = this.apiUrl + '/api/orders/stripe';
-    return this.http.post(tokenUrl, token, this.requestOptions);
-  };
-
-  makeOrder(req) {
-    const addOrder = this.apiUrl + '/api/orders/add';
-    return this.http.post(addOrder, req, this.requestOptions)
-  }
-
   signIn(req) {
     const sendContact = this.apiUrl + '/api/auth/signin';
     return this.http.post(sendContact, req, this.requestOptions)
@@ -141,6 +131,16 @@ export class ApiService {
   removeCategory(name: string) {
     const removeCategory = this.apiUrl + '/api/products/categories/' + name;
     return this.http.delete(removeCategory, this.requestOptions);
+  }
+
+  handleToken(token) {
+    const tokenUrl = this.apiUrl + '/api/orders/stripe';
+    return this.http.post(tokenUrl, token, this.requestOptions);
+  };
+
+  makeOrder(req) {
+    const addOrder = this.apiUrl + '/api/orders/add';
+    return this.http.post(addOrder, req, this.requestOptions)
   }
 
   getUserOrders() {

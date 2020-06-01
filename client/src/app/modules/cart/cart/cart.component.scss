@@ -3,7 +3,7 @@
   min-height: 100vh;
   flex-direction: column;
 
-  /deep/ .mat-radio-button ~ .mat-radio-button {
+  ::ng-deep .mat-radio-button ~ .mat-radio-button {
     margin-left: 16px;
   }
 

@@ -14,7 +14,7 @@
     }
   }
 
-  /deep/ .mat-raised-button.slider-arrow  {
+  ::ng-deep .mat-raised-button.slider-arrow  {
     max-width: 40px;
     min-width: 40px;
     padding: 10px;

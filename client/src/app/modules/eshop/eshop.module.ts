@@ -16,7 +16,7 @@ import { PageComponent } from './page/page.component';
 import { EnvConfigurationService } from '../../services/env-configuration.service';
 
 export function RecaptchFactory(config: EnvConfigurationService): string {
-  return config.config['FE_RECAPTCHA_CLIENT_KEY'];
+  return config && config.config ? config.config['FE_RECAPTCHA_CLIENT_KEY'] : '';
 }
 
 @NgModule({
