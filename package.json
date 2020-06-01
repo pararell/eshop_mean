@@ -114,5 +114,11 @@
     "tslint": "^6.1.1",
     "typescript": "3.7.5",
     "webpack-cli": "^3.3.11"
-  }
+  },
+  "browserslist": [
+    "last 2 versions",
+    "> 2%",
+    "maintained node versions",
+    "not dead"
+  ]
 }
