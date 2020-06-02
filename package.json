@@ -116,9 +116,9 @@
     "webpack-cli": "^3.3.11"
   },
   "browserslist": [
-    "last 2 versions",
-    "> 2%",
-    "maintained node versions",
-    "not dead"
+    "defaults",
+    "not IE 11",
+    "not IE_Mob 11",
+    "maintained node versions"
   ]
 }
