@@ -13,19 +13,21 @@
         }
       }
     ],
-    "assetGroups": [{
-      "name": "eshop",
-      "installMode": "prefetch",
-      "resources": {
-        "files": [
-          "/favicon.ico",
-          "/manifest.webmanifest",
-          "/*.bundle.css",
-          "/*.bundle.js",
-          "/*.chunk.js"
-        ]
-      }
-    }, {
+    "assetGroups": [
+      {
+        "name": "app",
+        "installMode": "prefetch",
+        "resources": {
+          "files": [
+            "/favicon.ico",
+            "/manifest.webmanifest",
+            "/index.html",
+            "/*.css",
+            "/*.js"
+          ]
+        }
+      },
+      {
       "name": "assets",
       "installMode": "lazy",
       "updateMode": "prefetch",
