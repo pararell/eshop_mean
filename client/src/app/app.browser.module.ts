@@ -7,7 +7,6 @@ import { WindowService } from './services/window.service';
 import { BrowserHttpInterceptor } from './services/browser-http-interceptor';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EnvConfigurationService } from './services/env-configuration.service';
-import { BrowserTransferStateModule } from '@angular/platform-browser';
 
 
 export function WindowFactory() {
@@ -18,7 +17,6 @@ export function WindowFactory() {
   imports: [
     AppModule,
     BrowserAnimationsModule,
-    BrowserTransferStateModule
   ],
   providers: [
     {
