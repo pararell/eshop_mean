@@ -19,7 +19,6 @@ export class SidebarComponent  {
   @Input() price: number;
   @Input() sortOptions: {name: string; id: string}[];
   @Input() choosenSort: string;
-  @Input() convertVal : number;
   @Input() currency: string;
   @Input() lang: string;
 
@@ -41,7 +40,10 @@ export class SidebarComponent  {
     of('chane_price').pipe(take(1), delay(200)).subscribe(() => {
       this.changePrice.emit(value);
     });
+  }
 
+  trackById(_index: number, item) {
+    return item.titleUrl;
   }
 
 

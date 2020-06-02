@@ -16,7 +16,6 @@ export class ProductContentComponent {
     this.categoriesToShow = categories.reduce((prev, cat) => ({...prev, [cat.titleUrl]: cat.title }), {});
   }
   @Input()  cartIds     : {[productId: string]: number};
-  @Input()  convertVal  : number;
   @Input()  currency    : string;
   @Input()  lang        : string;
   @Input()  withLink      = false;

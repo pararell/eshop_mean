@@ -9,15 +9,13 @@ export interface State {
   user: User;
   lang: string;
   currency: string;
-  convertVal: number;
 }
 
 export const initialState: State = {
   loading: false,
   user: null,
   lang: languages[0],
-  currency: currencyLang['default'],
-  convertVal: 0,
+  currency: currencyLang['default']
 };
 
 
@@ -45,7 +43,7 @@ export function appReducer(state = initialState, action): State {
     }
 
     case EshopActions.ChangeLanguage: {
-      return {...state, lang: action.payload.lang, currency: action.payload.currency, convertVal: 0 };
+      return {...state, lang: action.payload.lang, currency: action.payload.currency };
     }
 
     default: {
@@ -57,5 +55,4 @@ export function appReducer(state = initialState, action): State {
 export const user = (state: State) => state.user;
 export const lang = (state: State) => state.lang;
 export const currency = (state: State) => state.currency;
-export const convertVal = (state: State) => state.convertVal;
 export const loading = (state: State) => state.loading;

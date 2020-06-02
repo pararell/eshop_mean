@@ -21,7 +21,6 @@
             [categories]="categories$ | async"
             [cartIds]="items?.cartIds"
             [currency]="currency$ | async"
-            [convertVal]="convertVal$ | async"
             [lang]="lang$ | async"
             (addProduct)="cartEvent($event, 'add')"
             (removeProduct)="cartEvent($event, 'remove')">

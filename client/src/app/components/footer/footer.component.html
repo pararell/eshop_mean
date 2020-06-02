@@ -12,7 +12,7 @@
               [routerLink]="['/' + lang + '/eshop/contact']">
               {{'CONTACT' | translate | async}}
             </a></li>
-          <ng-container *ngFor="let page of (pages$ | async)">
+          <ng-container *ngFor="let page of (pages$ | async); trackBy: trackById">
             <li>
                 <a class
                 [routerLink]="['/' + lang + '/eshop/' + page.titleUrl]">

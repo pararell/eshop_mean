@@ -15,7 +15,7 @@
                (blur)="onBlur()"
                [matAutocomplete]="auto">
         <mat-autocomplete #auto="matAutocomplete">
-          <mat-option *ngFor="let title of (productTitles$ | async)"
+          <mat-option *ngFor="let title of (productTitles$ | async); trackBy: trackById"
               [value]="title"
               [routerLink]="['/' + (lang$ | async) + '/product/' + title]"
               (click)="onTitleLink()">
@@ -60,21 +60,21 @@
         {{ 'Login' | translate | async }} {{ 'with' | translate | async }} Google
       </a>
     </button>
-    <button mat-menu-item  
+    <button mat-menu-item
       [routerLink]="['/' + (lang$ | async) + '/authorize/signin']"
       routerLinkActive="nav-active-link">
       <mat-icon>account_circle</mat-icon>
       <a class="nav-link">{{ 'Login' | translate | async }}</a>
     </button>
   </ng-container>
-  <button mat-menu-item 
+  <button mat-menu-item
       [routerLink]="['/' + (lang$ | async) + '/dashboard']"
       routerLinkActive="nav-active-link"
      *ngIf="(user$ | async)?.roles?.includes('admin')">
     <mat-icon>dashboard</mat-icon>
     <a class="nav-link"> {{'Dashboard' | translate | async}}</a>
   </button>
-  <button mat-menu-item 
+  <button mat-menu-item
     [routerLink]="['/' + (lang$ | async) + '/orders']"
     routerLinkActive="nav-active-link"
     *ngIf="(userOrders$ | async)?.length">

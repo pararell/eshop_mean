@@ -19,7 +19,6 @@
           <app-all-products
             [allProducts]="allProducts$ | async"
             [lang]="lang$ | async"
-            [convertVal]="convertVal$ | async"
             [currency]="currency$ | async"
             (getAllProducts)="getProducts()"
             (editProduct)="setToEditProduct($event)">

@@ -27,7 +27,6 @@ export const Eshop = (state: State) => state.eshop;
 export const getUser = createSelector(Auth, fromAuth.user);
 export const getLang = createSelector(Auth, fromAuth.lang);
 export const getCurrency = createSelector(Auth, fromAuth.currency);
-export const getConvertVal = createSelector(Auth, fromAuth.convertVal);
 export const getAuthLoading = createSelector(Auth, fromAuth.loading);
 
 export const getProducts = createSelector(Products, fromProducts.products);

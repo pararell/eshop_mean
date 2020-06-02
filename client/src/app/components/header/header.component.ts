@@ -87,4 +87,8 @@ export class HeaderComponent implements OnInit {
     };
     this.store.dispatch(new actions.ChangeLanguage(langUpdate));
   }
+
+  trackById(_index: number, item: string) {
+    return item;
+  }
 }

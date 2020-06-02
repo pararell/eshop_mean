@@ -8,9 +8,9 @@
         </div>
         <div
           class="product-price">
-          <span>{{ (product?.salePrice * (convertVal || 1)) | priceFormat }} {{ currency }}</span>
+          <span>{{ product?.salePrice | priceFormat }} {{ currency }}</span>
           <span class="product-before-price" *ngIf="product.regularPrice">
-            {{ (product?.regularPrice * (convertVal || 1)) | priceFormat }} {{ currency }}
+            {{ product?.regularPrice | priceFormat }} {{ currency }}
           </span>
         </div>
         <button class="product-cart-wrap"

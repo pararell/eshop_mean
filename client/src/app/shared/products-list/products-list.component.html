@@ -24,12 +24,12 @@
       lazySrcVisible="visible">
     </a>
     <div class="product_card-before-price" *ngIf="product.onSale && product.regularPrice">
-      {{(product.regularPrice * (convertVal || 1)) }} {{ currency }}
+      {{product.regularPrice }} {{ currency }}
     </div>
     <div class="product_card-action">
       <div class="product_card-action-wrap">
         <div class="product_card-price-info">
-          {{ (product?.salePrice * (convertVal || 1)) | priceFormat }} {{ currency }}
+          {{ product?.salePrice | priceFormat }} {{ currency }}
         </div>
         <p class="product_card-stock">{{ product?.stock | translate | async }}</p>
         <app-cart-show *ngIf="cartIds"

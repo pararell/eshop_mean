@@ -8,7 +8,7 @@
     {{ 'All' | translate | async }} {{ 'products' | translate | async }}
   </a>
   <a class="sidebar-item"
-    *ngFor="let category of categories"
+    *ngFor="let category of categories; trackBy: trackById "
     (click)="changeCategory.emit(category.titleUrl)"
     [routerLink]="['/' + lang + '/product/category/' + category.titleUrl]"
     [class.active]="activeCategory == (category.titleUrl)">
@@ -44,5 +44,5 @@
     [(ngModel)]="(maxPrice < price) ? maxPrice : price">
   </mat-slider>
   {{ 'Price' | translate | async }} {{ 'to' | translate | async }}:
-  {{ (ref.value * (convertVal || 1)) | priceFormat }} {{ currency }}
+  {{ ref.value | priceFormat }} {{ currency }}
 </div>

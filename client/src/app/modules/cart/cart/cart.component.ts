@@ -21,7 +21,6 @@ export class CartComponent {
   order$      : Observable<Order>;
   user$       : Observable<User>;
   orderForm   : FormGroup;
-  convertVal$ : Observable<number>;
   currency$   : Observable<string>;
   toggleCard = false;
   productUrl  : string;
@@ -53,7 +52,6 @@ export class CartComponent {
       notes: ['']
     });
 
-    this.convertVal$ = this.store.select(fromRoot.getConvertVal);
     this.currency$ = this.store.select(fromRoot.getCurrency);
   }
 

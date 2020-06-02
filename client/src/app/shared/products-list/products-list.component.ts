@@ -11,7 +11,6 @@ import { Product } from '../models';
 export class ProductsListComponent {
   @Input()  products    : Product[];
   @Input()  cartIds     : {[productId: string]: number};
-  @Input()  convertVal  : number;
   @Input()  currency    : string;
   @Input()  lang        : string;
   @Input()  showEdit    = false;

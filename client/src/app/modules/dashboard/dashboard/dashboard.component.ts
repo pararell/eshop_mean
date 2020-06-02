@@ -21,7 +21,6 @@ export class DashboardComponent implements OnDestroy {
 
   productAction = '';
   lang$: Observable<string>;
-  convertVal$ : Observable<number>;
   currency$   : Observable<string>;
   allProducts$ : Observable<Product[]>;
   allProductsTitles$: Observable<string[]>;
@@ -32,7 +31,6 @@ export class DashboardComponent implements OnDestroy {
 
   constructor(private translate: TranslateService, private store: Store<fromRoot.State>) {
     this.lang$          = this.translate.getLang$();
-    this.convertVal$    = this.store.select(fromRoot.getConvertVal);
     this.currency$      = this.store.select(fromRoot.getCurrency);
     this.allProducts$    = this.store.select(fromRoot.getAllProducts);
     this.allProductsTitles$    = this.store.select(fromRoot.getAllProducts).pipe(

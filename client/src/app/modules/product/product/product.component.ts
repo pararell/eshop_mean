@@ -22,7 +22,6 @@ export class ProductComponent implements OnDestroy {
   items$: Observable<{ product: Product; cartIds: { [productId: string]: number } }>;
   categories$: Observable<Category[]>;
   productLoading$: Observable<boolean>;
-  convertVal$: Observable<number>;
   currency$: Observable<string>;
   lang$: Observable<string>;
   routeSub: Subscription;
@@ -66,7 +65,6 @@ export class ProductComponent implements OnDestroy {
       }
     );
 
-    this.convertVal$ = this.store.select(fromRoot.getConvertVal);
     this.currency$ = this.store.select(fromRoot.getCurrency);
   }
 

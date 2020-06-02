@@ -30,7 +30,6 @@ export class HomeComponent implements OnDestroy {
   minPrice$: Observable<number>;
   page$: Observable<number>;
   sortBy$: Observable<string>;
-  convertVal$: Observable<number>;
   currency$: Observable<string>;
   lang$: Observable<string>;
   categoriesSub: Subscription;
@@ -80,7 +79,6 @@ export class HomeComponent implements OnDestroy {
 
     this.categories$ = this.store.select(fromRoot.getCategories);
     this.pagination$ = this.store.select(fromRoot.getPagination);
-    this.convertVal$ = this.store.select(fromRoot.getConvertVal);
     this.currency$ = this.store.select(fromRoot.getCurrency);
 
     this._loadCategories();

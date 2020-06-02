@@ -18,7 +18,7 @@
             </div>
             <div class="cart-item-part">{{ cartItem.qty }} ks</div>
             <div class="cart-item-part">
-              {{ cartItem.price * ((convertVal$ | async) || 1) | priceFormat }}
+              {{ cartItem.price | priceFormat }}
               {{ currency$ | async }}
             </div>
             <div class="cart-remove"
@@ -32,7 +32,7 @@
             <div class="cart-item-part">&nbsp;
             </div>
             <div class="cart-item-part">
-                {{ cart.shippingCost * ((convertVal$ | async) || 1) | priceFormat }}
+                {{ cart.shippingCost | priceFormat }}
                 {{ currency$ | async }}
             </div>
             <div class="cart-item-last-down"></div>
@@ -40,10 +40,10 @@
           <li class="cart-items cart-items-last">
             <div class="cart-image-wrap"><b>{{ 'Summary' | translate | async }}</b>
             </div>
-            <div class="cart-item-part"><b>{{ cart?.totalQty }} ks</b>
+            <div class="cart-item-part"><b>{{ cart.totalQty }} ks</b>
             </div>
             <div class="cart-item-part"><b>
-                {{ cart?.totalPrice * ((convertVal$ | async) || 1) | priceFormat }}
+                {{ cart.totalPrice | priceFormat }}
                 {{ currency$ | async }}
               </b>
             </div>
@@ -139,7 +139,7 @@
                 [(ngModel)]="toggleCard">
                 <mat-radio-button [value]="true">
                   {{ 'Pay' | translate | async }}
-                  <b> {{ cart?.totalPrice * ((convertVal$ | async) || 1) | priceFormat }}
+                  <b> {{ cart?.totalPrice | priceFormat }}
                   {{ currency$ | async }}
                 </b>
                 </mat-radio-button>
@@ -166,7 +166,7 @@
               <ng-template matStepLabel>{{ 'Summary_and_payment' | translate | async }}</ng-template>
               <app-card
                 *ngIf="toggleCard"
-                [price]="cart?.totalPrice * ((convertVal$ | async) || 1) | priceFormat"
+                [price]="cart?.totalPrice | priceFormat"
                 [currency]="currency$ | async"
                 [loading]="loading$ | async"
                 (scrollToTop)="scrollToTop()"
