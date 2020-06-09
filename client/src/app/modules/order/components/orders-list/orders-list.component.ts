@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 
-import { Order } from '../../../shared/models';
+import { Order } from '../../../../shared/models';
 
 @Component({
   selector: 'app-orders-list',
@@ -13,6 +13,6 @@ export class OrdersListComponent {
   @Input() orderUrl: string;
 
   constructor() {
-   }
+  }
 
 }

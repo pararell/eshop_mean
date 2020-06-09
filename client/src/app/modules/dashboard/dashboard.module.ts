@@ -28,6 +28,7 @@ import { PagesEditComponent } from './pages-edit/pages-edit.component';
 import { ThemeEditComponent } from './theme-edit/theme-edit.component';
 import { CategoriesEditComponent } from './categories-edit/categories-edit.component';
 import { ConfigEditComponent } from './config-edit/config-edit.component';
+import { OrderComponentsModule } from '../order/components/order-components.module';
 
 
 const DASHBOARD_ROUTER: Routes = [
@@ -53,6 +54,7 @@ const DASHBOARD_ROUTER: Routes = [
   imports: [
     CommonModule,
     SharedModule,
+    OrderComponentsModule,
     FormsModule,
     ReactiveFormsModule,
     FileUploadModule,

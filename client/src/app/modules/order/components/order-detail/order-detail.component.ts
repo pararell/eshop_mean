@@ -6,10 +6,10 @@ import { Location } from '@angular/common';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 
-import * as fromRoot from '../../../store/reducers';
-import * as actions from './../../../store/actions';
-import { TranslateService } from '../../../services/translate.service';
-import { Order, OrderStatus } from '../../../shared/models';
+import * as fromRoot from '../../../../store/reducers';
+import * as actions from './../../../../store/actions';
+import { TranslateService } from '../../../../services/translate.service';
+import { Order, OrderStatus } from '../../../../shared/models';
 
 @Component({
   selector: 'app-order-detail',

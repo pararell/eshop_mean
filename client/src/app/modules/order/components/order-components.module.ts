@@ -9,21 +9,18 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 
-import { OrdersComponent } from './orders.component';
-import { OrderComponent } from './order/order.component';
-import { SharedModule } from '../../shared/shared.module';
-import { PipeModule } from '../../pipes/pipe.module';
-import { OrderComponentsModule } from './components/order-components.module';
+import { OrdersListComponent } from './orders-list/orders-list.component';
+import { OrderDetailComponent } from './order-detail/order-detail.component';
+import { PipeModule } from '../../../pipes/pipe.module';
 
 @NgModule({
   declarations: [
-    OrdersComponent,
-    OrderComponent
+    OrdersListComponent,
+    OrderDetailComponent
   ],
   imports: [
     CommonModule,
-    SharedModule,
-    OrderComponentsModule,
+    RouterModule,
     ReactiveFormsModule,
     PipeModule,
     MatCardModule,
@@ -31,11 +28,11 @@ import { OrderComponentsModule } from './components/order-components.module';
     MatChipsModule,
     MatProgressBarModule,
     MatSelectModule,
-    RouterModule.forChild([
-      { path: ':id', component: OrderComponent },
-      { path: '', component: OrdersComponent }
-    ]),
+  ],
+  exports: [
+    OrdersListComponent,
+    OrderDetailComponent
   ],
   providers: []
 })
-export class OrderModule { }
+export class OrderComponentsModule { }
