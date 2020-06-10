@@ -4,7 +4,7 @@ import { Inject, Injectable, Optional, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { FileUploader } from 'ng2-file-upload';
-import { Observable, BehaviorSubject, combineLatest} from 'rxjs';
+import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { Store } from '@ngrx/store';
 
 import * as fromRoot from '../store/reducers';
@@ -19,23 +19,23 @@ import { accessTokenKey } from '../shared/constants';
 export class ApiService {
 
   apiUrl = environment.apiUrl;
-  uploaderSub : BehaviorSubject<FileUploader> = new BehaviorSubject(null);
+  uploaderSub: BehaviorSubject<FileUploader> = new BehaviorSubject(null);
   requestOptions = {};
 
   constructor(
-    private readonly http     : HttpClient,
-    private readonly _window  : WindowService,
-    private store     : Store<fromRoot.State>,
+    private readonly http: HttpClient,
+    private readonly _window: WindowService,
+    private store: Store<fromRoot.State>,
     @Optional() @Inject('serverUrl') protected serverUrl: string,
     @Inject(PLATFORM_ID)
     private platformId: Object
-    ) {
+  ) {
 
     this.setHeaders();
 
     if (environment.production) {
       if (isPlatformServer(this.platformId)) {
-        this.apiUrl = this.serverUrl || '';
+        this.apiUrl = this.serverUrl ? this.serverUrl.replace('http', 'https') : '';
       }
 
       if (isPlatformBrowser(this.platformId)) {
@@ -65,21 +65,22 @@ export class ApiService {
   }
 
   getProducts(req) {
-    const {lang, page, sort, category, maxPrice} = req;
-    const addCategory = category ? {category} : {};
+    const { lang, page, sort, category, maxPrice } = req;
+    const addCategory = category ? { category } : {};
     const categoryQuery = category ? '&category=' + category : '';
     const priceQuery = maxPrice ? '&maxPrice=' + maxPrice : '';
     const productsUrl = this.apiUrl + '/api/products?lang=' + lang + '&page=' + page + '&sort=' + sort + categoryQuery + priceQuery;
     return this.http.get(productsUrl, this.requestOptions).pipe(map((data: any) => ({
-        products : data.all
-          .map(product =>
-            ({...product,
-              tags: product.tags.filter(Boolean).map((cat: string) => cat.toLowerCase())
+      products: data.all
+        .map(product =>
+          ({
+            ...product,
+            tags: product.tags.filter(Boolean).map((cat: string) => cat.toLowerCase())
           })),
-        pagination: data.pagination,
-        maxPrice: data.maxPrice,
-        minPrice: data.minPrice,
-        ...addCategory
+      pagination: data.pagination,
+      maxPrice: data.maxPrice,
+      minPrice: data.minPrice,
+      ...addCategory
     })))
   }
 
@@ -194,9 +195,9 @@ export class ApiService {
     return this.http.get(translationsUrl, this.requestOptions);
   }
 
-  editTranslation({lang, keys}) {
+  editTranslation({ lang, keys }) {
     const translationsUpdateUrl = this.apiUrl + '/api/translations?lang=' + lang;
-    return this.http.patch(translationsUpdateUrl, { keys : keys }, this.requestOptions);
+    return this.http.patch(translationsUpdateUrl, { keys: keys }, this.requestOptions);
   }
 
   editAllTranslation(translations: Translations[]) {
@@ -209,13 +210,13 @@ export class ApiService {
     return this.http.get(getImages, this.requestOptions);
   }
 
-  addProductImagesUrl({image, titleUrl}) {
+  addProductImagesUrl({ image, titleUrl }) {
     const titleUrlQuery = titleUrl ? '?titleUrl=' + titleUrl : '';
     const addImageUrl = this.apiUrl + '/api/admin/images/add' + titleUrlQuery;
     return this.http.post(addImageUrl, { image }, this.requestOptions);
   }
 
-  removeImage({image, titleUrl}) {
+  removeImage({ image, titleUrl }) {
     const titleUrlQuery = titleUrl ? '?titleUrl=' + titleUrl : '';
     const removeImage = this.apiUrl + '/api/admin/images/remove' + titleUrlQuery;
     return this.http.post(removeImage, { image }, this.requestOptions);
@@ -225,19 +226,19 @@ export class ApiService {
     return this.uploaderSub.asObservable();
   }
 
-  setUploader({options, titleUrl}): Observable<any> {
+  setUploader({ options, titleUrl }): Observable<any> {
     if (isPlatformBrowser(this.platformId)) {
       const titleUrlQuery = titleUrl ? '?titleUrl=' + titleUrl : '';
       const accessToken = localStorage.getItem(accessTokenKey);
-      const authorizationHeader = accessToken ? {name: 'Authorization', value: 'Bearer ' + accessToken } : {};
+      const authorizationHeader = accessToken ? { name: 'Authorization', value: 'Bearer ' + accessToken } : {};
 
       this.uploaderSub.next(new FileUploader({
         url: this.apiUrl + '/api/admin/images/upload' + titleUrlQuery,
-        headers: [{name: 'Accept', value: 'application/json', ...authorizationHeader}],
+        headers: [{ name: 'Accept', value: 'application/json', ...authorizationHeader }],
         ...options
-    }));
+      }));
 
-    return this.uploaderSub.asObservable();
+      return this.uploaderSub.asObservable();
     }
   }
 
@@ -301,16 +302,16 @@ export class ApiService {
     combineLatest(
       this.store.select(fromRoot.getLang),
       this.store.select(fromRoot.getUser),
-      (lang, user) => ({lang, user})
-      ).subscribe(({lang, user}) => {
-        if (user && user.accessToken && isPlatformBrowser(this.platformId)) {
-          localStorage.setItem(accessTokenKey, user.accessToken);
-        }
-        const accessToken = isPlatformBrowser(this.platformId) ? localStorage.getItem(accessTokenKey) : '';
-        let headers = new HttpHeaders();
-        headers = headers.set('Authorization', 'Bearer ' + accessToken).set('lang', lang);
-        this.requestOptions = { headers, withCredentials: true };
-      })
+      (lang, user) => ({ lang, user })
+    ).subscribe(({ lang, user }) => {
+      if (user && user.accessToken && isPlatformBrowser(this.platformId)) {
+        localStorage.setItem(accessTokenKey, user.accessToken);
+      }
+      const accessToken = isPlatformBrowser(this.platformId) ? localStorage.getItem(accessTokenKey) : '';
+      let headers = new HttpHeaders();
+      headers = headers.set('Authorization', 'Bearer ' + accessToken).set('lang', lang);
+      this.requestOptions = { headers, withCredentials: true };
+    })
   }
 
 
