@@ -21,19 +21,19 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
 import { PipeModule } from './pipes/pipe.module';
+import { LazyModule } from './utils/lazyLoadImg/lazy.module';
 import { reducers } from './store/reducers/index';
 import { AppEffects } from './store/effects';
-import { HeaderComponent } from './components/header/header.component';
-import { FooterComponent } from './components/footer/footer.component';
 import { routesAll } from './app.routes';
 import { environment } from '../environments/environment';
 import { TranslateService } from './services/translate.service';
+import { AppComponent } from './app.component';
+import { HeaderComponent } from './components/header/header.component';
+import { FooterComponent } from './components/footer/footer.component';
 import { HomeComponent } from './components/home/home.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
-import { LazyModule } from './utils/lazyLoadImg/lazy.module';
 
 
 
@@ -49,9 +49,9 @@ const routes: Routes = routesAll;
   ],
   imports: [
     BrowserTransferStateModule,
-    BrowserModule.withServerTransition({appId: 'my-app-id'}),
+    BrowserModule.withServerTransition({ appId: 'my-app-id' }),
     TransferHttpCacheModule,
-    StoreModule.forRoot( reducers ),
+    StoreModule.forRoot(reducers),
     HttpClientModule,
     SharedModule,
     PipeModule,
@@ -67,7 +67,7 @@ const routes: Routes = routesAll;
     MatProgressSpinnerModule,
     MatSidenavModule,
     LazyModule,
-    EffectsModule.forRoot([ AppEffects ]),
+    EffectsModule.forRoot([AppEffects]),
     RouterModule.forRoot(routes, { initialNavigation: 'enabled' }),
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
     !environment.production ? StoreDevtoolsModule.instrument() : []
@@ -77,7 +77,7 @@ const routes: Routes = routesAll;
     {
       provide: APP_INITIALIZER,
       useFactory: (translateService: TranslateService) => () => translateService.use(''),
-      deps: [ TranslateService ],
+      deps: [TranslateService],
       multi: true
     }
   ]

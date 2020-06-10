@@ -36,5 +36,9 @@
       </a>
     </div>
     <div class="product-main-image"
-      [ngStyle]="{'background': 'url(' + product?.mainImage?.url + ') no-repeat'}"></div>
+        [attr.aria-labelledby]="product.mainImage.name"
+        lazySrc
+        [lazyBackground]="'url(' + product?.mainImage?.url + ') no-repeat'"
+        lazySrcVisible="visible">
+    </div>
   </div>
