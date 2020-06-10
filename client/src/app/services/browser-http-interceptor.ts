@@ -6,10 +6,10 @@ import { TransferState, makeStateKey, StateKey } from '@angular/platform-browser
 
 @Injectable()
 export class BrowserHttpInterceptor implements HttpInterceptor {
-  key  : StateKey<string>;
+  key: StateKey<string>;
 
   constructor(
-      private transferState: TransferState) {
+    private transferState: TransferState) {
   }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -21,7 +21,8 @@ export class BrowserHttpInterceptor implements HttpInterceptor {
         }));
     }
 
-    this.key = makeStateKey<HttpResponse<object>>(request.url);
+    const requestUrl = request.url ? request.url.replace(/^https?:\/\//, '') : request.url;
+    this.key = makeStateKey<HttpResponse<object>>(requestUrl);
     const storedResponse: any = this.transferState.get(this.key, null);
 
     if (storedResponse) {
@@ -46,10 +47,10 @@ export class BrowserHttpInterceptor implements HttpInterceptor {
         console.warn('HTTP status code: 410: ', url, statusCode); // tslint:disable-line no-console
         break;
       case 500:
-      console.warn('HTTP status code: 500: ', url, statusCode); // tslint:disable-line no-console
+        console.warn('HTTP status code: 500: ', url, statusCode); // tslint:disable-line no-console
         break;
       case 503:
-      console.warn('HTTP status code: 503: ', url, statusCode); // tslint:disable-line no-console
+        console.warn('HTTP status code: 503: ', url, statusCode); // tslint:disable-line no-console
         break;
       default:
         console.warn('HTTP status code: Unhandled ', url, statusCode); // tslint:disable-line no-console

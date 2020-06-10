@@ -7,20 +7,21 @@ import { TransferState, makeStateKey, StateKey } from '@angular/platform-browser
 
 @Injectable()
 export class ServerHttpInterceptor implements HttpInterceptor {
-  key  : StateKey<string>;
+  key: StateKey<string>;
   apiToTransfer = ['api/eshop', 'api/products', 'api/translations', 'api/orders'];
 
   constructor(
     @Optional() @Inject('serverUrl') protected serverUrl: string,
-    private transferState: TransferState) {}
+    private transferState: TransferState) { }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(tap(event => {
-    if (event instanceof HttpResponse && (request.method === 'GET'
-      && this.apiToTransfer.find(api => request.url.includes(api)))
+      if (event instanceof HttpResponse && (request.method === 'GET'
+        && this.apiToTransfer.find(api => request.url.includes(api)))
       ) {
-      this.key = makeStateKey<HttpResponse<object>>(request.url);
-      this.transferState.set(this.key, event.body);
+        const requestUrl = request.url ? request.url.replace(/^https?:\/\//, '') : request.url;
+        this.key = makeStateKey<HttpResponse<object>>(requestUrl);
+        this.transferState.set(this.key, event.body);
       }
     }));
   }

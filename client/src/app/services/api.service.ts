@@ -35,7 +35,7 @@ export class ApiService {
 
     if (environment.production) {
       if (isPlatformServer(this.platformId)) {
-        this.apiUrl = this.serverUrl ? this.serverUrl.replace('http', 'https') : '';
+        this.apiUrl = this.serverUrl || '';
       }
 
       if (isPlatformBrowser(this.platformId)) {

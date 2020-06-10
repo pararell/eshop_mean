@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { BrowserModule, BrowserTransferStateModule } from '@angular/platform-browser';
+import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -48,7 +48,6 @@ const routes: Routes = routesAll;
     NotFoundComponent
   ],
   imports: [
-    BrowserTransferStateModule,
     BrowserModule.withServerTransition({ appId: 'my-app-id' }),
     TransferHttpCacheModule,
     StoreModule.forRoot(reducers),
