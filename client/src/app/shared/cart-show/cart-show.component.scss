@@ -10,12 +10,12 @@
 
     &-icon {
       cursor: pointer;
-      color: #fff;
+      color: var(--theme-primary-contrast-500, rgba(255,255,255,0.8));
       font-size: 25px;
     }
 
     &-quantity {
-      color: #fff;
+      color: var(--theme-primary-contrast-500, rgba(255,255,255,0.8));
       line-height: 15px;
     }
   }

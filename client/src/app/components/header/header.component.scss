@@ -28,7 +28,7 @@
     height: 50px;
     width: 100%;
     line-height: 50px;
-    background: #fff;
+    background: var(--theme-primary-contrast-500, rgba(255,255,255,0.8));
     justify-content: space-between;
     z-index: 5;
     position: relative;
@@ -135,6 +135,6 @@
   select.nav-lang-select {
     background: var(--primary-color);
     border: none;
-    color: #fff;
+    color: var(--theme-primary-contrast-A700);
   }
 }

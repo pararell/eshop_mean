@@ -11,7 +11,7 @@
   .home {
     &-primary-header {
       color: var(--primary-color);
-      background: #fff;
+      background: var(--theme-primary-contrast-A700);
       border-top: 1px solid rgba(0, 0, 0, 0.1);
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
       position: relative;

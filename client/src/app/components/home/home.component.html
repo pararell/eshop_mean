@@ -31,7 +31,7 @@
       <div class="home-product" *ngIf="(products$ | async) as products">
         <div class="container">
           <app-carousel [intervalForSlider]="20000">
-            <ng-container *ngFor="let product of products | slice:0:3">
+            <ng-container *ngFor="let product of products | slice:0:5">
               <app-product-content
                 [product]="product"
                 [categories]="categories$ | async"

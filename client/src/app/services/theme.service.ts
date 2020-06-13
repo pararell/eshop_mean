@@ -1,6 +1,6 @@
 
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser, DOCUMENT } from '@angular/common';
+import { Injectable, Inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import * as tinycolor from 'tinycolor2';
 
 export interface Color {
@@ -16,8 +16,6 @@ export interface Color {
 export class ThemeService {
 
   constructor(
-    @Inject(PLATFORM_ID)
-    private platformId : Object,
     @Inject(DOCUMENT)
     private document: Document
     ) {}
@@ -34,7 +32,7 @@ export class ThemeService {
       const key1 = `--${type}-${color.name}`;
       const value1 = color.hex;
       const key2 = `--${type}-contrast-${color.name}`;
-      const value2 = color.darkContrast ? 'rgba(black, 0.87)' : 'rgba(255,255,255, 0.8)';
+      const value2 = color.darkContrast ? 'rgba(0,0,0, 0.87)' : 'rgba(255,255,255, 0.8)';
       this.document.documentElement.style.setProperty(key1, value1);
       this.document.documentElement.style.setProperty(key2, value2);
     }
