@@ -20,6 +20,7 @@ body {
 .main {
   position: relative;
   flex: 1 0 auto;
+  z-index: 1;
   @include add-main-background(#fff, var(--background-color), 45deg, 1px, 80px);
 }
 
@@ -33,6 +34,7 @@ body {
   background-size: cover;
   background-image: var(--main-background-url);
   background-repeat: no-repeat;
+  z-index: 0;
 }
 
 .container, .container-mid {
