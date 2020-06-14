@@ -34,7 +34,6 @@ export class EshopController {
     return this.eshopService.addOrEditPage(pageDto);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Get('/page/:titleUrl')
   getPage(@Param('titleUrl') titleUrl: string, @Headers('lang') lang: string): Promise<Page> {
     return this.eshopService.getPage(titleUrl, lang);
