@@ -24,8 +24,11 @@
           <i class="material-icons md-16">filter_list</i>
           <span>{{ 'Filter' | translate | async }}</span>
         </div>
-        <h1 class="products-title" *ngIf="!(categoryTitle$ | async)">{{'Products' | translate | async}}</h1>
-        <h1 class="products-title" *ngIf="(categoryTitle$ | async) as categoryTitle">{{categoryTitle}}</h1>
+        <h1 class="products-title" *ngIf="!(categoryInfo$ | async)">{{'Products' | translate | async}}</h1>
+        <ng-container *ngIf="(categoryInfo$ | async) as categoryInfo">
+          <h1 class="products-title">{{categoryInfo.title}} </h1>
+          <p  class="products-description" *ngIf="categoryInfo.description">{{ categoryInfo.description }}</p>
+        </ng-container>
       </div>
     </div>
     <div class="container products-content">
@@ -50,6 +53,13 @@
           </app-sidebar>
         </div>
         <div class="main-wrap">
+          <ng-container *ngIf="(subCategories$ | async) as subCategories">
+            <app-categories-list *ngIf="subCategories.length && (pagination$ | async).page === 1"
+              [categories]="subCategories"
+              [lang]="lang$ | async"
+              [withSlider]="false">
+            </app-categories-list>
+          </ng-container>
           <app-products-list
             [class.disabled]="loadingProducts$ | async"
             [products]="products"

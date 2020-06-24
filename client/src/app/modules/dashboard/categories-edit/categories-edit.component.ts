@@ -23,6 +23,7 @@ export class CategoriesEditComponent {
   categoryProductsTitlesUrl: string[] = [];
   filteredTitles$: Observable<string[]>;
   mainImageType = false;
+  subCategory: string;
 
   constructor(private fb: FormBuilder, private store: Store<fromRoot.State>) {
     this.createForm();
@@ -48,6 +49,7 @@ export class CategoriesEditComponent {
     this.categoryEditForm = this.fb.group({
       titleUrl: ['', Validators.required],
       mainImage: '',
+      subCategories: [[]],
       ...this._createLangForm(this.languageOptions),
     });
   }
@@ -75,6 +77,7 @@ export class CategoriesEditComponent {
         const newForm = {
           titleUrl: category.titleUrl,
           mainImage: category.mainImage && category.mainImage.url ? category.mainImage.url : '',
+          subCategories: category.subCategories,
           ...this.prepareLangEditForm(category),
         };
 
@@ -99,6 +102,20 @@ export class CategoriesEditComponent {
     const titleUrl = this.categoryEditForm.get('titleUrl').value;
     this.store.dispatch(new actions.RemoveCategory(titleUrl));
     this.sendRequest = true;
+  }
+
+  addSubCategory(): void {
+    if (this.subCategory && this.subCategory !== this.categoryEditForm.get('titleUrl').value) {
+      const formSubCategories = this.categoryEditForm.value.subCategories.filter((subCat) => subCat !== this.subCategory);
+      const subCategories = [...formSubCategories, this.subCategory.replace(/ /g, '_').toLowerCase()];
+      this.categoryEditForm.get('subCategories').setValue(subCategories);
+      this.subCategory = '';
+    }
+  }
+
+  removeSubCategory(subCatToRemove: string): void {
+    const formSubCategories = this.categoryEditForm.value.subCategories.filter((subCat) => subCat !== subCatToRemove);
+    this.categoryEditForm.get('subCategories').setValue(formSubCategories);
   }
 
   private _createLangForm(languageOptions: Array<string>) {

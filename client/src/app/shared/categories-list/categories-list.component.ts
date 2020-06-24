@@ -11,6 +11,7 @@ import { Category } from '../models';
 export class CategoriesListComponent {
   @Input()  categories    : Category[];
   @Input()  lang          : string;
+  @Input()  withSlider    = true;
 
   constructor() {}
 

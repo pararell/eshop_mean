@@ -1,4 +1,13 @@
-<app-carousel [intervalForSlider]="8000">
+<app-carousel [intervalForSlider]="8000" *ngIf="withSlider">
+  <ng-container *ngTemplateOutlet="categoriesTemplate"></ng-container>
+</app-carousel>
+
+<div class="categories-list" *ngIf="!withSlider">
+  <ng-container *ngTemplateOutlet="categoriesTemplate"></ng-container>
+</div>
+
+
+<ng-template #categoriesTemplate>
   <ng-container *ngFor="let category of categories; trackBy: trackById">
     <div class="category_card">
       <a class="category_card-image"
@@ -9,9 +18,14 @@
         [lazyBackground]="'url(' + category.mainImage?.url + ')'"
         lazySrcVisible="visible">
         <span class="category_card-overlay">
-          <h2 class="category_card-title">{{ category?.title }}</h2>
+          <span class="category_card-info">
+            <h2 class="category_card-title">{{ category?.title }}</h2>
+            <p class="category_card-description" *ngIf="category?.description">
+              {{ category?.description }}
+            </p>
+          </span>
         </span>
       </a>
     </div>
   </ng-container>
-</app-carousel>
+</ng-template>

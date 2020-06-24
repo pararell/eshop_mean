@@ -22,9 +22,10 @@ export class ProductsComponent implements OnDestroy {
   cartIds$: Observable<{ [productID: string]: number }>;
   loadingProducts$: Observable<boolean>;
   categories$: Observable<Category[]>;
+  subCategories$: Observable<Category[]>;
   pagination$: Observable<Pagination>;
   category$: Observable<string>;
-  categoryTitle$: Observable<string>;
+  categoryInfo$: Observable<Category>;
   filterPrice$: Observable<number>;
   maxPrice$: Observable<number>;
   minPrice$: Observable<number>;
@@ -79,16 +80,23 @@ export class ProductsComponent implements OnDestroy {
     this.categories$ = this.store.select(fromRoot.getCategories);
     this.pagination$ = this.store.select(fromRoot.getPagination);
     this.currency$ = this.store.select(fromRoot.getCurrency);
-    this.categoryTitle$ = this.category$.pipe(
+    this.categoryInfo$ = this.category$.pipe(
       switchMap((category) =>
         this.categories$.pipe(
           map((categories) => {
             const foundCategory = categories.find((cat) => cat.titleUrl === category);
-            return foundCategory ? foundCategory.title : category;
+            return foundCategory;
           })
         )
       )
     );
+    this.subCategories$ = combineLatest(this.categories$, this.categoryInfo$.pipe(filter(cat => !!cat)),
+      (categories, category) => ({categories, category})).pipe(map(({categories, category}) => {
+        return categories.filter(cat => category.subCategories.includes(cat.titleUrl))
+    }));
+
+    this.subCategories$.subscribe()
+
     this._loadCategories();
     this._loadProducts();
   }

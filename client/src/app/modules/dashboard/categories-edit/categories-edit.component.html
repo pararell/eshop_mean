@@ -145,6 +145,47 @@
           </mat-radio-group>
         </div>
       </div>
+
+      <div class="category_edit-full-input">
+        <mat-form-field class="category_edit-field-small">
+          <mat-label>
+            Subcategories
+          </mat-label>
+          <input
+            matInput
+            [(ngModel)]="subCategory"
+            [ngModelOptions]="{standalone: true}"
+            name="subCategory"
+            [matAutocomplete]="autoSubCategories">
+          <mat-autocomplete #autoSubCategories="matAutocomplete">
+            <mat-option
+              *ngFor="let category of categories$ | async"
+              [value]="category.category.titleUrl">
+              <span>{{category.category.titleUrl}}</span>
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <button
+          mat-raised-button
+          color="primary"
+          class="edit-find-button"
+          (click)="addSubCategory()">
+          Add SubCategory
+        </button>
+      </div>
+      <mat-chip-list
+        class="category_edit-subCategories"
+        *ngIf="(categoryEditForm.get('subCategories').value) as allCategories">
+        <ng-container *ngIf="allCategories && allCategories.length">
+          <mat-chip
+            class="clickable"
+            *ngFor="let subCategory of allCategories"
+            (click)="removeSubCategory(subCategory)">
+            <span *ngIf="subCategory">{{ subCategory }} x</span>
+          </mat-chip>
+        </ng-container>
+      </mat-chip-list>
+
       <button
         mat-raised-button
         color="primary"
