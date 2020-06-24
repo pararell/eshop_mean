@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 
 import { languages } from '../../shared/constans';
 
-const getCategoryLangInfo = (): {[lang: string]: {}} => {
+const getCategoryLangInfo = () => {
   return languages
     .reduce((prev, lang) => ({...prev,
       [lang]:
@@ -22,6 +22,7 @@ const CategorySchema = new Schema({
     name: { type: String, trim: true },
     type: { type: Boolean }
   },
+  subCategories: Array,
   _user: { type: Schema.Types.ObjectId, ref: 'user' },
   dateAdded: Date,
   ...getCategoryLangInfo()

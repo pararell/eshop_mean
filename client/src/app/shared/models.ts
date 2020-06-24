@@ -47,6 +47,7 @@ export interface Category {
   description?  : string;
   visibility?   : boolean;
   mainImage?    : {url: string; name: string; type?: boolean};
+  subCategories? : string[];
   position      : number;
   [lang: string]: any | { title?: string; description?: string; visibility? : boolean; };
 }

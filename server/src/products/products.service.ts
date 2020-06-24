@@ -151,6 +151,7 @@ export class ProductsService {
       titleUrl: category.titleUrl,
       mainImage: category.mainImage,
       dateAdded: category.dateAdded,
+      subCategories: category.subCategories,
       title: category[lang] ? category[lang].title : category.titleUrl,
       description: category[lang] ? category[lang].description : '',
       visibility: category[lang] ? category[lang].visibility : false,

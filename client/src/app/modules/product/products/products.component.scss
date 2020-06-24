@@ -31,6 +31,14 @@
       text-transform: capitalize;
     }
 
+    &-description {
+      text-align: center;
+      margin: 0;
+      font-size: 14px;
+      color: var(--primary-color);
+      line-height: 16px;
+    }
+
     &-spinner {
       margin: auto;
     }
