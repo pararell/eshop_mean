@@ -7,7 +7,7 @@ sgMail.setApiKey(process.env.SENDGRID_KEY);
 export const sendMsg = async (email: string, emailType) => {
   const msg = {
     to: email,
-    from: 'no-reply@eshop.sk',
+    from: 'no-reply@smrtic.eu',
     subject: emailType.subject,
     html: getContent(emailType),
   };

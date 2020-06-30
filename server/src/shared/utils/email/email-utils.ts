@@ -19,7 +19,7 @@ export function getContent(emailType) {
             </div>
             <div>
             </div>
-            <a href='https://angular-un-ngrx-node-eshop.herokuapp.com> Bluetooth Eshop </a>
+            <a href='https://smrtic.eu> Eshop </a>
             </div>
             </body>
             </html>
@@ -36,7 +36,7 @@ export function getContent(emailType) {
             </div>
             <div>
             </div>
-            <a href='https://angular-un-ngrx-node-eshop.herokuapp.com> Bluetooth Eshop </a>
+            <a href='https://smrtic.eu> Eshop </a>
             </div>
             </body>
             </html>
