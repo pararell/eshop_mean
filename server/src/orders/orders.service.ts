@@ -7,10 +7,9 @@ import { Order, OrderStatus } from './models/order.model';
 import { User } from '../auth/models/user.model';
 import { OrderDto } from './dto/order.dto';
 import { sendMsg } from '../shared/utils/email/mailer';
-import { Cart } from '../cart/utils/cart';
 import { prepareCart } from '../shared/utils/prepareUtils';
 import { CartModel } from '../cart/models/cart.model';
-
+import { Translation } from '../translations/translation.model';
 
 const secret = process.env.STRIPE_SECRETKEY;
 export const stripe = new Stripe(secret, {apiVersion: '2020-03-02'});
@@ -19,27 +18,30 @@ export const stripe = new Stripe(secret, {apiVersion: '2020-03-02'});
 export class OrdersService {
   private logger = new Logger('OrdersService');
   constructor(
-      @InjectModel('Order') private orderModel: Model<Order>) {}
+      @InjectModel('Order') private orderModel: Model<Order>,
+      @InjectModel('Translation') private translationModel: Model<Translation>) {}
 
   async getOrders(user: User): Promise<Order[]> {
     const orders = await this.orderModel.find({ _user: user._id }).sort('-dateAdded');
     return orders;
   }
 
-  async addOrder(orderDto: OrderDto, session, lang): Promise<{error: string; result: Order}> {
+  async addOrder(orderDto: OrderDto, session, lang: string): Promise<{error: string; result: Order}> {
     const { cart, config } = session;
     const cartForLang = prepareCart(cart, lang, config);
     const newOrder = await new this.orderModel(this.createOrder(orderDto, cartForLang, 'PAYMENT_ON_DELIVERY'));
     newOrder.save();
     try {
-      this.sendmail(newOrder.customerEmail, newOrder, cartForLang);
+      const translations = await this.translationModel.findOne({ lang });
+
+      this.sendmail(newOrder.customerEmail, newOrder, cartForLang, translations);
 
       if (process.env.ADMIN_EMAILS) {
         process.env.ADMIN_EMAILS
           .split(',')
           .filter(Boolean)
           .forEach(email => {
-            this.sendmail(email, newOrder, cartForLang);
+            this.sendmail(email, newOrder, cartForLang, translations);
           });
       }
     } catch (error) {
@@ -72,14 +74,16 @@ export class OrdersService {
           const capturePayment = await stripe.charges.capture(charge.id);
           if (capturePayment) {
             newOrder.save();
-            this.sendmail(newOrder.customerEmail, newOrder, cartForLang);
+
+            const translations = await this.translationModel.findOne({ lang });
+            this.sendmail(newOrder.customerEmail, newOrder, cartForLang, translations);
 
             if (process.env.ADMIN_EMAILS) {
               process.env.ADMIN_EMAILS
                 .split(',')
                 .filter(Boolean)
                 .forEach(email => {
-                  this.sendmail(email, newOrder, cartForLang);
+                  this.sendmail(email, newOrder, cartForLang, translations);
                 });
             }
         }
@@ -98,8 +102,8 @@ export class OrdersService {
     return order;
   }
 
-  async updateOrder(reqorder): Promise<Order> {
-    const order = this.orderModel.findOneAndUpdate({orderId: reqorder.orderId}, reqorder, {new: true})
+  async updateOrder(reqOrder): Promise<Order> {
+    const order = this.orderModel.findOneAndUpdate({orderId: reqOrder.orderId}, reqOrder, {new: true})
     return order;
   }
 
@@ -122,7 +126,6 @@ export class OrdersService {
         notes,
         customerEmail : email,
         outcome : {
-            // eslint-disable-next-line @typescript-eslint/camelcase
             seller_message: type
         },
         addresses,
@@ -132,7 +135,7 @@ export class OrdersService {
   }
 
 
-  private sendmail = async (email: string, order: Order, cart: CartModel) => {
+  private sendmail = async (email: string, order: Order, cart: CartModel, translations) => {
       const emailType = {
         subject: 'Order',
         cart,
@@ -143,7 +146,7 @@ export class OrdersService {
         date      : new Date()
       };
 
-      const mailSended = await sendMsg(email, emailType);
+      const mailSended = await sendMsg(email, emailType, translations);
       return mailSended;
   }
 

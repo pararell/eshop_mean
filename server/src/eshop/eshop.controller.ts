@@ -19,8 +19,8 @@ export class EshopController {
   }
 
   @Post('/contact')
-  sendContact(@Body() contactDto: ContactDto, @Session() session): void {
-    this.eshopService.sendContact(contactDto, session.cart);
+  sendContact(@Body() contactDto: ContactDto, @Session() session, @Headers('lang') lang: string,): void {
+    this.eshopService.sendContact(contactDto, session.cart, lang);
   }
 
   @Get('/page/all')

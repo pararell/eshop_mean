@@ -1,4 +1,6 @@
-const emailTemplates = (cart, order) => {
+const emailTemplates = (cart, order, translations) => {
+  const keys = translations ? translations['keys'] : {};
+
   function prepareCartItems(items, currency) {
     return items.map((product) => {
       return `<div style="background-color:transparent;">
@@ -334,7 +336,7 @@ const emailTemplates = (cart, order) => {
                                                       <div style="color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;line-height:120%; padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 10px;">
                                                           <div style="font-size:12px;line-height:14px;text-align:center;color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;">
                                                               <p style="margin: 0;font-size: 12px;line-height: 14px;text-align: center">
-                                                                  <a style="font-size: 26px; line-height: 31px; color: rgb(153, 153, 153);" href="https://angular-un-ngrx-node-eshop.herokuapp.com/">Eshop
+                                                                  <a style="font-size: 26px; line-height: 31px; color: rgb(153, 153, 153);" href="https://smrtic.eu/">${keys.ESHOP_TITLE || 'Eshop'}
                                                                   </a>
                                                               </p>
                                                           </div>
@@ -382,7 +384,7 @@ const emailTemplates = (cart, order) => {
                                                               <p style="margin: 0;font-size: 12px;line-height: 14px;text-align: center">
                                                                   <span style="font-size: 28px; line-height: 33px;">
                                                                       <strong>
-                                                                          <span style="line-height: 33px; font-size: 28px;">${'Thanks for your order'}</span>
+                                                                          <span style="line-height: 33px; font-size: 28px;">${keys.Email_order_title ||'Thanks for your order'}</span>
                                                                       </strong>
                                                                   </span>
                                                                   <br>
@@ -395,12 +397,7 @@ const emailTemplates = (cart, order) => {
                                                           <div style="font-size:12px;line-height:18px;color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;text-align:left;">
                                                               <p style="margin: 0;font-size: 12px;line-height: 18px;text-align: center">
                                                                   <span style="font-size: 14px; line-height: 21px;">
-                                                                      ${"You'll receive an email when your items are shipped. If you"}
-                                                                  </span>
-                                                              </p>
-                                                              <p style="margin: 0;font-size: 12px;line-height: 18px;text-align: center">
-                                                                  <span style="font-size: 14px; line-height: 21px;">
-                                                                      ${'have any questions, send mail to'}
+                                                                      ${keys.Email_order_subtitle || "You'll receive an email when your items are shipped. If you have any questions, send mail to"}
                                                                   </span>
                                                               </p>
                                                           </div>
@@ -418,10 +415,10 @@ const emailTemplates = (cart, order) => {
                                                               <strong>
                                                                   <a
                                                                       style="font-size: 16px; line-height: 32px; color:#fff; text-decoration: none;"
-                                                                      data-mce-style="font-size: 16px; line-height: 32px;" href="http://eshop.miroslavsmrtic.sk/en/orders/${
+                                                                      data-mce-style="font-size: 16px; line-height: 32px;" href="https://smrtic.eu/en/orders/${
                                                                         order.orderId
                                                                       }">
-                                                                      ${'VIEW ORDER STATUS'}
+                                                                      ${keys.Email_order_link || 'VIEW ORDER STATUS'}
 
                                                                   </a>
                                                               </strong>
@@ -457,7 +454,7 @@ const emailTemplates = (cart, order) => {
                                                           <div style="line-height:18px;font-size:12px;color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;text-align:left;">
                                                               <p style="margin: 0;font-size: 12px;line-height: 18px">
                                                                   <span style="font-size: 16px; line-height: 24px;">
-                                                                      <strong>${'Summary'}:</strong>
+                                                                      <strong>${keys.Email_order_summary || 'Summary'}:</strong>
                                                                   </span>
                                                               </p>
                                                               <p style="margin: 0;font-size: 12px;line-height: 18px">
@@ -472,7 +469,7 @@ const emailTemplates = (cart, order) => {
                                                               </p>
                                                               <p style="margin: 0;font-size: 12px;line-height: 18px">
                                                                   <span style="font-size: 16px; line-height: 24px;">
-                                                                  ${'Order Total'}: ${ cart.totalPrice + ' ' + order.currency}
+                                                                  ${keys.Email_order_total || 'Order Total'}: ${ cart.totalPrice + ' ' + order.currency}
                                                                   </span>
                                                               </p>
                                                               <p style="margin: 0;font-size: 12px;line-height: 18px"> 
@@ -502,7 +499,7 @@ const emailTemplates = (cart, order) => {
                                                           <div style="font-size:12px;line-height:18px;color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;text-align:left;">
                                                               <p style="margin: 0;font-size: 12px;line-height: 18px">
                                                                   <span style="font-size: 16px; line-height: 24px;">
-                                                                      <strong>${'SHIPPING ADDRESS'}:</strong>
+                                                                      <strong>${keys.Email_order_shipping_address || 'SHIPPING ADDRESS'}:</strong>
                                                                   </span>
                                                                   <br>
                                                               </p>
@@ -618,7 +615,7 @@ const emailTemplates = (cart, order) => {
                                                           <div style="font-size:12px;line-height:14px;color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;text-align:left;">
                                                               <p style="margin: 0;font-size: 12px;line-height: 14px">
                                                                   <span style="font-size: 14px; line-height: 16px;">
-                                                                      <strong>${'ITEMS ORDERED'}</strong>
+                                                                      <strong>${keys.Email_order_items_title || 'ITEMS ORDERED'}</strong>
                                                                   </span>
                                                                   <br>
                                                               </p>
@@ -733,17 +730,17 @@ const emailTemplates = (cart, order) => {
                                                       <div style="color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;line-height:200%; padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 10px;">
                                                           <div style="font-size:12px;line-height:24px;color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;text-align:left;">
                                                               <p style="margin: 0;font-size: 14px;line-height: 28px;text-align: right">
-                                                                  <span style="font-size: 16px; line-height: 32px;">${'Subtotal'} (${cart.items.length}):
+                                                                  <span style="font-size: 16px; line-height: 32px;">${keys.Email_order_subtotal || 'Subtotal'} (${cart.items.length}):
                                                                   </span>
                                                               </p>
                                                               <p style="margin: 0;font-size: 14px;line-height: 28px;text-align: right">
-                                                                  <span style="font-size: 16px; line-height: 32px;"> ${'Shipping'}:</span>
+                                                                  <span style="font-size: 16px; line-height: 32px;"> ${keys.Email_order_shipping || 'Shipping'}:</span>
                                                               </p>
 
 
                                                               <p style="margin: 0;font-size: 14px;line-height: 28px;text-align: right">
                                                                   <strong>
-                                                                      <span style="font-size: 16px; line-height: 32px;">Order ${'Total'}:</span>
+                                                                      <span style="font-size: 16px; line-height: 32px;">Order ${keys.Email_order_total || 'Total'}:</span>
                                                                   </strong>
                                                               </p>
                                                           </div>
@@ -804,7 +801,7 @@ const emailTemplates = (cart, order) => {
                           </div>
                           <div style="background-color:transparent;">
                               <div
-                                  style="Margin: 0 auto;min-width: 320px;max-width: 500px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: #ffffff;"
+                                  style="margin: 0 auto;min-width: 320px;max-width: 500px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: #ffffff;"
                                   class="block-grid"
                               >
                                   <div style="border-collapse: collapse;display: table;width: 100%;background-color:#ffffff;">
@@ -822,7 +819,7 @@ const emailTemplates = (cart, order) => {
                                                           <div style="font-size:12px;line-height:14px;color:#555555;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;text-align:left;">
                                                               <p style="margin: 0;font-size: 12px;line-height: 14px;text-align: center">
                                                                   <span style="color: rgb(255, 255, 255); font-size: 16px; line-height: 19px;">
-                                                                  ${'send mail to'}
+                                                                  ${keys.Email_order_send_mail || 'Send mail to'}
                                                                       <strong>${process.env.ADMIN_EMAILS}</strong>
                                                                   </span>
                                                               </p>
@@ -839,7 +836,7 @@ const emailTemplates = (cart, order) => {
 
                           <div style="background-color:transparent;">
                               <div
-                                  style="Margin: 0 auto;min-width: 320px;max-width: 500px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"
+                                  style="margin: 0 auto;min-width: 320px;max-width: 500px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"
                                   class="block-grid"
                               >
                                   <div style="border-collapse: collapse;display: table;width: 100%;background-color:transparent;">
