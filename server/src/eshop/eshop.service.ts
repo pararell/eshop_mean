@@ -9,6 +9,7 @@ import { Cart } from '../cart/utils/cart';
 import { Page } from './models/page.model';
 import { Theme } from './models/theme.model';
 import { Config } from './models/config.model';
+import { Translation } from '../translations/translation.model';
 
 @Injectable()
 export class EshopService {
@@ -16,9 +17,10 @@ export class EshopService {
     @InjectModel('Page') private pageModel: Model<Page>,
     @InjectModel('Theme') private themeModel: Model<Theme>,
     @InjectModel('Config') private configModel: Model<Config>,
+    @InjectModel('Translation') private translationModel: Model<Translation>,
     private httpService: HttpService) {}
 
-  async getConfig(session) {
+  async getConfig(session): Promise<{config: any}> {
     const activeConfig = await this.configModel.findOne({active: true});
 
     if (activeConfig) {
@@ -46,21 +48,22 @@ export class EshopService {
   }
 
 
-  async sendContact(contactDto: ContactDto, cart: Cart): Promise<void> {
+  async sendContact(contactDto: ContactDto, cart: Cart, lang: string): Promise<void> {
     const { token } = contactDto;
     const url = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SERVER_KEY}&response=${token}`;
 
    const result = await this.httpService.post(url).toPromise();
    if (result.data.success) {
     try {
-      this.sendmail(contactDto.email, contactDto, cart);
+      const translations = await this.translationModel.findOne({ lang });
+      this.sendmail(contactDto.email, contactDto, cart, translations);
 
       if (process.env.ADMIN_EMAILS) {
         process.env.ADMIN_EMAILS
           .split(',')
           .filter(Boolean)
           .forEach(email => {
-            this.sendmail(email, contactDto, cart);
+            this.sendmail(email, contactDto, cart, translations);
           });
        }
       } catch {
@@ -207,7 +210,7 @@ export class EshopService {
       }
   }
 
-  private sendmail = async (email: string, contactDto: ContactDto, cart: Cart) => {
+  private sendmail = async (email: string, contactDto: ContactDto, cart: Cart, translations) => {
       const emailType = {
         subject: 'Contact',
         cart,
@@ -215,7 +218,7 @@ export class EshopService {
         date   : new Date()
       };
 
-      const mailSended = await sendMsg(email, emailType);
+      const mailSended = await sendMsg(email, emailType, translations);
       return mailSended;
   }
 

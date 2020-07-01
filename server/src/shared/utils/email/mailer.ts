@@ -4,12 +4,12 @@ import { getContent } from './email-utils';
 
 sgMail.setApiKey(process.env.SENDGRID_KEY);
 
-export const sendMsg = async (email: string, emailType) => {
+export const sendMsg = async (email: string, emailType, translations) => {
   const msg = {
     to: email,
     from: 'no-reply@smrtic.eu',
     subject: emailType.subject,
-    html: getContent(emailType),
+    html: getContent(emailType, translations),
   };
 
   const response = await sgMail.send(msg);
