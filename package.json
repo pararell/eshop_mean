@@ -58,7 +58,7 @@
     "@sendgrid/mail": "^7.2.0",
     "@tinymce/tinymce-angular": "^3.6.0",
     "bcryptjs": "^2.4.3",
-    "class-transformer": "^0.2.3",
+    "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
     "cloudinary": "^1.22.0",
     "connect-mongo": "^3.2.0",
