@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.4.0](https://github.com/pararell/eshop_mean/compare/v0.3.0...v0.4.0) (2020-08-15)
+
+
+### Features
+
+* **update:** Angular 10 ([e48c132](https://github.com/pararell/eshop_mean/commit/e48c1321a97a3250f0c43494813f2904bcffbae0))
+* add orders to module to not load them on landing ([c804aa3](https://github.com/pararell/eshop_mean/commit/c804aa3c65ccf396a435f682f61c985b2b1d8f09))
+* add subCategories ([aea12bd](https://github.com/pararell/eshop_mean/commit/aea12bd34f577c503a1b17d13f23b7bcb94bbc2c))
+* add translations to emails ([7b14f10](https://github.com/pararell/eshop_mean/commit/7b14f10025b59356e15133ccf75cd4f8be557e5c))
+* BrowserTransferStateModule ([cf73349](https://github.com/pararell/eshop_mean/commit/cf733493e3f729e99fd33e4db98eaeb6071fc639))
+* change service worker for api ([6e068dc](https://github.com/pararell/eshop_mean/commit/6e068dca3cd177b7f9dfdc8854af6c1026f5a5e5))
+* email template update ([f0bba25](https://github.com/pararell/eshop_mean/commit/f0bba25743e133061cf3d77edb20643690121d2f))
+* http/https url remove ([8413a8d](https://github.com/pararell/eshop_mean/commit/8413a8dfe9d3ec539beac2801e0a637f1275c473))
+* intercept more API ([fe29749](https://github.com/pararell/eshop_mean/commit/fe297494f903186ee8840686657178f0ec6f56cf))
+* packages update ([b1a0031](https://github.com/pararell/eshop_mean/commit/b1a003127104dd10bae8ed199401d1595a68a0d5))
+* performance 3 ([a087fb6](https://github.com/pararell/eshop_mean/commit/a087fb6a41304c6f34ce01316766a04541e6c55b))
+* performance 4 ([551746c](https://github.com/pararell/eshop_mean/commit/551746ca2f94c30d9cc5fc3da99b5a542262867f))
+* performance 5 ([d271d83](https://github.com/pararell/eshop_mean/commit/d271d830db9abc37d22dd54c440ee1de284f51ba))
+* performance update ([ed0453a](https://github.com/pararell/eshop_mean/commit/ed0453a871306033f2fa6106db5670e71fe28529))
+* performance update 2 ([6a0017f](https://github.com/pararell/eshop_mean/commit/6a0017f6fd4789d237eee8508dd001e3fd89b775))
+* small performance refactor ([6d23564](https://github.com/pararell/eshop_mean/commit/6d23564565b8f8e22e056a96791a1c6752037ac9))
+* styles updates ([9816fdd](https://github.com/pararell/eshop_mean/commit/9816fdd2ee04d2e9702a98baac24a0a44ba874be))
+
+
+### Bug Fixes
+
+* api strategy freshness ([499d58e](https://github.com/pararell/eshop_mean/commit/499d58e926de7e3fbf0ddd55026dc1f120c87a5c))
+* browserslist ([ecee641](https://github.com/pararell/eshop_mean/commit/ecee64123f3e70247a70fd1c7c17a3a4350530e8))
+* font load ([8402924](https://github.com/pararell/eshop_mean/commit/8402924aff16ee85ebfca1d64ea86819d8a2317d))
+* ngsw-config.json ([eba4a87](https://github.com/pararell/eshop_mean/commit/eba4a87fe1d4f3736be042ff6476ea985155dcfc))
+* pages ([456146b](https://github.com/pararell/eshop_mean/commit/456146b1bb2016f12c271454792796435ccb6ef4))
+* performance ([585b2d0](https://github.com/pararell/eshop_mean/commit/585b2d090a5619928fc61e7c45ec58222fe98b44))
+* styles ([31eddab](https://github.com/pararell/eshop_mean/commit/31eddab8abc46b3400ed943c1a2e68714d59540b))
+
 ## 0.3.0 (2020-05-29)
 
 
