@@ -3,6 +3,7 @@
 
 
 - eshop.miroslavsmrtic.sk - dashboard test - email: test@miroslavsmrtic.sk , password: test123456
+- more info in blog https://miroslavsmrtic.sk/blog
 
 
 ## Description
