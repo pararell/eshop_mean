@@ -1,3 +1,5 @@
+declare const Express: any;
+
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppSSRModule } from './app-ssr.module';
@@ -9,7 +11,8 @@ import * as passport from 'passport';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import * as compression from 'compression';
-import * as bodyParser from 'body-parser';
+import * as bodyParser from 'body-parser'
+;
 
 async function bootstrap() {
   const logger = new Logger('boostrap');

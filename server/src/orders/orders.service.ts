@@ -12,7 +12,7 @@ import { CartModel } from '../cart/models/cart.model';
 import { Translation } from '../translations/translation.model';
 
 const secret = process.env.STRIPE_SECRETKEY;
-export const stripe = new Stripe(secret, {apiVersion: '2020-03-02'});
+export const stripe = new Stripe(secret, {apiVersion: '2020-08-27'});
 
 @Injectable()
 export class OrdersService {
