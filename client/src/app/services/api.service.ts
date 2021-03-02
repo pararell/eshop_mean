@@ -21,6 +21,7 @@ export class ApiService {
   apiUrl = environment.apiUrl;
   uploaderSub: BehaviorSubject<FileUploader> = new BehaviorSubject(null);
   requestOptions = {};
+  ranNumber = 0;
 
   constructor(
     private readonly http: HttpClient,
@@ -176,12 +177,16 @@ export class ApiService {
   }
 
   addToCart(params: string) {
-    const addToCartUrl = this.apiUrl + '/api/cart/add' + params;
+    this.ranNumber = this.ranNumber + 1;
+    const randomNum = '&random=' + this.ranNumber;
+    const addToCartUrl = this.apiUrl + '/api/cart/add' + params + randomNum;
     return this.http.get(addToCartUrl, this.requestOptions);
   }
 
   removeFromCart(params: string) {
-    const removeFromCartUrl = this.apiUrl + '/api/cart/remove' + params;
+    this.ranNumber = this.ranNumber + 1;
+    const randomNum = '&random=' + this.ranNumber;
+    const removeFromCartUrl = this.apiUrl + '/api/cart/remove' + params + randomNum;
     return this.http.get(removeFromCartUrl, this.requestOptions);
   }
 

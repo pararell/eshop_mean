@@ -91,7 +91,13 @@ export function productReducer(state = initialState, action): State {
       return { ...state, productsTitles: action.payload }
     }
 
-    case EshopActions.GetCartSuccess:
+    case EshopActions.GetCartSuccess: {
+        return {
+          ...state,
+          cart: action.payload
+        }
+      }
+
     case EshopActions.AddToCartSuccess: {
       return {
         ...state,
