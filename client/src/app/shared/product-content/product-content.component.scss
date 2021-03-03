@@ -72,10 +72,11 @@
     }
 
     &-cart-wrap {
-      padding: 5px;
       display: flex;
       align-items: center;
       justify-content: center;
+      min-width: initial;
+      padding: 0;
     }
 
     &-main-image {
