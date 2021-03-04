@@ -126,6 +126,7 @@ export class CategoriesEditComponent {
           description: '',
           position: 0,
           visibility: false,
+          menuHidden: false,
         }),
       }))
       .reduce((prev, curr) => ({ ...prev, ...curr }), {});
@@ -141,6 +142,7 @@ export class CategoriesEditComponent {
             description: categoryLang.description || '',
             position: categoryLang.position || 0,
             visibility: !!categoryLang.visibility,
+            menuHidden: !!categoryLang.menuHidden,
           },
         };
       })

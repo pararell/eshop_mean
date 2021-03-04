@@ -103,6 +103,25 @@
             </mat-radio-group>
           </div>
           <div class="category_edit-field-small">
+            <div class="check-title">{{ 'Menu hidden' | translate | async }}</div>
+            <mat-radio-group
+              aria-label="Menu hidden"
+              formControlName="menuHidden">
+              <mat-radio-button
+                name="menuHidden"
+                [value]="true"
+                id="hidden">
+                {{ 'Hidden' | translate | async }}
+              </mat-radio-button>
+              <mat-radio-button
+                name="menuHidden"
+                [value]="false"
+                id="visible">
+                {{ 'Visible' | translate | async }}
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <div class="category_edit-field-small">
             <mat-form-field class="category_edit-field">
               <mat-label>{{ 'Position' | translate | async }}</mat-label>
               <input

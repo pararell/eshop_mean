@@ -11,6 +11,7 @@ export interface Category {
     description: string;
     position?: number;
     visibility: Boolean;
+    menuHidden: Boolean;
   }
 }
 

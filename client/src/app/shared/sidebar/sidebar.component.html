@@ -7,13 +7,16 @@
     [class.active]="!activeCategory">
     {{ 'All' | translate | async }} {{ 'products' | translate | async }}
   </a>
-  <a class="sidebar-item"
-    *ngFor="let category of categories; trackBy: trackById "
+  <ng-container   *ngFor="let category of categories; trackBy: trackById">
+    <a class="sidebar-item"
+    *ngIf="!category.menuHidden"
     (click)="changeCategory.emit(category.titleUrl)"
     [routerLink]="['/' + lang + '/product/category/' + category.titleUrl]"
     [class.active]="activeCategory == (category.titleUrl)">
     {{category.title}}
   </a>
+  </ng-container>
+
   <div class="sidebar-sort-wrap">
     <div class="sidebar-header">
       <h3 class="sidebar-title">{{ 'Sorting' | translate | async }}</h3>

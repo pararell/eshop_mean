@@ -9,7 +9,7 @@
 
 <ng-template #categoriesTemplate>
   <ng-container *ngFor="let category of categories; trackBy: trackById">
-    <div class="category_card">
+    <div class="category_card" *ngIf="!category.menuHidden">
       <a class="category_card-image"
         [ngClass]="category.mainImage?.type ? 'category_card-image-cover' : ''"
         [routerLink]="['/' + lang + '/product/category/' + category.titleUrl]"
