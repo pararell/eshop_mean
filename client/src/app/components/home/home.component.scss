@@ -25,13 +25,21 @@
       position: fixed;
       top: 50px;
       left: 0;
-      display: var(--free-shipping-promo, none);
       width: 100%;
       background: #eee;
       color: #222;
       z-index: 2;
       text-align: center;
+
+      &-basic {
+        display: var(--promo, none)
+      }
+
+      &-shipping {
+        display: var(--free-shipping-promo, none);
+      }
     }
+
 
     &-product {
       background: #fff;

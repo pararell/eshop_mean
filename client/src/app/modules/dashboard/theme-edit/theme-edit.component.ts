@@ -52,6 +52,7 @@ export class ThemeEditComponent {
         this.themeService.setCSSVariable(`url(/)`, 'main-background-url');
       }
       this.themeService.setCSSVariable(values.freeShippingPromo, 'free-shipping-promo');
+      this.themeService.setCSSVariable(values.promo, 'promo');
     })
   }
 
@@ -73,6 +74,7 @@ export class ThemeEditComponent {
         const foundTheme = themes.find((theme) => theme.titleUrl === this.chosenTheme);
         this.themesEditForm.get('active').setValue(!!foundTheme.active);
         this.themesEditForm.get('freeShippingPromo').setValue(foundTheme.styles.freeShippingPromo || 'none');
+        this.themesEditForm.get('promo').setValue(foundTheme.styles.promo || 'none');
         this.themesEditForm.get('primaryColor').setValue(foundTheme.styles.primaryColor || '');
         this.themesEditForm.get('secondaryColor').setValue(foundTheme.styles.secondaryColor || '');
         this.themesEditForm.get('backgroundColor').setValue(foundTheme.styles.backgroundColor || '');
@@ -91,7 +93,8 @@ export class ThemeEditComponent {
         secondaryColor: formValues.secondaryColor,
         backgroundColor: formValues.backgroundColor,
         mainBackground: formValues.mainBackground,
-        freeShippingPromo: formValues.freeShippingPromo
+        freeShippingPromo: formValues.freeShippingPromo,
+        promo: formValues.promo
       }
     }
     this.store.dispatch(new actions.AddOrEditTheme(request));
@@ -107,6 +110,7 @@ export class ThemeEditComponent {
     return {
       active  : false,
       freeShippingPromo: 'none',
+      promo: 'none',
       primaryColor: '#222222',
       secondaryColor: '#cccccc',
       backgroundColor: '#eeeeee',

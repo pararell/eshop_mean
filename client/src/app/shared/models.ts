@@ -123,6 +123,7 @@ export interface Theme {
     backgroundColor: string;
     mainBackground: string;
     freeShippingPromo: string;
+    promo: string;
   };
 }
 
