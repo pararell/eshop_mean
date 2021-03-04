@@ -155,6 +155,7 @@ export class ProductsService {
       title: category[lang] ? category[lang].title : category.titleUrl,
       description: category[lang] ? category[lang].description : '',
       visibility: category[lang] ? category[lang].visibility : false,
+      menuHidden: category[lang] ? category[lang].menuHidden : false,
     }));
   };
 
