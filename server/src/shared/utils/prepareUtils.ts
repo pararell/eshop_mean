@@ -10,7 +10,7 @@ export const prepareProduct = (product, lang: string, light?: boolean): Product 
   tags: product.tags,
   _user: product._user,
   dateAdded: product.dateAdded,
-  ...{...product[lang], descriptionFull: !light ? product[lang].descriptionFull : []},
+  ...{ ...product[lang], descriptionFull: !light ? product[lang].descriptionFull : [] },
 });
 
 export const prepareCart = (cart, lang: string, config): CartModel => {
@@ -33,9 +33,10 @@ export const prepareCart = (cart, lang: string, config): CartModel => {
 
   const shippingTypeCheck = cartLangItems.find((item) => item.shipingCostType === shippingTypes[1]);
   const shippingType = shippingTypeCheck ? shippingTypes[1] : shippingTypes[0];
-  const shippingByLang = config && config[lang] && config[lang].shippingCost && config[lang].shippingCost[shippingType]
-    ? config[lang].shippingCost[shippingType]
-    : shippingCost[lang][shippingType];
+  const shippingByLang =
+    config && config[lang] && config[lang].shippingCost && config[lang].shippingCost[shippingType]
+      ? config[lang].shippingCost[shippingType]
+      : shippingCost[lang][shippingType];
   const shippingTypeCost = totalPrice >= shippingByLang.limit ? 0 : shippingByLang.cost;
 
   return {

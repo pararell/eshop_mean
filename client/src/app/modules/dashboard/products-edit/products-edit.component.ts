@@ -86,12 +86,12 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
         ...this.prepareLangEditForm(product),
       };
 
-      const uploaderOptions = {
+      const uploaderOptionsSecond = {
         itemAlias: 'file',
         autoUpload: true,
       };
 
-      this.store.dispatch(new actions.SetUploader({ options: uploaderOptions, titleUrl: product.titleUrl }));
+      this.store.dispatch(new actions.SetUploader({ options: uploaderOptionsSecond, titleUrl: product.titleUrl }));
 
       const prepareDescFull = this.languageOptions
         .map((lang) => ({
@@ -240,7 +240,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
           .filter((key) => !!this.productEditForm.value[key])
           .reduce((prev, curr) => ({ ...prev, [curr]: this.productEditForm.value[curr] }), {});
 
-        const productPrepare = {
+        const productPrepareEdit = {
           ...editProduct,
           mainImage: {
             url: this.productEditForm.value.mainImage,
@@ -249,7 +249,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
           ...this.prepareProductData(this.languageOptions, editProduct),
         };
 
-        this.store.dispatch(new actions.EditProduct(productPrepare));
+        this.store.dispatch(new actions.EditProduct(productPrepareEdit));
         break;
     }
 

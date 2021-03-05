@@ -4,7 +4,7 @@ import { isPlatformServer } from '@angular/common';
 import { RESPONSE } from '@nguniversal/express-engine/tokens';
 
 @Component({
-  selector: 'my-not-found',
+  selector: 'app-not-found',
   templateUrl: './not-found.component.html',
   styleUrls: ['./not-found.component.scss'],
 })
@@ -14,7 +14,7 @@ export class NotFoundComponent {
     private readonly platformId: any,
     @Optional()
     @Inject(RESPONSE)
-    res: Response,
+    res: Response
   ) {
     // `res` is the express response, only available on the server
     if (isPlatformServer(this.platformId)) {

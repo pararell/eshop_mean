@@ -50,6 +50,7 @@
     "@nestjs/serve-static": "^2.1.4",
     "@ngrx/effects": "^11.0.1",
     "@ngrx/router-store": "^11.0.1",
+    "@ngrx/schematics": "11.0.1",
     "@ngrx/store": "^11.0.1",
     "@ngrx/store-devtools": "^11.0.1",
     "@nguniversal/builders": "^11.2.0",

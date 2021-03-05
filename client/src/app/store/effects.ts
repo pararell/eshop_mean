@@ -1,6 +1,6 @@
 import { switchMap, map, catchError } from 'rxjs/operators';
 import {Injectable} from '@angular/core';
-import {Actions, Effect, ofType} from '@ngrx/effects';
+import {Actions, createEffect, ofType} from '@ngrx/effects';
 
 import {Observable, of} from 'rxjs';
 
@@ -15,216 +15,216 @@ export class AppEffects {
 
   // AUTH
 
-  @Effect() signIn$: Observable<Action> = this._actions.pipe(
+   signIn$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.SignIn),
       switchMap((action: actions.SignIn) => this.apiService.signIn(action.payload)),
       map(res => new actions.SignInSuccess(res))
-  );
+  ));
 
-  @Effect() signUp$: Observable<Action> = this._actions.pipe(
+   signUp$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.SignUp),
       switchMap((action: actions.SignUp) => this.apiService.signUp(action.payload)),
       map(res => new actions.SignUpSuccess(res))
-  );
+  ));
 
-  @Effect() fetchUser$: Observable<Action> = this._actions.pipe(
+   fetchUser$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.GetUser),
       switchMap((action: actions.GetUser) => this.apiService.getUser()),
       map(res => new actions.StoreUser(res)),
       catchError(() => of(new actions.GetUserFail()))
-  );
+  ));
 
-  @Effect() getPages$: Observable<Action> = this._actions.pipe(
+   getPages$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.GetPages),
       switchMap((action: actions.GetPages) => this.apiService.getPages(action.payload)),
       map(res => new actions.GetPagesSuccess(res)),
       catchError(() => of(new actions.GetPagesFail()))
-  );
+  ));
 
-  @Effect() getPage$: Observable<Action> = this._actions.pipe(
+   getPage$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.GetPage),
       switchMap((action: actions.GetPage) => this.apiService.getPage(action.payload)),
       map(res => new actions.GetPageSuccess(res)),
       catchError(() => of(new actions.GetPageFail()))
-  );
+  ));
 
-  @Effect() addOrEditPage$: Observable<Action> = this._actions.pipe(
+   addOrEditPage$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.AddOrEditPage),
       switchMap((action: actions.AddOrEditPage) => this.apiService.addOrEditPage(action.payload)),
       map(res => new actions.AddOrEditPageSuccess(res)),
       catchError(() => of(new actions.AddOrEditPageFail()))
-  );
+  ));
 
-  @Effect() removePage$: Observable<Action> = this._actions.pipe(
+   removePage$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.RemovePage),
       switchMap((action: actions.RemovePage) => this.apiService.removePage(action.payload)),
       map(res => new actions.RemovePageSuccess(res)),
       catchError(() => of(new actions.RemovePageFail()))
-  );
+  ));
 
-  @Effect() getThemes$: Observable<Action> = this._actions.pipe(
+   getThemes$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.GetThemes),
       switchMap((action: actions.GetThemes) => this.apiService.getThemes()),
       map(res => new actions.GetThemesSuccess(res)),
       catchError(() => of(new actions.GetThemesFail()))
-  );
+  ));
 
-  @Effect() addOrEditTheme$: Observable<Action> = this._actions.pipe(
+   addOrEditTheme$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.AddOrEditTheme),
       switchMap((action: actions.AddOrEditTheme) => this.apiService.addOrEditTheme(action.payload)),
       map(res => new actions.AddOrEditThemeSuccess(res)),
       catchError(() => of(new actions.AddOrEditThemeFail()))
-  );
+  ));
 
-  @Effect() removeTheme$: Observable<Action> = this._actions.pipe(
+   removeTheme$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.RemoveTheme),
       switchMap((action: actions.RemoveTheme) => this.apiService.removeTheme(action.payload)),
       map(res => new actions.RemoveThemeSuccess(res)),
       catchError(() => of(new actions.RemoveThemeFail()))
-  );
+  ));
 
-  @Effect() getConfigs$: Observable<Action> = this._actions.pipe(
+   getConfigs$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.GetConfigs),
       switchMap((action: actions.GetConfigs) => this.apiService.getConfigs()),
       map(res => new actions.GetConfigsSuccess(res)),
       catchError(() => of(new actions.GetConfigsFail()))
-  );
+  ));
 
-  @Effect() addOrEditConfig$: Observable<Action> = this._actions.pipe(
+   addOrEditConfig$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.AddOrEditConfig),
       switchMap((action: actions.AddOrEditConfig) => this.apiService.addOrEditConfig(action.payload)),
       map(res => new actions.AddOrEditConfigSuccess(res)),
       catchError(() => of(new actions.AddOrEditConfigFail()))
-  );
+  ));
 
-  @Effect() removeConfig$: Observable<Action> = this._actions.pipe(
+   removeConfig$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.RemoveConfig),
       switchMap((action: actions.RemoveConfig) => this.apiService.removeConfig(action.payload)),
       map(res => new actions.RemoveConfigSuccess(res)),
       catchError(() => of(new actions.RemoveConfigFail()))
-  );
+  ));
 
   // PRODUCT
 
-  @Effect() getProducts$: Observable<Action> = this._actions.pipe(
+   getProducts$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.GetProducts),
       switchMap((action: actions.GetProducts) => this.apiService.getProducts(action.payload)),
       map(res => new actions.GetProductsSuccess(res))
-  );
+  ));
 
-  @Effect() getCategories$: Observable<Action> = this._actions.pipe(
+   getCategories$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.GetCategories),
       switchMap((action: actions.GetCategories) => this.apiService.getCategories(action.payload)),
       map(res => new actions.GetCategoriesSuccess(res))
-  );
+  ));
 
-  @Effect() getProductsSearch$: Observable<Action> = this._actions.pipe(
+   getProductsSearch$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.GetProductsSearch),
       switchMap((action: actions.GetProductsSearch) => this.apiService.getProductsSearch(action.payload)),
       map(res => new actions.GetProductsSearchSuccess(res))
-  );
+  ));
 
-  @Effect() getProduct$: Observable<Action> = this._actions.pipe(
+   getProduct$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.GetProduct),
       switchMap((action: actions.GetProduct) => this.apiService.getProduct(action.payload)),
       map(res => new actions.GetProductSuccess(res))
-  );
+  ));
 
-  @Effect() MakeOrderWithPayment$: Observable<Action> = this._actions.pipe(
+   MakeOrderWithPayment$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.MakeOrderWithPayment),
       switchMap((action: actions.MakeOrderWithPayment) => this.apiService.handleToken(action.payload)),
       map(res => new actions.MakeOrderWithPaymentSuccess(res))
-  );
+  ));
 
-  @Effect() makeOrder$: Observable<Action> = this._actions.pipe(
+   makeOrder$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.MakeOrder),
       switchMap((action: actions.MakeOrder) => this.apiService.makeOrder(action.payload)),
       map(res => new actions.MakeOrderSuccess(res)),
       catchError(() => of(new actions.MakeOrderFail()))
-  );
+  ));
 
-  @Effect() getCart$: Observable<Action> = this._actions.pipe(
+   getCart$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.GetCart),
       switchMap((action: actions.GetCart) => this.apiService.getCart(action.payload)),
       map(res => new actions.GetCartSuccess(res))
-  );
+  ));
 
-  @Effect() addToCart$: Observable<Action> = this._actions.pipe(
+   addToCart$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.AddToCart),
       switchMap((action: actions.AddToCart) => this.apiService.addToCart(action.payload)),
       map(res => new actions.AddToCartSuccess(res))
-  );
+  ));
 
-  @Effect() removeFromCart$: Observable<Action> = this._actions.pipe(
+   removeFromCart$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.RemoveFromCart),
       switchMap((action: actions.RemoveFromCart) => this.apiService.removeFromCart(action.payload)),
       map(res => new actions.GetCartSuccess(res))
-  );
+  ));
 
-  @Effect() stripeSession$: Observable<Action> = this._actions.pipe(
+   stripeSession$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.StripeSession),
       switchMap((action: actions.StripeSession) => this.apiService.getStripeSession(action.payload)),
       map(res => new actions.StripeSessionSuccess(res))
-  );
+  ));
 
-  @Effect() GetUserOrders$: Observable<Action> = this._actions.pipe(
+   GetUserOrders$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.GetUserOrders),
       switchMap((action: actions.GetUserOrders) => this.apiService.getUserOrders()),
       map(res => new actions.GetUserOrdersSuccess(res))
-  );
+  ));
 
 
   // DASHBOARD
 
-  @Effect() addProduct$: Observable<Action> = this._actions.pipe(
+   addProduct$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.AddProduct),
       switchMap((action: actions.AddProduct) => this.apiService.addProduct(action.payload)),
       map(res => new actions.AddProductSuccess(res))
-  );
+  ));
 
-  @Effect() editProduct$: Observable<Action> = this._actions.pipe(
+   editProduct$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.EditProduct),
       switchMap((action: actions.EditProduct) => this.apiService.editProduct(action.payload)),
       map(res => new actions.EditProductSuccess(res))
-  );
+  ));
 
-  @Effect() removeProduct$: Observable<Action> = this._actions.pipe(
+   removeProduct$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.RemoveProduct),
       switchMap((action: actions.RemoveProduct) => this.apiService.removeProduct(action.payload)),
       map(res => new actions.RemoveProductSuccess(res))
-  );
+  ));
 
-  @Effect() getAllProducts$: Observable<Action> = this._actions.pipe(
+   getAllProducts$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.GetAllProducts),
       switchMap((action: actions.GetAllProducts) => this.apiService.getAllProducts()),
       map(res => new actions.GetAllProductsSuccess(res))
-  );
+  ));
 
-  @Effect() getAllCategories$: Observable<Action> = this._actions.pipe(
+   getAllCategories$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.GetAllCategories),
       switchMap((action: actions.GetAllCategories) => this.apiService.getAllCategories()),
       map(res => new actions.GetAllCategoriesSuccess(res))
-  );
+  ));
 
-  @Effect() editCategory$: Observable<Action> = this._actions.pipe(
+   editCategory$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.EditCategory),
       switchMap((action: actions.EditCategory) => this.apiService.editCategory(action.payload)),
       map(res => new actions.EditCategorySuccess(res))
-  );
+  ));
 
-  @Effect() removeCategory$: Observable<Action> = this._actions.pipe(
+   removeCategory$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.RemoveCategory),
       switchMap((action: actions.RemoveCategory) => this.apiService.removeCategory(action.payload)),
       map(res => new actions.RemoveCategorySuccess(res))
-  );
+  ));
 
-  @Effect() getImages$: Observable<Action> = this._actions.pipe(
+   getImages$: Observable<Action> = createEffect(() => this._actions.pipe(
    ofType(EshopActions.GetImages),
       switchMap((action: actions.GetImages) => this.apiService.getImages()),
       map(res => new actions.GetImagesSuccess(res))
-  );
+  ));
 
-  @Effect() addProductImagesUrl$: Observable<Action> = this._actions.pipe(
+   addProductImagesUrl$: Observable<Action> = createEffect(() => this._actions.pipe(
    ofType(EshopActions.AddProductImagesUrl),
       switchMap((action: actions.AddProductImagesUrl) => this.apiService.addProductImagesUrl(action.payload)),
       map((res : any) => {
@@ -233,9 +233,9 @@ export class AppEffects {
         }
         return new actions.AddProductImagesUrlSuccess(res);
       })
-  );
+  ));
 
-  @Effect() removeImage$: Observable<Action> = this._actions.pipe(
+   removeImage$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.RemoveProductImage),
       switchMap((action: actions.RemoveProductImage) => this.apiService.removeImage(action.payload)),
       map((res: any) => {
@@ -244,51 +244,51 @@ export class AppEffects {
         }
         return new actions.RemoveProductImageSuccess(res);
       })
-  );
+  ));
 
-  @Effect({dispatch: false}) setuploder$: Observable<void> = this._actions.pipe(
+   setuploder$: Observable<void> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.SetUploader),
       switchMap((action: actions.SetUploader) => this.apiService.setUploader(action.payload)),
       map((uploader: any) => console.log('Uploader init'))
-  );
+  ), {dispatch: false});
 
-  @Effect() getOrders$: Observable<Action> = this._actions.pipe(
+   getOrders$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.GetOrders),
       switchMap((action: actions.GetOrders) => this.apiService.getOrders()),
       map(res => new actions.GetOrdersSuccess(res))
-  );
+  ));
 
-  @Effect() getOrder$: Observable<Action> = this._actions.pipe(
+   getOrder$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.GetOrder),
       switchMap((action: actions.GetOrder) => this.apiService.getOrder(action.payload)),
       map(res => new actions.GetOrderSuccess(res))
-  );
+  ));
 
-  @Effect() updateOrder$: Observable<Action> = this._actions.pipe(
+   updateOrder$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.UpdateOrder),
       switchMap((action: actions.UpdateOrder) => this.apiService.updateOrder(action.payload)),
       map(res => new actions.GetOrderSuccess(res))
-  );
+  ));
 
-  @Effect() getAllTranslations$: Observable<Action> = this._actions.pipe(
+   getAllTranslations$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.GetAllTranslations),
       switchMap((action: actions.GetAllTranslations) => this.apiService.getAllTranslations()),
       map(res => new actions.GetAllTranslationsSuccess(res))
-  );
+  ));
 
-  @Effect() editTranslation$: Observable<Action> = this._actions.pipe(
+   editTranslation$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.EditTranslation),
       switchMap((action: actions.EditTranslation) => this.apiService.editAllTranslation(action.payload)),
       map(res => new actions.EditTranslationSuccess(res))
-  );
+  ));
 
   // OTHERS
 
-  @Effect() sendContact$: Observable<Action> = this._actions.pipe(
+   sendContact$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.SendContact),
       switchMap((action: actions.SendContact) => this.apiService.sendContact(action.payload)),
       map(res => new actions.SendContactSuccess())
-  );
+  ));
 
 
   constructor(private _actions: Actions, private apiService: ApiService) { }
