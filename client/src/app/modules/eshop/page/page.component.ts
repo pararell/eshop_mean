@@ -34,11 +34,10 @@ export class PageComponent {
     this.titleUrl$ = this.route.params.pipe(map(params => params['titleUrl']));
     this.page$ = this.store.select(fromRoot.getPage).pipe(filter(page => !!page));
 
-    this.pageSub = combineLatest(
+    this.pageSub = combineLatest([
       this.titleUrl$,
-      this.lang$,
-      (titleUrl: string, lang: string) => ({ titleUrl, lang })
-    ).subscribe(({ titleUrl, lang }) => {
+      this.lang$]
+    ).subscribe(([titleUrl, lang ]: [string, string]) => {
       this.store.dispatch(new actions.GetPage({ titleUrl, lang }));
     })
   }

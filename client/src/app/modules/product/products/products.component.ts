@@ -90,12 +90,13 @@ export class ProductsComponent implements OnDestroy {
         )
       )
     );
-    this.subCategories$ = combineLatest(this.categories$, this.categoryInfo$.pipe(filter(cat => !!cat)),
-      (categories, category) => ({categories, category})).pipe(map(({categories, category}) => {
-        return categories.filter(cat => category.subCategories.includes(cat.titleUrl))
-    }));
+    this.subCategories$ = combineLatest([this.categories$, this.categoryInfo$.pipe(filter((cat) => !!cat))]).pipe(
+      map(([categories, category]) => {
+        return categories.filter((cat) => category.subCategories.includes(cat.titleUrl));
+      })
+    );
 
-    this.subCategories$.subscribe()
+    this.subCategories$.subscribe();
 
     this._loadCategories();
     this._loadProducts();
@@ -122,13 +123,9 @@ export class ProductsComponent implements OnDestroy {
   }
 
   changePage(page: number): void {
-    combineLatest(this.category$, this.sortBy$, this.lang$, (category: string, sortBy: string, lang: string) => ({
-      category,
-      sortBy,
-      lang,
-    }))
+    combineLatest([this.category$, this.sortBy$, this.lang$])
       .pipe(take(1))
-      .subscribe(({ category, sortBy, lang }) => {
+      .subscribe(([category, sortBy, lang]: [string, string, string]) => {
         if (category) {
           this.router.navigate(['/' + lang + '/product/category/' + category], {
             queryParams: { sort: sortBy || 'newest', page: page || 1 },
@@ -143,13 +140,9 @@ export class ProductsComponent implements OnDestroy {
   }
 
   changeSort(sort: string): void {
-    combineLatest(this.category$, this.page$, this.lang$, (category: string, page: number, lang: string) => ({
-      category,
-      page,
-      lang,
-    }))
+    combineLatest([this.category$, this.page$, this.lang$])
       .pipe(take(1))
-      .subscribe(({ category, page, lang }) => {
+      .subscribe(([category, page, lang]: [string, number, string]) => {
         if (category) {
           this.router.navigate(['/' + lang + '/product/category/' + category], {
             queryParams: { sort, page: page || 1 },
@@ -171,12 +164,9 @@ export class ProductsComponent implements OnDestroy {
   }
 
   private _loadCategories(): void {
-    combineLatest(this.categories$.pipe(take(1)), this.lang$.pipe(take(1)), (categories, lang) => ({
-      categories,
-      lang,
-    }))
+    combineLatest([this.categories$.pipe(take(1)), this.lang$.pipe(take(1))])
       .pipe(take(1))
-      .subscribe(({ categories, lang }) => {
+      .subscribe(([categories, lang]) => {
         if (!categories.length) {
           this.store.dispatch(new actions.GetCategories(lang));
         }
@@ -188,7 +178,7 @@ export class ProductsComponent implements OnDestroy {
   }
 
   private _loadProducts(): void {
-    this.productsSub = combineLatest(
+    this.productsSub = combineLatest([
       this.lang$.pipe(distinctUntilChanged()),
       this.category$.pipe(distinctUntilChanged()),
       this.filterPrice$.pipe(distinctUntilChanged()),
@@ -196,14 +186,7 @@ export class ProductsComponent implements OnDestroy {
         map((params) => ({ page: params['page'], sort: params['sort'] })),
         distinctUntilChanged()
       ),
-      (lang: string, category: string, filterPrice: number, { page, sort }) => ({
-        lang,
-        category,
-        filterPrice,
-        page,
-        sort,
-      })
-    ).subscribe(({ lang, category, filterPrice, page, sort }) => {
+    ]).subscribe(([lang, category, filterPrice, { page, sort }]) => {
       this.store.dispatch(
         new actions.GetProducts({ lang, category, maxPrice: filterPrice, page: page || 1, sort: sort || 'newest' })
       );

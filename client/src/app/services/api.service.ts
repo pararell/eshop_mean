@@ -12,12 +12,10 @@ import { environment } from '../../environments/environment';
 import { Translations } from '../shared/models';
 import { accessTokenKey } from '../shared/constants';
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApiService {
-
   apiUrl = environment.apiUrl;
   uploaderSub: BehaviorSubject<FileUploader> = new BehaviorSubject(null);
   requestOptions = {};
@@ -31,7 +29,6 @@ export class ApiService {
     @Inject(PLATFORM_ID)
     private platformId: Object
   ) {
-
     this.setHeaders();
 
     if (environment.production) {
@@ -57,7 +54,7 @@ export class ApiService {
 
   signIn(req) {
     const sendContact = this.apiUrl + '/api/auth/signin';
-    return this.http.post(sendContact, req, this.requestOptions)
+    return this.http.post(sendContact, req, this.requestOptions);
   }
 
   signUp(req) {
@@ -70,19 +67,20 @@ export class ApiService {
     const addCategory = category ? { category } : {};
     const categoryQuery = category ? '&category=' + category : '';
     const priceQuery = maxPrice ? '&maxPrice=' + maxPrice : '';
-    const productsUrl = this.apiUrl + '/api/products?lang=' + lang + '&page=' + page + '&sort=' + sort + categoryQuery + priceQuery;
-    return this.http.get(productsUrl, this.requestOptions).pipe(map((data: any) => ({
-      products: data.all
-        .map(product =>
-          ({
-            ...product,
-            tags: product.tags.filter(Boolean).map((cat: string) => cat.toLowerCase())
-          })),
-      pagination: data.pagination,
-      maxPrice: data.maxPrice,
-      minPrice: data.minPrice,
-      ...addCategory
-    })))
+    const productsUrl =
+      this.apiUrl + '/api/products?lang=' + lang + '&page=' + page + '&sort=' + sort + categoryQuery + priceQuery;
+    return this.http.get(productsUrl, this.requestOptions).pipe(
+      map((data: any) => ({
+        products: data.all.map((product) => ({
+          ...product,
+          tags: product.tags.filter(Boolean).map((cat: string) => cat.toLowerCase()),
+        })),
+        pagination: data.pagination,
+        maxPrice: data.maxPrice,
+        minPrice: data.minPrice,
+        ...addCategory,
+      }))
+    );
   }
 
   getCategories(lang: string) {
@@ -138,11 +136,11 @@ export class ApiService {
   handleToken(token) {
     const tokenUrl = this.apiUrl + '/api/orders/stripe';
     return this.http.post(tokenUrl, token, this.requestOptions);
-  };
+  }
 
   makeOrder(req) {
     const addOrder = this.apiUrl + '/api/orders/add';
-    return this.http.post(addOrder, req, this.requestOptions)
+    return this.http.post(addOrder, req, this.requestOptions);
   }
 
   getUserOrders() {
@@ -237,11 +235,13 @@ export class ApiService {
       const accessToken = localStorage.getItem(accessTokenKey);
       const authorizationHeader = accessToken ? { name: 'Authorization', value: 'Bearer ' + accessToken } : {};
 
-      this.uploaderSub.next(new FileUploader({
-        url: this.apiUrl + '/api/admin/images/upload' + titleUrlQuery,
-        headers: [{ name: 'Accept', value: 'application/json', ...authorizationHeader }],
-        ...options
-      }));
+      this.uploaderSub.next(
+        new FileUploader({
+          url: this.apiUrl + '/api/admin/images/upload' + titleUrlQuery,
+          headers: [{ name: 'Accept', value: 'application/json', ...authorizationHeader }],
+          ...options,
+        })
+      );
 
       return this.uploaderSub.asObservable();
     }
@@ -302,22 +302,18 @@ export class ApiService {
     const configUrl = this.apiUrl + '/api/eshop/config/' + titleUrl;
     return this.http.delete(configUrl, this.requestOptions);
   }
-
+  1;
   setHeaders() {
-    combineLatest(
-      this.store.select(fromRoot.getLang),
-      this.store.select(fromRoot.getUser),
-      (lang, user) => ({ lang, user })
-    ).subscribe(({ lang, user }) => {
-      if (user && user.accessToken && isPlatformBrowser(this.platformId)) {
-        localStorage.setItem(accessTokenKey, user.accessToken);
+    combineLatest([this.store.select(fromRoot.getLang), this.store.select(fromRoot.getUser)]).subscribe(
+      ([lang, user]) => {
+        if (user && user.accessToken && isPlatformBrowser(this.platformId)) {
+          localStorage.setItem(accessTokenKey, user.accessToken);
+        }
+        const accessToken = isPlatformBrowser(this.platformId) ? localStorage.getItem(accessTokenKey) : '';
+        let headers = new HttpHeaders();
+        headers = headers.set('Authorization', 'Bearer ' + accessToken).set('lang', lang);
+        this.requestOptions = { headers, withCredentials: true };
       }
-      const accessToken = isPlatformBrowser(this.platformId) ? localStorage.getItem(accessTokenKey) : '';
-      let headers = new HttpHeaders();
-      headers = headers.set('Authorization', 'Bearer ' + accessToken).set('lang', lang);
-      this.requestOptions = { headers, withCredentials: true };
-    })
+    );
   }
-
-
 }

@@ -39,30 +39,28 @@ export class ProductComponent implements OnDestroy {
     this.lang$ = this.translate.getLang$();
     this.categories$ = this.store.select(fromRoot.getCategories);
 
-    this.routeSub = combineLatest(this.lang$, this.route.params.pipe(map((params) => params['id'])), (lang, id) => ({
-      lang,
-      id,
-    })).subscribe(({ lang, id }) => {
-      this.store.dispatch(new actions.GetProduct(id + '?lang=' + lang));
-    });
+    this.routeSub = combineLatest([this.lang$, this.route.params.pipe(map((params) => params['id']))]).subscribe(
+      ([lang, id]) => {
+        this.store.dispatch(new actions.GetProduct(id + '?lang=' + lang));
+      }
+    );
 
     this.callCategories();
 
     this.setMetaData();
     this.productLoading$ = this.store.select(fromRoot.getProductLoading);
 
-    this.items$ = combineLatest(
+    this.items$ = combineLatest([
       this.store.select(fromRoot.getProduct),
       this.store.select(fromRoot.getCart).pipe(
         filter(Boolean),
         map((cart: Cart) => cart.items)
       ),
-      (product, cartItems) => {
-        return {
-          product,
-          cartIds: cartItems.reduce((prev, curr) => ({ ...prev, [curr.id]: curr.qty }), {}),
-        };
-      }
+    ]).pipe(
+      map(([product, cartItems]) => ({
+        product,
+        cartIds: cartItems.reduce((prev, curr) => ({ ...prev, [curr.id]: curr.qty }), {}),
+      }))
     );
 
     this.currency$ = this.store.select(fromRoot.getCurrency);
@@ -99,12 +97,9 @@ export class ProductComponent implements OnDestroy {
   }
 
   private callCategories(): void {
-    combineLatest(this.categories$.pipe(take(1)), this.lang$.pipe(take(1)), (categories, lang) => ({
-      categories,
-      lang,
-    }))
+    combineLatest([this.categories$.pipe(take(1)), this.lang$.pipe(take(1))])
       .pipe(take(1))
-      .subscribe(({ categories, lang }) => {
+      .subscribe(([categories, lang]) => {
         if (!categories.length) {
           this.store.dispatch(new actions.GetCategories(lang));
         }
