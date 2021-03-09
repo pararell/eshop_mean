@@ -41,7 +41,9 @@ $ npm run serve:ssr
 
 For another commands look to package.json
 
-## SET ENVIROMENT FOR BE - Rename .env.example to .env
+## Set enviroment for BE 
+
+- Rename .env.example to .env
 
 ```bash
 # BE HOST
