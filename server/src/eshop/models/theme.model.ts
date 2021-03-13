@@ -11,6 +11,8 @@ export interface Theme extends Document {
       backgroundColor: string;
       mainBackground: string;
       freeShippingPromo: string;
+      promoSlideBackground: string;
       promo: string;
+      logo: string;
     };
 }

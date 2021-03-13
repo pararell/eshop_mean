@@ -30,10 +30,13 @@
       </mat-select>
     </mat-form-field>
   </div>
-  <form class="theme_edit-form"
+  <form
+    class="theme_edit-form"
     [formGroup]="themesEditForm"
     *ngIf="themesEditForm.get('titleUrl').value">
-    <h2>{{ themesEditForm.get('titleUrl').value }}</h2>
+    <h2>
+      {{ themesEditForm.get('titleUrl').value }}
+    </h2>
     <mat-form-field class="theme_edit-field">
       <mat-label>Primary color</mat-label>
       <input
@@ -62,35 +65,31 @@
         formControlName="mainBackground">
     </mat-form-field>
     <mat-form-field class="theme_edit-field-full">
-      <mat-label>
-        {{ 'Show_shipping_promo' | translate | async }}
-      </mat-label>
-      <mat-select
-        formControlName="freeShippingPromo">
-        <mat-option
-          [value]="'none'">
-          {{ 'Hide' | translate | async }}
-        </mat-option>
-        <mat-option
-          [value]="'block'">
-          {{ 'Show' | translate | async }}
-      </mat-option>
-      </mat-select>
+      <mat-label>Logo</mat-label>
+      <input
+        matInput
+        formControlName="logo">
+    </mat-form-field>
+    <mat-form-field class="theme_edit-field-full">
+      <mat-label>Promo slide background</mat-label>
+      <input
+        matInput
+        formControlName="promoSlideBackground">
     </mat-form-field>
     <mat-form-field class="theme_edit-field-full">
       <mat-label>
-        {{ 'Show_promo' | translate | async }}
+        {{ 'Show_shipping_promo' | translate | async }}
       </mat-label>
-      <mat-select
-        formControlName="promo">
-        <mat-option
-          [value]="'none'">
-          {{ 'Hide' | translate | async }}
-        </mat-option>
-        <mat-option
-          [value]="'block'">
-          {{ 'Show' | translate | async }}
-      </mat-option>
+      <mat-select formControlName="freeShippingPromo">
+        <mat-option [value]="'none'">{{ 'Hide' | translate | async }}</mat-option>
+        <mat-option [value]="'block'">{{ 'Show' | translate | async }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field class="theme_edit-field-full">
+      <mat-label>{{ 'Show_promo' | translate | async }}</mat-label>
+      <mat-select formControlName="promo">
+        <mat-option [value]="'none'">{{ 'Hide' | translate | async }}</mat-option>
+        <mat-option [value]="'block'">{{ 'Show' | translate | async }}</mat-option>
       </mat-select>
     </mat-form-field>
     <mat-radio-group
@@ -112,26 +111,28 @@
   </form>
   <div class="theme_edit-cta">
     <button
-    mat-flat-button
-    color="primary"
-    [disabled]="themesEditForm.invalid"
-    (click)="saveTheme()">
-    Save
-  </button>
-  <button
-    mat-flat-button
-    color="primary"
-    [disabled]="themesEditForm.invalid"
-    (click)="removeTheme()">
-    Remove
-  </button>
+      mat-flat-button
+      color="primary"
+      [disabled]="themesEditForm.invalid"
+      (click)="saveTheme()">
+      Save
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      [disabled]="themesEditForm.invalid"
+      (click)="removeTheme()">
+      Remove
+    </button>
   </div>
 
 </ng-container>
 <div
   class="theme_edit-after-send"
   *ngIf="sendRequest">
-  <span> {{ 'Request_sended' | translate | async }}</span>
+  <span>
+    {{ 'Request_sended' | translate | async }}
+  </span>
   <button
     class="product_edit-btn-action"
     mat-raised-button

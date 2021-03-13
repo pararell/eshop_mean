@@ -1,5 +1,7 @@
 <div class="slider-container" [class.slider-with-background]="withBackground" #slideContainer>
-  <button class="slider-arrow" *ngIf="showArrowsSub$ | async"
+  <button class="slider-arrow slider-arrow-left" 
+    *ngIf="showArrowsSub$ | async"
+    [class.slider-arrow-absolute]="absoluteArrows"
      mat-raised-button
     (click)="onClickLeft()">
     <i class="nav-cart-icon material-icons md-18">keyboard_arrow_left</i>
@@ -7,7 +9,9 @@
   <div class="slides" #slides>
     <ng-content></ng-content>
   </div>
-  <button class="slider-arrow" *ngIf="showArrowsSub$ | async"
+  <button class="slider-arrow slider-arrow-right"
+     *ngIf="showArrowsSub$ | async"
+     [class.slider-arrow-absolute]="absoluteArrows"
      mat-raised-button
     (click)="onClickRight()">
     <i class="nav-cart-icon material-icons md-24">keyboard_arrow_right</i>

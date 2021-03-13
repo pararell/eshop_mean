@@ -52,7 +52,9 @@ export class ThemeEditComponent {
         this.themeService.setCSSVariable(`url(/)`, 'main-background-url');
       }
       this.themeService.setCSSVariable(values.freeShippingPromo, 'free-shipping-promo');
+      this.themeService.setCSSVariable(`url(${values.promoSlideBackground})`, 'promo-slide-background');
       this.themeService.setCSSVariable(values.promo, 'promo');
+      this.themeService.setCSSVariable(`url(${values.logo})`, 'logo');
     })
   }
 
@@ -74,11 +76,13 @@ export class ThemeEditComponent {
         const foundTheme = themes.find((theme) => theme.titleUrl === this.chosenTheme);
         this.themesEditForm.get('active').setValue(!!foundTheme.active);
         this.themesEditForm.get('freeShippingPromo').setValue(foundTheme.styles.freeShippingPromo || 'none');
+        this.themesEditForm.get('promoSlideBackground').setValue(foundTheme.styles.promoSlideBackground || '');
         this.themesEditForm.get('promo').setValue(foundTheme.styles.promo || 'none');
         this.themesEditForm.get('primaryColor').setValue(foundTheme.styles.primaryColor || '');
         this.themesEditForm.get('secondaryColor').setValue(foundTheme.styles.secondaryColor || '');
         this.themesEditForm.get('backgroundColor').setValue(foundTheme.styles.backgroundColor || '');
         this.themesEditForm.get('mainBackground').setValue(foundTheme.styles.mainBackground || '');
+        this.themesEditForm.get('logo').setValue(foundTheme.styles.logo || '');
       });
     }
   }
@@ -90,11 +94,13 @@ export class ThemeEditComponent {
       active  : formValues.active,
       styles: {
         primaryColor: formValues.primaryColor,
+        promoSlideBackground: formValues.promoSlideBackground,
         secondaryColor: formValues.secondaryColor,
         backgroundColor: formValues.backgroundColor,
         mainBackground: formValues.mainBackground,
         freeShippingPromo: formValues.freeShippingPromo,
-        promo: formValues.promo
+        promo: formValues.promo,
+        logo: formValues.logo
       }
     }
     this.store.dispatch(new actions.AddOrEditTheme(request));
@@ -110,11 +116,13 @@ export class ThemeEditComponent {
     return {
       active  : false,
       freeShippingPromo: 'none',
+      promoSlideBackground: '',
       promo: 'none',
       primaryColor: '#222222',
       secondaryColor: '#cccccc',
       backgroundColor: '#eeeeee',
-      mainBackground: ''
+      mainBackground: '',
+      logo: ''
     }
   }
 

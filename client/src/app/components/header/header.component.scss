@@ -46,9 +46,32 @@
     }
 
     &-brand-logo {
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
+      // text-overflow: ellipsis;
+      // overflow: hidden;
+      // white-space: nowrap;
+      position: relative;
+      background: var(--logo, url('https://res.cloudinary.com/dnpgh1vhi/image/upload/v1615640124/logo1_gvrmpd.svg'));
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 85px;
+      min-height: 100%;
+
+      a {
+        position: relative;
+        display: flex;
+        min-width: 85px;
+        min-height: 50px;
+      }
+
+      img {
+        min-width: 130px;
+        display: block;
+        position: relative;
+
+        @media screen and (max-width: 600px) {
+          min-width: 70px;
+        }
+      }
     }
 
     &-part-right {

@@ -14,6 +14,7 @@ export class CarouselComponent implements AfterViewInit, OnDestroy {
 
   @Input() intervalForSlider = 10000;
   @Input() withBackground = false;
+  @Input() absoluteArrows = false;
 
   showArrowsSub$ = new BehaviorSubject(false);
   autoSlideSub: Subscription;
