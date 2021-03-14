@@ -3,8 +3,8 @@
   min-height: 100vh;
   flex-direction: column;
 
-  ::ng-deep .mat-radio-button ~ .mat-radio-button {
-    margin-left: 16px;
+  ::ng-deep .mat-radio-button {
+    padding-bottom: 24px;
   }
 
   .cart {
@@ -115,7 +115,8 @@
 
   .delivery-button {
     margin: 20px 0;
-    display: block;
+    display: flex;
+    flex-flow: column;
   }
 
   .submit-order-button {

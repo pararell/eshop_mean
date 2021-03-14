@@ -24,7 +24,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SharedModule } from './shared/shared.module';
 import { PipeModule } from './pipes/pipe.module';
 import { LazyModule } from './utils/lazyLoadImg/lazy.module';
-import { reducers } from './store/reducers/index';
+import { reducers, metaReducers } from './store/reducers/index';
 import { AppEffects } from './store/effects';
 import { routesAll } from './app.routes';
 import { environment } from '../environments/environment';
@@ -50,7 +50,7 @@ const routes: Routes = routesAll;
   imports: [
     BrowserModule.withServerTransition({ appId: 'my-app-id' }),
     TransferHttpCacheModule,
-    StoreModule.forRoot(reducers),
+    StoreModule.forRoot(reducers, { metaReducers }),
     HttpClientModule,
     SharedModule,
     PipeModule,

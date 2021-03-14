@@ -1,4 +1,5 @@
-import { map, filter, take } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { map, filter, take, withLatestFrom } from 'rxjs/operators';
 import { Component } from '@angular/core';
 import { Location } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -32,6 +33,7 @@ export class CartComponent {
   constructor(
     private store: Store<fromRoot.State>,
     private fb: FormBuilder,
+    private router: Router,
     private location: Location,
     private translate: TranslateService) {
 
@@ -53,6 +55,14 @@ export class CartComponent {
     });
 
     this.currency$ = this.store.select(fromRoot.getCurrency);
+
+    this.order$.pipe(
+      filter(order => !!order),
+      withLatestFrom(this.lang$),
+      take(1))
+      .subscribe(([order, lang]) => {
+        this.router.navigate(['/' + lang + '/cart/summary'])
+      });
   }
 
   goBack(): void {

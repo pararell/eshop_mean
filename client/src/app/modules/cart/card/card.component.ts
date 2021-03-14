@@ -27,6 +27,7 @@ export class CardComponent implements OnInit {
   stripe; // : stripe.Stripe;
   card;
   cardErrorSub$ = new BehaviorSubject('INVALID');
+  loadingPayment = false;
 
   constructor(
     private envConfigurationService: EnvConfigurationService,
@@ -53,14 +54,17 @@ export class CardComponent implements OnInit {
 
   async handleForm(e) {
     e.preventDefault();
+    this.loadingPayment = true;
 
     this.stripe.createToken(this.card).then((result) => {
       if (result.error) {
         this.cardErrorSub$.next(result.error.message);
+        this.loadingPayment = false;
       } else {
         this.cardErrorSub$.next('');
         this.stripeTokenHandler(result.token);
         this.scrollToTop.emit();
+        this.loadingPayment = false;
       }
     });
   }

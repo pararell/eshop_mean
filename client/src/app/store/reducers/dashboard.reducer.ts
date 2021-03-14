@@ -1,5 +1,5 @@
 
-import { EshopActions } from '../../store/actions';
+import { EshopActions } from '../actions';
 import { Product, Translations, Order, Category } from '../../shared/models';
 
 

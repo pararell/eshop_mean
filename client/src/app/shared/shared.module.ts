@@ -9,6 +9,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatCardModule } from '@angular/material/card';
 
 import { PipeModule } from '../pipes/pipe.module';
 import { LazyModule } from '../utils/lazyLoadImg/lazy.module';
@@ -20,6 +22,8 @@ import { ImagesDialogComponent } from './images-dialog/images-dialog.component';
 import { CategoriesListComponent } from './categories-list/categories-list.component';
 import { CarouselComponent } from './carousel/carousel.component';
 import { ProductContentComponent } from './product-content/product-content.component';
+import { OrderInfoComponent } from './order-info/order-info.component';
+
 
 @NgModule({
   declarations: [
@@ -30,7 +34,8 @@ import { ProductContentComponent } from './product-content/product-content.compo
     CategoriesListComponent,
     PaginationComponent,
     ImagesDialogComponent,
-    CarouselComponent
+    CarouselComponent,
+    OrderInfoComponent
   ],
   imports: [
     ReactiveFormsModule,
@@ -44,7 +49,9 @@ import { ProductContentComponent } from './product-content/product-content.compo
     MatSelectModule,
     MatSliderModule,
     MatButtonModule,
-    MatChipsModule
+    MatChipsModule,
+    MatProgressBarModule,
+    MatCardModule
   ],
   providers: [],
   exports: [
@@ -55,7 +62,8 @@ import { ProductContentComponent } from './product-content/product-content.compo
     CategoriesListComponent,
     PaginationComponent,
     ImagesDialogComponent,
-    CarouselComponent
+    CarouselComponent,
+    OrderInfoComponent
   ]
 })
 export class SharedModule { }

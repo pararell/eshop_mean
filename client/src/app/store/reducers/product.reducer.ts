@@ -1,5 +1,5 @@
 
-import { EshopActions } from '../../store/actions';
+import { EshopActions } from '../actions';
 import { Product, Cart, Category, Order, Pagination } from '../../shared/models';
 
 
@@ -157,7 +157,7 @@ export function productReducer(state = initialState, action): State {
     }
 
     case EshopActions.CleanError: {
-      return { ...state, error: '' }
+      return { ...state, order: null, error: '' }
     }
 
 

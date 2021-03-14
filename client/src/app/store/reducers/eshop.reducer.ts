@@ -1,5 +1,5 @@
 
-import { EshopActions } from '../../store/actions';
+import { EshopActions } from '../actions';
 import { Page, Theme, Config } from '../../shared/models';
 
 

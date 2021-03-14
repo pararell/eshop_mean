@@ -9,7 +9,7 @@
         #cardElement></div>
       <button
         class="card-button"
-        [disabled]="!!(cardErrorSub$ | async) && !loading"
+        [disabled]="(!!(cardErrorSub$ | async) && !loading) || loadingPayment"
         mat-raised-button
         color="primary"
         id="submit-button"

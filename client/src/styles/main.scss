@@ -120,3 +120,14 @@ a:hover {
 .material-icons.md-48 {
   font-size: 48px;
 }
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.margin {
+  &-left-small {
+    margin-left: 5px;
+  }
+}

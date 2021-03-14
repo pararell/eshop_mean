@@ -74,6 +74,7 @@
     "mongoose": "5.10.14",
     "ng-recaptcha": "^7.0.1",
     "ng2-file-upload": "^1.4.0",
+    "ngrx-store-localstorage": "^11.0.0",
     "ngx-cookie-service": "^11.0.2",
     "passport": "^0.4.1",
     "passport-google-oauth20": "^2.0.0",

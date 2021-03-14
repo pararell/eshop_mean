@@ -134,20 +134,30 @@
             </mat-step>
             <mat-step [stepControl]="toggleCard">
               <ng-template matStepLabel>{{ 'Payment_method' | translate | async }}</ng-template>
-              <mat-radio-group class="delivery-button"
+                <mat-radio-group class="delivery-button"
                 *ngIf="orderForm.valid"
                 [(ngModel)]="toggleCard">
                 <mat-radio-button [value]="true">
-                  {{ 'Pay' | translate | async }}
-                  <b> {{ cart?.totalPrice | priceFormat }}
-                  {{ currency$ | async }}
-                </b>
+                  <span class="flex">
+                    <mat-icon>credit_card</mat-icon>
+                    <span class="margin-left-small">
+                      {{ 'Pay' | translate | async }}
+                      <b> {{ cart?.totalPrice | priceFormat }}
+                        {{ currency$ | async }}
+                      </b>
+                    </span>
+                  </span>
                 </mat-radio-button>
                 <mat-radio-button [value]="false">
-                  {{ 'Payment' | translate | async }}
-                  {{ 'on' | translate | async }}
-                  {{ 'delivery' | translate | async }}
-                </mat-radio-button>
+                  <span class="flex">
+                    <mat-icon>local_atm</mat-icon>
+                    <span class="margin-left-small">
+                      {{ 'Payment' | translate | async }}
+                      {{ 'on' | translate | async }}
+                      {{ 'delivery' | translate | async }}
+                    </span>
+                  </span>
+                  </mat-radio-button>
               </mat-radio-group>
               <div>
                 <button class="cart-navigation-button"

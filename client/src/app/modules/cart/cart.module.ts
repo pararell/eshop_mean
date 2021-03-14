@@ -8,16 +8,19 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatStepperModule } from '@angular/material/stepper';
+import { MatIconModule } from '@angular/material/icon';
 
 import { CartComponent } from './cart/cart.component';
 import { SharedModule } from '../../shared/shared.module';
 import { PipeModule } from '../../pipes/pipe.module';
 import { CardComponent } from './card/card.component';
+import { SummaryComponent } from './summary/summary.component';
 
 @NgModule({
   declarations: [
     CartComponent,
-    CardComponent
+    CardComponent,
+    SummaryComponent
   ],
   imports: [
     CommonModule,
@@ -28,10 +31,12 @@ import { CardComponent } from './card/card.component';
     MatButtonModule,
     MatInputModule,
     MatProgressBarModule,
+    MatIconModule,
     MatRadioModule,
     MatStepperModule,
     RouterModule.forChild([
-      { path: '', component: CartComponent }
+      { path: '', component: CartComponent },
+      { path: 'summary', component: SummaryComponent }
     ]),
   ],
   providers: []
