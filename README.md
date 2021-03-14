@@ -1,6 +1,9 @@
+![MEAN](https://res.cloudinary.com/dnpgh1vhi/image/upload/v1615640124/logo1_gvrmpd.svg) 
 
-# MEAN (server : Nest.js with Mongoose, client : Angular, server-ssr : Server-side rendering - build both)
+# MEAN Eshop template
 
+## Server : Nest.js with Mongoose
+## Client : Angular, server-ssr : Server-side rendering - build both
 
 - eshop.miroslavsmrtic.sk - dashboard test - email: test@miroslavsmrtic.sk , password: test123456
 - more info in blog https://miroslavsmrtic.sk/blog

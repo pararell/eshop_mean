@@ -15,9 +15,11 @@ export class CarouselComponent implements AfterViewInit, OnDestroy {
   @Input() intervalForSlider = 10000;
   @Input() withBackground = false;
   @Input() absoluteArrows = false;
+  @Input() showArrows = true;
 
   showArrowsSub$ = new BehaviorSubject(false);
   autoSlideSub: Subscription;
+  dragging = false;
 
   constructor(
     @Inject(PLATFORM_ID)
@@ -54,6 +56,14 @@ export class CarouselComponent implements AfterViewInit, OnDestroy {
           }
       });
       this.autoSlideSub = timer(this.intervalForSlider, this.intervalForSlider).subscribe(() => { this.onClickRight(); })
+    }
+  }
+
+  onDrag(e, type: string) {
+    this.dragging = type === 'down' ? true : (type === 'up' ? false : this.dragging);
+    if (this.dragging && type === 'move') {
+      const slidesElement = this.slides.nativeElement;
+      slidesElement.scrollLeft += e.movementX * -50;
     }
   }
 
