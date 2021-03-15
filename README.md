@@ -7,13 +7,13 @@
 
 
 ## Test it
-- eshop.miroslavsmrtic.sk - dashboard test - email: test@miroslavsmrtic.sk , password: test123456
+- smrtic.eu - dashboard test - email: test@miroslavsmrtic.sk , password: test123456
 - more info in blog https://miroslavsmrtic.sk/blog
 
 ## Description
 - Eshop with products and administration
 - Typescript stack with decorators, use MongoDB and mongoose schemas, JWT Passport
-- in progress
+- Theming with css variables
 
 ## Installation
 
