@@ -1,10 +1,12 @@
 ![MEAN](https://res.cloudinary.com/dnpgh1vhi/image/upload/v1615640124/logo1_gvrmpd.svg) 
 
-# MEAN Eshop template
+# Eshop template
 
-## Server : Nest.js with Mongoose
-## Client : Angular, server-ssr : Server-side rendering - build both
+## Server : <img src="https://d33wubrfki0l68.cloudfront.net/e937e774cbbe23635999615ad5d7732decad182a/26072/logo-small.ede75a6b.svg" alt="nest.js" width="50"/> Nest.js with Express and <img src="https://webassets.mongodb.com/_com_assets/cms/mongodb_logo1-76twgcu2dm.png" alt="mongoDB" width="150"> MongoDB (Mongoose)
+## Client : <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Angular_full_color_logo.svg/1200px-Angular_full_color_logo.svg.png" alt="angular" width="60"> Angular (Server-side rendering)
 
+
+## Test it
 - eshop.miroslavsmrtic.sk - dashboard test - email: test@miroslavsmrtic.sk , password: test123456
 - more info in blog https://miroslavsmrtic.sk/blog
 
