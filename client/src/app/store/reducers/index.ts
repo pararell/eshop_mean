@@ -63,7 +63,8 @@ export function localStorageSyncReducer(reducer: ActionReducer<State>): ActionRe
   return localStorageSync({
     keys: [{ products: ['order'] }],
     rehydrate: true,
-    removeOnUndefined: true
+    removeOnUndefined: true,
+    checkStorageAvailability: true
   })(reducer);
 }
 
