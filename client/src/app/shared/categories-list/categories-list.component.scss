@@ -10,17 +10,17 @@
   }
 
   .category_card {
-    flex-basis: 21%;
+    flex-basis: 18%;
     overflow: hidden;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
     display: flex;
     flex-flow: column;
     justify-content: space-between;
     background: #fff;
-    margin: 0.5rem 2% 1rem 2%;
+    margin: 0.5rem 1% 1rem 1%;
     z-index: 1;
     position: relative;
-    min-width: 21%;
+    min-width: 18%;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
     border-radius: 10px;
 
@@ -101,7 +101,7 @@
     &-image {
       background-repeat: no-repeat !important;
       background-position: center !important;
-      min-height: 250px;
+      min-height: 200px;
       background-size: contain !important;
       cursor: pointer;
       overflow: hidden;

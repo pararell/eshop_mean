@@ -74,7 +74,15 @@
           <span class="home-mobile-filter" (click)="toggleSidebar()">
             <i class="material-icons md-16">filter_list</i>
           </span>
-          <h1 class="home-title">{{'Categories' | translate | async}}</h1>
+          <div class="home-categories-links-wrap">
+            <div class="home-categories-links">
+              <a class="home-title-category"  
+                *ngFor="let cat of (categories$ | async)"
+                [routerLink]="['/' + (lang$ | async) + '/product/category/' + cat.titleUrl]">
+                {{ cat.title }}
+              </a>
+            </div>
+          </div>
         </div>
       </div>
       <div class="container">

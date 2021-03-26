@@ -7,6 +7,7 @@ export class WindowService {
   self        : Window;
   location    : { href: string, origin: string };
   document    : Document;
+  dataLayer   : any[];
 
   constructor() {
     this.location = {

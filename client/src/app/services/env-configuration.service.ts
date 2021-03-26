@@ -1,3 +1,4 @@
+import { AnalyticsService } from './analytics.service';
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Observable } from 'rxjs';
@@ -7,9 +8,10 @@ import { ApiService } from './api.service';
 import { ThemeService } from './theme.service';
 
 export interface Config {
-  FE_STRIPE_PUBLISHABLE_KEY: string;
-  FE_TINYMCE_API_KEY: string;
-  FE_RECAPTCHA_CLIENT_KEY: string;
+  FE_STRIPE_PUBLISHABLE_KEY?: string;
+  FE_TINYMCE_API_KEY?: string;
+  FE_RECAPTCHA_CLIENT_KEY?: string;
+  FE_ANALYTICS_TOKEN?: string;
   [name: string]: any;
 }
 
@@ -23,6 +25,7 @@ export class EnvConfigurationService {
   constructor(
     private apiService: ApiService,
     private themeService: ThemeService,
+    private analyticsService: AnalyticsService,
     @Inject(PLATFORM_ID)
     private platformId: Object
   ) {}
@@ -73,6 +76,7 @@ export class EnvConfigurationService {
         .subscribe((conf) => {
           this.config = conf;
           this.setTheme(conf);
+          this.analyticsService.initial(conf);
         });
     }
     return this.configuration$;
