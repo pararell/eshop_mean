@@ -27,10 +27,10 @@ const staticFile = existsSync(join(process.cwd(), '../dist/eshop/browser'))
     AuthModule,
     AdminModule,
     EshopModule,
-    ServeStaticModule.forRoot({
-      rootPath: staticFile,
-      exclude: ['/api'],
-    }),
+    // ServeStaticModule.forRoot({
+    //   rootPath: staticFile,
+    //   exclude: ['/api'],
+    // }),
   ],
   exports: [],
   controllers: [],

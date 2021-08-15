@@ -4,24 +4,22 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppSSRModule } from './app-ssr.module';
 import { Logger } from '@nestjs/common';
-import * as session from 'express-session';
-import * as mongoose from 'mongoose';
-import * as connectMongo from 'connect-mongo';
-import * as passport from 'passport';
-import * as cookieParser from 'cookie-parser';
-import * as cors from 'cors';
-import * as compression from 'compression';
-import * as bodyParser from 'body-parser'
-;
+import session from 'express-session'
+import mongoose from 'mongoose';
+import MongoStore from 'connect-mongo';
+import passport from 'passport';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import compression from 'compression';
+import {json, urlencoded} from 'body-parser';
 
 async function bootstrap() {
   const logger = new Logger('boostrap');
-  const MongoStore = connectMongo(session);
 
   const app = await NestFactory.create<NestExpressApplication>(AppSSRModule);
   app.use(compression());
-  app.use(bodyParser.json({ limit: '10mb' }));
-  app.use(bodyParser.urlencoded({ limit: '10mb' }));
+  app.use(json({ limit: '10mb' }));
+  app.use(urlencoded({ limit: '10mb' }));
   app.use(cookieParser());
 
   app.use(
@@ -31,13 +29,11 @@ async function bootstrap() {
     }),
   );
 
-  if (process.env.MONGO_URI) {
-    mongoose.connect(process.env.MONGO_URI, {
+  const clientP: any = mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-    });
-    mongoose.set('useFindAndModify', false);
-  }
+      useFindAndModify: false
+  }).then(m => m.connection.getClient());
 
   app.use(
     session({
@@ -48,11 +44,11 @@ async function bootstrap() {
       secret: process.env.COOKIE_KEY,
       resave: false,
       saveUninitialized: false,
-      store: new MongoStore({
-        mongooseConnection: mongoose.connection,
-        collection: 'session',
-      }),
-    }),
+      store: MongoStore.create({
+        clientPromise: clientP,
+        dbName: 'session',
+      })
+    })
   );
 
   app.use(passport.initialize());
@@ -70,5 +66,5 @@ declare const __non_webpack_require__: NodeRequire;
 const mainModule = __non_webpack_require__.main;
 const moduleFilename = (mainModule && mainModule.filename) || '';
 if (moduleFilename === __filename || moduleFilename.includes('iisnode')) {
-  bootstrap().catch((err) => console.error(err));
+  bootstrap().catch(err => console.error(err));
 }

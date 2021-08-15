@@ -1,3 +1,5 @@
+@use "sass:math";
+
 @import '~@angular/material/theming';
 
 // generate pallete from http://mcg.mbitson.com/
@@ -94,9 +96,9 @@ $eshop-background:  mat-palette($material-secondary-color, 50);
   }
 
   $tile-size: ($stripe1-width + $stripe2-width) * 2;
-  $stripe2-start: ($stripe1-width / $tile-size) * 100%;
-  $stripe3-start: $stripe2-start + (($stripe2-width / $tile-size) * 100%);
-  $stripe4-start: $stripe3-start + (($stripe1-width / $tile-size) * 100%);
+  $stripe2-start: math.div($stripe1-width, $tile-size) * 100%;
+  $stripe3-start: $stripe2-start + (math.div($stripe2-width, $tile-size) * 100%);
+  $stripe4-start: $stripe3-start + (math.div($stripe1-width, $tile-size) * 100%);
 
   background-size: $tile-size $tile-size;
   background-image: linear-gradient(

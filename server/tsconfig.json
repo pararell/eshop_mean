@@ -10,7 +10,8 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "esModuleInterop": true
   },
   "files": ["./src/main.ts"],
   "exclude": ["node_modules", "dist", "types.d.ts"]

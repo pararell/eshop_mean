@@ -14,14 +14,16 @@ export const prepareProduct = (product, lang: string, light?: boolean): Product 
 });
 
 export const prepareCart = (cart, lang: string, config): CartModel => {
-  const cartLangItems = cart.items
-    .map((cartItem: any) => {
-      const prepareItem = prepareProduct(cartItem.item, lang, true);
-      const price: number = prepareItem.salePrice;
-      const shipingCostType: string = prepareItem.shipping;
-      return { item: prepareItem, id: cartItem.id, qty: cartItem.qty, price, shipingCostType };
-    })
-    .filter((cartItem: any) => cartItem.item.visibility && cartItem.item.salePrice);
+  const cartLangItems = cart.items.length 
+    ? cart.items
+        .map((cartItem: any) => {
+          const prepareItem = prepareProduct(cartItem.item, lang, true);
+          const price: number = prepareItem.salePrice;
+          const shipingCostType: string = prepareItem.shipping;
+          return { item: prepareItem, id: cartItem.id, qty: cartItem.qty, price, shipingCostType };
+        })
+      .filter((cartItem: any) => cartItem.item.visibility && cartItem.item.salePrice)
+    : [];
 
   const { totalPrice, totalQty }: { totalPrice: number; totalQty: number } = cartLangItems.reduce(
     (prev, item) => ({

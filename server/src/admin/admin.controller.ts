@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
-import * as multer from 'multer';
+import multer from 'multer';
 
 import { RolesGuard } from '../auth/roles.guard';
 import { AdminService } from './admin.service';
