@@ -1,5 +1,4 @@
-FROM node:12.13.0-alpine as buildContainer
-RUN apk update && apk add python make g++
+FROM node:14.17.0 as buildContainer
 WORKDIR /usr/src/app
 COPY ./package.json ./
 RUN npm install
