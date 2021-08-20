@@ -80,7 +80,7 @@
           }
         },
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
             "tsConfig": [
               "client/tsconfig.app.json"
@@ -166,6 +166,7 @@
     }
   },
   "cli": {
-    "analytics": false
+    "analytics": false,
+    "defaultCollection": "@angular-eslint/schematics"
   }
 }

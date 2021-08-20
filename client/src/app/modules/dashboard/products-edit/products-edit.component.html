@@ -313,8 +313,8 @@
         </div>
       </div>
       <h3 class="product_edit-subtitle">Full Description (for chosen language/market)</h3>
-      <app-tiny-editor
-        [description]="(descriptionFullSub$ | async)[chooseLang]"
+      <app-tiny-editor *ngIf="(descriptionFullSub$ | async) as descriptionFull"
+        [description]="descriptionFull[chooseLang]"
         (onEditorContentChange)="onEditorChange($event)">
       </app-tiny-editor>
       <button

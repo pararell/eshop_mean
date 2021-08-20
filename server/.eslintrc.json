@@ -19,5 +19,6 @@
   "rules": {
     "no-irregular-whitespace": 0,
     "camelcase": "off"
-  }
+  },
+  "ignorePatterns": ["dist/*"]
 }

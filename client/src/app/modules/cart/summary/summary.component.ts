@@ -22,8 +22,6 @@ export class SummaryComponent {
   constructor(private location: Location, private store: Store<fromRoot.State>, public translate: TranslateService) {
     this.order$ = this.store.select(fromRoot.getOrder);
     this.lang$ = this.translate.getLang$();
-
-    this.order$.subscribe((order) => console.log(order));
   }
 
   goBack(): void {
