@@ -1,6 +1,11 @@
 ![MEAN](https://res.cloudinary.com/dnpgh1vhi/image/upload/v1615640124/logo1_gvrmpd.svg) 
 
 # Eshop template
+![David](https://img.shields.io/david/pararell/eshop_mean)
+![Lines of code](https://img.shields.io/tokei/lines/github/pararell/eshop_mean)
+![GitHub repo size](https://img.shields.io/github/repo-size/pararell/eshop_mean)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/pararell/eshop_mean)
+![GitHub Repo stars](https://img.shields.io/github/stars/pararell/eshop_mean?style=social)
 
 ## Server : <img src="https://d33wubrfki0l68.cloudfront.net/e937e774cbbe23635999615ad5d7732decad182a/26072/logo-small.ede75a6b.svg" alt="nest.js" width="50"/> Nest.js with Express and <img src="https://webassets.mongodb.com/_com_assets/cms/mongodb_logo1-76twgcu2dm.png" alt="mongoDB" width="150"> MongoDB (Mongoose)
 ## Client : <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Angular_full_color_logo.svg/1200px-Angular_full_color_logo.svg.png" alt="angular" width="60"> Angular (Server-side rendering)
