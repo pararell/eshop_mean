@@ -207,11 +207,11 @@
           *ngIf="!cart?.items?.length && order$ | async as order">
           <ng-container *ngIf="order.outcome.seller_message">
             <div class="pay-success"
-              *ngIf="order.outcome.seller_message == 'WITH_PAYMENT'">
+              *ngIf="order.outcome.seller_message === 'WITH_PAYMENT'">
               {{ 'SuccessPayment' | translate | async }}
             </div>
             <div class="pay-success"
-              *ngIf="order.outcome.seller_message == 'PAYMENT_ON_DELIVERY'">
+              *ngIf="order.outcome.seller_message === 'PAYMENT_ON_DELIVERY'">
               {{ 'SuccessOrder' | translate | async }}
             </div>
           </ng-container>

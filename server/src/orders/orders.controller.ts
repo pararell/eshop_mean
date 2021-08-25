@@ -20,7 +20,7 @@ import { Order } from './models/order.model';
 import { RolesGuard } from '../auth/roles.guard';
 import { Cart } from '../cart/utils/cart';
 import { prepareCart } from '../shared/utils/prepareUtils';
-import { CartModel } from '../cart/models/cart.model';
+
 
 @Controller('api/orders')
 export class OrdersController {
@@ -37,11 +37,11 @@ export class OrdersController {
     @Body() orderDto: OrderDto,
     @Session() session,
     @Headers('lang') lang: string
-  ): Promise<{ error: string; result: Order; cart: CartModel }> {
+  ): Promise<{ error: string; result: Order; cart: any }> {
     try {
       const successResult = await this.ordersService.addOrder(orderDto, session, lang);
       if (successResult && !successResult.error) {
-        const emptyCart = new Cart({});
+        const emptyCart = new Cart({items: []});
         session.cart = emptyCart;
         return { ...successResult, cart: emptyCart };
       } else {
@@ -57,12 +57,12 @@ export class OrdersController {
     @Body() body,
     @Session() session,
     @Headers('lang') lang: string
-  ): Promise<{ error: string; result: Order; cart: CartModel }> {
+  ): Promise<{ error: string; result: Order; cart: any }> {
     try {
       const successResult = await this.ordersService.orderWithStripe(body, session, lang);
 
       if (successResult && !successResult.error) {
-        const emptyCart = new Cart({});
+        const emptyCart = new Cart({items: []});
         session.cart = emptyCart;
         return { ...successResult, cart: emptyCart };
       } else {

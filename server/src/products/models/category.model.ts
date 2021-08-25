@@ -10,8 +10,8 @@ export interface Category {
     title: string;
     description: string;
     position?: number;
-    visibility: Boolean;
-    menuHidden: Boolean;
+    visibility: boolean;
+    menuHidden: boolean;
   }
 }
 

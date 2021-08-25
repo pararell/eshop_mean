@@ -1,4 +1,6 @@
-import { Controller, Get, Query, UseGuards, Patch, Body, HttpService } from '@nestjs/common';
+import { firstValueFrom } from 'rxjs';
+import { Controller, Get, Query, UseGuards, Patch, Body } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AuthGuard } from '@nestjs/passport';
@@ -19,7 +21,7 @@ export class TranslationsController {
     if (!lang) {
       const url = `https://geolocation-db.com/json/${process.env.GEO_LOCATION_API_KEY}`;
       try {
-      const result = await this.httpService.get(url).toPromise();
+      const result = await firstValueFrom(this.httpService.post(url))
       const country = result.data.country_code ? result.data.country_code.toLowerCase() : '';
       const langCode = countryLang[country] || country['default'];
 

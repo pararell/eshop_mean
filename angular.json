@@ -82,10 +82,10 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": [
-              "client/tsconfig.app.json"
-            ],
-            "exclude": []
+            "lintFilePatterns": [
+              "client/src/**/*.ts",
+              "client/src/**/*.html"
+            ]
           }
         },
         "server": {

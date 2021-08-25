@@ -100,4 +100,5 @@ dist
 # Config
 *.yml
 
+# Public builded files
 public

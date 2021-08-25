@@ -12,14 +12,14 @@ export class TinyEditorComponent {
   editorApiKey$: Observable<string>;
 
   @Input() description = '';
-  @Output() onEditorContentChange = new EventEmitter();
+  @Output() editorContentChange = new EventEmitter();
 
   constructor(envConfigurationService: EnvConfigurationService) {
     this.editorApiKey$ = envConfigurationService.getConfigType$('FE_TINYMCE_API_KEY');
   }
 
   onEditorChange(value): void {
-    this.onEditorContentChange.emit(value);
+    this.editorContentChange.emit(value);
   }
 
 

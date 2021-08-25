@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 import * as paginate from '../../shared/utils/paginate';
 import { languages } from '../../shared/constans';
 
-const getProductLangInfo = (): {[lang: string]: {}} => {
+const getProductLangInfo = (): {[lang: string]: any} => {
   return languages
     .reduce((prev, lang) => ({...prev,
       [lang]:

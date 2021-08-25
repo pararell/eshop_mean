@@ -59,7 +59,7 @@
     </div>
     <app-tiny-editor *ngIf="pagesEditForm.get(chooseLang).value as langValue"
       [description]="langValue.contentHTML"
-      (onEditorContentChange)="onPageEditorChange($event,chooseLang)">
+      (editorContentChange)="onPageEditorChange($event,chooseLang)">
     </app-tiny-editor>
   </form>
   <button

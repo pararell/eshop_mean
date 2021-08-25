@@ -41,19 +41,19 @@ export class BrowserHttpInterceptor implements HttpInterceptor {
   private _handleError(url: string, statusCode: number): void {
     switch (statusCode) {
       case 404:
-        console.warn('HTTP status code: 404: ', url, statusCode); // tslint:disable-line no-console
+        console.warn('HTTP status code: 404: ', url, statusCode); 
         break;
       case 410:
-        console.warn('HTTP status code: 410: ', url, statusCode); // tslint:disable-line no-console
+        console.warn('HTTP status code: 410: ', url, statusCode);
         break;
       case 500:
-        console.warn('HTTP status code: 500: ', url, statusCode); // tslint:disable-line no-console
+        console.warn('HTTP status code: 500: ', url, statusCode);
         break;
       case 503:
-        console.warn('HTTP status code: 503: ', url, statusCode); // tslint:disable-line no-console
+        console.warn('HTTP status code: 503: ', url, statusCode);
         break;
       default:
-        console.warn('HTTP status code: Unhandled ', url, statusCode); // tslint:disable-line no-console
+        console.warn('HTTP status code: Unhandled ', url, statusCode);
         break;
     }
   }

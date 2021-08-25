@@ -3,6 +3,7 @@
 .htmlhintrc
 .prettierrc
 .stylelintrc
+.eslinttrc
 .svgorc
 .vscode
 CHANGELOG.md
@@ -13,4 +14,3 @@ e2e
 node_modules
 proxy.conf.js
 raml
-tslint*

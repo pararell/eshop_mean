@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException, BadRequestException, HttpService} from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
@@ -10,6 +11,7 @@ import { Page } from './models/page.model';
 import { Theme } from './models/theme.model';
 import { Config } from './models/config.model';
 import { Translation } from '../translations/translation.model';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class EshopService {
@@ -52,7 +54,7 @@ export class EshopService {
     const { token } = contactDto;
     const url = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SERVER_KEY}&response=${token}`;
 
-   const result = await this.httpService.post(url).toPromise();
+   const result = await firstValueFrom(this.httpService.post(url))
    if (result.data.success) {
     try {
       const translations = await this.translationModel.findOne({ lang });
@@ -119,7 +121,7 @@ export class EshopService {
     }
   }
 
-  async deletePage(titleUrl: string) {
+  async deletePage(titleUrl: string): Promise<void> {
     const found = await this.pageModel.findOneAndRemove({ titleUrl });
 
       if (!found) {
@@ -160,7 +162,7 @@ export class EshopService {
     }
   }
 
-  async deleteTheme(titleUrl: string) {
+  async deleteTheme(titleUrl: string): Promise<void> {
     const found = await this.themeModel.findOneAndRemove({ titleUrl });
 
       if (!found) {
@@ -202,7 +204,7 @@ export class EshopService {
     }
   }
 
-  async deleteConfig(titleUrl: string) {
+  async deleteConfig(titleUrl: string): Promise<void> {
     const found = await this.configModel.findOneAndRemove({ titleUrl });
 
       if (!found) {

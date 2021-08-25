@@ -1,0 +1,29 @@
+{
+    "root": true,
+    "overrides": [
+      {
+        "files": ["*.ts"],
+        "parserOptions": {
+          "project": [ "./tsconfig.app.json"],
+          "tsconfigRootDir": "./client",
+          "createDefaultProgram": true
+        },
+        "extends": [
+          "plugin:@angular-eslint/recommended",
+          "plugin:@angular-eslint/template/process-inline-templates"
+        ],
+        "rules": {
+            "@angular-eslint/no-input-rename": "off",
+            "@angular-eslint/no-inputs-metadata-property": "off"
+        }
+      },
+      {
+        "files": ["*.html"],
+        "extends": ["plugin:@angular-eslint/template/recommended"],
+        "rules": {
+            "@angular-eslint/template/no-negated-async": "off",
+            "@angular-eslint/template/eqeqeq": "off"
+        }
+      }
+    ]
+}

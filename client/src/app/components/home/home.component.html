@@ -1,12 +1,5 @@
-<mat-drawer-container
-  class="home-sidebar-container"
-  autosize
-  hasBackdrop>
-  <mat-drawer
-    #sideBar
-    [(opened)]="sidebarOpened"
-    class="home-sidebar"
-    mode="over">
+<mat-drawer-container class="home-sidebar-container" autosize hasBackdrop>
+  <mat-drawer #sideBar [(opened)]="sidebarOpened" class="home-sidebar" mode="over">
     <app-sidebar
       [class.disabled]="loadingProducts$ | async"
       [categories]="categories$ | async"
@@ -20,40 +13,38 @@
       [choosenSort]="sortBy$ | async"
       (changePrice)="priceRange($event)"
       (changeSort)="changeSort($event)"
-      (changeCategory)="changeCategory()">
+      (changeCategory)="changeCategory()"
+    >
     </app-sidebar>
   </mat-drawer>
   <mat-drawer-content>
     <div class="main">
-      <div class="home-promo" *ngIf="(cart$ | async) as cart">
+      <div class="home-promo" *ngIf="cart$ | async as cart">
         <span class="home-promo-basic">
-        {{ 'Home_promo' | translate | async }}
+          {{ 'Home_promo' | translate | async }}
         </span>
-          <span class="home-promo-shipping">
-          {{ 'Free_shipping_limit' | translate | async }}  {{ cart.shippingLimit }} {{ currency$ | async }}
-          </span>
+        <span class="home-promo-shipping">
+          {{ 'Free_shipping_limit' | translate | async }} {{ cart.shippingLimit }} {{ currency$ | async }}
+        </span>
       </div>
-
-      <div class="home-product" *ngIf="(products$ | async) as products">
-
-          <app-carousel [intervalForSlider]="30000" [showArrows]="false"> 
-            <div class="home-promo-slide">
-              <div class="home-promo-slide-background">
+      <div class="home-product" *ngIf="products$ | async as products">
+        <app-carousel [intervalForSlider]="30000" [showArrows]="false">
+          <div class="home-promo-slide">
+            <div class="home-promo-slide-background"></div>
+            <div class="home-promo-slide-cta">
+              <div class="home-promo-slide-logo"></div>
+              <div class="home-promo-slide-subtitle">
+                {{ 'Eshop_subtitle' | translate | async }}
               </div>
-              <div class="home-promo-slide-cta">
-                <div class="home-promo-slide-logo">
-                </div>
-                <div class="home-promo-slide-subtitle">
-                  {{'Eshop_subtitle' | translate | async}}
-                </div>
-                <span class="home-promo-slide-text">
-                  {{'Home_promo_text' | translate | async}} <a [href]="'Home_promo_link' | translate | async"> {{'Home_promo_text_link' | translate | async}}</a>
-                </span>
-              </div>
+              <span class="home-promo-slide-text">
+                {{ 'Home_promo_text' | translate | async }}
+                <a [href]="'Home_promo_link' | translate | async"> {{ 'Home_promo_text_link' | translate | async }}</a>
+              </span>
             </div>
-            <ng-container *ngFor="let product of products | slice:0:3">
-              <div class="home-product-top">
-                <app-product-content
+          </div>
+          <ng-container *ngFor="let product of products | slice: 0:3">
+            <div class="home-product-top">
+              <app-product-content
                 [product]="product"
                 [categories]="categories$ | async"
                 [cartIds]="cartIds$ | async"
@@ -61,24 +52,25 @@
                 [lang]="lang$ | async"
                 [withLink]="true"
                 (addProduct)="addToCart($event)"
-                (removeProduct)="removeFromCart($event)">
+                (removeProduct)="removeFromCart($event)"
+              >
               </app-product-content>
-              </div>
-            </ng-container>
-          </app-carousel>
-
+            </div>
+          </ng-container>
+        </app-carousel>
       </div>
-      <div class="home-primary-header"
-        *ngIf="(categories$ | async)?.length">
+      <div class="home-primary-header" *ngIf="(categories$ | async)?.length">
         <div class="home-primary-container">
           <span class="home-mobile-filter" (click)="toggleSidebar()">
             <i class="material-icons md-16">filter_list</i>
           </span>
           <div class="home-categories-links-wrap">
             <div class="home-categories-links">
-              <a class="home-title-category"  
-                *ngFor="let cat of (categories$ | async)"
-                [routerLink]="['/' + (lang$ | async) + '/product/category/' + cat.titleUrl]">
+              <a
+                class="home-title-category"
+                *ngFor="let cat of categories$ | async"
+                [routerLink]="['/' + (lang$ | async) + '/product/category/' + cat.titleUrl]"
+              >
                 {{ cat.title }}
               </a>
             </div>
@@ -87,23 +79,21 @@
       </div>
       <div class="container">
         <mat-progress-bar mode="indeterminate" *ngIf="loadingProducts$ | async"></mat-progress-bar>
-        <div *ngIf="(categories$ | async) as categories">
-          <app-categories-list
-            [categories]="categories"
-            [lang]="lang$ | async">
+        <div *ngIf="categories$ | async as categories">
+          <app-categories-list 
+            [categories]="categories" 
+            [lang]="lang$ | async"> 
           </app-categories-list>
         </div>
       </div>
-      <div
-        class="home-primary-header"
-        *ngIf="(products$ | async)">
+      <div class="home-primary-header" *ngIf="products$ | async">
         <div class="home-primary-container">
-          <h1 class="home-title">{{'Products' | translate | async}}</h1>
+          <h1 class="home-title">{{ 'Products' | translate | async }}</h1>
         </div>
       </div>
       <div class="container">
         <mat-spinner class="home-spinner" *ngIf="loadingProducts$ | async"></mat-spinner>
-        <div *ngIf="(products$ | async) as products">
+        <div *ngIf="products$ | async as products">
           <app-products-list
             [class.disabled]="loadingProducts$ | async"
             [products]="products"
@@ -111,16 +101,18 @@
             [currency]="currency$ | async"
             [lang]="lang$ | async"
             (addProduct)="addToCart($event)"
-            (removeProduct)="removeFromCart($event)">
+            (removeProduct)="removeFromCart($event)"
+          >
           </app-products-list>
           <app-pagination
+            *ngIf="pagination$ | async as pagination"
             [class.disabled]="loadingProducts$ | async"
-            *ngIf="(pagination$ | async) as pagination"
             [pagination]="pagination"
-            (changePage)="changePage($event)">
+            (changePage)="changePage($event)"
+          >
           </app-pagination>
         </div>
       </div>
-  </div>
+    </div>
   </mat-drawer-content>
 </mat-drawer-container>

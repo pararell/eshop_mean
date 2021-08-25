@@ -13,7 +13,7 @@ export interface Product {
   title               : string;
   titleUrl            : string;
   description         : string;
-  descriptionFull     : string;
+  descriptionFull     : string[];
   tags                : string[];
   regularPrice        : number;
   salePrice           : number;
