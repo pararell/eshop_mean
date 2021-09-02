@@ -25,7 +25,8 @@
     "prebuild:ssr": "ngcc",
     "build:ssr": "NODE_ENV=production ng build --configuration production && ng run eshop:server:production",
     "prerender": "ng run eshop:prerender",
-    "release": "standard-version"
+    "release": "standard-version",
+    "heroku-postbuild": "npm run build:ssr && npm run serve:ssr"
   },
   "dependencies": {
     "@angular/animations": "^12.2.1",
