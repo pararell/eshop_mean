@@ -47,7 +47,7 @@ For another commands look to package.json
 
 ```bash
 # BE HOST
-SERVER_PORT=4000
+PORT=4000
 SERVER_URL="http://localhost:4000"
 
 # FE HOST
