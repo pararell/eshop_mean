@@ -7,9 +7,9 @@
   "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "NODE_ENV=production nest build --config ./server/nest-cli.json --path ./server/tsconfig.build.json",
+    "build:server": "NODE_ENV=production nest build --config ./server/nest-cli.json --path ./server/tsconfig.build.json",
     "format": "prettier --write \"server/**/*.ts\"",
-    "start": "NODE_ENV=production nest start config ./server/nest-cli.json --path ./server/tsconfig.json",
+    "start:server": "NODE_ENV=production nest start config ./server/nest-cli.json --path ./server/tsconfig.json",
     "start:dev": "NODE_ENV=development nest start --watch config ./server/nest-cli.json --path ./server/tsconfig.json",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node server/dist/main",
@@ -26,7 +26,7 @@
     "build:ssr": "NODE_ENV=production ng build --configuration production && ng run eshop:server:production",
     "prerender": "ng run eshop:prerender",
     "release": "standard-version",
-    "postinstall": "npm run build:ssr",
+    "heroku-postbuild": "npm run build:ssr",
     "start:heroku":"npm run serve:ssr"
   },
   "dependencies": {
