@@ -27,7 +27,7 @@
     "prerender": "ng run eshop:prerender",
     "release": "standard-version",
     "heroku-postbuild": "npm run build:ssr",
-    "start:heroku":"npm run serve:ssr"
+    "start":"npm run serve:ssr"
   },
   "dependencies": {
     "@angular/animations": "^12.2.1",
