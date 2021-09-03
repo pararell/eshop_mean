@@ -13,9 +13,8 @@ async function bootstrap() {
 
   setAppDB(app);
   
-  const port = process.env.PORT;
-  await app.listen(port);
-  logger.log('App listening on port ' + port);
+  await app.listen(process.env.PORT);
+  logger.log('App listening on port ' + process.env.PORT);
 }
 
 // Webpack will replace 'require' with '__webpack_require__'
