@@ -36,13 +36,11 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      padding: 20px 10px;
     }
 
     &-items-last {
       border-top: 1px solid rgba(0, 0, 0, 0.1);
-      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
       margin-top: 20px;
     }
 
@@ -119,8 +117,27 @@
     flex-flow: column;
   }
 
+  .payment-choice {
+    padding: 0 0 0 10px;
+    margin: 10px 0;
+    border-radius: 2px;
+    box-shadow: 1px 1px 3px 0px rgba(0, 0, 0, 0.1);
+    min-height: 80px;
+    display: flex;
+  
+    &--active {
+      background: #1de9b6;
+    }
+  }
+
+  .order-last-summary {
+    display: flex;
+    flex-flow: column;
+    padding: 0 0 20px 20px;
+  }
+
   .submit-order-button {
-    margin-top: 25px;
+    margin: 25px 0;
     width: 100%;
   }
 
@@ -133,4 +150,5 @@
     flex: 1;
     margin: 0 5px;
   }
+  
 }

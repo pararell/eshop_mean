@@ -126,8 +126,20 @@ a:hover {
   align-items: center;
 }
 
+.justify-between {
+  justify-content: space-between;
+}
+
+.items-start {
+  align-items: flex-start;
+}
+
 .margin {
   &-left-small {
     margin-left: 5px;
+  }
+
+  &-top-basic {
+    margin-top: 1rem;
   }
 }

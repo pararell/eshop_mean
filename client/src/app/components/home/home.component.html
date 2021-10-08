@@ -28,7 +28,7 @@
         </span>
       </div>
       <div class="home-product" *ngIf="products$ | async as products">
-        <app-carousel [intervalForSlider]="30000" [showArrows]="false">
+        <app-carousel [intervalForSlider]="30000" [absoluteArrows]="true">
           <div class="home-promo-slide">
             <div class="home-promo-slide-background"></div>
             <div class="home-promo-slide-cta">
@@ -36,9 +36,8 @@
               <div class="home-promo-slide-subtitle">
                 {{ 'Eshop_subtitle' | translate | async }}
               </div>
-              <span class="home-promo-slide-text">
-                {{ 'Home_promo_text' | translate | async }}
-                <a [href]="'Home_promo_link' | translate | async"> {{ 'Home_promo_text_link' | translate | async }}</a>
+              <span class="home-promo-slide-text" *ngIf="('Home_promo_text_link' | translate | async) as promoText">
+                <a [href]="'Home_promo_link' | translate | async"> {{ promoText }}</a>
               </span>
             </div>
           </div>
@@ -116,3 +115,4 @@
     </div>
   </mat-drawer-content>
 </mat-drawer-container>
+

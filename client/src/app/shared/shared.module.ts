@@ -11,6 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatCardModule } from '@angular/material/card';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { PipeModule } from '../pipes/pipe.module';
 import { LazyModule } from '../utils/lazyLoadImg/lazy.module';
@@ -51,7 +52,8 @@ import { OrderInfoComponent } from './order-info/order-info.component';
     MatButtonModule,
     MatChipsModule,
     MatProgressBarModule,
-    MatCardModule
+    MatCardModule,
+    MatSnackBarModule
   ],
   providers: [],
   exports: [

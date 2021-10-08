@@ -1,6 +1,7 @@
-import { filter, map, take, distinctUntilChanged, skip } from 'rxjs/operators';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { filter, map, take, distinctUntilChanged, skip, withLatestFrom } from 'rxjs/operators';
 import { Component, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, combineLatest, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { Location } from '@angular/common';
@@ -34,6 +35,8 @@ export class ProductComponent implements OnDestroy {
     private meta: Meta,
     private title: Title,
     public dialog: MatDialog,
+    private snackBar: MatSnackBar,
+    private router: Router,
     private translate: TranslateService
   ) {
     this.lang$ = this.translate.getLang$();
@@ -69,6 +72,21 @@ export class ProductComponent implements OnDestroy {
   cartEvent(id: string, type: string): void {
     if (type === 'add') {
       this.store.dispatch(new actions.AddToCart('?id=' + id));
+
+      this.translate.getTranslations$()
+        .pipe(map(translations => translations 
+          ? {message: translations['ADDED_TO_CART'] || 'Added to cart', action: translations['TO_CART'] || 'To Cart'}
+          : {message: 'Added to cart', action: 'To Cart'}
+          ),take(1))
+        .subscribe(({message, action}) => {
+          let snackBarRef = this.snackBar.open(message, action);
+          snackBarRef.onAction().pipe(
+              withLatestFrom(this.lang$),
+              take(1))
+            .subscribe(([_, lang]) => {
+              this.router.navigate(['/' + lang + '/cart'])
+            });
+        });
     }
     if (type === 'remove') {
       this.store.dispatch(new actions.RemoveFromCart('?id=' + id));

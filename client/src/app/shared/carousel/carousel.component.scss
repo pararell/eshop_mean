@@ -19,8 +19,9 @@
     min-width: 40px;
     padding: 10px;
     min-height: 100px;
-    border: 1px solid rgba(0,0,0,0.2);
     z-index: 1;
+    background: none;
+    box-shadow: none;
 
     &-right {
       right: 0;

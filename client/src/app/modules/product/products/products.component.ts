@@ -1,4 +1,5 @@
-import { map, distinctUntilChanged, filter, switchMap, take, skip } from 'rxjs/operators';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { map, distinctUntilChanged, filter, switchMap, take, skip, withLatestFrom } from 'rxjs/operators';
 import { Component, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
 import { Observable, combineLatest, Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -44,6 +45,7 @@ export class ProductsComponent implements OnDestroy {
     private store: Store<fromRoot.State>,
     private route: ActivatedRoute,
     private router: Router,
+    private snackBar: MatSnackBar,
     private meta: Meta,
     private title: Title,
     private translate: TranslateService
@@ -104,6 +106,21 @@ export class ProductsComponent implements OnDestroy {
 
   addToCart(id: string): void {
     this.store.dispatch(new actions.AddToCart('?id=' + id));
+
+    this.translate.getTranslations$()
+      .pipe(map(translations => translations 
+        ? {message: translations['ADDED_TO_CART'] || 'Added to cart', action: translations['TO_CART'] || 'To Cart'}
+        : {message: 'Added to cart', action: 'To Cart'}
+        ),take(1))
+      .subscribe(({message, action}) => {
+        let snackBarRef = this.snackBar.open(message, action);
+        snackBarRef.onAction().pipe(
+            withLatestFrom(this.lang$),
+            take(1))
+          .subscribe(([_, lang]) => {
+            this.router.navigate(['/' + lang + '/cart'])
+          });
+      });
   }
 
   removeFromCart(id: string): void {

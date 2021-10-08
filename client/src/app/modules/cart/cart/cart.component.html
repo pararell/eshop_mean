@@ -137,7 +137,9 @@
                 <mat-radio-group class="delivery-button"
                 *ngIf="orderForm.valid"
                 [(ngModel)]="toggleCard">
-                <mat-radio-button [value]="true">
+                <mat-radio-button class="payment-choice" 
+                  [class.payment-choice--active]="toggleCard"
+                  [value]="true">
                   <span class="flex">
                     <mat-icon>credit_card</mat-icon>
                     <span class="margin-left-small">
@@ -145,10 +147,14 @@
                       <b> {{ cart?.totalPrice | priceFormat }}
                         {{ currency$ | async }}
                       </b>
+                      {{ 'with' | translate | async }}
+                      {{ 'card' | translate | async }}
                     </span>
                   </span>
                 </mat-radio-button>
-                <mat-radio-button [value]="false">
+                <mat-radio-button class="payment-choice" 
+                  [class.payment-choice--active]="!toggleCard"
+                  [value]="false">
                   <span class="flex">
                     <mat-icon>local_atm</mat-icon>
                     <span class="margin-left-small">
@@ -174,6 +180,27 @@
             </mat-step>
             <mat-step>
               <ng-template matStepLabel>{{ 'Summary_and_payment' | translate | async }}</ng-template>
+              <div class="flex items-start margin-top-basic">
+                <span>{{ 'Your_summary' | translate | async }}</span>
+                <div class="order-last-summary">
+                  <span>
+                    {{orderForm.get('name').value}}
+                  </span>
+                  <span>
+                    {{orderForm.get('email').value}}
+                  </span>
+                  <span>
+                    {{orderForm.get('address').value}}
+                  </span>
+                  <span>
+                    {{orderForm.get('city').value}},{{orderForm.get('zip').value}}
+                  </span>
+                  <span>
+                    {{orderForm.get('country').value}}
+                  </span>
+                </div>
+              </div>
+
               <app-card
                 *ngIf="toggleCard"
                 [price]="cart?.totalPrice | priceFormat"
