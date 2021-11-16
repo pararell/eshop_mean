@@ -1,6 +1,6 @@
 import { PaginateOptions, Product } from '../../products/models/product.model';
 
-function paginate(query, options: PaginateOptions)
+function paginateSchema(query, options: PaginateOptions)
   : Promise<{all: Product[]; pagination; maxPrice: number; minPrice: number}> {
   query = query || {};
   options = Object.assign({}, options);
@@ -33,10 +33,9 @@ function paginate(query, options: PaginateOptions)
   });
 }
 
-export const paginateFn = paginate;
+export const paginateFn = paginateSchema;
 
 export const pagination = (schema): void => {
-  schema.statics.paginate = paginate;
-  const self: any = this;
-  self.paginate = paginateFn;
+  schema.statics.paginate = paginateSchema;
+  const paginate = paginateFn;
 };

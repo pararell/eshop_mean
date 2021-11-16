@@ -22,11 +22,7 @@ export const setAppDB = (app: NestExpressApplication): void => {
   );
 
   const clientP: any = mongoose
-    .connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useFindAndModify: false,
-    })
+    .connect(process.env.MONGO_URI, {})
     .then((m) => m.connection.getClient());
 
   app.use(

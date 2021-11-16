@@ -104,7 +104,8 @@
               "@nestjs/microservices/microservices-module",
               "@nestjs/websockets",
               "@nestjs/websockets/socket-module",
-              "cache-manager"
+              "cache-manager",
+              "whatwg-url"
             ]
           },
           "configurations": {

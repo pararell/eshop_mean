@@ -100,5 +100,7 @@ dist
 # Config
 *.yml
 
+/.angular
+
 # Public builded files
 public

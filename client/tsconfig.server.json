@@ -6,7 +6,8 @@
     "types": ["node"],
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "importHelpers": true
   },
   "files": ["src/main.server.ts", "../server-ssr.ts"],
   "angularCompilerOptions": {

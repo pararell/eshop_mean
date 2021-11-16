@@ -1,4 +1,4 @@
-import { Document, Model, DocumentQuery } from 'mongoose';
+import { Document, Model } from 'mongoose';
 
 export interface Product extends Document {
     _id: string;
@@ -28,7 +28,7 @@ export interface PaginateOptions {
 }
 
 export interface ProductModel extends Model<Product> {
-    paginate(query: any, options: PaginateOptions): DocumentQuery<ProductsWithPagination, Product>;
+    paginate(query: any, options: PaginateOptions);
 }
 
 export interface ProductsWithPagination {
