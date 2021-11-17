@@ -89,8 +89,11 @@
           }
         },
         "server": {
-          "builder": "@angular-devkit/build-angular:server",
+          "builder": "@angular-builders/custom-webpack:server",
           "options": {
+            "customWebpackConfig": {
+              "path": "./webpack.config.ts"
+            },
             "outputPath": "dist/eshop/server",
             "main": "server-ssr.ts",
             "tsConfig": "client/tsconfig.server.json",

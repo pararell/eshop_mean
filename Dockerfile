@@ -8,7 +8,8 @@ RUN npm run build:ssr
 
 FROM node:16.13
 WORKDIR /usr/src/app
-COPY --from=buildContainer /usr/src/app/package.json /usr/src/app/.env* ./
+COPY --from=buildContainer /usr/src/app/package.json /usr/src/app/package-lock.json /usr/src/app/.env* ./
+RUN npm i whatwg-url
 COPY --from=buildContainer /usr/src/app/dist ./dist
 
-ENTRYPOINT ["npm", "run", "serve:ssr"]
+ENTRYPOINT ["npm", "run", "start"]

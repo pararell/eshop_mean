@@ -6,12 +6,10 @@
     "types": ["node"],
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "skipLibCheck": true,
-    "importHelpers": true
+    "skipLibCheck": true
   },
   "files": ["src/main.server.ts", "../server-ssr.ts"],
   "angularCompilerOptions": {
     "entryModule": "./src/app/app.server.module#AppServerModule"
-  },
-  "exclude": ["node_modules", "types.d.ts"]
+  }
 }

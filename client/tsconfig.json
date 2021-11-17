@@ -14,9 +14,10 @@
     "importHelpers": true,
     "target": "es2018",
     "typeRoots": ["node_modules/@types"],
-    "lib": ["es2018", "dom"],
+    "lib": ["es2018", "dom", "ESNext.AsyncIterable"],
     "skipLibCheck": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "preserveSymlinks": true
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,

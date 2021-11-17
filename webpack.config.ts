@@ -33,8 +33,7 @@ export default (
             "@nestjs/microservices/microservices-module",
             "@nestjs/websockets",
             "@nestjs/websockets/socket-module",
-            "cache-manager",
-            "whatwg-url"
+            "cache-manager"
           ];
 
           if (!lazyImports.includes(resource)) {
