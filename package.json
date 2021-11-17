@@ -80,6 +80,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^13.0.2",
+    "@angular-builders/custom-webpack": "13.0.0",
     "@angular-devkit/schematics": "13.0.2",
     "@angular-eslint/builder": "^12.6.1",
     "@angular-devkit/core": "13.0.2",

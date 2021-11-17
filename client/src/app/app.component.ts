@@ -1,4 +1,4 @@
-import { Component, ElementRef, Renderer2, PLATFORM_ID, Inject } from '@angular/core';
+import { Component, ElementRef, Renderer2, PLATFORM_ID, Inject, OnInit } from '@angular/core';
 import { isPlatformBrowser, Location } from '@angular/common';
 import { Store, select } from '@ngrx/store';
 import { filter, take, delay, skip } from 'rxjs/operators';
@@ -6,6 +6,7 @@ import { of } from 'rxjs';
 import { Router } from '@angular/router';
 
 import { TranslateService } from './services/translate.service';
+import { JsonLDService } from './services/jsonLD.service';
 import * as fromRoot from './store/reducers';
 import * as actions from './store/actions';
 import { User } from './shared/models';
@@ -16,20 +17,21 @@ import { languages, currencyLang } from './shared/constants';
   templateUrl : './app.component.html',
   styleUrls   : ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 
   rememberScroll  : {[component: string]: number} = {};
   position = 0;
 
   constructor(
-    private elRef     : ElementRef,
-    private renderer  : Renderer2,
-    private store     : Store<fromRoot.State>,
-    private router    : Router,
-    private location  : Location,
-    private translate : TranslateService,
+    private elRef         : ElementRef,
+    private renderer      : Renderer2,
+    private store         : Store<fromRoot.State>,
+    private router        : Router,
+    private location      : Location,
+    private translate     : TranslateService,
+    private jsonLDService : JsonLDService,
     @Inject(PLATFORM_ID)
-    private platformId : Object) {
+    private platformId    : Object) {
 
     this.translate.getLang$()
       .pipe(filter(Boolean), take(1))
@@ -79,6 +81,11 @@ export class AppComponent {
         this.store.dispatch(new actions.GetCart(lang));
         this.store.dispatch(new actions.GetPages({lang, titles: true}));
       })
+  }
+
+  ngOnInit(): void {
+    this.jsonLDService.insertSchema(this.jsonLDService.websiteSchema);
+    this.jsonLDService.insertSchema(this.jsonLDService.orgSchema, 'structured-data-org');
   }
 
   onScrolling(event: Event): void {

@@ -1,3 +1,4 @@
+import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { ServerModule, ServerTransferStateModule } from '@angular/platform-server';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -14,7 +15,8 @@ import { ServerHttpInterceptor } from './services/server-http-interceptor';
     // by the ServerModule from @angular/platform-server.
     AppModule,
     ServerModule,
-    ServerTransferStateModule
+    ServerTransferStateModule,
+    BrowserModule.withServerTransition({ appId: 'eshop' }),
   ],
   providers: [
     {

@@ -12,8 +12,8 @@ import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { existsSync } from 'fs';
 
-const staticFile = existsSync(join(process.cwd(), '../dist/eshop/browser'))
-  ? join(process.cwd(), '../dist/eshop/browser')
+const staticFile = existsSync(join(process.cwd(), 'dist/eshop/browser'))
+  ? join(process.cwd(), '/dist/eshop/browser')
   : join(process.cwd(), 'public');
 
 @Module({
@@ -27,10 +27,10 @@ const staticFile = existsSync(join(process.cwd(), '../dist/eshop/browser'))
     AuthModule,
     AdminModule,
     EshopModule,
-    // ServeStaticModule.forRoot({
-    //   rootPath: staticFile,
-    //   exclude: ['/api'],
-    // }),
+    ServeStaticModule.forRoot({
+      rootPath: staticFile,
+      exclude: ['/api'],
+    }),
   ],
   exports: [],
   controllers: [],

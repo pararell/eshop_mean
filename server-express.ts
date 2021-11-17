@@ -1,14 +1,12 @@
-import 'zone.js/dist/zone-node';
+import 'zone.js/node';
 
-import { ngExpressEngine } from '@nguniversal/express-engine';
+import * as engine from '@nguniversal/express-engine';
 import express from 'express';
 import { join } from 'path';
 
 import { AppServerModule } from './client/src/main.server';
 import { APP_BASE_HREF } from '@angular/common';
 import { existsSync } from 'fs';
-
-import compression from 'compression';
 
 // The Express app is exported so that it can be used by serverless Functions.
 export function app() {
@@ -17,7 +15,7 @@ export function app() {
   const indexHtml = existsSync(join(distFolder, 'index.html')) ? 'index.html' : 'index';
 
   // Our Universal express-engine (found @ https://github.com/angular/universal/tree/master/modules/express-engine)
-  server.engine('html', ngExpressEngine({
+  server.engine('html', engine.ngExpressEngine({
     bootstrap: AppServerModule,
   }));
   
@@ -34,7 +32,6 @@ export function app() {
     res.render(indexHtml, { req, providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }] });
   });
 
-  server.use(compression())
 
   return server;
 }

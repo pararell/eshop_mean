@@ -48,7 +48,7 @@ const routes: Routes = routesAll;
     NotFoundComponent
   ],
   imports: [
-    BrowserModule.withServerTransition({ appId: 'my-app-id' }),
+    BrowserModule,
     TransferHttpCacheModule,
     StoreModule.forRoot(reducers, { metaReducers }),
     HttpClientModule,
@@ -68,7 +68,6 @@ const routes: Routes = routesAll;
     LazyModule,
     EffectsModule.forRoot([AppEffects]),
     RouterModule.forRoot(routes, { initialNavigation: 'enabled' }),
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
     !environment.production ? StoreDevtoolsModule.instrument() : []
   ],
   providers: [
