@@ -15,8 +15,7 @@ import { ServerHttpInterceptor } from './services/server-http-interceptor';
     // by the ServerModule from @angular/platform-server.
     AppModule,
     ServerModule,
-    ServerTransferStateModule,
-    BrowserModule.withServerTransition({ appId: 'eshop' }),
+    ServerTransferStateModule
   ],
   providers: [
     {

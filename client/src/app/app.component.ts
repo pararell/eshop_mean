@@ -1,9 +1,9 @@
-import { Component, ElementRef, Renderer2, PLATFORM_ID, Inject, OnInit } from '@angular/core';
-import { isPlatformBrowser, Location } from '@angular/common';
+import { Component, ElementRef, Renderer2, PLATFORM_ID, Inject } from '@angular/core';
+import { isPlatformBrowser, isPlatformServer, Location } from '@angular/common';
 import { Store, select } from '@ngrx/store';
-import { filter, take, delay, skip } from 'rxjs/operators';
+import { filter, take, delay, skip, map } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { Router } from '@angular/router';
+import { NavigationStart, Router, RouterEvent } from '@angular/router';
 
 import { TranslateService } from './services/translate.service';
 import { JsonLDService } from './services/jsonLD.service';
@@ -17,7 +17,7 @@ import { languages, currencyLang } from './shared/constants';
   templateUrl : './app.component.html',
   styleUrls   : ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
 
   rememberScroll  : {[component: string]: number} = {};
   position = 0;
@@ -80,12 +80,20 @@ export class AppComponent implements OnInit {
       .subscribe(lang => {
         this.store.dispatch(new actions.GetCart(lang));
         this.store.dispatch(new actions.GetPages({lang, titles: true}));
-      })
-  }
+      });
 
-  ngOnInit(): void {
-    this.jsonLDService.insertSchema(this.jsonLDService.websiteSchema);
-    this.jsonLDService.insertSchema(this.jsonLDService.orgSchema, 'structured-data-org');
+    if (isPlatformServer(this.platformId)) {
+      this.jsonLDService.insertSchema(this.jsonLDService.websiteSchema);
+      this.jsonLDService.insertSchema(this.jsonLDService.orgSchema, 'structured-data-org');
+    }
+
+    this.router.events.pipe(
+      filter((event: RouterEvent) => event instanceof NavigationStart),
+      map((checkRoute: NavigationStart) => {
+        this.jsonLDService.insertSchema(this.jsonLDService.websiteSchema);
+        this.jsonLDService.insertSchema(this.jsonLDService.orgSchema, 'structured-data-org');
+      })
+     );
   }
 
   onScrolling(event: Event): void {

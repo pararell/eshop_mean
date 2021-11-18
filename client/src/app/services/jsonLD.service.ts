@@ -5,22 +5,29 @@ import { Inject, Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class JsonLDService {
-  scriptType = 'application/json+ld';
+  scriptType = 'application/ld+json';
   websiteSchema = {
       '@context': 'http://schema.org',
       '@type': 'WebSite',
-      url: 'https://smrtic.eu',
-      name: 'Eshop mean',
+      'url': 'https://smrtic.eu',
+      'name': 'Eshop MEAN',
+      'description': 'Angular - Node.js - Eshop application - MEAN Eshop with dashboard',
+      'image': 'https://res.cloudinary.com/dnpgh1vhi/image/upload/v1615640124/logo1_gvrmpd.svg',
+      'keywords': 'MEAN, Angular, Node, MongoDB, Express, Nest.js, Cart, Google login, Dashboard'
   };
 
   orgSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    url: 'https://smrtic.eu',
-    name: 'Miroslav Smrtic',
-    contactPoint: {
-      '@type': 'ContactPoint',
-      email: 'miro218@gmail.com',
+    "@context": "https://schema.org/",
+    "@type": "Organization",
+    "name": "Miroslav Smrtic",
+    "url": "https://smrtic.eu",
+    "logo": "https://res.cloudinary.com/dnpgh1vhi/image/upload/v1615640124/logo1_gvrmpd.svg",
+    "email": "miro218@gmail.com",
+    "description": "Developer",
+    "contactPoint": {
+      "contactType": "PR",
+      "@type": "ContactPoint",
+      "email": "miro218@gmail.com"
     },
   }
 

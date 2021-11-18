@@ -9,7 +9,7 @@ import { AppComponent } from './app.component';
 import { WindowService } from './services/window.service';
 import { BrowserHttpInterceptor } from './services/browser-http-interceptor';
 import { EnvConfigurationService } from './services/env-configuration.service';
-import { BrowserModule, BrowserTransferStateModule } from '@angular/platform-browser';
+import { BrowserTransferStateModule } from '@angular/platform-browser';
 
 
 export function WindowFactory() {
@@ -19,7 +19,6 @@ export function WindowFactory() {
 @NgModule({
   imports: [
     AppModule,
-    BrowserModule.withServerTransition({ appId: 'eshop' }),
     BrowserTransferStateModule,
     BrowserAnimationsModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production, registrationStrategy: 'registerWhenStable:30000' }),
