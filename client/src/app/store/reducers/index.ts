@@ -1,9 +1,10 @@
 import { Action, ActionReducer, createSelector, MetaReducer } from '@ngrx/store';
+import { localStorageSync } from './local-storage';
 import * as fromAuth from './auth.reducer';
 import * as fromProducts from './product.reducer';
 import * as fromDashboard from './dashboard.reducer';
 import * as fromEshop from './eshop.reducer';
-import { localStorageSync } from 'ngrx-store-localstorage';
+;
 
 export interface State {
   auth: fromAuth.State;
