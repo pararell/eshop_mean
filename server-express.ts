@@ -18,7 +18,7 @@ export function app() {
   server.engine('html', engine.ngExpressEngine({
     bootstrap: AppServerModule,
   }));
-  
+
   server.set('view engine', 'html');
   server.set('views', distFolder);
 
@@ -29,7 +29,24 @@ export function app() {
 
   // All regular routes use the Universal engine
   server.get('*', (req, res) => {
-    res.render(indexHtml, { req, providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }] });
+    res.render(indexHtml, {
+      req,
+      res,
+      providers: [
+        {
+          provide: APP_BASE_HREF,
+          useValue: req.baseUrl
+        },
+        {
+          provide  : 'REQUEST',
+          useValue : (req)
+        },
+        {
+          provide  : 'RESPONSE',
+          useValue : (res)
+        }
+      ]
+    });
   });
 
 

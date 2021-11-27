@@ -48,7 +48,7 @@ const routes: Routes = routesAll;
     NotFoundComponent
   ],
   imports: [
-    BrowserModule.withServerTransition({ appId: 'eshop' }),
+    BrowserModule.withServerTransition({ appId: 'eshop-mean-app' }),
     TransferHttpCacheModule,
     StoreModule.forRoot(reducers, { metaReducers }),
     HttpClientModule,

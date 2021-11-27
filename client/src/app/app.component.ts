@@ -13,7 +13,7 @@ import { User } from './shared/models';
 import { languages, currencyLang } from './shared/constants';
 
 @Component({
-  selector    : 'app-root',
+  selector    : 'eshop-mean-app',
   templateUrl : './app.component.html',
   styleUrls   : ['./app.component.scss']
 })
