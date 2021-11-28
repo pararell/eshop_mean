@@ -8,13 +8,13 @@ import { TranslationsModule } from './translations/translations.module';
 import { AdminModule } from './admin/admin.module';
 import { EshopModule } from './eshop/eshop.module';
 import { ConfigModule } from '@nestjs/config';
-import { join } from 'path';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { existsSync } from 'fs';
+// import { join } from 'path';
+// import { ServeStaticModule } from '@nestjs/serve-static';
+// import { existsSync } from 'fs';
 
-const staticFile = existsSync(join(process.cwd(), 'dist/eshop/browser'))
-  ? join(process.cwd(), '/dist/eshop/browser')
-  : join(process.cwd(), 'public');
+// const staticFile = existsSync(join(process.cwd(), 'dist/eshop/browser'))
+//   ? join(process.cwd(), '/dist/eshop/browser')
+//   : join(process.cwd(), 'public');
 
 @Module({
   imports: [

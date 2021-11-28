@@ -3,5 +3,9 @@
     "stylelint-config-recommended",
     "stylelint-config-standard",
     "stylelint-config-recommended-scss"
+  ],
+  "ignoreFiles": [
+    "dist/**",
+    "node_modules/**"
   ]
 }
