@@ -130,6 +130,10 @@
     "webpack-cli": "^4.9.1",
     "whatwg-url": "^11.0.0"
   },
+  "engines": {
+    "node": "16.13.0",
+    "npm": "8.1.0"
+  },
   "browserslist": [
     "defaults",
     "not IE 11",
