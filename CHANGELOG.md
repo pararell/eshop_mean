@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.6.0](https://github.com/pararell/eshop_mean/compare/v0.5.0...v0.6.0) (2021-11-28)
+
+
+### Features
+
+* add hereku postbuild ([0f25bce](https://github.com/pararell/eshop_mean/commit/0f25bce6e22f68e9c066400589158cc2baf8db0e))
+* angular 13 full update ([fe08480](https://github.com/pararell/eshop_mean/commit/fe084802ca9b2762bb907a7d54479128219b8a86))
+* **docker:** update node version ([38acfba](https://github.com/pararell/eshop_mean/commit/38acfba23d16c72ccc34ce9e80a0ef74a9f91f7d))
+* **heroku:** package script start ([0b9552f](https://github.com/pararell/eshop_mean/commit/0b9552f6183a8d771116a6a5c23fc847c223e359))
+* **heroku:** package.json ([bf5799d](https://github.com/pararell/eshop_mean/commit/bf5799d2ed94214151c49335a417045e3a284009))
+* **heroku:** rename PORT variable ([265cafa](https://github.com/pararell/eshop_mean/commit/265cafa47a777d7245adbccf91770d44e8bf29c5))
+* **heroku:** scripts in package.json ([f6a366a](https://github.com/pararell/eshop_mean/commit/f6a366ae1dd74bf2cad781a2a9ba8fcdd17896ad))
+* node version to package ([23f67ad](https://github.com/pararell/eshop_mean/commit/23f67ad399be49e51b866c8c582a431ebbca9326))
+* update deprecate, lint client, refactor ([a14210b](https://github.com/pararell/eshop_mean/commit/a14210bcc916d3c0f6e6256b31e3b612147c7e25))
+* updates, schema.org initialization ([f72f856](https://github.com/pararell/eshop_mean/commit/f72f8569043ba5529df790a395b2111ef0caa7f6))
+* **updates:** packages, small fixes ([6212659](https://github.com/pararell/eshop_mean/commit/62126592a098f35377f5ec3d7b240f568e84ce37))
+* **updates:** styles, functionality ([2421fe4](https://github.com/pararell/eshop_mean/commit/2421fe4a890b9af6585140198b6dca3c89314688))
+
+
+### Bug Fixes
+
+* browsermodule ([6412330](https://github.com/pararell/eshop_mean/commit/6412330dba28788c7bf3a3302213f96aeea070ac))
+* docker build ([22dcd50](https://github.com/pararell/eshop_mean/commit/22dcd50ed8ef6c24346adc4cba9f805e9f1a5796))
+* SSR before PWA cache ([4d1d7fb](https://github.com/pararell/eshop_mean/commit/4d1d7fb4927db257baf91e46a5a7e0daa1b1263e))
+* **ssr:** appid ([b5e86e6](https://github.com/pararell/eshop_mean/commit/b5e86e61205986ed2c89eaa109c783ff79e028dd))
+
 ## [0.5.0](https://github.com/pararell/eshop_mean/compare/v0.3.0...v0.5.0) (2021-08-15)
 
 
