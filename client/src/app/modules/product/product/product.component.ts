@@ -74,12 +74,12 @@ export class ProductComponent implements OnDestroy {
       this.store.dispatch(new actions.AddToCart('?id=' + id));
 
       this.translate.getTranslations$()
-        .pipe(map(translations => translations 
+        .pipe(map(translations => translations
           ? {message: translations['ADDED_TO_CART'] || 'Added to cart', action: translations['TO_CART'] || 'To Cart'}
           : {message: 'Added to cart', action: 'To Cart'}
           ),take(1))
         .subscribe(({message, action}) => {
-          let snackBarRef = this.snackBar.open(message, action);
+          let snackBarRef = this.snackBar.open(message, action, {duration: 3000});
           snackBarRef.onAction().pipe(
               withLatestFrom(this.lang$),
               take(1))

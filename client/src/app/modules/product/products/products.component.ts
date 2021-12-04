@@ -76,8 +76,8 @@ export class ProductsComponent implements OnDestroy {
       )
     );
 
-    this.title.setTitle('Products');
-    this.meta.updateTag({ name: 'description', content: 'Products description' });
+    this.title.setTitle('Eshop Mean');
+    this.meta.updateTag({ name: 'description', content: 'Angular - Node.js - Eshop application - MEAN Eshop with dashboard' });
 
     this.categories$ = this.store.select(fromRoot.getCategories);
     this.pagination$ = this.store.select(fromRoot.getPagination);
@@ -108,12 +108,12 @@ export class ProductsComponent implements OnDestroy {
     this.store.dispatch(new actions.AddToCart('?id=' + id));
 
     this.translate.getTranslations$()
-      .pipe(map(translations => translations 
+      .pipe(map(translations => translations
         ? {message: translations['ADDED_TO_CART'] || 'Added to cart', action: translations['TO_CART'] || 'To Cart'}
         : {message: 'Added to cart', action: 'To Cart'}
         ),take(1))
       .subscribe(({message, action}) => {
-        let snackBarRef = this.snackBar.open(message, action);
+        let snackBarRef = this.snackBar.open(message, action, {duration: 3000});
         snackBarRef.onAction().pipe(
             withLatestFrom(this.lang$),
             take(1))
