@@ -1,3 +1,4 @@
+import { JsonLDService } from './../../../services/jsonLD.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { filter, map, take, distinctUntilChanged, skip, withLatestFrom } from 'rxjs/operators';
 import { Component, OnDestroy } from '@angular/core';
@@ -37,7 +38,8 @@ export class ProductComponent implements OnDestroy {
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private jsonLDService: JsonLDService
   ) {
     this.lang$ = this.translate.getLang$();
     this.categories$ = this.store.select(fromRoot.getCategories);
@@ -47,6 +49,8 @@ export class ProductComponent implements OnDestroy {
         this.store.dispatch(new actions.GetProduct(id + '?lang=' + lang));
       }
     );
+
+    this.currency$ = this.store.select(fromRoot.getCurrency);
 
     this.callCategories();
 
@@ -65,8 +69,6 @@ export class ProductComponent implements OnDestroy {
         cartIds: cartItems.reduce((prev, curr) => ({ ...prev, [curr.id]: curr.qty }), {}),
       }))
     );
-
-    this.currency$ = this.store.select(fromRoot.getCurrency);
   }
 
   cartEvent(id: string, type: string): void {
@@ -133,11 +135,26 @@ export class ProductComponent implements OnDestroy {
       .select(fromRoot.getProduct)
       .pipe(
         filter((product: Product) => !!product && !!product.title),
+        withLatestFrom(this.currency$),
         take(1)
       )
-      .subscribe((product) => {
+      .subscribe(([product,currency]) => {
         this.title.setTitle(product.title);
         this.meta.updateTag({ name: 'description', content: product.description });
+        const productSchema = {
+          "@context": "https://schema.org/",
+          "@type": "Product",
+          "name": product.title,
+          "image": product.mainImage?.url,
+          "offers": {
+            "@type": "Offer",
+            "priceCurrency": currency,
+            "price": product.regularPrice,
+            "availability": product.stock === 'onStock' ? "https://schema.org/InStock" : 'https://schema.org/OutOfStock'
+          },
+          "description": product.description
+        }
+        this.jsonLDService.insertSchema(productSchema, 'structured-data-product')
       });
   }
 }

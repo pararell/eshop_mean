@@ -33,9 +33,11 @@ export class JsonLDService {
 
   constructor(@Inject(DOCUMENT) private _document: Document) {}
 
-  removeStructuredData(): void {
+  removeStructuredData(className?: string): void {
     const els = [];
-    ['structured-data', 'structured-data-org'].forEach((c) => {
+    ['structured-data', 'structured-data-org', className]
+    .filter(Boolean)
+    .forEach((c) => {
       els.push(...Array.from(this._document.head.getElementsByClassName(c)));
     });
     els.forEach((el) => this._document.head.removeChild(el));
