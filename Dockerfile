@@ -1,7 +1,6 @@
 FROM node:16.13 as buildContainer
 WORKDIR /usr/src/app
-COPY ./package-lock.json ./
-COPY ./package.json ./
+COPY ./package.json ./package-lock.json ./
 RUN npm install
 COPY . /usr/src/app
 RUN npm run build:ssr
