@@ -246,12 +246,6 @@ export class AppEffects {
       })
   ));
 
-   setuploder$: Observable<void> = createEffect(() => this._actions.pipe(
-    ofType(EshopActions.SetUploader),
-      switchMap((action: actions.SetUploader) => this.apiService.setUploader(action.payload)),
-      map((uploader: any) => console.log('Uploader init'))
-  ), {dispatch: false});
-
    getOrders$: Observable<Action> = createEffect(() => this._actions.pipe(
     ofType(EshopActions.GetOrders),
       switchMap((action: actions.GetOrders) => this.apiService.getOrders()),

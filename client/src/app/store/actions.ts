@@ -68,9 +68,6 @@ export enum EshopActions {
   AddProductImagesUrlSuccess = '[Dashboard] AddProductImagesSuccessUrl',
   RemoveProductImage = '[Dashboard] RemoveProductImage',
   RemoveProductImageSuccess = '[Dashboard] RemoveProductImageSuccess',
-  SetUploader = '[Dashboard] SetUploader',
-  SetUploaderSuccess = '[Dashboard] SetUploaderSuccess',
-  SetUploaderError = '[Dashboard] SetUploaderError',
 
   SendContact = '[Eshop] SendContact',
   SendContactSuccess = '[Eshop] SendContactSuccess',
@@ -501,24 +498,6 @@ export class RemoveProductImageSuccess implements Action {
 export class AddProductImagesUrlSuccess implements Action {
   readonly type = EshopActions.AddProductImagesUrlSuccess;
   constructor(public payload: any ) {
-  }
-}
-
-export class SetUploader implements Action {
-  readonly type = EshopActions.SetUploader;
-  constructor(public payload: any) {
-  }
-}
-
-export class SetUploaderSuccess implements Action {
-  readonly type = EshopActions.SetUploaderSuccess;
-  constructor(public payload: any) {
-  }
-}
-
-export class SetUploaderError implements Action {
-  readonly type = EshopActions.SetUploaderError;
-  constructor(public payload: any) {
   }
 }
 

@@ -3,7 +3,6 @@ import { map } from 'rxjs/operators';
 import { Inject, Injectable, Optional, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
-import { FileUploader } from 'ng2-file-upload';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { Store } from '@ngrx/store';
 
@@ -17,7 +16,6 @@ import { accessTokenKey } from '../shared/constants';
 })
 export class ApiService {
   apiUrl = environment.apiUrl;
-  uploaderSub: BehaviorSubject<FileUploader> = new BehaviorSubject(null);
   requestOptions = {};
   ranNumber = 0;
 
@@ -225,25 +223,20 @@ export class ApiService {
     return this.http.post(removeImage, { image }, this.requestOptions);
   }
 
-  getUploader() {
-    return this.uploaderSub.asObservable();
-  }
-
-  setUploader({ options, titleUrl }): Observable<any> {
+  uploadImage({fileToUpload, titleUrl}) {
     if (isPlatformBrowser(this.platformId)) {
       const titleUrlQuery = titleUrl ? '?titleUrl=' + titleUrl : '';
       const accessToken = localStorage.getItem(accessTokenKey);
-      const authorizationHeader = accessToken ? { name: 'Authorization', value: 'Bearer ' + accessToken } : {};
+      const formData: FormData = new FormData();
+      formData.append('file', fileToUpload);
 
-      this.uploaderSub.next(
-        new FileUploader({
-          url: this.apiUrl + '/api/admin/images/upload' + titleUrlQuery,
-          headers: [{ name: 'Accept', value: 'application/json', ...authorizationHeader }],
-          ...options,
-        })
-      );
+      let headers = new HttpHeaders();
+      headers = headers.set('Authorization', 'Bearer ' + accessToken);
+      const sendHeaders = { headers, withCredentials: true };
+      const uploadUrl = this.apiUrl + '/api/admin/images/upload' + titleUrlQuery;
 
-      return this.uploaderSub.asObservable();
+      return this.http.post(uploadUrl, formData,
+        {reportProgress: true, responseType: 'json', ...sendHeaders});
     }
   }
 

@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FileUploadModule } from 'ng2-file-upload';
 import { EditorModule } from '@tinymce/tinymce-angular';
 
 import { MatButtonModule } from '@angular/material/button';
@@ -57,7 +56,6 @@ const DASHBOARD_ROUTER: Routes = [
     OrderComponentsModule,
     FormsModule,
     ReactiveFormsModule,
-    FileUploadModule,
     PipeModule,
     RouterModule.forChild(DASHBOARD_ROUTER),
     EditorModule,

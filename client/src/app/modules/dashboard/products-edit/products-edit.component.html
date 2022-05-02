@@ -240,25 +240,13 @@
         </mat-form-field>
       </div>
       <h4 class="product_edit-infotitle">Upload Images from file or url</h4>
-      <ng-container *ngIf="uploader">
-        <div
-          class="product_edit-add-images"
-          ng2FileDrop
-          [uploader]="uploader">
-          <div class="file-field input-field">
-            <button
-              mat-raised-button
-              color="primary">
-              <input
-                type="file"
-                #fileInput
-                ng2FileSelect
-                [uploader]="uploader"
-                multiple>
-            </button>
-          </div>
-        </div>
-      </ng-container>
+
+      <label for="file-upload"
+        class="product_edit-add-images">
+      </label>
+      <input class="file-field input-field" type="file" id="file-upload"
+        (change)="onFileChanged($event)">
+
       <div class="product_edit-full-input">
         <mat-form-field class="product_edit-field-small">
           <mat-label>Add Image Url</mat-label>
