@@ -24,5 +24,5 @@
     "@typescript-eslint/ban-types": "off",
     "@typescript-eslint/no-empty-function": "off"
   },
-  "ignorePatterns": ["dist/*"]
+  "ignorePatterns": ["dist/*", "app-ssr.module.ts", "main-ssr.ts"]
 }

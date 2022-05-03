@@ -10,9 +10,9 @@ export class OrderDto {
 
   addresses: Address[];
   cart: Cart;
-  userId?   : string;
-  notes?    : string;
-  cardId?   : string;
+  userId?: string;
+  notes?: string;
+  cardId?: string;
 
   @IsNotEmpty()
   amount: number;

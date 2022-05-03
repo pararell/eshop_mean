@@ -129,7 +129,8 @@
           "builder": "@nguniversal/builders:ssr-dev-server",
           "options": {
             "browserTarget": "eshop:build",
-            "serverTarget": "eshop:server"
+            "serverTarget": "eshop:server",
+            "port": 4000
           },
           "configurations": {
             "production": {

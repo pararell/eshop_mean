@@ -1,7 +1,7 @@
 export class Images {
   all: string[];
 
-  constructor(previousImages: {all: string[]}) {
+  constructor(previousImages: { all: string[] }) {
     this.all = previousImages.all || [];
   }
 

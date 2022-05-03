@@ -9,8 +9,7 @@ export class Cart {
   }
 
   add = function (item: Product, id: string): void {
-    const itemExist = !!this.items.filter((cartItem) => cartItem.id === id)
-      .length;
+    const itemExist = !!this.items.filter((cartItem) => cartItem.id === id).length;
 
     if (!itemExist) {
       this.items.push({ item, id, qty: 1 });

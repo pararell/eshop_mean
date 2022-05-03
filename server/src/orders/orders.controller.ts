@@ -21,7 +21,6 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Cart } from '../cart/utils/cart';
 import { prepareCart } from '../shared/utils/prepareUtils';
 
-
 @Controller('api/orders')
 export class OrdersController {
   constructor(private ordersService: OrdersService) {}
@@ -41,7 +40,7 @@ export class OrdersController {
     try {
       const successResult = await this.ordersService.addOrder(orderDto, session, lang);
       if (successResult && !successResult.error) {
-        const emptyCart = new Cart({items: []});
+        const emptyCart = new Cart({ items: [] });
         session.cart = emptyCart;
         return { ...successResult, cart: emptyCart };
       } else {
@@ -62,7 +61,7 @@ export class OrdersController {
       const successResult = await this.ordersService.orderWithStripe(body, session, lang);
 
       if (successResult && !successResult.error) {
-        const emptyCart = new Cart({items: []});
+        const emptyCart = new Cart({ items: [] });
         session.cart = emptyCart;
         return { ...successResult, cart: emptyCart };
       } else {
