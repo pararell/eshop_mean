@@ -104,3 +104,4 @@ dist
 
 # Public builded files
 public
+package-lock.json
