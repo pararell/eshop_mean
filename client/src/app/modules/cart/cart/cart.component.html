@@ -5,7 +5,7 @@
      <div class="cart">
       <div class="cart-with-order">
         <ul class="cart-wrap" [class.cart-empty]="!cart?.items?.length">
-          <li class="cart-items"><h2>{{ 'Cart_title' | translate | async }}</h2></li>
+          <li class="cart-items"><h2>{{ 'Your Cart' | translate | async }}</h2></li>
           <li class="cart-items"
             *ngFor="let cartItem of cart?.items; let last = last;"
             [class.cart-last-item]="last">
@@ -137,7 +137,7 @@
                 <mat-radio-group class="delivery-button"
                 *ngIf="orderForm.valid"
                 [(ngModel)]="toggleCard">
-                <mat-radio-button class="payment-choice" 
+                <mat-radio-button class="payment-choice"
                   [class.payment-choice--active]="toggleCard"
                   [value]="true">
                   <span class="flex">
@@ -152,7 +152,7 @@
                     </span>
                   </span>
                 </mat-radio-button>
-                <mat-radio-button class="payment-choice" 
+                <mat-radio-button class="payment-choice"
                   [class.payment-choice--active]="!toggleCard"
                   [value]="false">
                   <span class="flex">
