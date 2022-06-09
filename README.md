@@ -18,7 +18,7 @@
 
 ## Test it
 - smrtic.eu - dashboard test - email: test@miroslavsmrtic.sk , password: test123456
-- more info in blog http://svelte.smrtic.eu/blogs
+- more info in blog [https://miroslavsmrtic.sk/blogs](https://miroslavsmrtic.sk/blogs)
 
 <img alt="eshop-mean setup" src="https://res.cloudinary.com/dnpgh1vhi/image/upload/v1629726575/Isometric_illustration_design_concept_loading_and_maintenance_process_kjtxck.jpg" height="200" style="margin: 0; padding: 0;">
 
