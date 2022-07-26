@@ -7,7 +7,7 @@ import { TransferState, makeStateKey, StateKey } from '@angular/platform-browser
 
 @Injectable()
 export class ServerHttpInterceptor implements HttpInterceptor {
-  key: StateKey<string>;
+  key: StateKey<any>;
   apiToTransfer = ['api/eshop', 'api/products', 'api/translations', 'api/orders'];
 
   constructor(

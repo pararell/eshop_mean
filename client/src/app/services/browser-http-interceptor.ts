@@ -6,7 +6,7 @@ import { TransferState, makeStateKey, StateKey } from '@angular/platform-browser
 
 @Injectable()
 export class BrowserHttpInterceptor implements HttpInterceptor {
-  key: StateKey<string>;
+  key: StateKey<any>;
 
   constructor(
     private transferState: TransferState) {
@@ -17,7 +17,7 @@ export class BrowserHttpInterceptor implements HttpInterceptor {
       return next.handle(request).pipe(
         catchError((error: HttpResponse<any>) => {
           this._handleError(error.url, error.status);
-          return throwError(error);
+          return throwError(() => (error));
         }));
     }
 
@@ -33,7 +33,7 @@ export class BrowserHttpInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError((error: HttpResponse<any>) => {
         this._handleError(error.url, error.status);
-        return throwError(error);
+        return throwError(() => (error));
       }));
   }
 
@@ -41,7 +41,7 @@ export class BrowserHttpInterceptor implements HttpInterceptor {
   private _handleError(url: string, statusCode: number): void {
     switch (statusCode) {
       case 404:
-        console.warn('HTTP status code: 404: ', url, statusCode); 
+        console.warn('HTTP status code: 404: ', url, statusCode);
         break;
       case 410:
         console.warn('HTTP status code: 410: ', url, statusCode);

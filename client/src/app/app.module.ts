@@ -66,7 +66,7 @@ const routes: Routes = routesAll;
     MatSidenavModule,
     LazyModule,
     EffectsModule.forRoot([AppEffects]),
-    RouterModule.forRoot(routes, { initialNavigation: 'enabled' }),
+    RouterModule.forRoot(routes, { initialNavigation: 'enabledBlocking' }),
     !environment.production ? StoreDevtoolsModule.instrument() : []
   ],
   providers: [
