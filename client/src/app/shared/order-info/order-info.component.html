@@ -1,6 +1,6 @@
 <mat-progress-bar mode="indeterminate" *ngIf="!order"></mat-progress-bar>
 <ng-container *ngIf="order">
-  <mat-card class="card">
+  <mat-card appearance="outlined" class="card">
     <mat-card-content class="order-top-content">
       <div>
         <h4>{{ order?.orderId }}</h4>
@@ -10,9 +10,9 @@
           </div>
           <div class="price">{{ 'Amount' | translate | async }}: {{ order?.amount }} {{ order.currency }}</div>
         </div>
-        <mat-chip-list class="order-tags">
-          <mat-chip>{{ 'Customer' | translate | async }}: {{ order?.customerEmail }}</mat-chip>
-        </mat-chip-list>
+        <mat-chip-listbox class="order-tags">
+          <mat-chip-option>{{ 'Customer' | translate | async }}: {{ order?.customerEmail }}</mat-chip-option>
+        </mat-chip-listbox>
       </div>
       <div>
         <p *ngIf="order?.description">{{ 'Description' | translate | async }}: {{ order?.description }}</p>

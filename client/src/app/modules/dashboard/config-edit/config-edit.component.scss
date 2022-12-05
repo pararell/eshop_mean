@@ -1,10 +1,10 @@
 :host {
-  ::ng-deep .mat-radio-button ~ .mat-radio-button {
+  ::ng-deep .mat-mdc-radio-button ~ .mat-radio-button {
     margin-left: 16px;
   }
 
   @media screen and (max-width: 600px) {
-    ::ng-deep .mat-radio-button ~ .mat-radio-button {
+    ::ng-deep .mat-mdc-radio-button ~ .mat-radio-button {
       margin-left: 4px;
     }
   }

@@ -24,13 +24,13 @@
           </app-cart-show>
         </button>
       </div>
-      <mat-chip-list class="product-tags">
-        <mat-chip class="clickable"
+      <mat-chip-listbox class="product-tags">
+        <mat-chip-option class="clickable"
           *ngFor="let tag of product.tags"
           [routerLink]="[ '/' + lang + '/product/category/' + tag]">
           {{ categoriesToShow[tag] || tag }}
-        </mat-chip>
-      </mat-chip-list>
+        </mat-chip-option>
+      </mat-chip-listbox>
       <a class="product-more" *ngIf="withLink" [routerLink]="[ '/' + lang + '/product/' + product.titleUrl]">
         {{ "More" | translate | async }}
       </a>

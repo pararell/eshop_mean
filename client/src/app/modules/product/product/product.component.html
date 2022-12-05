@@ -13,6 +13,7 @@
     </mat-progress-bar>
     <ng-container *ngIf="(items$ | async) as items">
       <mat-card
+        appearance="outlined"
         class="product"
         *ngIf="!(productLoading$ | async) && items.product as product">
         <ng-container *ngIf="product.visibility && product.salePrice">

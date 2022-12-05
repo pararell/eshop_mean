@@ -215,18 +215,18 @@
           Add Tag
         </button>
       </div>
-      <mat-chip-list
+      <mat-chip-listbox
         class="product-tags"
         *ngIf="(productEditForm.get('tags').value) as allTags">
         <ng-container *ngIf="allTags && allTags.length">
-          <mat-chip
+          <mat-chip-option
             class="clickable"
             *ngFor="let tag of allTags"
             (click)="removeTag(tag)">
             <span *ngIf="tag">{{ tag }} x</span>
-          </mat-chip>
+          </mat-chip-option>
         </ng-container>
-      </mat-chip-list>
+      </mat-chip-listbox>
       <h3 class="product_edit-subtitle">Images (for all languages/markets)</h3>
       <div class="product_edit-full-input">
         <mat-form-field class="product_edit-field">

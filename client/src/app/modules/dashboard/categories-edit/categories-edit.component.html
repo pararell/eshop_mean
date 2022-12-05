@@ -48,15 +48,15 @@
         {{ 'Edit' | translate | async }}
       </button>
     </div>
-    <mat-chip-list
+    <mat-chip-listbox
       class="category-tags"
       *ngIf="categoryProductsTitlesUrl.length">
-      <mat-chip
+      <mat-chip-option
         class="clickable"
         *ngFor="let productTitleUrl of categoryProductsTitlesUrl">
         <span>{{ productTitleUrl }}</span>
-      </mat-chip>
-    </mat-chip-list>
+      </mat-chip-option>
+    </mat-chip-listbox>
     <ng-container>
       <h3 class="category_edit-subtitle">Content (for chosen language/market)</h3>
       <div [formGroupName]="chooseLang">
@@ -192,18 +192,18 @@
           Add SubCategory
         </button>
       </div>
-      <mat-chip-list
+      <mat-chip-listbox
         class="category_edit-subCategories"
         *ngIf="(categoryEditForm.get('subCategories').value) as allCategories">
         <ng-container *ngIf="allCategories && allCategories.length">
-          <mat-chip
+          <mat-chip-option
             class="clickable"
             *ngFor="let subCategory of allCategories"
             (click)="removeSubCategory(subCategory)">
             <span *ngIf="subCategory">{{ subCategory }} x</span>
-          </mat-chip>
+          </mat-chip-option>
         </ng-container>
-      </mat-chip-list>
+      </mat-chip-listbox>
 
       <button
         mat-raised-button

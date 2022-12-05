@@ -43,8 +43,7 @@
     class="sidebar-range"
     [max]="maxPrice"
     [min]="minPrice"
-    (change)="onChangePrice($event, ref.value)"
-    [(ngModel)]="(maxPrice < price) ? maxPrice : price">
+    [(ngModel)]="(maxPrice < price) ? maxPrice : price" #ngSlider><input matSliderThumb (change)="onChangePrice({source: ngSliderThumb, parent: ngSlider, value: ngSliderThumb.value}, ref.value)" #ngSliderThumb="matSliderThumb" />
   </mat-slider>
   {{ 'Price' | translate | async }} {{ 'to' | translate | async }}:
   {{ ref.value | priceFormat }} {{ currency }}
