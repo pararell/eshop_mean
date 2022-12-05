@@ -1,6 +1,6 @@
 @use "sass:math";
 
-@import '~@angular/material/theming';
+@use '@angular/material' as mat;
 
 // generate pallete from http://mcg.mbitson.com/
 $material-primary-color: (
