@@ -24,7 +24,7 @@
           </app-cart-show>
         </button>
       </div>
-      <mat-chip-listbox class="product-tags">
+      <mat-chip-listbox aria-label="Category selection" class="product-tags">
         <mat-chip-option class="clickable"
           *ngFor="let tag of product.tags"
           [routerLink]="[ '/' + lang + '/product/category/' + tag]">

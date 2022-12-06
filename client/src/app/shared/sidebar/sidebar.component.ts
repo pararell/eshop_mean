@@ -11,11 +11,11 @@ import { Category } from '../models';
   styleUrls: ['./sidebar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SidebarComponent  {
+export class SidebarComponent {
   @Input() categories: Category[];
   @Input() activeCategory?: string;
-  @Input() minPrice: number;
-  @Input() maxPrice: number;
+  @Input() minPrice: number = 0;
+  @Input() maxPrice: number = Infinity;
   @Input() price: number;
   @Input() sortOptions: {name: string; id: string}[];
   @Input() choosenSort: string;
@@ -28,6 +28,7 @@ export class SidebarComponent  {
 
   productsUrl: string;
   categoryUrl: string;
+  priceValue = 0;
 
   constructor() {
   }
@@ -36,8 +37,8 @@ export class SidebarComponent  {
     this.changeSort.emit($event);
   }
 
-  onChangePrice(event, value: number): void {
-    of('chane_price').pipe(take(1), delay(200)).subscribe(() => {
+  onChangePrice(value: number): void {
+    of('change_price').pipe(take(1), delay(200)).subscribe(() => {
       this.changePrice.emit(value);
     });
   }

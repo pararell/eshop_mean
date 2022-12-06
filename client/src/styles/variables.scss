@@ -4,82 +4,80 @@
 
 // generate pallete from http://mcg.mbitson.com/
 $material-primary-color: (
-  50 : var(--theme-primary-50, #e0e0e0),
-  100 : var(--theme-primary-100, #b3b3b3),
-  200 : var(--theme-primary-200, #808080),
-  300 : var(--theme-primary-300, #808080),
-  400 : var(--theme-primary-400, #4d4d4d),
-  500 : var(--theme-primary-500, #262626),
-  600 : var(--theme-primary-600, #000000),
-  700 : var(--theme-primary-700, #000000),
-  800 : var(--theme-primary-800, #000000),
-  900 : var(--theme-primary-900, #000000),
-  A100 : var(--theme-primary-A100, #a6a6a6),
-  A200 : var(--theme-primary-A200, #8c8c8c),
-  A400 : var(--theme-primary-A400, #737373),
-  A700 : var(--theme-primary-A700, #666666),
+  50 : #e0e0e0,
+  100 : #b3b3b3,
+  200 :  #808080,
+  300 : #808080,
+  400 :  #4d4d4d,
+  500 :  #262626,
+  600 :  #000000,
+  700 : #000000,
+  800 : #000000,
+  900 :  #000000,
+  A100 :  #a6a6a6,
+  A200 :  #8c8c8c,
+  A400 :  #737373,
+  A700 : #666666,
   contrast: (
-    50: var(--theme-primary-contrast-50, #000000),
-    100: var(--theme-primary-contrast-100, #000000),
-    200: var(--theme-primary-contrast-200, #000000),
-    300: var(--theme-primary-contrast-300, rgba(255,255,255,0.8)),
-    400: var(--theme-primary-contrast-400, rgba(255,255,255,0.8)),
-    500: var(--theme-primary-contrast-500, rgba(255,255,255,0.8)),
-    600: var(--theme-primary-contrast-600, rgba(255,255,255,0.8)),
-    700: var(--theme-primary-contrast-700, rgba(255,255,255,0.8)),
-    800: var(--theme-primary-contrast-800, rgba(255,255,255,0.8)),
-    900: var(--theme-primary-contrast-900, rgba(255,255,255,0.8)),
-    A100: var(--theme-primary-contrast-A100, #000000),
-    A200: var(--theme-primary-contrast-A200, #000000),
-    A400: var(--theme-primary-contrast-A400, #ffffff),
-    A700: var(--theme-primary-contrast-A700, #ffffff),
+    50: #000000,
+    100: #000000,
+    200: #000000,
+    300: rgba(255,255,255,0.8),
+    400: rgba(255,255,255,0.8),
+    500: rgba(255,255,255,0.8),
+    600: rgba(255,255,255,0.8),
+    700: rgba(255,255,255,0.8),
+    800: rgba(255,255,255,0.8),
+    900: rgba(255,255,255,0.8),
+    A100: #000000,
+    A200: #000000,
+    A400: #ffffff,
+    A700: #ffffff,
   )
 );
 
 $material-secondary-color: (
-  50 : var(--theme-secondary-50, #fbfbfb),
-  100 : var(--theme-secondary-100, #f6f6f6),
-  200 : var(--theme-secondary-200, #f0f0f0),
-  300 : var(--theme-secondary-300, #e9e9e9),
-  400 : var(--theme-secondary-400, #e5e5e5),
-  500 : var(--theme-secondary-500, #e0e0e0),
-  600 : var(--theme-secondary-600, #dcdcdc),
-  700 : var(--theme-secondary-700, #d8d8d8),
-  800 : var(--theme-secondary-800, #d3d3d3),
-  900 : var(--theme-secondary-900, #cbcbcb),
-  A100 : var(--theme-secondary-A100, #ffffff),
-  A200 : var(--theme-secondary-A200, #ffffff),
-  A400 : var(--theme-secondary-A400, #ffffff),
-  A700 : var(--theme-secondary-A700, #ffffff),
+  50 :  #fbfbfb,
+  100 :  #f6f6f6,
+  200 :  #f0f0f0,
+  300 :  #e5e5e5,
+  500 :  #e0e0e0,
+  600 :  #dcdcdc,
+  700 :  #d8d8d8,
+  800 :  #d3d3d3,
+  900 :  #cbcbcb,
+  A100 :  #ffffff,
+  A200 : #ffffff,
+  A400 :  #ffffff,
+  A700 :  #ffffff,
   contrast: (
-    50: var(--theme-secondary-contrast-50, #000000),
-    100: var(--theme-secondary-contrast-100, #000000),
-    200: var(--theme-secondary-contrast-200, #000000),
-    300: var(--theme-secondary-contrast-300, #000000),
-    400: var(--theme-secondary-contrast-400, #000000),
-    500: var(--theme-secondary-contrast-500, #000000),
-    600: var(--theme-secondary-contrast-600, #000000),
-    700: var(--theme-secondary-contrast-700, #000000),
-    800: var(--theme-secondary-contrast-800, #000000),
-    900: var(--theme-secondary-contrast-900, #000000),
-    A100: var(--theme-secondary-contrast-A100, #000000),
-    A200: var(--theme-secondary-contrast-A200, #000000),
-    A400: var(--theme-secondary-contrast-A400, #000000),
-    A700: var(--theme-secondary-contrast-A700, #000000),
+    50:  #000000,
+    100: #000000,
+    200:  #000000,
+    300:  #000000,
+    400:  #000000,
+    500:  #000000,
+    600:  #000000,
+    700:  #000000,
+    800:  #000000,
+    900:  #000000,
+    A100:  #000000,
+    A200:  #000000,
+    A400:  #000000,
+    A700:  #000000,
   )
 );
 
-$eshop-primary: mat-palette($material-primary-color);
-$eshop-accent:  mat-palette($material-secondary-color);
-$eshop-warn:    mat-palette($mat-red);
-$eshop-background:  mat-palette($material-secondary-color, 50);
+$eshop-primary: mat.define-palette($material-primary-color);
+$eshop-accent:  mat.define-palette($material-secondary-color);
+$eshop-background:  mat.define-palette($material-secondary-color, 50);
 
 :root {
-  --primary-color: #{mat-color($eshop-primary)};
-  --secondary-color: #{mat-color($eshop-accent)};
+  --primary-color: #{mat.get-color-from-palette($eshop-primary)};
+  --secondary-color: #{mat.get-color-from-palette($eshop-accent)};
   --success-color: #4bb543;
-  --error-color: #{mat-color($eshop-warn)};
-  --background-color: #{mat-color($eshop-background)};
+  --error-color: red;
+  --background-color: #{mat.get-color-from-palette($eshop-background)};
   --main-background: '';
 }
 

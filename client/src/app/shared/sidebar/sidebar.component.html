@@ -38,13 +38,12 @@
     <h3 class="sidebar-title">{{ 'PriceRange' | translate | async }}</h3>
   </div>
   <mat-slider
-    #ref
     aria-label="Range"
     class="sidebar-range"
     [max]="maxPrice"
-    [min]="minPrice"
-    [(ngModel)]="(maxPrice < price) ? maxPrice : price" #ngSlider><input matSliderThumb (change)="onChangePrice({source: ngSliderThumb, parent: ngSlider, value: ngSliderThumb.value}, ref.value)" #ngSliderThumb="matSliderThumb" />
+    [min]="minPrice">
+    <input matSliderThumb [(ngModel)]="(maxPrice < price) ? maxPrice : price" (change)="onChangePrice((maxPrice < price) ? maxPrice : price)" />
   </mat-slider>
   {{ 'Price' | translate | async }} {{ 'to' | translate | async }}:
-  {{ ref.value | priceFormat }} {{ currency }}
+  {{ priceValue | priceFormat }} {{ currency }}
 </div>

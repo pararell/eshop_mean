@@ -33,9 +33,9 @@
             <div class="home-promo-slide-background"></div>
             <div class="home-promo-slide-cta">
               <div class="home-promo-slide-logo"></div>
-              <div class="home-promo-slide-subtitle">
+              <h2 class="home-promo-slide-subtitle">
                 {{ 'Eshop_subtitle' | translate | async }}
-              </div>
+              </h2>
               <span class="home-promo-slide-text" *ngIf="('Home_promo_text_link' | translate | async) as promoText">
                 <a [href]="'Home_promo_link' | translate | async"> {{ promoText }}</a>
               </span>
@@ -79,9 +79,9 @@
       <div class="container">
         <mat-progress-bar mode="indeterminate" *ngIf="loadingProducts$ | async"></mat-progress-bar>
         <div *ngIf="categories$ | async as categories">
-          <app-categories-list 
-            [categories]="categories" 
-            [lang]="lang$ | async"> 
+          <app-categories-list
+            [categories]="categories"
+            [lang]="lang$ | async">
           </app-categories-list>
         </div>
       </div>

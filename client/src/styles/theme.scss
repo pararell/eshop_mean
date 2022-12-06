@@ -12,22 +12,18 @@
 $eshop-app-primary: mat.define-palette($material-primary-color);
 $eshop-app-accent:  mat.define-palette($material-secondary-color);
 
-// The warn palette is optional (defaults to red).
-$eshop-app-warn:    mat.define-palette($mat-red);
-
-// Create the theme object (a Sass map containing all of the palettes).
-$eshop-app-theme: mat.define-light-theme($eshop-app-primary, $eshop-app-accent, $eshop-app-warn);
-
-$custom-typography: mat.define-typography-config(
+$eshop-typography: mat.define-typography-config(
   $font-family: 'Kanit, sans-serif',
-  $headline: mat.typography-level(32px, 48px, 700),
-  $body-1: mat.typography-level(16px, 24px, 500)
 );
 
-@include mat.base-typography($custom-typography);
+$eshop-app-theme: mat.define-light-theme((
+  color: (
+    primary: $eshop-app-primary,
+    accent: $eshop-app-accent,
+  ),
+  typography:  $eshop-typography,
+ ));
 
-@include mat.menu-typography($custom-typography);
-// Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
-@include angular-material-theme($eshop-app-theme);
+@include mat.all-component-typographies($eshop-typography);
+@include mat.all-component-themes($eshop-app-theme);
+

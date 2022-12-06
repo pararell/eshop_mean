@@ -1,5 +1,5 @@
 :host {
-  color: var(--theme-primary-contrast-500, rgba(255,255,255,0.8));
+  color: rgba(255,255,255,0.8);
 
   .footer {
     background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
@@ -19,7 +19,7 @@
     }
 
     a {
-      color: var(--theme-primary-contrast-500, rgba(255,255,255,0.8));
+      color: rgba(255,255,255,0.8);
     }
 
     &-links {
