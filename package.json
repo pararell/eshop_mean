@@ -57,7 +57,7 @@
     "@nestjs/common": "^9.2.1",
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.2.1",
-    "@nestjs/jwt": "^9.0.0",
+    "@nestjs/jwt": "^10.0.1",
     "@nestjs/mongoose": "9.2.1",
     "@nestjs/passport": "^9.0.0",
     "@nestjs/platform-express": "^9.2.1",
@@ -71,7 +71,7 @@
     "mongoose": "6.8.0",
     "passport": "^0.6.0",
     "passport-google-oauth20": "^2.0.0",
-    "passport-jwt": "^4.0.0",
+    "passport-jwt": "^4.0.1",
     "streamifier": "^0.1.1",
     "stripe": "^9.15.0"
   },
