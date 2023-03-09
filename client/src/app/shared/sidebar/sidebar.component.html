@@ -45,5 +45,5 @@
     <input matSliderThumb [(ngModel)]="(maxPrice < price) ? maxPrice : price" (change)="onChangePrice((maxPrice < price) ? maxPrice : price)" />
   </mat-slider>
   {{ 'Price' | translate | async }} {{ 'to' | translate | async }}:
-  {{ priceValue | priceFormat }} {{ currency }}
+  {{ price | priceFormat }} {{ currency }}
 </div>
