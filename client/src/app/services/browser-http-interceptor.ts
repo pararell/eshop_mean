@@ -2,7 +2,7 @@ import { catchError } from 'rxjs/operators';
 import { Observable, of, throwError } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
-import { TransferState, makeStateKey, StateKey } from '@angular/platform-browser';
+import { TransferState, makeStateKey, StateKey } from '@angular/core';
 
 @Injectable()
 export class BrowserHttpInterceptor implements HttpInterceptor {

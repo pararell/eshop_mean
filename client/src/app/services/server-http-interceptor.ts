@@ -2,7 +2,7 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Inject, Injectable, Optional } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
-import { TransferState, makeStateKey, StateKey } from '@angular/platform-browser';
+import { TransferState, makeStateKey, StateKey } from '@angular/core';
 
 
 @Injectable()
