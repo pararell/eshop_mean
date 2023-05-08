@@ -3,7 +3,7 @@ import { isPlatformBrowser, isPlatformServer, Location } from '@angular/common';
 import { Store, select } from '@ngrx/store';
 import { filter, take, delay, skip, map } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { NavigationStart, Router, RouterEvent } from '@angular/router';
+import { NavigationStart, Router } from '@angular/router';
 
 import { TranslateService } from './services/translate.service';
 import { JsonLDService } from './services/jsonLD.service';
@@ -88,7 +88,7 @@ export class AppComponent {
     }
 
     this.router.events.pipe(
-      filter((event: RouterEvent) => event instanceof NavigationStart),
+      filter((event) => event instanceof NavigationStart),
       map((checkRoute: NavigationStart) => {
         this.jsonLDService.insertSchema(this.jsonLDService.websiteSchema);
         this.jsonLDService.insertSchema(this.jsonLDService.orgSchema, 'structured-data-org');

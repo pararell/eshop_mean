@@ -3,10 +3,10 @@ import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
-import { ReCaptchaV3Service } from 'ng-recaptcha';
 
 import * as actions from '../../../store/actions';
 import * as fromRoot from '../../../store/reducers';
+import { ReCaptchaV3Service } from 'src/app/services/recaptcha.service';
 
 @Component({
   selector: 'app-contact',

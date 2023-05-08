@@ -33,7 +33,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { HomeComponent } from './components/home/home.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
-
+import {provideClientHydration} from '@angular/platform-browser';
 
 
 const routes: Routes = routesAll;
@@ -70,6 +70,7 @@ const routes: Routes = routesAll;
     !environment.production ? StoreDevtoolsModule.instrument() : []
   ],
   providers: [
+    provideClientHydration(),
     CookieService,
     {
       provide: APP_INITIALIZER,
