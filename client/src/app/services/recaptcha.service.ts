@@ -7,7 +7,7 @@ declare const grecaptcha;
 
 import { isPlatformBrowser } from "@angular/common";
 import { Inject, Injectable, InjectionToken, NgZone, Optional, PLATFORM_ID } from "@angular/core";
-import { Observable, Subject } from "rxjs";
+import { Observable, Subject, filter, take } from "rxjs";
 
 import { loader } from "../utils/loadRecaptchaScript";
 import { EnvConfigurationService } from "./env-configuration.service";
@@ -85,7 +85,6 @@ export class ReCaptchaV3Service {
   ) {
     this.zone = zone;
     this.isBrowser = isPlatformBrowser(platformId);
-    this.siteKey = this.envConfigurationService.config['FE_RECAPTCHA_CLIENT_KEY'];
     this.nonce = nonce;
     this.language = language;
     this.baseUrl = baseUrl;
@@ -152,22 +151,25 @@ export class ReCaptchaV3Service {
         }
       });
     };
-
-    this.zone.runOutsideAngular(() => {
-      try {
-        this.grecaptcha.execute(this.siteKey, { action }).then((token: string) => {
-          this.zone.run(() => {
-            subject.next(token);
-            subject.complete();
-            if (this.onExecuteSubject) {
-              this.onExecuteSubject.next({ action, token });
-            }
-          });
-        }, onError);
-      } catch (e) {
-        onError(e);
-      }
+    this.envConfigurationService.getConfigType$('FE_RECAPTCHA_CLIENT_KEY')
+    .pipe(filter(Boolean), take(1)).subscribe((siteKey) => {
+      this.zone.runOutsideAngular(() => {
+        try {
+          this.grecaptcha.execute(siteKey, { action }).then((token: string) => {
+            this.zone.run(() => {
+              subject.next(token);
+              subject.complete();
+              if (this.onExecuteSubject) {
+                this.onExecuteSubject.next({ action, token });
+              }
+            });
+          }, onError);
+        } catch (e) {
+          onError(e);
+        }
+      });
     });
+
   }
 
   /** @internal */
@@ -176,8 +178,11 @@ export class ReCaptchaV3Service {
       if ("grecaptcha" in window) {
         this.grecaptcha = grecaptcha;
       } else {
-        const langParam = this.language ? "&hl=" + this.language : "";
-        loader.loadRecaptchaScript(this.siteKey, this.onLoadComplete, langParam, this.baseUrl, this.nonce);
+        this.envConfigurationService.getConfigType$('FE_RECAPTCHA_CLIENT_KEY')
+          .pipe(filter(Boolean), take(1)).subscribe((siteKey) => {
+            const langParam = this.language ? "&hl=" + this.language : "";
+            loader.loadRecaptchaScript(siteKey, this.onLoadComplete, langParam, this.baseUrl, this.nonce);
+          })
       }
     }
   }

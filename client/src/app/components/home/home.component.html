@@ -1,16 +1,16 @@
 <mat-drawer-container class="home-sidebar-container" autosize hasBackdrop>
   <mat-drawer #sideBar [(opened)]="sidebarOpened" class="home-sidebar" mode="over">
     <app-sidebar
-      [class.disabled]="loadingProducts$ | async"
-      [categories]="categories$ | async"
-      [price]="filterPrice$ | async"
-      [maxPrice]="maxPrice$ | async"
-      [minPrice]="minPrice$ | async"
-      [activeCategory]="category$ | async"
+      [class.disabled]="loadingProducts()"
+      [categories]="categories()"
+      [price]="filterPrice()"
+      [maxPrice]="maxPrice()"
+      [minPrice]="minPrice()"
+      [activeCategory]="category()"
       [sortOptions]="sortOptions"
-      [currency]="currency$ | async"
-      [lang]="lang$ | async"
-      [choosenSort]="sortBy$ | async"
+      [currency]="currency()"
+      [lang]="lang()"
+      [choosenSort]="sortBy()"
       (changePrice)="priceRange($event)"
       (changeSort)="changeSort($event)"
       (changeCategory)="changeCategory()"
@@ -19,15 +19,15 @@
   </mat-drawer>
   <mat-drawer-content>
     <div class="main">
-      <div class="home-promo" *ngIf="cart$ | async as cart">
+      <div class="home-promo" *ngIf="cart() as cart">
         <span class="home-promo-basic">
           {{ 'Home_promo' | translate | async }}
         </span>
         <span class="home-promo-shipping">
-          {{ 'Free_shipping_limit' | translate | async }} {{ cart.shippingLimit }} {{ currency$ | async }}
+          {{ 'Free_shipping_limit' | translate | async }} {{ cart.shippingLimit }} {{ currency() }}
         </span>
       </div>
-      <div class="home-product" *ngIf="products$ | async as products">
+      <div class="home-product" *ngIf="products() as products">
         <app-carousel [intervalForSlider]="30000" [absoluteArrows]="true">
           <div class="home-promo-slide">
             <div class="home-promo-slide-background"></div>
@@ -45,10 +45,10 @@
             <div class="home-product-top">
               <app-product-content
                 [product]="product"
-                [categories]="categories$ | async"
-                [cartIds]="cartIds$ | async"
-                [currency]="currency$ | async"
-                [lang]="lang$ | async"
+                [categories]="categories()"
+                [cartIds]="cartIds()"
+                [currency]="currency()"
+                [lang]="lang()"
                 [withLink]="true"
                 (addProduct)="addToCart($event)"
                 (removeProduct)="removeFromCart($event)"
@@ -58,7 +58,7 @@
           </ng-container>
         </app-carousel>
       </div>
-      <div class="home-primary-header" *ngIf="(categories$ | async)?.length">
+      <div class="home-primary-header" *ngIf="(categories())?.length">
         <div class="home-primary-container">
           <span class="home-mobile-filter" (click)="toggleSidebar()">
             <i class="material-icons md-16">filter_list</i>
@@ -67,8 +67,8 @@
             <div class="home-categories-links">
               <a
                 class="home-title-category"
-                *ngFor="let cat of categories$ | async"
-                [routerLink]="['/' + (lang$ | async) + '/product/category/' + cat.titleUrl]"
+                *ngFor="let cat of categories()"
+                [routerLink]="['/' + (lang()) + '/product/category/' + cat.titleUrl]"
               >
                 {{ cat.title }}
               </a>
@@ -77,35 +77,35 @@
         </div>
       </div>
       <div class="container">
-        <mat-progress-bar mode="indeterminate" *ngIf="loadingProducts$ | async"></mat-progress-bar>
-        <div *ngIf="categories$ | async as categories">
+        <mat-progress-bar mode="indeterminate" *ngIf="loadingProducts()"></mat-progress-bar>
+        <div *ngIf="categories() as categories">
           <app-categories-list
             [categories]="categories"
-            [lang]="lang$ | async">
+            [lang]="lang()">
           </app-categories-list>
         </div>
       </div>
-      <div class="home-primary-header" *ngIf="products$ | async">
+      <div class="home-primary-header" *ngIf="products()">
         <div class="home-primary-container">
           <h1 class="home-title">{{ 'Products' | translate | async }}</h1>
         </div>
       </div>
       <div class="container">
-        <mat-spinner class="home-spinner" *ngIf="loadingProducts$ | async"></mat-spinner>
-        <div *ngIf="products$ | async as products">
+        <mat-spinner class="home-spinner" *ngIf="loadingProducts()"></mat-spinner>
+        <div *ngIf="products() as products">
           <app-products-list
-            [class.disabled]="loadingProducts$ | async"
+            [class.disabled]="loadingProducts()"
             [products]="products"
-            [cartIds]="cartIds$ | async"
-            [currency]="currency$ | async"
-            [lang]="lang$ | async"
+            [cartIds]="cartIds()"
+            [currency]="currency()"
+            [lang]="lang()"
             (addProduct)="addToCart($event)"
             (removeProduct)="removeFromCart($event)"
           >
           </app-products-list>
           <app-pagination
-            *ngIf="pagination$ | async as pagination"
-            [class.disabled]="loadingProducts$ | async"
+            *ngIf="pagination() as pagination"
+            [class.disabled]="loadingProducts()"
             [pagination]="pagination"
             (changePage)="changePage($event)"
           >

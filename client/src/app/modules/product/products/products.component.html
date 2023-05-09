@@ -1,16 +1,16 @@
 <mat-drawer-container class="products-sidebar-container" autosize hasBackdrop >
   <mat-drawer #sideBar [(opened)]="sidebarOpened"  class="products-sidebar" mode="over">
     <app-sidebar
-      [class.disabled]="loadingProducts$ | async"
-      [categories]="categories$ | async"
-      [price]="filterPrice$ | async"
-      [maxPrice]="maxPrice$ | async"
-      [minPrice]="minPrice$ | async"
-      [activeCategory]="category$ | async"
+      [class.disabled]="loadingProducts()"
+      [categories]="categories()"
+      [price]="filterPrice()"
+      [maxPrice]="maxPrice()"
+      [minPrice]="minPrice()"
+      [activeCategory]="category()"
       [sortOptions]="sortOptions"
-      [currency]="currency$ | async"
-      [lang]="lang$ | async"
-      [choosenSort]="sortBy$ | async"
+      [currency]="currency()"
+      [lang]="lang()"
+      [choosenSort]="sortBy()"
       (changePrice)="priceRange($event)"
       (changeSort)="changeSort($event)"
       (changeCategory)="changeCategory()">
@@ -24,54 +24,54 @@
           <i class="material-icons md-16">filter_list</i>
           <span>{{ 'Filter' | translate | async }}</span>
         </div>
-        <h1 class="products-title" *ngIf="!(categoryInfo$ | async)">{{'Products' | translate | async}}</h1>
-        <ng-container *ngIf="(categoryInfo$ | async) as categoryInfo">
+        <h1 class="products-title" *ngIf="!(categoryInfo())">{{'Products' | translate | async}}</h1>
+        <ng-container *ngIf="(categoryInfo()) as categoryInfo">
           <h1 class="products-title">{{categoryInfo.title}} </h1>
           <p  class="products-description" *ngIf="categoryInfo.description">{{ categoryInfo.description }}</p>
         </ng-container>
       </div>
     </div>
     <div class="container products-content">
-      <mat-progress-bar mode="indeterminate" *ngIf="loadingProducts$ | async"></mat-progress-bar>
+      <mat-progress-bar mode="indeterminate" *ngIf="loadingProducts()"></mat-progress-bar>
       <div class="sidebar-layout"
-        *ngIf="(products$ | async) as products">
+        *ngIf="products() as products">
         <div class="sidebar-wrap">
           <app-sidebar class="products-sidebar-desktop"
-            [class.disabled]="loadingProducts$ | async"
-            [categories]="categories$ | async"
-            [price]="filterPrice$ | async"
-            [maxPrice]="maxPrice$ | async"
-            [minPrice]="minPrice$ | async"
-            [activeCategory]="category$ | async"
+            [class.disabled]="loadingProducts()"
+            [categories]="categories()"
+            [price]="filterPrice()"
+            [maxPrice]="maxPrice()"
+            [minPrice]="minPrice()"
+            [activeCategory]="category()"
             [sortOptions]="sortOptions"
-            [currency]="currency$ | async"
-            [lang]="lang$ | async"
-            [choosenSort]="sortBy$ | async"
+            [currency]="currency()"
+            [lang]="lang()"
+            [choosenSort]="sortBy()"
             (changePrice)="priceRange($event)"
             (changeSort)="changeSort($event)"
             (changeCategory)="changeCategory()">
           </app-sidebar>
         </div>
         <div class="main-wrap">
-          <ng-container *ngIf="(subCategories$ | async) as subCategories">
-            <app-categories-list *ngIf="subCategories.length && (pagination$ | async).page === 1"
+          <ng-container *ngIf="(subCategories()) as subCategories">
+            <app-categories-list *ngIf="subCategories.length && (pagination()).page === 1"
               [categories]="subCategories"
-              [lang]="lang$ | async"
+              [lang]="lang()"
               [withSlider]="false">
             </app-categories-list>
           </ng-container>
           <app-products-list
-            [class.disabled]="loadingProducts$ | async"
+            [class.disabled]="loadingProducts()"
             [products]="products"
-            [cartIds]="cartIds$ | async"
-            [currency]="currency$ | async"
-            [lang]="lang$ | async"
+            [cartIds]="cartIds()"
+            [currency]="currency()"
+            [lang]="lang()"
             (addProduct)="addToCart($event)"
             (removeProduct)="removeFromCart($event)">
           </app-products-list>
           <app-pagination
-            [class.disabled]="loadingProducts$ | async"
-            *ngIf="(pagination$ | async) as pagination"
+            [class.disabled]="loadingProducts()"
+            *ngIf="(pagination()) as pagination"
             [pagination]="pagination"
             (changePage)="changePage($event)">
           </app-pagination>

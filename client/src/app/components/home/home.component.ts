@@ -1,5 +1,6 @@
 import { map, distinctUntilChanged, filter, take, skip, withLatestFrom } from 'rxjs/operators';
-import { Component, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnDestroy, Signal, computed } from '@angular/core';
+import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { Observable, combineLatest, Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
@@ -19,20 +20,20 @@ import { Product, Category, Pagination, Cart } from '../../shared/models';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent implements OnDestroy {
-  products$: Observable<Product[]>;
-  cartIds$: Observable<{ [productID: string]: number }>;
-  cart$: Observable<Cart>;
-  loadingProducts$: Observable<boolean>;
-  categories$: Observable<Category[]>;
-  pagination$: Observable<Pagination>;
-  category$: Observable<string>;
-  filterPrice$: Observable<number>;
-  maxPrice$: Observable<number>;
-  minPrice$: Observable<number>;
-  page$: Observable<number>;
-  sortBy$: Observable<string>;
-  currency$: Observable<string>;
-  lang$: Observable<string>;
+  products: Signal<Product[]>;
+  cartIds: Signal<{ [productID: string]: number }>;
+  cart: Signal<Cart>;
+  loadingProducts: Signal<boolean>;
+  categories: Signal<Category[]>;
+  pagination: Signal<Pagination>;
+  category: Signal<string>;
+  filterPrice: Signal<number>;
+  maxPrice: Signal<number>;
+  minPrice: Signal<number>;
+  page: Signal<number>;
+  sortBy: Signal<string>;
+  currency: Signal<string>;
+  lang: Signal<string>;
   categoriesSub: Subscription;
   productsSub: Subscription;
   sortOptions = sortOptions;
@@ -49,38 +50,37 @@ export class HomeComponent implements OnDestroy {
     private translate: TranslateService,
     private snackBar: MatSnackBar
   ) {
-    this.category$ = this.route.params.pipe(
+    this.category = toSignal(this.route.params.pipe(
       map((params) => params['category']),
-      distinctUntilChanged()
-    );
-    this.page$ = this.route.queryParams.pipe(
+    ));
+    this.page = toSignal(this.route.queryParams.pipe(
       map((params) => params['page']),
       map((page) => parseFloat(page))
-    );
-    this.sortBy$ = this.route.queryParams.pipe(
-      map((params) => params['sort']),
-      map((sort) => sort)
-    );
-    this.lang$ = this.translate.getLang$().pipe(filter((lang: string) => !!lang));
-    this.cart$ = this.store.select(fromRoot.getCart);
-    this.maxPrice$ = this.store.select(fromRoot.getMaxPrice);
-    this.minPrice$ = this.store.select(fromRoot.getMinPrice);
-    this.filterPrice$ = this.store.select(fromRoot.getPriceFilter);
-    this.loadingProducts$ = this.store.select(fromRoot.getLoadingProducts);
-    this.products$ = this.store.select(fromRoot.getProducts).pipe(filter((products) => !!products));
-    this.cartIds$ = this.cart$.pipe(
-      filter((cart) => !!cart),
-      map((cart: Cart) =>
-        cart.items && cart.items.length ? cart.items.reduce((prev, curr) => ({ ...prev, [curr.id]: curr.qty }), {}) : {}
-      )
+    ));
+    this.sortBy = toSignal(this.route.queryParams.pipe(
+      map((params) => params['sort'])
+    ));
+    this.lang = toSignal(this.translate.getLang$().pipe(filter((lang: string) => !!lang)));
+    this.cart = this.store.selectSignal(fromRoot.getCart);
+    this.maxPrice = this.store.selectSignal(fromRoot.getMaxPrice);
+    this.minPrice = this.store.selectSignal(fromRoot.getMinPrice);
+    this.filterPrice = this.store.selectSignal(fromRoot.getPriceFilter);
+    this.loadingProducts = this.store.selectSignal(fromRoot.getLoadingProducts);
+    this.products = this.store.selectSignal(fromRoot.getProducts);
+    this.cartIds = computed(() => {
+      if (!this.cart()) {
+          return {};
+        }
+        return this.cart().items && this.cart().items.length ? this.cart().items.reduce((prev, curr) => ({ ...prev, [curr.id]: curr.qty }), {}) : {}
+      }
     );
 
     this.title.setTitle('Eshop Mean');
     this.meta.updateTag({ name: 'description', content: 'Angular - Node.js - Eshop application - MEAN Eshop with dashboard' });
 
-    this.categories$ = this.store.select(fromRoot.getCategories);
-    this.pagination$ = this.store.select(fromRoot.getPagination);
-    this.currency$ = this.store.select(fromRoot.getCurrency);
+    this.categories = this.store.selectSignal(fromRoot.getCategories);
+    this.pagination = this.store.selectSignal(fromRoot.getPagination);
+    this.currency = this.store.selectSignal(fromRoot.getCurrency);
 
     this._loadCategories();
     this._loadProducts();
@@ -97,10 +97,9 @@ export class HomeComponent implements OnDestroy {
       .subscribe(({message, action}) => {
         let snackBarRef = this.snackBar.open(message, action, {duration: 3000});
         snackBarRef.onAction().pipe(
-            withLatestFrom(this.lang$),
             take(1))
-          .subscribe(([_, lang]) => {
-            this.router.navigate(['/' + lang + '/cart'])
+          .subscribe(() => {
+            this.router.navigate(['/' + this.lang() + '/cart'])
           });
       });
   }
@@ -110,11 +109,9 @@ export class HomeComponent implements OnDestroy {
   }
 
   priceRange(price: number): void {
-    this.filterPrice$.pipe(take(1)).subscribe((filterPrice) => {
-      if (filterPrice !== price) {
-        this.store.dispatch(new actions.FilterPrice(price));
-      }
-    });
+    if (this.filterPrice() !== price) {
+      this.store.dispatch(new actions.FilterPrice(price));
+    }
   }
 
   changeCategory(): void {
@@ -122,34 +119,26 @@ export class HomeComponent implements OnDestroy {
   }
 
   changePage(page: number): void {
-    combineLatest([this.category$, this.sortBy$, this.lang$])
-      .pipe(take(1))
-      .subscribe(([category, sortBy, lang]: [string, string, string]) => {
-        if (category) {
-          this.router.navigate(['/' + lang + '/product/category/' + category], {
-            queryParams: { sort: sortBy || 'newest', page: page || 1 },
-          });
-        } else {
-          this.router.navigate(['/' + lang + '/product/all'], {
-            queryParams: { sort: sortBy || 'newest', page: page || 1 },
-          });
-        }
+    if (this.category()) {
+      this.router.navigate(['/' + this.lang() + '/product/category/' + this.category()], {
+        queryParams: { sort: this.sortBy() || 'newest', page: page || 1 },
       });
+    } else {
+      this.router.navigate(['/' + this.lang() + '/product/all'], {
+        queryParams: { sort: this.sortBy() || 'newest', page: page || 1 },
+      });
+    }
     this.store.dispatch(new actions.UpdatePosition({ productsComponent: 0 }));
   }
 
   changeSort(sort: string): void {
-    combineLatest([this.category$, this.page$, this.lang$])
-      .pipe(take(1))
-      .subscribe(([category, page, lang]: [string, number, string]) => {
-        if (category) {
-          this.router.navigate(['/' + lang + '/product/category/' + category], {
-            queryParams: { sort, page: page || 1 },
-          });
-        } else {
-          this.router.navigate(['/' + lang + '/product/all'], { queryParams: { sort, page: page || 1 } });
-        }
+    if (this.category()) {
+      this.router.navigate(['/' + this.lang() + '/product/category/' + this.category()], {
+        queryParams: { sort , page: this.page() || 1 },
       });
+    } else {
+      this.router.navigate(['/' + this.lang() + '/product/all'], { queryParams: { sort, page: this.page() || 1 } });
+    }
     this.store.dispatch(new actions.UpdatePosition({ productsComponent: 0 }));
   }
 
@@ -162,35 +151,30 @@ export class HomeComponent implements OnDestroy {
     this.productsSub.unsubscribe();
   }
 
-  private _loadCategories(): void {
-    combineLatest([this.categories$.pipe(take(1)), this.lang$.pipe(take(1))])
-      .pipe(take(1))
-      .subscribe(([categories, lang]: [any, string]) => {
-        if (!categories.length) {
-          this.store.dispatch(new actions.GetCategories(lang));
-        }
-      });
 
-    this.categoriesSub = this.lang$.pipe(distinctUntilChanged(), skip(1)).subscribe((lang: string) => {
+  private _loadCategories(): void {
+    if (!this.categories()?.length) {
+      this.store.dispatch(new actions.GetCategories(this.lang()));
+    }
+
+    this.categoriesSub = toObservable(this.lang).pipe(distinctUntilChanged(), skip(1)).subscribe((lang: string) => {
       this.store.dispatch(new actions.GetCategories(lang));
     });
   }
 
   private _loadProducts(): void {
     this.productsSub = combineLatest([
-      this.lang$.pipe(distinctUntilChanged()),
-      this.category$.pipe(distinctUntilChanged()),
-      this.filterPrice$.pipe(distinctUntilChanged()),
+      toObservable(this.lang).pipe(distinctUntilChanged()),
+      toObservable(this.category).pipe(distinctUntilChanged()),
+      toObservable(this.filterPrice).pipe(distinctUntilChanged()),
       this.route.queryParams.pipe(
         map((params) => ({ page: params['page'], sort: params['sort'] })),
         distinctUntilChanged()
       ),
-    ]).subscribe(
-      ([lang, category, filterPrice, { page, sort }]: [string, string, number, { page: number; sort: string }]) => {
-        this.store.dispatch(
-          new actions.GetProducts({ lang, category, maxPrice: filterPrice, page: page || 1, sort: sort || 'newest' })
-        );
-      }
-    );
+    ]).subscribe(([lang, category, filterPrice, { page, sort }]) => {
+      this.store.dispatch(
+        new actions.GetProducts({ lang, category, maxPrice: filterPrice, page: page || 1, sort: sort || 'newest' })
+      );
+    });
   }
 }
