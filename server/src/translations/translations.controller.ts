@@ -43,7 +43,13 @@ export class TranslationsController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Patch('all')
   async updateTranslations(@Body() translations): Promise<Translation[]> {
-    const updateTranslations = translations.map((translation) => {
+
+    const updateTranslations = translations.map(async(translation) => {
+      const langTranslation = await this.translationModel.findOne({lang: translation.lang })
+      if (!langTranslation) {
+        const newTranslation = await new this.translationModel({lang: translation.lang, keys: translation.keys });
+        newTranslation.save();
+      }
       return this.translationModel.update(
         { lang: translation.lang },
         { $set: { keys: translation.keys } },

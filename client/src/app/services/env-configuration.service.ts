@@ -43,9 +43,20 @@ export class EnvConfigurationService {
             .split(/(?=[A-Z])/)
             .join('-')
             .toLowerCase();
+
+          if (style === 'promoSlideBackground') {
+            this.themeService.setCSSVariable(`url(${styleValue})`, `${varName}`);
+            return;
+          }
           if (style.includes('Background')) {
             this.themeService.setCSSVariable(`url(${styleValue})`, `${varName}-url`);
+            return;
           }
+          if (style === 'logo') {
+            this.themeService.setCSSVariable(`url(${styleValue})`, 'logo');
+            return;
+          }
+
           this.themeService.setCSSVariable(styleValue, varName);
           if (style.includes('Color')) {
             if (style.includes('primary')) {

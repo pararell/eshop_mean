@@ -1,7 +1,7 @@
 
 import { Injectable, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import * as tinycolor from 'tinycolor2';
+import tinycolor from "tinycolor2";
 
 export interface Color {
   name: string;

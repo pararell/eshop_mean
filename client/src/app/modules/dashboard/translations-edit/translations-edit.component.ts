@@ -1,4 +1,4 @@
-import { take } from 'rxjs/operators';
+import { filter, take } from 'rxjs/operators';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { Component, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
@@ -16,6 +16,7 @@ import { Translations } from '../../../shared/models';
 })
 export class TranslationsEditComponent implements OnDestroy {
   translations$: Observable<Translations[]>;
+  loading$: Observable<boolean>;
   languageForm: FormGroup;
   translationSub$ = new BehaviorSubject([]);
   translationsSub: Subscription;
@@ -29,10 +30,14 @@ export class TranslationsEditComponent implements OnDestroy {
     });
 
     this.translations$ = this.store.select(fromRoot.getAllTranslations);
+    this.loading$ = this.store.select(fromRoot.getDashboardLoading);
 
     this.translationsSub = this.translations$.subscribe((translations) => {
-      translations.forEach((translation: Translations) => {
-        const keys = translation.keys;
+      const initTranslations = !translations.length
+        ? this.allLanguages.map((lang,i) => ({id:i,lang, keys: {}}))
+        : translations;
+      initTranslations.forEach((translation: Translations) => {
+        const keys = translation.keys ? translation.keys : {};
         const newUsergroup: FormGroup = this.fb.group({});
         Object.keys(keys).map((key) => {
           newUsergroup.addControl(key, new FormControl(keys[key]));
@@ -41,7 +46,7 @@ export class TranslationsEditComponent implements OnDestroy {
         this.languageForm.setControl(translation.lang + '_json', new FormControl(JSON.stringify(keys)));
       });
 
-      this.translationSub$.next(translations);
+      this.translationSub$.next(initTranslations);
     });
   }
 
@@ -49,7 +54,9 @@ export class TranslationsEditComponent implements OnDestroy {
     const newKey = this.languageForm.get('add').value;
     if (newKey) {
       this.translationSub$.pipe(take(1)).subscribe((translations) => {
+        console.log(this.languageForm)
         const updateTransations = translations.map((translation) => {
+          console.log(translation, 'translation')
           const langGroup = this.languageForm.get(translation.lang) as FormGroup;
           langGroup.addControl(newKey, new FormControl(newKey));
 
@@ -88,6 +95,10 @@ export class TranslationsEditComponent implements OnDestroy {
         keys: this.languageForm.value[lang],
       }));
     this.store.dispatch(new actions.EditTranslation(allTranslations));
+    this.loading$.pipe(filter(loading => !loading),take(1))
+    .subscribe(() => {
+      this.store.dispatch(new actions.GetAllTranslations());
+    })
   }
 
   submitJSON(): void {
@@ -98,6 +109,10 @@ export class TranslationsEditComponent implements OnDestroy {
         keys: JSON.parse(this.languageForm.value[lang]),
       }));
     this.store.dispatch(new actions.EditTranslation(allTranslations));
+    this.loading$.pipe(filter(loading => !loading),take(1))
+      .subscribe(() => {
+        this.store.dispatch(new actions.GetAllTranslations());
+      })
   }
 
   ngOnDestroy(): void {
