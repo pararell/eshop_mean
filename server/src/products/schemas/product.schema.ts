@@ -19,7 +19,7 @@ const getProductLangInfo = (): { [lang: string]: any } => {
         shipping: String,
       },
     }),
-    {}
+    {},
   );
 };
 

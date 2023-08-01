@@ -7,35 +7,29 @@ import { User } from './models/user.model';
 import { GetUser } from './utils/get-user.decorator';
 import { GoogleUserDto } from './dto/google-user.dto';
 
-
 @Controller('api/auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @UseGuards(AuthGuard('jwt'))
   @Get()
-  getUser(@GetUser() user: User): {id: string; email: string; roles: string[]} {
-    return {id: user._id, email: user.email, roles: user.roles};
+  getUser(@GetUser() user: User): { id: string; email: string; roles: string[] } {
+    return { id: user._id, email: user.email, roles: user.roles };
   }
 
   @Post('/signup')
-  signUp(
-    @Body(ValidationPipe) authCredentialsDto: AuthCredentialDto,
-  ): Promise<void> {
+  signUp(@Body(ValidationPipe) authCredentialsDto: AuthCredentialDto): Promise<void> {
     return this.authService.signUp(authCredentialsDto);
   }
 
   @Post('/signin')
-  signIn(
-    @Body(ValidationPipe) authCredentialsDto: AuthCredentialDto,
-  ): Promise<{ accessToken: string; id: string; email: string; roles?: string[] }> {
+  signIn(@Body(ValidationPipe) authCredentialsDto: AuthCredentialDto): Promise<{ accessToken: string; id: string; email: string; roles?: string[] }> {
     return this.authService.signIn(authCredentialsDto);
   }
 
   @Get('/google')
   @UseGuards(AuthGuard('google'))
   googleLogin() {}
-
 
   @Get('/google/callback')
   @UseGuards(AuthGuard('google'))

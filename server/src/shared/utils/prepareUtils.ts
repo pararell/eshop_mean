@@ -30,7 +30,7 @@ export const prepareCart = (cart, lang: string, config): CartModel => {
       totalPrice: prev.totalPrice + item.price * item.qty,
       totalQty: prev.totalQty + item.qty,
     }),
-    { totalPrice: 0, totalQty: 0 }
+    { totalPrice: 0, totalQty: 0 },
   );
 
   const shippingTypeCheck = cartLangItems.find((item) => item.shipingCostType === shippingTypes[1]);

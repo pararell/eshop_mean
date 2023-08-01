@@ -13,7 +13,7 @@ const getConfigLangContent = (): { [lang: string]: {} } => {
         },
       },
     }),
-    {}
+    {},
   );
 };
 

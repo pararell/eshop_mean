@@ -9,7 +9,7 @@ const getCategoryLangInfo = () => {
       ...prev,
       [lang]: { title: String, description: String, position: Number, visibility: Boolean, menuHidden: Boolean },
     }),
-    {}
+    {},
   );
 };
 

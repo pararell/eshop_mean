@@ -12,7 +12,7 @@ import TranslationScheme from '../translations/schemas/translation.schema';
     ConfigModule.forRoot(),
     MongooseModule.forFeature([
       { name: 'Order', schema: OrderSchema },
-      { name: 'Translation', schema: TranslationScheme }
+      { name: 'Translation', schema: TranslationScheme },
     ]),
     AuthModule,
   ],

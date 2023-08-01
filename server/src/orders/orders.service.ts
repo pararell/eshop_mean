@@ -19,7 +19,7 @@ export class OrdersService {
   private logger = new Logger('OrdersService');
   constructor(
     @InjectModel('Order') private orderModel: Model<Order>,
-    @InjectModel('Translation') private translationModel: Model<Translation>
+    @InjectModel('Translation') private translationModel: Model<Translation>,
   ) {}
 
   async getOrders(user: User): Promise<Order[]> {

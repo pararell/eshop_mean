@@ -14,7 +14,7 @@ import { languages, paginationLimit } from '../shared/constans';
 export class ProductsService {
   constructor(
     @InjectModel('Product') private productModel: ProductModel,
-    @InjectModel('Category') private categoryModel: Model<CategoryModel>
+    @InjectModel('Category') private categoryModel: Model<CategoryModel>,
   ) {}
 
   async getProducts(getProductsDto: GetProductsDto, lang: string): Promise<ProductsWithPagination> {
@@ -177,7 +177,7 @@ export class ProductsService {
                 visibility: product.tags.includes(category),
               },
             }),
-            {}
+            {},
           ),
         };
         const found = await this.categoryModel.findOne({ titleUrl });
