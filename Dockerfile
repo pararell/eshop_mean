@@ -10,6 +10,7 @@ RUN npm run build:ssr
 FROM node:20.9.0-alpine
 WORKDIR /usr/src/app
 COPY --from=buildContainer /usr/src/app/package.json /usr/src/app/package-lock.json /usr/src/app/.env* ./
+RUN npm i whatwg-url
 COPY --from=buildContainer /usr/src/app/dist ./dist
 
 ENTRYPOINT ["npm", "run", "start"]
