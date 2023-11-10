@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.8.0](https://github.com/pararell/eshop_mean/compare/v0.7.0...v0.8.0) (2023-11-10)
+
+
+### Features
+
+* load product SSR ([4914e0f](https://github.com/pararell/eshop_mean/commit/4914e0fdaa7af4683e8f493e573b075d0512a777))
+* small fixes ([846cedf](https://github.com/pararell/eshop_mean/commit/846cedf94602e9b1cb8b6ed08e21592ade096254))
+* use signals, fix recaptcha ([a316417](https://github.com/pararell/eshop_mean/commit/a316417664e7dd2884f3f767349b9419e3b9b3c5))
+
+
+### Bug Fixes
+
+* docker ([423e8b0](https://github.com/pararell/eshop_mean/commit/423e8b0e570fa7ed540b0eb6c17dbe96f1198c05))
+* npm command ([472ab0a](https://github.com/pararell/eshop_mean/commit/472ab0a459ef713a05e00c5ad9850ac99b0c0647))
+
 ## [0.7.0](https://github.com/pararell/eshop_mean/compare/v0.3.0...v0.7.0) (2023-03-09)
 
 
