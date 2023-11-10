@@ -21,7 +21,7 @@
     "lint:client": "ng lint",
     "dev:ssr": "ng run eshop:serve-ssr",
     "serve:ssr": "node dist/eshop/server/server.mjs",
-    "build:ssr": "NODE_ENV=production ng build --configuration production && ng run eshop:server:production",
+    "build:ssr": "NODE_ENV=production ng build --configuration production",
     "prerender": "ng run eshop:prerender",
     "release": "standard-version",
     "heroku-postbuild": "npm run build:ssr",
