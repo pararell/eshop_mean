@@ -28,7 +28,7 @@ export class ProductComponent implements OnDestroy {
   routeSub: Subscription;
   categoriesSub: Subscription;
   product$: Observable<Product>;
-  cartIds$: Observable<{[productId: string]: number }>;
+  cartIds$: Observable<{ [productId: string]: number }>;
 
   constructor(
     private route: ActivatedRoute,
@@ -40,15 +40,13 @@ export class ProductComponent implements OnDestroy {
     private snackBar: MatSnackBar,
     private router: Router,
     private translate: TranslateService,
-    private jsonLDService: JsonLDService
+    private jsonLDService: JsonLDService,
   ) {
     this.lang$ = this.translate.getLang$();
     this.categories$ = this.store.select(fromRoot.getCategories);
-    this.routeSub = combineLatest([this.lang$, this.route.params.pipe(map((params) => params['id']))]).subscribe(
-      ([lang, id]) => {
-        this.store.dispatch(new actions.GetProduct(id + '?lang=' + lang));
-      }
-    );
+    this.routeSub = combineLatest([this.lang$, this.route.params.pipe(map((params) => params['id']))]).subscribe(([lang, id]) => {
+      this.store.dispatch(new actions.GetProduct(id + '?lang=' + lang));
+    });
 
     this.currency$ = this.store.select(fromRoot.getCurrency);
 
@@ -59,7 +57,7 @@ export class ProductComponent implements OnDestroy {
     this.product$ = this.store.select(fromRoot.getProduct);
     this.cartIds$ = this.store.select(fromRoot.getCart).pipe(
       filter(Boolean),
-      map((cart: Cart) => cart.items.reduce((prev, curr) => ({ ...prev, [curr.id]: curr.qty }), {}))
+      map((cart: Cart) => cart.items.reduce((prev, curr) => ({ ...prev, [curr.id]: curr.qty }), {})),
     );
   }
 
@@ -67,18 +65,23 @@ export class ProductComponent implements OnDestroy {
     if (type === 'add') {
       this.store.dispatch(new actions.AddToCart('?id=' + id));
 
-      this.translate.getTranslations$()
-        .pipe(map(translations => translations
-          ? {message: translations['ADDED_TO_CART'] || 'Added to cart', action: translations['TO_CART'] || 'To Cart'}
-          : {message: 'Added to cart', action: 'To Cart'}
-          ),take(1))
-        .subscribe(({message, action}) => {
-          let snackBarRef = this.snackBar.open(message, action, {duration: 3000});
-          snackBarRef.onAction().pipe(
-              withLatestFrom(this.lang$),
-              take(1))
+      this.translate
+        .getTranslations$()
+        .pipe(
+          map((translations) =>
+            translations
+              ? { message: translations['ADDED_TO_CART'] || 'Added to cart', action: translations['TO_CART'] || 'To Cart' }
+              : { message: 'Added to cart', action: 'To Cart' },
+          ),
+          take(1),
+        )
+        .subscribe(({ message, action }) => {
+          let snackBarRef = this.snackBar.open(message, action, { duration: 3000 });
+          snackBarRef
+            .onAction()
+            .pipe(withLatestFrom(this.lang$), take(1))
             .subscribe(([_, lang]) => {
-              this.router.navigate(['/' + lang + '/cart'])
+              this.router.navigate(['/' + lang + '/cart']);
             });
         });
     }
@@ -128,25 +131,25 @@ export class ProductComponent implements OnDestroy {
       .pipe(
         filter((product: Product) => !!product && !!product.title),
         withLatestFrom(this.currency$),
-        take(1)
+        take(1),
       )
-      .subscribe(([product,currency]) => {
+      .subscribe(([product, currency]) => {
         this.title.setTitle(product.title);
         this.meta.updateTag({ name: 'description', content: product.description });
         const productSchema = {
-          "@context": "https://schema.org/",
-          "@type": "Product",
-          "name": product.title,
-          "image": product.mainImage?.url,
-          "offers": {
-            "@type": "Offer",
-            "priceCurrency": currency,
-            "price": product.regularPrice,
-            "availability": product.stock === 'onStock' ? "https://schema.org/InStock" : 'https://schema.org/OutOfStock'
+          '@context': 'https://schema.org/',
+          '@type': 'Product',
+          name: product.title,
+          image: product.mainImage?.url,
+          offers: {
+            '@type': 'Offer',
+            priceCurrency: currency,
+            price: product.regularPrice,
+            availability: product.stock === 'onStock' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
           },
-          "description": product.description
-        }
-        this.jsonLDService.insertSchema(productSchema, 'structured-data-product')
+          description: product.description,
+        };
+        this.jsonLDService.insertSchema(productSchema, 'structured-data-product');
       });
   }
 }

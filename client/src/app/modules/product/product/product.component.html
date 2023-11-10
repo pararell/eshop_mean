@@ -6,7 +6,8 @@
     </button>
     @if (!(product$ | async) || (productLoading$ | async)) {
     <mat-progress-bar mode="indeterminate"> </mat-progress-bar>
-    } @if ((product$ | async); as product) {
+    }
+    @if ((product$ | async); as product) {
       @if (!(productLoading$ | async)) {
     <mat-card appearance="outlined" class="product">
       @if (product.visibility && product.salePrice) {
@@ -42,6 +43,7 @@
 
       }
     </mat-card>
-    } }
+    }
+  }
   </div>
 </div>

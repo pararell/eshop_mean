@@ -1,7 +1,6 @@
 import { APP_BASE_HREF } from '@angular/common';
-import { DynamicModule, Inject, Module, OnModuleInit } from '@nestjs/common';
+import { DynamicModule, Module, OnModuleInit } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
-import { existsSync } from 'fs';
 import { dirname, join, resolve } from 'path';
 import 'reflect-metadata';
 import { Provider } from '@nestjs/common';
@@ -10,55 +9,10 @@ import { CommonEngine } from '@angular/ssr';
 import { fileURLToPath } from 'url';
 import AppServerModule from '../../client/src/main.server';
 
-export const ANGULAR_UNIVERSAL_OPTIONS = 'ANGULAR_UNIVERSAL_OPTIONS';
-
-export interface AngularUniversalOptions {
-  /**
-   * The directory where the module should look for client bundle (Angular app).
-   */
-  viewsPath: string;
-  /**
-   * Path to index file.
-   * Default: {viewsPaths}/index.html
-   */
-  templatePath?: string;
-  /**
-   * Static files root directory.
-   * Default: *.*
-   */
-  rootStaticPath?: string | RegExp;
-  /**
-   * Path to render Angular app.
-   * Default: * (wildcard - all paths)
-   */
-  renderPath?: string;
-  /**
-   * The platform level providers for the current render request.
-   */
-  extraProviders?: any[];
-   /**
-   * Reduce render blocking requests by inlining critical CSS.
-   * Default: true.
-   */
-  inlineCriticalCss?: boolean;
-  /**
-   * Callback to be called in case of a rendering error.
-   */
-  errorHandler?: (params: {
-    err?: Error;
-    html?: string;
-    renderCallback: (err: any, content: string) => void;
-  }) => void;
-  /**
-   * Module to bootstrap
-   */
-  bootstrap: any;
-}
-
-export function setupUniversal(app: any, ngOptions: AngularUniversalOptions) {
-      const serverDistFolder = dirname(fileURLToPath(import.meta.url));
-    const browserDistFolder = resolve(serverDistFolder, '../browser');
-    const indexHtml = join(serverDistFolder, 'index.server.html');
+export function setupUniversal(app: any) {
+  const serverDistFolder = dirname(fileURLToPath(import.meta.url));
+  const browserDistFolder = resolve(serverDistFolder, '../browser');
+  const indexHtml = join(serverDistFolder, 'index.server.html');
 
   app.engine('html', (_, options, callback) => {
     const commonEngine = new CommonEngine();
@@ -71,10 +25,9 @@ export function setupUniversal(app: any, ngOptions: AngularUniversalOptions) {
         providers: [
           {
             provide: 'serverUrl',
-            useValue: `${options.req.protocol}://${options.req.get('host')}`
+            useValue: `${options.req.protocol}://${options.req.get('host')}`,
           },
-          ...(ngOptions.extraProviders || [])
-        ]
+        ],
       })
       .then((html) => callback(null, html))
       .catch((err) => callback(err));
@@ -83,62 +36,33 @@ export function setupUniversal(app: any, ngOptions: AngularUniversalOptions) {
   app.set('view engine', 'html');
   app.set('views', browserDistFolder);
 
+  const rootStaticPath = '*.*';
   // Serve static files
   app.get(
-    ngOptions.rootStaticPath,
+    rootStaticPath,
     express.static(browserDistFolder, {
-      maxAge: 600
-    })
+      maxAge: 600,
+    }),
   );
 }
 
 export const angularUniversalProviders: Provider[] = [
   {
     provide: 'UNIVERSAL_INITIALIZER',
-    useFactory: (
-      host: HttpAdapterHost,
-      options: AngularUniversalOptions & { template: string }
-    ) =>
-      host &&
-      host.httpAdapter &&
-      setupUniversal(host.httpAdapter.getInstance(), options),
-    inject: [HttpAdapterHost, ANGULAR_UNIVERSAL_OPTIONS]
-  }
+    useFactory: (host: HttpAdapterHost & { template: string }) => host && host.httpAdapter && setupUniversal(host.httpAdapter.getInstance()),
+    inject: [HttpAdapterHost],
+  },
 ];
 
 @Module({
-  providers: [...angularUniversalProviders]
+  providers: [...angularUniversalProviders],
 })
 export class AngularUniversalModule implements OnModuleInit {
-  constructor(
-    @Inject(ANGULAR_UNIVERSAL_OPTIONS)
-    private readonly ngOptions: AngularUniversalOptions,
-    private readonly httpAdapterHost: HttpAdapterHost
-  ) {}
+  constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
-  static forRoot(options: AngularUniversalOptions): DynamicModule {
-
-
-      const serverDistFolder = dirname(fileURLToPath(import.meta.url));
-      const indexHtml = join(serverDistFolder, 'index.server.html');
-      const browserDistFolder = resolve(serverDistFolder, '../browser');
-
-    options = {
-      templatePath: indexHtml,
-      rootStaticPath: '*.*',
-      renderPath: '*',
-      viewsPath: browserDistFolder,
-      ...options
-    };
-
+  static forRoot(): DynamicModule {
     return {
       module: AngularUniversalModule,
-      providers: [
-        {
-          provide: ANGULAR_UNIVERSAL_OPTIONS,
-          useValue: options
-        }
-      ]
     };
   }
 
@@ -151,12 +75,15 @@ export class AngularUniversalModule implements OnModuleInit {
       return;
     }
     const app = httpAdapter.getInstance();
-    app.get(this.ngOptions.renderPath, (req, res) =>
-      res.render(this.ngOptions.templatePath, {
+    const serverDistFolder = dirname(fileURLToPath(import.meta.url));
+    const templatePath = join(serverDistFolder, 'index.server.html');
+    const renderPath = '*';
+    app.get(renderPath, (req, res) =>
+      res.render(templatePath, {
         req,
         res,
-        providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }]
-      })
+        providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }],
+      }),
     );
   }
 }
