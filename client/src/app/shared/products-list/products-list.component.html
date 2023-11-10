@@ -20,8 +20,7 @@
     <a class="product_card-image"
       [routerLink]="[ '/' + lang + '/product/' + product?.titleUrl]"
       [attr.aria-labelledby]="product?.titleUrl"
-      lazySrc [lazyBackground]="'url(' + product.mainImage.url + ')'"
-      lazySrcVisible="visible">
+      [style.background]="'url(' + product.mainImage.url + ')'">
     </a>
     <div class="product_card-before-price" *ngIf="product.onSale && product.regularPrice">
       {{product.regularPrice }} {{ currency }}

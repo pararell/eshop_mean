@@ -14,7 +14,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { PipeModule } from '../pipes/pipe.module';
-import { LazyModule } from '../utils/lazyLoadImg/lazy.module';
 import { CartShowComponent } from './cart-show/cart-show.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { ProductsListComponent } from './products-list/products-list.component';
@@ -43,7 +42,6 @@ import { OrderInfoComponent } from './order-info/order-info.component';
     FormsModule,
     CommonModule,
     RouterModule,
-    LazyModule,
     PipeModule,
     MatPaginatorModule,
     MatDialogModule,

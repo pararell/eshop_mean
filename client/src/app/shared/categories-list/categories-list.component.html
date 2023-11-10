@@ -14,9 +14,7 @@
         [ngClass]="category.mainImage?.type ? 'category_card-image-cover' : ''"
         [routerLink]="['/' + lang + '/product/category/' + category.titleUrl]"
         [attr.aria-labelledby]="category.titleUrl"
-        lazySrc
-        [lazyBackground]="'url(' + category.mainImage?.url + ')'"
-        lazySrcVisible="visible">
+        [style.background]="'url(' + category.mainImage?.url + ')'">
         <span class="category_card-overlay">
           <span class="category_card-info">
             <h2 class="category_card-title">{{ category?.title }}</h2>

@@ -12,7 +12,7 @@ import { SharedModule } from '../../shared/shared.module';
 import { PipeModule } from '../../pipes/pipe.module';
 import { ContactComponent } from './contact/contact.component';
 import { PageComponent } from './page/page.component';
-import { ReCaptchaV3Service } from 'src/app/services/recaptcha.service';
+import { ReCaptchaV3Service } from '../../services/recaptcha.service';
 
 
 @NgModule({

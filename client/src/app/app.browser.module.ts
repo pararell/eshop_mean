@@ -19,7 +19,7 @@ export function WindowFactory() {
   imports: [
     AppModule,
     BrowserAnimationsModule,
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production, registrationStrategy: 'registerWhenStable:10000' }),
+    // ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production, registrationStrategy: 'registerWhenStable:10000' }),
   ],
   providers: [
     {

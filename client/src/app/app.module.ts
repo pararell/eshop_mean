@@ -1,14 +1,13 @@
-import { Routes } from '@angular/router';
-import { BrowserModule } from '@angular/platform-browser';
+import { Routes, provideRouter } from '@angular/router';
+import { BrowserModule, withHttpTransferCacheOptions } from '@angular/platform-browser';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { CookieService } from 'ngx-cookie-service';
-import { TransferHttpCacheModule } from '@nguniversal/common';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
@@ -22,7 +21,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { SharedModule } from './shared/shared.module';
 import { PipeModule } from './pipes/pipe.module';
-import { LazyModule } from './utils/lazyLoadImg/lazy.module';
 import { reducers, metaReducers } from './store/reducers/index';
 import { AppEffects } from './store/effects';
 import { routesAll } from './app.routes';
@@ -48,7 +46,6 @@ const routes: Routes = routesAll;
   ],
   imports: [
     BrowserModule,
-    TransferHttpCacheModule,
     StoreModule.forRoot(reducers, { metaReducers }),
     HttpClientModule,
     SharedModule,
@@ -64,13 +61,15 @@ const routes: Routes = routesAll;
     MatProgressBarModule,
     MatProgressSpinnerModule,
     MatSidenavModule,
-    LazyModule,
     EffectsModule.forRoot([AppEffects]),
     RouterModule.forRoot(routes, { initialNavigation: 'enabledBlocking' }),
     !environment.production ? StoreDevtoolsModule.instrument() : []
   ],
   providers: [
-    provideClientHydration(),
+     provideHttpClient(withFetch()),
+      provideClientHydration(withHttpTransferCacheOptions({
+        includePostRequests: true
+      })),
     CookieService,
     {
       provide: APP_INITIALIZER,

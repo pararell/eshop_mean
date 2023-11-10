@@ -1,10 +1,11 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "skipLibCheck": true,
     "outDir": "../out-tsc/app",
-    "types": []
+    "types": [
+
+    ]
   },
-  "files": ["src/main.ts", "src/polyfills.ts"],
+  "files": ["src/main.ts", "src/main.server.ts", "../server-ssr.ts"],
   "include": ["src/**/*.d.ts"]
 }

@@ -6,7 +6,7 @@ import { filter, take } from 'rxjs/operators';
 
 import * as actions from '../../../store/actions';
 import * as fromRoot from '../../../store/reducers';
-import { ReCaptchaV3Service } from 'src/app/services/recaptcha.service';
+import { ReCaptchaV3Service } from '../../../services/recaptcha.service';
 
 @Component({
   selector: 'app-contact',

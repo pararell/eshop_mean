@@ -13,7 +13,6 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { ProductComponent } from './product/product.component';
-import { LazyModule } from '../../utils/lazyLoadImg/lazy.module';
 import { SharedModule } from '../../shared/shared.module';
 import { PipeModule } from '../../pipes/pipe.module';
 import { ProductsComponent } from './products/products.component';
@@ -26,7 +25,6 @@ import { ProductsComponent } from './products/products.component';
   imports: [
     CommonModule,
     SharedModule,
-    LazyModule,
     ReactiveFormsModule,
     PipeModule,
     MatCardModule,

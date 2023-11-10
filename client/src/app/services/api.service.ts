@@ -295,7 +295,7 @@ export class ApiService {
     const configUrl = this.apiUrl + '/api/eshop/config/' + titleUrl;
     return this.http.delete(configUrl, this.requestOptions);
   }
-  1;
+
   setHeaders() {
     combineLatest([this.store.select(fromRoot.getLang), this.store.select(fromRoot.getUser)]).subscribe(
       ([lang, user]) => {

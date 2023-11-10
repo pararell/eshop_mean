@@ -39,8 +39,7 @@
                     *ngFor="let imageSrc of product?.images; let i = index; let f = first; let l = last;"
                     (click)="openDialog(i, product?.images)">
                     <img class="product-images-image"
-                      [lazySrc]="imageSrc"
-                      lazySrcVisible="visible">
+                      [src]="imageSrc">
                   </div>
                 </div>
               </mat-card-content>

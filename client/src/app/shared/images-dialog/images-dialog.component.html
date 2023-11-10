@@ -21,7 +21,6 @@
       {{ 'Next' | translate | async }}
     </button>
     <img (click)="onCloseImage()"
-      [lazySrc]="imageSrc"
-      lazySrcVisible="visible">
+      [src]="imageSrc">
   </div>
 </ng-container>

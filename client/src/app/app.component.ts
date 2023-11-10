@@ -46,11 +46,11 @@ export class AppComponent {
     this.store.select(fromRoot.getLang)
       .pipe(filter(Boolean), skip(1))
       .subscribe((lang: string) => {
-        const checkLang = this.router.url.split('/').filter(Boolean)[0];
-        if (checkLang && languages.includes(checkLang)) {
-          const urlWithNewLang = this.router.url.replace(checkLang, lang);
-          this.location.replaceState(urlWithNewLang);
-        }
+        // const checkLang = this.router.url.split('/').filter(Boolean)[0];
+        // if (checkLang && languages.includes(checkLang)) {
+        //   const urlWithNewLang = this.router.url.replace(checkLang, lang);
+        //   this.location.replaceState(urlWithNewLang);
+        // }
         translate.use(lang);
     });
 

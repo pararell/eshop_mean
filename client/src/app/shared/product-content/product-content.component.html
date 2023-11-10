@@ -37,8 +37,6 @@
     </div>
     <div class="product-main-image"
         [attr.aria-labelledby]="product.mainImage.name"
-        lazySrc
-        [lazyBackground]="'url(' + product?.mainImage?.url + ') no-repeat'"
-        lazySrcVisible="visible">
+        [style.background]="'url(' + product?.mainImage?.url + ') no-repeat'">
     </div>
   </div>

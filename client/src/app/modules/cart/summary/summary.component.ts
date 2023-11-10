@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 
 import * as fromRoot from '../../../store/reducers';
-import { Order } from 'src/app/shared/models';
+import { Order } from '../../../shared/models';
 
 @Component({
   selector: 'app-summary',
