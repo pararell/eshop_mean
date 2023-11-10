@@ -16,8 +16,7 @@
 
 ![eshop-mean](https://res.cloudinary.com/dnpgh1vhi/image/upload/v1629725636/eshop-mean.png)
 
-## Test it
-- smrtic.eu - dashboard test - email: test@miroslavsmrtic.sk , password: test123456
+## Blog
 - more info in blog [https://miroslavsmrtic.sk/blogs](https://miroslavsmrtic.sk/blogs)
 
 <img alt="eshop-mean setup" src="https://res.cloudinary.com/dnpgh1vhi/image/upload/v1629726575/Isometric_illustration_design_concept_loading_and_maintenance_process_kjtxck.jpg" height="200" style="margin: 0; padding: 0;">
@@ -34,7 +33,7 @@ $ npm install
 
 ```bash
 # development - start BE - port 4000
-$ npm run start
+$ npm run start:dev
 
 # development - start FE - port 3000
 $ npm run start:client
@@ -42,12 +41,9 @@ $ npm run start:client
 # watch mode server
 $ npm run start:dev
 
-# build ssr, watch for changes doesnt work well now
-$ npm run dev:ssr
-
 # build ssr and serve
-$ npm run build:ssr
-$ npm run serve:ssr
+$ npm run build
+$ npm run start
 ```
 
 For another commands look to package.json
