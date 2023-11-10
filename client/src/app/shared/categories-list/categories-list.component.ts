@@ -14,8 +14,4 @@ export class CategoriesListComponent {
   @Input()  withSlider    = true;
 
   constructor() {}
-
-  trackById(_index: number, item: Category) {
-    return item.titleUrl;
-  }
 }

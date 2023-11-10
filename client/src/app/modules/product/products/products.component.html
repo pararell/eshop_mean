@@ -24,17 +24,26 @@
           <i class="material-icons md-16">filter_list</i>
           <span>{{ 'Filter' | translate | async }}</span>
         </div>
-        <h1 class="products-title" *ngIf="!(categoryInfo())">{{'Products' | translate | async}}</h1>
-        <ng-container *ngIf="(categoryInfo()) as categoryInfo">
+        @if (!(categoryInfo())) {
+<h1 class="products-title">{{'Products' | translate | async}}</h1>
+}
+        @if ((categoryInfo()); as categoryInfo) {
+
           <h1 class="products-title">{{categoryInfo.title}} </h1>
-          <p  class="products-description" *ngIf="categoryInfo.description">{{ categoryInfo.description }}</p>
-        </ng-container>
+          @if (categoryInfo.description) {
+<p  class="products-description">{{ categoryInfo.description }}</p>
+}
+        
+}
       </div>
     </div>
     <div class="container products-content">
-      <mat-progress-bar mode="indeterminate" *ngIf="loadingProducts()"></mat-progress-bar>
-      <div class="sidebar-layout"
-        *ngIf="products() as products">
+      @if (loadingProducts()) {
+<mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+      @if (products(); as products) {
+<div class="sidebar-layout"
+       >
         <div class="sidebar-wrap">
           <app-sidebar class="products-sidebar-desktop"
             [class.disabled]="loadingProducts()"
@@ -53,13 +62,17 @@
           </app-sidebar>
         </div>
         <div class="main-wrap">
-          <ng-container *ngIf="(subCategories()) as subCategories">
-            <app-categories-list *ngIf="subCategories.length && (pagination()).page === 1"
+          @if ((subCategories()); as subCategories) {
+
+            @if (subCategories.length && (pagination()).page === 1) {
+<app-categories-list
               [categories]="subCategories"
               [lang]="lang()"
               [withSlider]="false">
             </app-categories-list>
-          </ng-container>
+}
+          
+}
           <app-products-list
             [class.disabled]="loadingProducts()"
             [products]="products"
@@ -69,14 +82,17 @@
             (addProduct)="addToCart($event)"
             (removeProduct)="removeFromCart($event)">
           </app-products-list>
-          <app-pagination
+          @if ((pagination()); as pagination) {
+<app-pagination
             [class.disabled]="loadingProducts()"
-            *ngIf="(pagination()) as pagination"
+           
             [pagination]="pagination"
             (changePage)="changePage($event)">
           </app-pagination>
+}
         </div>
       </div>
+}
     </div>
   </div>
 </mat-drawer-content>

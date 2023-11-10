@@ -70,7 +70,7 @@ export class TranslationsEditComponent implements OnDestroy {
     }
   }
 
-  removeTranslation(toRemove: string): void {
+  removeTranslation(toRemove: any): void {
     this.translationSub$.pipe(take(1)).subscribe((translations) => {
       const updateTransations = translations.map((translation) => {
         const langGroup = this.languageForm.get(translation.lang) as FormGroup;

@@ -4,72 +4,46 @@
       <div>
         <mat-form-field class="product_edit-field">
           <mat-label>Add key</mat-label>
-          <input
-            matInput
-            formControlName="add">
+          <input matInput formControlName="add" />
         </mat-form-field>
-        <button
-          class="translations-button"
-          mat-flat-button
-          color="accent"
-          (click)="addKeyToTranslation()">
-          +
-        </button>
+        <button class="translations-button" mat-flat-button color="accent" (click)="addKeyToTranslation()">+</button>
       </div>
       <div>
-        <button
-          class="translations-button"
-          mat-raised-button
-          color="primary"
-          type="submit"
-          [disabled]="languageForm.invalid"
-          (click)="submitForm()">
+        <button class="translations-button" mat-raised-button color="primary" type="submit" [disabled]="languageForm.invalid" (click)="submitForm()">
           Save from inputs
         </button>
-        <button
-          class="translations-button"
-          mat-raised-button
-          color="primary"
-          type="submit"
-          [disabled]="languageForm.invalid"
-          (click)="submitJSON()">
+        <button class="translations-button" mat-raised-button color="primary" type="submit" [disabled]="languageForm.invalid" (click)="submitJSON()">
           Save from JSONS
         </button>
       </div>
     </div>
     <div class="translations-subform">
-      <div *ngFor="let translation of (translationSub$ | async); let i = index;">
+      @for (translation of (translationSub$ | async); track translation; let i = $index) {
+      <div>
         <div [formGroup]="languageForm.controls[translation.lang]">
-          <h1>{{translation.lang}}</h1>
-          <ng-container *ngFor="let sentence of translation.keys | keyvalue;">
-            <div class="translation-sentence">
-              <button
-                class="translations-button"
-                *ngIf="!i"
-                (click)="removeTranslation(sentence.key)"
-                mat-mini-fab
-                color="accent">
-                -
-              </button>
-              <mat-form-field class="product_edit-field">
-                <mat-label>{{ sentence.key }}</mat-label>
-                <input
-                  matInput
-                  [formControlName]="sentence.key">
-              </mat-form-field>
-            </div>
-          </ng-container>
+          <h1>{{ translation.lang }}</h1>
+
+          @for (sentence of translation.keys | keyvalue; track sentence) {
+
+          <div class="translation-sentence">
+            @if (!i) {
+            <button class="translations-button" (click)="removeTranslation(sentence.key)" mat-mini-fab color="accent">-</button>
+            }
+            <mat-form-field class="product_edit-field">
+              <mat-label>{{ sentence.key }}</mat-label>
+              <input matInput [formControlName]="sentence.key" />
+            </mat-form-field>
+          </div>
+
+          }
         </div>
         <mat-form-field>
-          <mat-label>{{translation.lang}} JSON</mat-label>
-          <textarea
-            class="translation-textarea"
-            matInput
-            [formControlName]="translation.lang + '_json'">
-          </textarea>
+          <mat-label>{{ translation.lang }} JSON</mat-label>
+          <textarea class="translation-textarea" matInput [formControlName]="translation.lang + '_json'"> </textarea>
         </mat-form-field>
-        <br>
+        <br />
       </div>
+      }
     </div>
   </form>
 </div>

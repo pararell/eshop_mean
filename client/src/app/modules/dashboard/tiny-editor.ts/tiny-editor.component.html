@@ -1,6 +1,8 @@
-<editor *ngIf="(editorApiKey$ | async) as editorApiKey"
+@if ((editorApiKey$ | async); as editorApiKey) {
+<editor
     apiKey="{{editorApiKey}}"
     [ngModel]="description"
     (ngModelChange)="onEditorChange($event)"
     [init]="{plugins: ['image', 'media', 'link', 'code']}">
  </editor>
+}

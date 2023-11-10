@@ -1,42 +1,41 @@
 <div class="product-content">
-    <div class="product-detail">
-      <h1 class="product-title">{{ product?.title }}</h1>
-      <h2 class="product-description">{{ product?.description }}</h2>
-      <div class="product-info">
-        <div class="product-stock">
-          {{ product?.stock | translate | async }}
-        </div>
-        <div
-          class="product-price">
-          <span>{{ product?.salePrice | priceFormat }} {{ currency }}</span>
-          <span class="product-before-price" *ngIf="product.regularPrice">
-            {{ product?.regularPrice | priceFormat }} {{ currency }}
-          </span>
-        </div>
-        <button class="product-cart-wrap"
-          *ngIf="lang"
-          mat-raised-button
-          color="primary">
-          <app-cart-show *ngIf="cartIds && product"
-            [items]="cartIds[product._id]"
-            (add)="onAddProduct(product._id)"
-            (remove)="onRemoveProduct(product._id)">
-          </app-cart-show>
-        </button>
+  <div class="product-detail">
+    <h1 class="product-title">{{ product?.title }}</h1>
+    <h2 class="product-description">{{ product?.description }}</h2>
+    <div class="product-info">
+      <div class="product-stock">
+        {{ product?.stock | translate | async }}
       </div>
-      <mat-chip-listbox aria-label="Category selection" class="product-tags">
-        <mat-chip-option class="clickable"
-          *ngFor="let tag of product.tags"
-          [routerLink]="[ '/' + lang + '/product/category/' + tag]">
-          {{ categoriesToShow[tag] || tag }}
-        </mat-chip-option>
-      </mat-chip-listbox>
-      <a class="product-more" *ngIf="withLink" [routerLink]="[ '/' + lang + '/product/' + product.titleUrl]">
-        {{ "More" | translate | async }}
-      </a>
+      <div class="product-price">
+        <span>{{ product?.salePrice | priceFormat }} {{ currency }}</span>
+        @if (product.regularPrice) {
+        <span class="product-before-price"> {{ product?.regularPrice | priceFormat }} {{ currency }} </span>
+        }
+      </div>
+      @if (lang) {
+      <button class="product-cart-wrap" mat-raised-button color="primary">
+        @if (cartIds && product) {
+        <app-cart-show [items]="cartIds[product._id]" (add)="onAddProduct(product._id)" (remove)="onRemoveProduct(product._id)"> </app-cart-show>
+        }
+      </button>
+      }
     </div>
-    <div class="product-main-image"
-        [attr.aria-labelledby]="product.mainImage.name"
-        [style.background]="'url(' + product?.mainImage?.url + ') no-repeat'">
-    </div>
+    <mat-chip-listbox aria-label="Category selection" class="product-tags">
+      @for (tag of product.tags; track tag) {
+      <mat-chip-option class="clickable" [routerLink]="['/' + lang + '/product/category/' + tag]">
+        {{ categoriesToShow[tag] || tag }}
+      </mat-chip-option>
+      }
+    </mat-chip-listbox>
+    @if (withLink) {
+    <a class="product-more" [routerLink]="['/' + lang + '/product/' + product.titleUrl]">
+      {{ 'More' | translate | async }}
+    </a>
+    }
   </div>
+  <div
+    class="product-main-image"
+    [attr.aria-labelledby]="product.mainImage.name"
+    [style.background]="'url(' + product?.mainImage?.url + ') no-repeat'"
+  ></div>
+</div>

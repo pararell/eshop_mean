@@ -1,28 +1,29 @@
 <div class="main">
   <div class="container">
-    <mat-progress-bar *ngIf="!orders" mode="indeterminate"></mat-progress-bar>
-    <div class="orders-list-wrapper" *ngIf="orders">
-      <div class="card scale-transition"
-        *ngFor="let order of orders">
+    @if (!orders) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    } @if (orders) {
+    <div class="orders-list-wrapper">
+      @for (order of orders; track order) {
+      <div class="card scale-transition">
         <div class="card-action">
           <p>{{ 'Status' | translate | async }}: {{ order?.status }}</p>
           <div class="action-wrap">
-            <button
-              mat-raised-button
-              color="primary"
-              [routerLink]="[orderUrl + order?.orderId]">
+            <button mat-raised-button color="primary" [routerLink]="[orderUrl + order?.orderId]">
               {{ 'Detail' | translate | async }}
             </button>
           </div>
-          <br/>
+          <br />
           <div class="price-card">{{ 'Amount' | translate | async }}: {{ order?.amount }} {{ order?.currency }}</div>
-          <br/>
+          <br />
           <p>{{ 'Type' | translate | async }}: {{ order?.type }}</p>
           <p>{{ 'Customer' | translate | async }}: {{ order?.customerEmail }}</p>
-          <p>{{ 'Created' | translate | async }}: {{ order.dateAdded | date:'dd-MM-yy' }}</p>
+          <p>{{ 'Created' | translate | async }}: {{ order.dateAdded | date: 'dd-MM-yy' }}</p>
           <p>{{ 'Paid' | translate | async }}: {{ order?.outcome?.seller_message }}</p>
         </div>
       </div>
+      }
     </div>
+    }
   </div>
 </div>

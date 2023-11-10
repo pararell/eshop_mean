@@ -4,11 +4,12 @@
   color="primary">
   {{ 'Refresh' | translate | async }}
 </button>
+@if (allProducts) {
 <app-products-list
-  *ngIf="allProducts"
   [products]="allProducts"
   [lang]="lang"
   [showEdit]="true"
   [currency]="currency"
   (editProduct)="editProduct.emit($event)">
 </app-products-list>
+}

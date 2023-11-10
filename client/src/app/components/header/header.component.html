@@ -1,41 +1,34 @@
 <mat-toolbar class="nav nav-fixed" color="primary">
   <div class="nav-brand-logo">
-    <a (click)="scrollToTop()" [routerLink]="['/']">
-    </a>
+    <a (click)="scrollToTop()" [routerLink]="['/']"> </a>
   </div>
   <div class="nav-part-right">
     <div class="nav-search-form">
-      <mat-form-field class="nav-search-form-content"
-        [ngClass]="{'focus-active' : (showAutocomplete$ | async)}">
+      <mat-form-field class="nav-search-form-content" [ngClass]="{ 'focus-active': (showAutocomplete$ | async) }">
         <i class="material-icons md-18">search</i>
-        <input type="text"
-               aria-label="Search"
-               matInput
-               [formControl]="query"
-               (focus)="onFocus()"
-               (blur)="onBlur()"
-               [matAutocomplete]="auto">
+        <input type="text" aria-label="Search" matInput [formControl]="query" (focus)="onFocus()" (blur)="onBlur()" [matAutocomplete]="auto" />
         <mat-autocomplete #auto="matAutocomplete">
-          <mat-option *ngFor="let title of (productTitles$ | async); trackBy: trackById"
-              [value]="title"
-              [routerLink]="['/' + (lang$ | async) + '/product/' + title]"
-              (click)="onTitleLink()">
-            <a class="nav-autocomplete-link">{{title}}</a>
+          @for (title of (productTitles$ | async); track title) {
+          <mat-option [value]="title" [routerLink]="['/' + (lang$ | async) + '/product/' + title]" (click)="onTitleLink()">
+            <a class="nav-autocomplete-link">{{ title }}</a>
           </mat-option>
+          }
         </mat-autocomplete>
       </mat-form-field>
     </div>
     <div class="nav-basic">
-      <ng-container *ngIf="(cart$ | async) as cart">
-        <a class="nav-cart-wrap" [routerLink]="['/' + (lang$ | async) + '/cart']"  routerLinkActive="nav-active-link">
-          <span>{{ cart?.totalQty }}</span>
-          <i class="nav-cart-icon material-icons md-18">shopping_cart</i>
-        </a>
-      </ng-container>
-      <select class="browser-default nav-lang-select" aria-label="Language"
-        [ngModel]="(lang$ | async)"
-        (ngModelChange)="setLang($event)">
-        <option *ngFor="let option of languageOptions;" [value]="option">{{option}}</option>
+      @if ((cart$ | async); as cart) {
+
+      <a class="nav-cart-wrap" [routerLink]="['/' + (lang$ | async) + '/cart']" routerLinkActive="nav-active-link">
+        <span>{{ cart?.totalQty }}</span>
+        <i class="nav-cart-icon material-icons md-18">shopping_cart</i>
+      </a>
+
+      }
+      <select class="browser-default nav-lang-select" aria-label="Language" [ngModel]="lang$ | async" (ngModelChange)="setLang($event)">
+        @for (option of languageOptions; track option) {
+        <option [value]="option">{{ option }}</option>
+        }
       </select>
     </div>
     <div class="nav-mobile">
@@ -52,39 +45,33 @@
   </div>
 </mat-toolbar>
 
-
 <ng-template #menuItems>
-  <ng-container *ngIf="!(user$ | async)">
-    <button mat-menu-item *ngIf="googleAuthUrl">
-      <mat-icon>account_box</mat-icon>
-      <a class="nav-link" href="{{ googleAuthUrl }}">
-        {{ 'Login' | translate | async }} {{ 'with' | translate | async }} Google
-      </a>
-    </button>
-    <button mat-menu-item
-      [routerLink]="['/' + (lang$ | async) + '/authorize/signin']"
-      routerLinkActive="nav-active-link">
-      <mat-icon>account_circle</mat-icon>
-      <a class="nav-link">{{ 'Login' | translate | async }}</a>
-    </button>
-  </ng-container>
-  <button mat-menu-item
-      [routerLink]="['/' + (lang$ | async) + '/dashboard']"
-      routerLinkActive="nav-active-link"
-     *ngIf="(user$ | async)?.roles?.includes('admin')">
+  @if (!(user$ | async)) {
+    @if (googleAuthUrl) {
+  <button mat-menu-item>
+    <mat-icon>account_box</mat-icon>
+    <a class="nav-link" href="{{ googleAuthUrl }}"> {{ 'Login' | translate | async }} {{ 'with' | translate | async }} Google </a>
+  </button>
+  }
+  <button mat-menu-item [routerLink]="['/' + (lang$ | async) + '/authorize/signin']" routerLinkActive="nav-active-link">
+    <mat-icon>account_circle</mat-icon>
+    <a class="nav-link">{{ 'Login' | translate | async }}</a>
+  </button>
+
+  } @if ((user$ | async)?.roles?.includes('admin')) {
+  <button mat-menu-item [routerLink]="['/' + (lang$ | async) + '/dashboard']" routerLinkActive="nav-active-link">
     <mat-icon>dashboard</mat-icon>
-    <a class="nav-link"> {{'Dashboard' | translate | async}}</a>
+    <a class="nav-link"> {{ 'Dashboard' | translate | async }}</a>
   </button>
-  <button mat-menu-item
-    [routerLink]="['/' + (lang$ | async) + '/orders']"
-    routerLinkActive="nav-active-link"
-    *ngIf="(userOrders$ | async)?.length">
+  } @if ((userOrders$ | async)?.length) {
+  <button mat-menu-item [routerLink]="['/' + (lang$ | async) + '/orders']" routerLinkActive="nav-active-link">
     <mat-icon>assignment</mat-icon>
-    <a class="nav-link"> {{'Orders' | translate | async}}</a>
+    <a class="nav-link"> {{ 'Orders' | translate | async }}</a>
   </button>
-  <button mat-menu-item (click)="onLogout()"
-    *ngIf="(user$ | async)">
+  } @if ((user$ | async)) {
+  <button mat-menu-item (click)="onLogout()">
     <mat-icon>exit_to_app</mat-icon>
-    <a class="nav-link" > {{'Logout' | translate | async}}</a>
+    <a class="nav-link"> {{ 'Logout' | translate | async }}</a>
   </button>
+  }
 </ng-template>

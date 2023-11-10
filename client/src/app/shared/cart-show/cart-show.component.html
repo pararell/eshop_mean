@@ -1,7 +1,10 @@
 <div class="cart_show-wrap" (click)="add.emit()">
   <i class="material-icons cart_show-icon">add_shopping_cart</i>
 </div>
-<span class="cart_show-quantity" *ngIf="!!items">{{items}} ks</span>
-<div class="cart_show-wrap" *ngIf="!!items" (click)="remove.emit()">
-  <i *ngIf="!!items" class="material-icons cart_show-icon">remove_shopping_cart</i>
+@if (!!items) {
+<span class="cart_show-quantity">{{ items }} ks</span>
+
+<div class="cart_show-wrap" (click)="remove.emit()">
+  <i class="material-icons cart_show-icon">remove_shopping_cart</i>
 </div>
+}

@@ -26,10 +26,6 @@ export class FooterComponent implements OnDestroy {
     });
   }
 
-  trackById(_index: number, item: Page) {
-    return item.titleUrl;
-  }
-
   ngOnDestroy(): void {
     this.getPagesSub.unsubscribe();
   }

@@ -33,7 +33,5 @@ export class ProductsListComponent {
     this.editProduct.emit(id);
   }
 
-  trackById(_index: number, item: Product) {
-    return item._id;
-  }
+
 }

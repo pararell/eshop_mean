@@ -2,44 +2,31 @@
   <div class="container">
     <div class="sign-form-wrap">
       <h1>{{ 'SignIn' | translate | async }}</h1>
-      <form
-        class="sign-form"
-        [formGroup]="signInForm">
+      <form class="sign-form" [formGroup]="signInForm">
         <mat-form-field class="sign-field">
           <mat-label>Email</mat-label>
-          <input
-            matInput
-            formControlName="email"
-            type="email"
-            name="email">
+          <input matInput formControlName="email" type="email" name="email" />
         </mat-form-field>
         <mat-form-field class="sign-field">
           <mat-label>Password</mat-label>
-          <input
-            matInput
-            formControlName="password"
-            type="password"
-            name="password">
+          <input matInput formControlName="password" type="password" name="password" />
         </mat-form-field>
-        <button
-          type="submit"
-          class="submit-sign-button"
-          mat-raised-button
-          color="primary"
-          [disabled]="signInForm.invalid"
-          (click)="submit()">
+        <button type="submit" class="submit-sign-button" mat-raised-button color="primary" [disabled]="signInForm.invalid" (click)="submit()">
           {{ 'SignIn' | translate | async }}
         </button>
       </form>
-      <a class="signup-link"
-        [routerLink]="['/' + (lang$ | async) + '/authorize/signup']">
+      <a class="signup-link" [routerLink]="['/' + (lang$ | async) + '/authorize/signup']">
         {{ 'SignUp' | translate | async }}
       </a>
-      <div *ngIf="(sendRequestSub$ | async)">
-       <span class="sign-success" *ngIf="(user$ | async)">
-         {{'SIGNIN_SUCCESS' | translate | async }}
-       </span>
-     </div>
+      @if (sendRequestSub$ | async) {
+      <div>
+        @if (user$ | async) {
+        <span class="sign-success">
+          {{ 'SIGNIN_SUCCESS' | translate | async }}
+        </span>
+        }
+      </div>
+      }
     </div>
   </div>
 </div>
