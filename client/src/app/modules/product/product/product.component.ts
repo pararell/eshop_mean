@@ -21,13 +21,14 @@ import { TranslateService } from '../../../services/translate.service';
   styleUrls: ['./product.component.scss'],
 })
 export class ProductComponent implements OnDestroy {
-  items$: Observable<{ product: Product; cartIds: { [productId: string]: number } }>;
   categories$: Observable<Category[]>;
   productLoading$: Observable<boolean>;
   currency$: Observable<string>;
   lang$: Observable<string>;
   routeSub: Subscription;
   categoriesSub: Subscription;
+  product$: Observable<Product>;
+  cartIds$: Observable<{[productId: string]: number }>;
 
   constructor(
     private route: ActivatedRoute,
@@ -43,7 +44,6 @@ export class ProductComponent implements OnDestroy {
   ) {
     this.lang$ = this.translate.getLang$();
     this.categories$ = this.store.select(fromRoot.getCategories);
-
     this.routeSub = combineLatest([this.lang$, this.route.params.pipe(map((params) => params['id']))]).subscribe(
       ([lang, id]) => {
         this.store.dispatch(new actions.GetProduct(id + '?lang=' + lang));
@@ -56,18 +56,10 @@ export class ProductComponent implements OnDestroy {
 
     this.setMetaData();
     this.productLoading$ = this.store.select(fromRoot.getProductLoading);
-
-    this.items$ = combineLatest([
-      this.store.select(fromRoot.getProduct),
-      this.store.select(fromRoot.getCart).pipe(
-        filter(Boolean),
-        map((cart: Cart) => cart.items)
-      ),
-    ]).pipe(
-      map(([product, cartItems]) => ({
-        product,
-        cartIds: cartItems.reduce((prev, curr) => ({ ...prev, [curr.id]: curr.qty }), {}),
-      }))
+    this.product$ = this.store.select(fromRoot.getProduct);
+    this.cartIds$ = this.store.select(fromRoot.getCart).pipe(
+      filter(Boolean),
+      map((cart: Cart) => cart.items.reduce((prev, curr) => ({ ...prev, [curr.id]: curr.qty }), {}))
     );
   }
 

@@ -4,16 +4,17 @@
       <i class="material-icons left">arrow_back</i>
       {{ 'Back' | translate | async }}
     </button>
-    @if (!(items$ | async)?.product || (productLoading$ | async)) {
+    @if (!(product$ | async) || (productLoading$ | async)) {
     <mat-progress-bar mode="indeterminate"> </mat-progress-bar>
-    } @if ((items$ | async); as items) { @if (!(productLoading$ | async) && items.product; as product) {
+    } @if ((product$ | async); as product) {
+      @if (!(productLoading$ | async)) {
     <mat-card appearance="outlined" class="product">
       @if (product.visibility && product.salePrice) {
 
       <app-product-content
         [product]="product"
         [categories]="categories$ | async"
-        [cartIds]="items?.cartIds"
+        [cartIds]="cartIds$ | async"
         [currency]="currency$ | async"
         [lang]="lang$ | async"
         (addProduct)="cartEvent($event, 'add')"
