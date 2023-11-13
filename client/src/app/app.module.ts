@@ -1,3 +1,4 @@
+import { CategoriesListComponent } from './shared/categories-list/categories-list.component';
 import { Routes, provideRouter } from '@angular/router';
 import { BrowserModule, withHttpTransferCacheOptions } from '@angular/platform-browser';
 import { NgModule, APP_INITIALIZER } from '@angular/core';
@@ -32,6 +33,7 @@ import { FooterComponent } from './components/footer/footer.component';
 import { HomeComponent } from './components/home/home.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import {provideClientHydration} from '@angular/platform-browser';
+import { CarouselComponent } from './shared/carousel/carousel.component';
 
 
 const routes: Routes = routesAll;
@@ -61,6 +63,8 @@ const routes: Routes = routesAll;
     MatProgressBarModule,
     MatProgressSpinnerModule,
     MatSidenavModule,
+    CarouselComponent,
+    CategoriesListComponent,
     EffectsModule.forRoot([AppEffects]),
     RouterModule.forRoot(routes, { initialNavigation: 'enabledBlocking' }),
     !environment.production ? StoreDevtoolsModule.instrument() : []

@@ -1,12 +1,16 @@
-import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy, PLATFORM_ID, Inject, Input } from '@angular/core';
-import { BehaviorSubject, Subscription, timer } from 'rxjs';
-import { take, filter } from 'rxjs/operators';
+import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy, PLATFORM_ID, Inject, Input, signal } from '@angular/core';
+import { Subscription, timer } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-carousel',
   templateUrl: './carousel.component.html',
   styleUrls: ['./carousel.component.scss'],
+  standalone: true,
+  imports: [MatButtonModule]
+
 })
 export class CarouselComponent implements AfterViewInit, OnDestroy {
   @ViewChild('slides') slides: ElementRef<HTMLDivElement>;
@@ -17,7 +21,7 @@ export class CarouselComponent implements AfterViewInit, OnDestroy {
   @Input() absoluteArrows = false;
   @Input() showArrows = true;
 
-  showArrowsSub$ = new BehaviorSubject(false);
+  showArrowsSig = signal(false);
   autoSlideSub: Subscription;
   dragging = false;
 
@@ -27,16 +31,18 @@ export class CarouselComponent implements AfterViewInit, OnDestroy {
 
   onClickLeft() {
     const slidesElement = this.slides.nativeElement;
-    slidesElement.scrollLeft -= slidesElement.offsetWidth;
+    const slidesElementWIDTH = slidesElement.getBoundingClientRect().width;
+    slidesElement.scrollLeft -= slidesElementWIDTH;
     if (!slidesElement.scrollLeft) {
-      slidesElement.scrollLeft += slidesElement.offsetWidth * slidesElement.children.length - 1;
+      slidesElement.scrollLeft += slidesElementWIDTH * slidesElement.children.length - 1;
     }
   }
 
   onClickRight() {
     const slidesElement = this.slides.nativeElement;
-    slidesElement.scrollLeft += slidesElement.offsetWidth;
-    if ((slidesElement.scrollWidth - slidesElement.scrollLeft).toFixed() === slidesElement.offsetWidth.toFixed()) {
+    const slidesElementWIDTH = slidesElement.getBoundingClientRect().width;
+    slidesElement.scrollLeft += slidesElementWIDTH;
+    if ((slidesElement.scrollWidth - slidesElement.scrollLeft).toFixed() === slidesElementWIDTH.toFixed()) {
       slidesElement.scrollLeft = 0;
     }
   }
@@ -48,11 +54,11 @@ export class CarouselComponent implements AfterViewInit, OnDestroy {
         .subscribe(() => {
           const slidesElement = this.slides.nativeElement;
           if (slidesElement.children && slidesElement.children[0]) {
-            this.showArrowsSub$.next(
+            this.showArrowsSig.set(
               slidesElement.offsetWidth < slidesElement.children[0].clientWidth * slidesElement.children.length
             );
           } else {
-            this.showArrowsSub$.next(true);
+            this.showArrowsSig.set(true);
           }
       });
       this.autoSlideSub = timer(this.intervalForSlider, this.intervalForSlider).subscribe(() => { this.onClickRight(); })

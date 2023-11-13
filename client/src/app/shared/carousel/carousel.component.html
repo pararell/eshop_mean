@@ -1,5 +1,5 @@
 <div class="slider-container" [class.slider-with-background]="withBackground" #slideContainer>
-  @if (showArrows && showArrowsSub$ | async) {
+  @if (showArrows && showArrowsSig()) {
   <button class="slider-arrow slider-arrow-left" [class.slider-arrow-absolute]="absoluteArrows" mat-raised-button (click)="onClickLeft()">
     <i class="nav-cart-icon material-icons md-18">keyboard_arrow_left</i>
   </button>
@@ -7,7 +7,7 @@
   <div class="slides" #slides (mousedown)="onDrag($event, 'down')" (mouseup)="onDrag($event, 'up')" (mousemove)="onDrag($event, 'move')">
     <ng-content></ng-content>
   </div>
-  @if (showArrows && showArrowsSub$ | async) {
+  @if (showArrows && showArrowsSig()) {
   <button class="slider-arrow slider-arrow-right" [class.slider-arrow-absolute]="absoluteArrows" mat-raised-button (click)="onClickRight()">
     <i class="nav-cart-icon material-icons md-24">keyboard_arrow_right</i>
   </button>

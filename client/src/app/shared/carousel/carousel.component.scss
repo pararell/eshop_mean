@@ -1,6 +1,7 @@
 :host {
   width: 100%;
   position: relative;
+  display: block;
 
   .slider-container {
     display: flex;
@@ -37,7 +38,8 @@
     overflow-x: scroll;
     scroll-behavior: smooth;
     width: 100%;
-    scrollbar-color: transparent transparent;
+    max-width: 100%;
+    scrollbar-color: transparent;
     margin-bottom: -15px;
 
     &::-webkit-scrollbar {

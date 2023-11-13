@@ -19,8 +19,6 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { ProductsListComponent } from './products-list/products-list.component';
 import { PaginationComponent } from './pagination/pagination.component';
 import { ImagesDialogComponent } from './images-dialog/images-dialog.component';
-import { CategoriesListComponent } from './categories-list/categories-list.component';
-import { CarouselComponent } from './carousel/carousel.component';
 import { ProductContentComponent } from './product-content/product-content.component';
 import { OrderInfoComponent } from './order-info/order-info.component';
 
@@ -31,10 +29,8 @@ import { OrderInfoComponent } from './order-info/order-info.component';
     SidebarComponent,
     ProductsListComponent,
     ProductContentComponent,
-    CategoriesListComponent,
     PaginationComponent,
     ImagesDialogComponent,
-    CarouselComponent,
     OrderInfoComponent
   ],
   imports: [
@@ -59,10 +55,8 @@ import { OrderInfoComponent } from './order-info/order-info.component';
     SidebarComponent,
     ProductsListComponent,
     ProductContentComponent,
-    CategoriesListComponent,
     PaginationComponent,
     ImagesDialogComponent,
-    CarouselComponent,
     OrderInfoComponent
   ]
 })

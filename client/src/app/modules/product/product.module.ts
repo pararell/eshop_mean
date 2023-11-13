@@ -16,6 +16,7 @@ import { ProductComponent } from './product/product.component';
 import { SharedModule } from '../../shared/shared.module';
 import { PipeModule } from '../../pipes/pipe.module';
 import { ProductsComponent } from './products/products.component';
+import { CategoriesListComponent } from '../../shared/categories-list/categories-list.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { ProductsComponent } from './products/products.component';
     MatProgressSpinnerModule,
     MatDialogModule,
     MatSidenavModule,
+    CategoriesListComponent,
     RouterModule.forChild([
       { path: 'all', component: ProductsComponent },
       { path: 'category/:category', component: ProductsComponent },
