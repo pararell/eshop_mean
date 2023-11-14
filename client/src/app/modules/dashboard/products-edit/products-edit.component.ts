@@ -66,7 +66,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
         titleUrl: product.titleUrl,
         mainImage: product.mainImage && product.mainImage.url ? product.mainImage.url : '',
         tags: product.tags,
-        images: product.images,
+        images: product.images || [],
         imageUrl: '',
         ...this.prepareLangEditForm(product),
       };
