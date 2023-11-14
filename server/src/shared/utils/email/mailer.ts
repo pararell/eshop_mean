@@ -7,11 +7,17 @@ sgMail.setApiKey(process.env.SENDGRID_KEY);
 export const sendMsg = async (email: string, emailType, translations) => {
   const msg = {
     to: email,
-    from: 'no-reply@smrtic.eu',
+    from: process.env.EMAIL_FROM,
     subject: emailType.subject,
     html: getContent(emailType, translations),
   };
+  try {
+    return await sgMail.send(msg);
+  } catch (error) {
+    console.error(error);
 
-  const response = await sgMail.send(msg);
-  return response;
+    if (error.response) {
+      console.error(error.response.body)
+    }
+  }
 };
