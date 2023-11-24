@@ -48,6 +48,10 @@ export class EnvConfigurationService {
             this.themeService.setCSSVariable(`url(${styleValue})`, `${varName}`);
             return;
           }
+          if (style === 'promoSlideBackgroundPosition') {
+            this.themeService.setCSSVariable(`${styleValue}`, `${varName}`);
+            return;
+          }
           if (style.includes('Background')) {
             this.themeService.setCSSVariable(`url(${styleValue})`, `${varName}-url`);
             return;

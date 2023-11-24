@@ -52,6 +52,16 @@
   </mat-form-field>
   <mat-form-field class="theme_edit-field-full">
     <mat-label>
+      Promo slide background position
+    </mat-label>
+    <mat-select formControlName="promoSlideBackgroundPosition">
+      <mat-option [value]="'center'">Center</mat-option>
+      <mat-option [value]="'top'">Top</mat-option>
+      <mat-option [value]="'bottom'">Bottom</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field class="theme_edit-field-full">
+    <mat-label>
       {{ 'Show_shipping_promo' | translate | async }}
     </mat-label>
     <mat-select formControlName="freeShippingPromo">

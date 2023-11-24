@@ -26,6 +26,12 @@
     &-product-top {
       min-width: 100%;
       width: 100%;
+      display: flex;
+
+      &-content {
+        padding: 0 30px;
+        margin: auto;
+      }
     }
 
     &-promo {
@@ -58,7 +64,7 @@
         background: var(--promo-slide-background, url('https://res.cloudinary.com/dnpgh1vhi/image/upload/v1615624628/fabrizio-conti-xPFhK0MGsyw-unsplash_tkxjzp.jpg'));
         background-size: cover;
         background-repeat: no-repeat;
-        background-position: center;
+        background-position:  var(--promo-slide-background-position, center);
         position: absolute;
         top: 0;
         left: 0;
@@ -92,16 +98,19 @@
 
       &-subtitle {
         font-size: 50px;
-        color: #000;
+        color: var(--primary-color);
         margin-bottom: 15px;
         margin-top: 12px;
       }
 
       &-text {
-        color: #fff;
         padding: 10px;
         margin-top: 40px;
         display: block;
+
+        a {
+          color: var(--primary-color);
+        }
       }
 
       &-logo {

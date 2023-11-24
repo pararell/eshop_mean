@@ -42,7 +42,7 @@ export class CarouselComponent implements AfterViewInit, OnDestroy {
     const slidesElement = this.slides.nativeElement;
     const slidesElementWIDTH = slidesElement.getBoundingClientRect().width;
     slidesElement.scrollLeft += slidesElementWIDTH;
-    if ((slidesElement.scrollWidth - slidesElement.scrollLeft).toFixed() <= slidesElementWIDTH.toFixed()) {
+    if ((parseFloat((slidesElement.scrollWidth - slidesElement.scrollLeft).toFixed()) <= parseFloat(slidesElementWIDTH.toFixed()))) {
       slidesElement.scrollLeft = 0;
     }
   }

@@ -47,7 +47,8 @@
           @for (product of products | slice: 0:3; track product) {
 
           <div class="home-product-top">
-            <app-product-content
+            <div class="home-product-top-content">
+              <app-product-content
               [product]="product"
               [categories]="categories()"
               [cartIds]="cartIds()"
@@ -58,8 +59,8 @@
               (removeProduct)="removeFromCart($event)"
             >
             </app-product-content>
+            </div>
           </div>
-
           }
         </app-carousel>
       </div>

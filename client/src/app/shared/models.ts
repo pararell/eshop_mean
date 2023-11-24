@@ -124,6 +124,7 @@ export interface Theme {
     mainBackground: string;
     freeShippingPromo: string;
     promoSlideBackground: string;
+    promoSlideBackgroundPosition: string;
     promo: string;
     logo: string;
   };
