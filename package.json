@@ -78,11 +78,11 @@
     "@angular-devkit/build-angular": "17.0.3",
     "@angular-devkit/core": "17.0.3",
     "@angular-devkit/schematics": "17.0.3",
-    "@angular-eslint/builder": "^17.1.0",
-    "@angular-eslint/eslint-plugin": "^17.1.0",
-    "@angular-eslint/eslint-plugin-template": "^17.1.0",
-    "@angular-eslint/schematics": "^17.1.0",
-    "@angular-eslint/template-parser": "^17.1.0",
+    "@angular-eslint/builder": "^17.5.1",
+    "@angular-eslint/eslint-plugin": "^17.5.1",
+    "@angular-eslint/eslint-plugin-template": "^17.5.1",
+    "@angular-eslint/schematics": "^17.5.1",
+    "@angular-eslint/template-parser": "^17.5.1",
     "@angular/cli": "^17.0.3",
     "@angular/compiler-cli": "^17.0.4",
     "@angular/language-service": "^17.0.4",
@@ -116,8 +116,8 @@
     "whatwg-url": "^14.0.0"
   },
   "engines": {
-    "node": "20.9.0",
-    "npm": "10.2.2"
+    "node": "20.12.2",
+    "npm": "10.5.0"
   },
   "browserslist": [
     "> 5%"
