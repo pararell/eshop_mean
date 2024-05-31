@@ -7,7 +7,7 @@ import { Provider } from '@nestjs/common';
 import * as express from 'express';
 import { CommonEngine } from '@angular/ssr';
 import { fileURLToPath } from 'url';
-import AppServerModule from '../../client/src/main.server';
+import bootstrap from '../../client/src/main.server';
 
 export function setupUniversal(app: any) {
   const serverDistFolder = dirname(fileURLToPath(import.meta.url));
@@ -18,7 +18,7 @@ export function setupUniversal(app: any) {
     const commonEngine = new CommonEngine();
     commonEngine
       .render({
-        bootstrap: AppServerModule,
+        bootstrap,
         documentFilePath: indexHtml,
         url: `${options.req.protocol}://${options.req.get('host')}${options.req.originalUrl}`,
         publicPath: browserDistFolder,
@@ -49,7 +49,10 @@ export function setupUniversal(app: any) {
 export const angularUniversalProviders: Provider[] = [
   {
     provide: 'UNIVERSAL_INITIALIZER',
-    useFactory: (host: HttpAdapterHost & { template: string }) => host && host.httpAdapter && setupUniversal(host.httpAdapter.getInstance()),
+    useFactory: (host: HttpAdapterHost & { template: string }) =>
+      host &&
+      host.httpAdapter &&
+      setupUniversal(host.httpAdapter.getInstance()),
     inject: [HttpAdapterHost],
   },
 ];

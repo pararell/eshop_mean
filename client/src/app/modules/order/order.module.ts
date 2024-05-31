@@ -11,9 +11,9 @@ import { MatSelectModule } from '@angular/material/select';
 
 import { OrdersComponent } from './orders.component';
 import { OrderComponent } from './order/order.component';
-import { SharedModule } from '../../shared/shared.module';
-import { PipeModule } from '../../pipes/pipe.module';
 import { OrderComponentsModule } from './components/order-components.module';
+import { TranslatePipe } from '../../pipes/translate.pipe';
+import { PriceFormatPipe } from '../../pipes/price.pipe';
 
 @NgModule({
   declarations: [
@@ -22,10 +22,10 @@ import { OrderComponentsModule } from './components/order-components.module';
   ],
   imports: [
     CommonModule,
-    SharedModule,
     OrderComponentsModule,
     ReactiveFormsModule,
-    PipeModule,
+    TranslatePipe,
+    PriceFormatPipe,
     MatCardModule,
     MatButtonModule,
     MatChipsModule,

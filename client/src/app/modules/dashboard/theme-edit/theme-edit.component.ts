@@ -1,14 +1,15 @@
+import { toObservable } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Component } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { Observable, BehaviorSubject } from 'rxjs';
 import {  take } from 'rxjs/operators';
 
-import * as fromRoot from '../../../store/reducers';
-import * as actions from '../../../store/actions';
+
 import { languages } from '../../../shared/constants';
 import { ThemeService } from '../../../services/theme.service';
 import { Theme } from '../../../shared/models';
+import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
+import { SignalStore } from '../../../store/signal.store';
 
 
 @Component({
@@ -26,18 +27,19 @@ export class ThemeEditComponent {
   sendRequest = false;
 
   constructor(
-      private store: Store<fromRoot.State>,
+      private store: SignalStore,
+      private selectos: SignalStoreSelectors,
       private fb: FormBuilder,
       private themeService: ThemeService,
       ) {
-    this.store.dispatch(new actions.GetThemes());
+    this.store.getThemes();
 
     this.themesEditForm = this.fb.group({
       titleUrl: ['', Validators.required],
       ...this.startFormValues()
     });
 
-    this.themes$ = this.store.select(fromRoot.getThemes);
+    this.themes$ = toObservable(this.selectos.themes);
 
     this.themesEditForm.valueChanges.subscribe(values => {
       this.themeService.setCSSVariable(values.primaryColor, 'primary-color');
@@ -106,12 +108,12 @@ export class ThemeEditComponent {
         logo: formValues.logo
       }
     }
-    this.store.dispatch(new actions.AddOrEditTheme(request));
+    this.store.addOrEditTheme(request);
     this.sendRequest = true;
   }
 
   removeTheme(): void {
-    this.store.dispatch(new actions.RemoveTheme(this.chosenTheme));
+    this.store.removeTheme(this.chosenTheme);
     this.sendRequest = true;
   }
 

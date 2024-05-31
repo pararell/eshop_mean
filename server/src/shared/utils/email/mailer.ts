@@ -17,7 +17,7 @@ export const sendMsg = async (email: string, emailType, translations) => {
     console.error(error);
 
     if (error.response) {
-      console.error(error.response.body)
+      console.error(error.response.body);
     }
   }
 };

@@ -20,22 +20,22 @@
             "outputPath": "dist/eshop",
             "index": "client/src/index.html",
             "browser": "client/src/main.ts",
-            "optimization": true,
-            "polyfills": [
-              "zone.js"
-            ],
+            "polyfills": [],
             "tsConfig": "client/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              { "glob": "**/*",
+              {
+                "glob": "**/*",
                 "input": "client/src/assets",
                 "output": "assets"
               },
-              {"glob": "favicon.ico",
+              {
+                "glob": "favicon.ico",
                 "input": "client/src",
                 "output": "."
               },
-              {"glob": "manifest.webmanifest",
+              {
+                "glob": "manifest.webmanifest",
                 "input": "client/src",
                 "output": "."
               }
@@ -106,8 +106,22 @@
           "options": {
             "buildTarget": "eshop:build"
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "client/**/*.ts",
+              "client/**/*.html"
+            ]
+          }
         }
       }
     }
+  },
+  "cli": {
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
   }
 }

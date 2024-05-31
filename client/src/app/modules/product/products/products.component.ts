@@ -5,13 +5,12 @@ import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { combineLatest, Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
-import { Store } from '@ngrx/store';
 
 import { TranslateService } from '../../../services/translate.service';
 import { sortOptions } from '../../../shared/constants';
-import * as actions from './../../../store/actions';
-import * as fromRoot from '../../../store/reducers';
 import { Product, Category, Pagination, Cart } from '../../../shared/models';
+import { SignalStore } from '../../../store/signal.store';
+import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 
 @Component({
   selector: 'app-products',
@@ -43,7 +42,8 @@ export class ProductsComponent implements OnDestroy {
   readonly component = 'productsComponent';
 
   constructor(
-    private store: Store<fromRoot.State>,
+    private store: SignalStore,
+    private selectors: SignalStoreSelectors,
     private route: ActivatedRoute,
     private router: Router,
     private snackBar: MatSnackBar,
@@ -62,13 +62,13 @@ export class ProductsComponent implements OnDestroy {
     ));
     this.lang = toSignal(this.translate.getLang$().pipe(filter((lang: string) => !!lang)));
 
-    this.maxPrice = this.store.selectSignal(fromRoot.getMaxPrice);
-    this.minPrice = this.store.selectSignal(fromRoot.getMinPrice);
-    this.filterPrice = this.store.selectSignal(fromRoot.getPriceFilter);
-    this.loadingProducts = this.store.selectSignal(fromRoot.getLoadingProducts);
-    this.products = this.store.selectSignal(fromRoot.getProducts);
+    this.maxPrice = this.selectors.maxPrice;
+    this.minPrice = this.selectors.minPrice;
+    this.filterPrice = this.selectors.priceFilter;
+    this.loadingProducts = this.selectors.loadingProducts;
+    this.products = this.selectors.products;
     this.cartIds = computed(() => {
-      const cart = this.store.selectSignal(fromRoot.getCart)();
+      const cart = this.selectors.cart();
       if (!cart) {
         return {};
       }
@@ -79,9 +79,9 @@ export class ProductsComponent implements OnDestroy {
     this.title.setTitle('Eshop Mean');
     this.meta.updateTag({ name: 'description', content: 'Angular - Node.js - Eshop application - MEAN Eshop with dashboard' });
 
-    this.categories = this.store.selectSignal(fromRoot.getCategories);
-    this.pagination = this.store.selectSignal(fromRoot.getPagination);
-    this.currency = this.store.selectSignal(fromRoot.getCurrency);
+    this.categories = this.selectors.categories;
+    this.pagination = this.selectors.pagination;
+    this.currency = this.selectors.currency;
     this.categoryInfo = computed(() => this.categories().find(cat => cat.titleUrl === this.category()));
     this.subCategories = computed(() => this.categories().filter((cat) => this.categoryInfo() ? this.categoryInfo().subCategories.includes(cat.titleUrl) : false));
 
@@ -90,7 +90,7 @@ export class ProductsComponent implements OnDestroy {
   }
 
   addToCart(id: string): void {
-    this.store.dispatch(new actions.AddToCart('?id=' + id));
+    this.store.addToCart('?id=' + id);
 
     this.translate.getTranslations$()
       .pipe(map(translations => translations
@@ -108,17 +108,17 @@ export class ProductsComponent implements OnDestroy {
   }
 
   removeFromCart(id: string): void {
-    this.store.dispatch(new actions.RemoveFromCart('?id=' + id));
+    this.store.removeFromCart('?id=' + id);
   }
 
   priceRange(price: number): void {
     if (this.filterPrice() !== price) {
-      this.store.dispatch(new actions.FilterPrice(price));
+      this.store.filterPrice(price);
     }
   }
 
   changeCategory(): void {
-    this.store.dispatch(new actions.UpdatePosition({ productsComponent: 0 }));
+    this.store.updatePosition({ productsComponent: 0 });
   }
 
   changePage(page: number): void {
@@ -131,7 +131,7 @@ export class ProductsComponent implements OnDestroy {
         queryParams: { sort: this.sortBy() || 'newest', page: page || 1 },
       });
     }
-    this.store.dispatch(new actions.UpdatePosition({ productsComponent: 0 }));
+    this.store.updatePosition({ productsComponent: 0 });
   }
 
   changeSort(sort: string): void {
@@ -142,7 +142,7 @@ export class ProductsComponent implements OnDestroy {
     } else {
       this.router.navigate(['/' + this.lang() + '/product/all'], { queryParams: { sort, page: this.page() || 1 } });
     }
-    this.store.dispatch(new actions.UpdatePosition({ productsComponent: 0 }));
+    this.store.updatePosition({ productsComponent: 0 });
   }
 
   toggleSidebar() {
@@ -156,11 +156,11 @@ export class ProductsComponent implements OnDestroy {
 
   private _loadCategories(): void {
     if (!this.categories()?.length) {
-      this.store.dispatch(new actions.GetCategories(this.lang()));
+      this.store.getCategories(this.lang());
     }
 
     this.categoriesSub = toObservable(this.lang).pipe(distinctUntilChanged(), skip(1)).subscribe((lang: string) => {
-      this.store.dispatch(new actions.GetCategories(lang));
+      this.store.getCategories(lang);
     });
   }
 
@@ -174,9 +174,7 @@ export class ProductsComponent implements OnDestroy {
         distinctUntilChanged()
       ),
     ]).subscribe(([lang, category, filterPrice, { page, sort }]) => {
-      this.store.dispatch(
-        new actions.GetProducts({ lang, category, maxPrice: filterPrice, page: page || 1, sort: sort || 'newest' })
-      );
+      this.store.getProducts({ lang, category, maxPrice: filterPrice, page: page || 1, sort: sort || 'newest' });
     });
   }
 }

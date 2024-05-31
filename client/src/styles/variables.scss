@@ -68,16 +68,16 @@ $material-secondary-color: (
   )
 );
 
-$eshop-primary: mat.define-palette($material-primary-color);
-$eshop-accent:  mat.define-palette($material-secondary-color);
-$eshop-background:  mat.define-palette($material-secondary-color, 50);
+$eshop-primary: mat.m2-define-palette($material-primary-color);
+$eshop-accent:  mat.m2-define-palette($material-secondary-color);
+$eshop-background:  mat.m2-define-palette($material-secondary-color, 50);
 
 :root {
-  --primary-color: #{mat.get-color-from-palette($eshop-primary)};
-  --secondary-color: #{mat.get-color-from-palette($eshop-accent)};
+  --primary-color: #{mat.m2-get-color-from-palette($eshop-primary)};
+  --secondary-color: #{mat.m2-get-color-from-palette($eshop-accent)};
   --success-color: #4bb543;
   --error-color: red;
-  --background-color: #{mat.get-color-from-palette($eshop-background)};
+  --background-color: #{mat.m2-get-color-from-palette($eshop-background)};
   --main-background: '';
 }
 

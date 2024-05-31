@@ -11,7 +11,7 @@ import { AuthModule } from '../auth/auth.module';
       { name: 'Translation', schema: TranslationScheme },
     ]),
     AuthModule,
-    HttpModule
+    HttpModule,
   ],
   controllers: [TranslationsController],
   providers: [],

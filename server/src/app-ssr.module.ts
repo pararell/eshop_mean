@@ -3,9 +3,6 @@ import { AngularUniversalModule } from './app-universal.module';
 import { AppModule } from './app.module';
 
 @Module({
-  imports: [
-    AppModule,
-    AngularUniversalModule,
-  ],
+  imports: [AppModule, AngularUniversalModule],
 })
 export class AppSSRModule {}

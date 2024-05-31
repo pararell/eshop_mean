@@ -23,19 +23,32 @@ export class OrdersService {
   ) {}
 
   async getOrders(user: User): Promise<Order[]> {
-    const orders = await this.orderModel.find({ _user: user._id }).sort('-dateAdded');
+    const orders = await this.orderModel
+      .find({ _user: user._id })
+      .sort('-dateAdded');
     return orders;
   }
 
-  async addOrder(orderDto: OrderDto, session, lang: string): Promise<{ error: string; result: Order }> {
+  async addOrder(
+    orderDto: OrderDto,
+    session,
+    lang: string,
+  ): Promise<{ error: string; result: Order }> {
     const { cart, config } = session;
     const cartForLang = prepareCart(cart, lang, config);
-    const newOrder = await new this.orderModel(this.createOrder(orderDto, cartForLang, 'PAYMENT_ON_DELIVERY'));
+    const newOrder = await new this.orderModel(
+      this.createOrder(orderDto, cartForLang, 'PAYMENT_ON_DELIVERY'),
+    );
     newOrder.save();
     try {
       const translations = await this.translationModel.findOne({ lang });
 
-      this.sendmail(newOrder.customerEmail, newOrder, cartForLang, translations);
+      this.sendmail(
+        newOrder.customerEmail,
+        newOrder,
+        cartForLang,
+        translations,
+      );
 
       if (process.env.ADMIN_EMAILS) {
         process.env.ADMIN_EMAILS.split(',')
@@ -56,7 +69,11 @@ export class OrdersService {
     return orders;
   }
 
-  async orderWithStripe(body, session, lang: string): Promise<{ error: string; result: Order }> {
+  async orderWithStripe(
+    body,
+    session,
+    lang: string,
+  ): Promise<{ error: string; result: Order }> {
     const { cart, config } = session;
     const cartForLang = prepareCart(cart, lang, config);
     const charge = await stripe.charges.create({
@@ -70,13 +87,20 @@ export class OrdersService {
 
     if (charge) {
       try {
-        const newOrder = await new this.orderModel(this.createOrder(requestOrder, cartForLang, 'WITH_PAYMENT'));
+        const newOrder = await new this.orderModel(
+          this.createOrder(requestOrder, cartForLang, 'WITH_PAYMENT'),
+        );
         const capturePayment = await stripe.charges.capture(charge.id);
         if (capturePayment) {
           newOrder.save();
 
           const translations = await this.translationModel.findOne({ lang });
-          this.sendmail(newOrder.customerEmail, newOrder, cartForLang, translations);
+          this.sendmail(
+            newOrder.customerEmail,
+            newOrder,
+            cartForLang,
+            translations,
+          );
 
           if (process.env.ADMIN_EMAILS) {
             process.env.ADMIN_EMAILS.split(',')
@@ -101,13 +125,21 @@ export class OrdersService {
   }
 
   async updateOrder(reqOrder): Promise<Order> {
-    const order = this.orderModel.findOneAndUpdate({ orderId: reqOrder.orderId }, reqOrder, { new: true });
+    const order = this.orderModel.findOneAndUpdate(
+      { orderId: reqOrder.orderId },
+      reqOrder,
+      { new: true },
+    );
     return order;
   }
 
   private createOrder = (orderDto: OrderDto, cart: CartModel, type: string) => {
     const { addresses, currency, email, userId, cardId, notes } = orderDto;
-    const orderId = 'order' + new Date().getTime() + 't' + Math.floor(Math.random() * 1000 + 1);
+    const orderId =
+      'order' +
+      new Date().getTime() +
+      't' +
+      Math.floor(Math.random() * 1000 + 1);
     const date = Date.now();
     const addUser = userId ? { _user: userId } : {};
     const addCard = cardId ? { cardId } : {};
@@ -131,7 +163,12 @@ export class OrdersService {
     };
   };
 
-  private sendmail = async (email: string, order: Order, cart: CartModel, translations) => {
+  private sendmail = async (
+    email: string,
+    order: Order,
+    cart: CartModel,
+    translations,
+  ) => {
     const emailType = {
       subject: 'Order',
       cart,

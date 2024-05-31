@@ -1,13 +1,13 @@
+import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, take } from 'rxjs/operators';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { Component, OnDestroy } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { Observable, BehaviorSubject, Subscription } from 'rxjs';
 
-import * as fromRoot from '../../../store/reducers';
-import * as actions from '../../../store/actions';
 import { languages } from '../../../shared/constants';
 import { Translations } from '../../../shared/models';
+import { SignalStore } from '../../../store/signal.store';
+import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 
 @Component({
   selector: 'app-translations-edit',
@@ -22,15 +22,15 @@ export class TranslationsEditComponent implements OnDestroy {
   translationsSub: Subscription;
   allLanguages = languages;
 
-  constructor(private store: Store<fromRoot.State>, private fb: FormBuilder) {
-    this.store.dispatch(new actions.GetAllTranslations());
+  constructor(private store: SignalStore, private selectors: SignalStoreSelectors, private fb: FormBuilder) {
+    this.store.getAllTranslations();
 
     this.languageForm = this.fb.group({
       add: '',
     });
 
-    this.translations$ = this.store.select(fromRoot.getAllTranslations);
-    this.loading$ = this.store.select(fromRoot.getDashboardLoading);
+    this.translations$ = toObservable(this.selectors.translations);
+    this.loading$ =  toObservable(this.selectors.dashboardLoading);
 
     this.translationsSub = this.translations$.subscribe((translations) => {
       const initTranslations = !translations.length
@@ -94,10 +94,10 @@ export class TranslationsEditComponent implements OnDestroy {
         lang,
         keys: this.languageForm.value[lang],
       }));
-    this.store.dispatch(new actions.EditTranslation(allTranslations));
+    this.store.editTranslation(allTranslations);
     this.loading$.pipe(filter(loading => !loading),take(1))
     .subscribe(() => {
-      this.store.dispatch(new actions.GetAllTranslations());
+      this.store.getAllTranslations();
     })
   }
 
@@ -108,10 +108,10 @@ export class TranslationsEditComponent implements OnDestroy {
         lang: lang.replace('_json', ''),
         keys: JSON.parse(this.languageForm.value[lang]),
       }));
-    this.store.dispatch(new actions.EditTranslation(allTranslations));
+    this.store.editTranslation(allTranslations);
     this.loading$.pipe(filter(loading => !loading),take(1))
       .subscribe(() => {
-        this.store.dispatch(new actions.GetAllTranslations());
+        this.store.getAllTranslations();
       })
   }
 

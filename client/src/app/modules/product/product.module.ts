@@ -13,10 +13,14 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { ProductComponent } from './product/product.component';
-import { SharedModule } from '../../shared/shared.module';
-import { PipeModule } from '../../pipes/pipe.module';
 import { ProductsComponent } from './products/products.component';
-import { CategoriesListComponent } from '../../shared/categories-list/categories-list.component';
+import { CategoriesListComponent } from '../../shared/components/categories-list/categories-list.component';
+import { TranslatePipe } from '../../pipes/translate.pipe';
+import { PriceFormatPipe } from '../../pipes/price.pipe';
+import { ProductContentComponent } from '../../shared/components/product-content/product-content.component';
+import { ProductsListComponent } from '../../shared/components/products-list/products-list.component';
+import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
+import { SidebarComponent } from '../../shared/components/sidebar/sidebar.component';
 
 @NgModule({
   declarations: [
@@ -25,9 +29,7 @@ import { CategoriesListComponent } from '../../shared/categories-list/categories
   ],
   imports: [
     CommonModule,
-    SharedModule,
     ReactiveFormsModule,
-    PipeModule,
     MatCardModule,
     MatButtonModule,
     MatTabsModule,
@@ -36,7 +38,16 @@ import { CategoriesListComponent } from '../../shared/categories-list/categories
     MatProgressSpinnerModule,
     MatDialogModule,
     MatSidenavModule,
+
+    TranslatePipe,
+    PriceFormatPipe,
+
     CategoriesListComponent,
+    ProductContentComponent,
+    ProductsListComponent,
+    PaginationComponent,
+    SidebarComponent,
+
     RouterModule.forChild([
       { path: 'all', component: ProductsComponent },
       { path: 'category/:category', component: ProductsComponent },

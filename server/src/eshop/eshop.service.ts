@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -34,17 +38,26 @@ export class EshopService {
       const configFomEnvToFE = Object.keys(process.env)
         .filter((key) => key.includes('FE_'))
         .reduce((prev, curr) => ({ ...prev, [curr]: process.env[curr] }), {});
-      const themeStyles = theme && Object.keys(theme.styles).length ? { styles: theme.styles } : {};
+      const themeStyles =
+        theme && Object.keys(theme.styles).length
+          ? { styles: theme.styles }
+          : {};
 
       return {
-        config: Buffer.from(JSON.stringify({ ...configFomEnvToFE, ...themeStyles })).toString('base64'),
+        config: Buffer.from(
+          JSON.stringify({ ...configFomEnvToFE, ...themeStyles }),
+        ).toString('base64'),
       };
     } catch {
       return { config: '' };
     }
   }
 
-  async sendContact(contactDto: ContactDto, cart: Cart, lang: string): Promise<void> {
+  async sendContact(
+    contactDto: ContactDto,
+    cart: Cart,
+    lang: string,
+  ): Promise<void> {
     const { token } = contactDto;
     const url = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SERVER_KEY}&response=${token}`;
 
@@ -76,7 +89,10 @@ export class EshopService {
   }
 
   async getPage(titleUrl: string, lang: string): Promise<Page> {
-    const found = await this.pageModel.findOne({ titleUrl }, { titleUrl: 1, [lang]: 1 });
+    const found = await this.pageModel.findOne(
+      { titleUrl },
+      { titleUrl: 1, [lang]: 1 },
+    );
 
     if (!found) {
       throw new NotFoundException(`Product with title ${titleUrl} not found`);
@@ -203,7 +219,12 @@ export class EshopService {
     }
   }
 
-  private sendmail = async (email: string, contactDto: ContactDto, cart: Cart, translations) => {
+  private sendmail = async (
+    email: string,
+    contactDto: ContactDto,
+    cart: Cart,
+    translations,
+  ) => {
     const emailType = {
       subject: 'Contact',
       cart,

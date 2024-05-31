@@ -1,19 +1,19 @@
+import { toObservable } from '@angular/core/rxjs-interop';
 import { JsonLDService } from './../../../services/jsonLD.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { filter, map, take, distinctUntilChanged, skip, withLatestFrom } from 'rxjs/operators';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, Signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, combineLatest, Subscription } from 'rxjs';
-import { Store } from '@ngrx/store';
 import { Location } from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
 import { MatDialog } from '@angular/material/dialog';
 
-import * as actions from '../../../store/actions';
-import * as fromRoot from '../../../store/reducers';
 import { Cart, Product, Category } from '../../../shared/models';
-import { ImagesDialogComponent } from '../../../shared/images-dialog/images-dialog.component';
+import { ImagesDialogComponent } from '../../../shared/components/images-dialog/images-dialog.component';
 import { TranslateService } from '../../../services/translate.service';
+import { SignalStore } from '../../../store/signal.store';
+import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 
 @Component({
   selector: 'app-product',
@@ -22,17 +22,18 @@ import { TranslateService } from '../../../services/translate.service';
 })
 export class ProductComponent implements OnDestroy {
   categories$: Observable<Category[]>;
-  productLoading$: Observable<boolean>;
+  productLoading$: Signal<boolean>;
   currency$: Observable<string>;
   lang$: Observable<string>;
   routeSub: Subscription;
   categoriesSub: Subscription;
-  product$: Observable<Product>;
+  product$: Signal<Product>;
   cartIds$: Observable<{ [productId: string]: number }>;
 
   constructor(
     private route: ActivatedRoute,
-    private store: Store<fromRoot.State>,
+    private store: SignalStore,
+    private selectors: SignalStoreSelectors,
     private location: Location,
     private meta: Meta,
     private title: Title,
@@ -43,19 +44,19 @@ export class ProductComponent implements OnDestroy {
     private jsonLDService: JsonLDService,
   ) {
     this.lang$ = this.translate.getLang$();
-    this.categories$ = this.store.select(fromRoot.getCategories);
+    this.categories$ = toObservable(this.selectors.categories);
     this.routeSub = combineLatest([this.lang$, this.route.params.pipe(map((params) => params['id']))]).subscribe(([lang, id]) => {
-      this.store.dispatch(new actions.GetProduct(id + '?lang=' + lang));
+      this.store.getProduct(id + '?lang=' + lang);
     });
 
-    this.currency$ = this.store.select(fromRoot.getCurrency);
+    this.currency$ = toObservable(this.selectors.currency);
 
     this.callCategories();
 
     this.setMetaData();
-    this.productLoading$ = this.store.select(fromRoot.getProductLoading);
-    this.product$ = this.store.select(fromRoot.getProduct);
-    this.cartIds$ = this.store.select(fromRoot.getCart).pipe(
+    this.productLoading$ = this.selectors.productLoading;
+    this.product$ =  this.selectors.product;
+    this.cartIds$ = toObservable(this.selectors.cart).pipe(
       filter(Boolean),
       map((cart: Cart) => cart.items.reduce((prev, curr) => ({ ...prev, [curr.id]: curr.qty }), {})),
     );
@@ -63,7 +64,7 @@ export class ProductComponent implements OnDestroy {
 
   cartEvent(id: string, type: string): void {
     if (type === 'add') {
-      this.store.dispatch(new actions.AddToCart('?id=' + id));
+      this.store.addToCart('?id=' + id);
 
       this.translate
         .getTranslations$()
@@ -86,7 +87,7 @@ export class ProductComponent implements OnDestroy {
         });
     }
     if (type === 'remove') {
-      this.store.dispatch(new actions.RemoveFromCart('?id=' + id));
+      this.store.removeFromCart('?id=' + id);
     }
   }
 
@@ -116,18 +117,17 @@ export class ProductComponent implements OnDestroy {
       .pipe(take(1))
       .subscribe(([categories, lang]) => {
         if (!categories.length) {
-          this.store.dispatch(new actions.GetCategories(lang));
+          this.store.getCategories(lang);
         }
       });
 
     this.categoriesSub = this.lang$.pipe(distinctUntilChanged(), skip(1)).subscribe((lang: string) => {
-      this.store.dispatch(new actions.GetCategories(lang));
+      this.store.getCategories(lang);
     });
   }
 
   private setMetaData(): void {
-    this.store
-      .select(fromRoot.getProduct)
+    toObservable(this.selectors.product)
       .pipe(
         filter((product: Product) => !!product && !!product.title),
         withLatestFrom(this.currency$),

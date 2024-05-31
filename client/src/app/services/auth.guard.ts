@@ -1,38 +1,32 @@
-import { map } from 'rxjs/operators';
-import { Injectable } from '@angular/core';
-import { CanLoad, CanActivate, Router } from '@angular/router';
-import { AuthService } from './auth.service';
-import { Observable } from 'rxjs';
+import { inject } from '@angular/core';
+import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
+import { SignalStoreSelectors } from '../store/signal.store.selectors';
 
 
+export const AuthGuard: CanActivateFn = (_route: ActivatedRouteSnapshot): boolean => {
 
-@Injectable({
-  providedIn: 'root'
-})
-export class AuthGuard implements CanLoad, CanActivate {
+  const router = inject(Router);
+  const selectors = inject(SignalStoreSelectors);
 
-  constructor(private authService: AuthService, private router: Router) {}
 
-  canLoad(): Observable<boolean> {
-    return this.authService.isLoggedIn.pipe(map(user => {
-      if (user) {
-      return user;
-      } else {
-        this.router.navigate(['']);
-        return user;
-      }
-    }));
+  if (!selectors.user()) {
+    router.navigate(['/']);
   }
 
-  canActivate(): Observable<boolean> {
-    return this.authService.isLoggedIn.pipe(map(user => {
-      if (user) {
-      return user;
-      } else {
-        this.router.navigate(['']);
-        return user;
-      }
-    }));
- }
+  return true;
+};
 
-}
+
+
+export const AdminGuard: CanActivateFn = (_route: ActivatedRouteSnapshot): boolean => {
+
+  const router = inject(Router);
+  const selectors = inject(SignalStoreSelectors);
+
+
+  if (!selectors.user()?.roles.includes('admin')) {
+    router.navigate(['/']);
+  }
+
+  return true;
+};

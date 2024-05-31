@@ -1,13 +1,14 @@
+import { toObservable } from '@angular/core/rxjs-interop';
 import { delay, map, take, startWith, switchMap } from 'rxjs/operators';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Store } from '@ngrx/store';
 import { Observable, BehaviorSubject, from } from 'rxjs';
 
-import * as fromRoot from '../../../store/reducers';
-import * as actions from '../../../store/actions';
+
 import { languages } from '../../../shared/constants';
 import { Category } from '../../../shared/models';
+import { SignalStore } from '../../../store/signal.store';
+import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 
 @Component({
   selector: 'app-categories-edit',
@@ -25,10 +26,10 @@ export class CategoriesEditComponent {
   mainImageType = false;
   subCategory: string;
 
-  constructor(private fb: FormBuilder, private store: Store<fromRoot.State>) {
+  constructor(private fb: FormBuilder, private store: SignalStore, private selectors: SignalStoreSelectors) {
     this.createForm();
-    this.categories$ = this.store.select(fromRoot.getAllCategories);
-    this.store.dispatch(new actions.GetAllCategories());
+    this.categories$ = toObservable(this.selectors.allCategories);
+    this.store.getAllCategories();
 
     this.filteredTitles$ = this.categoryEditForm.get('titleUrl').valueChanges.pipe(
       startWith(''),
@@ -94,13 +95,13 @@ export class CategoriesEditComponent {
         type: this.mainImageType,
       },
     };
-    this.store.dispatch(new actions.EditCategory(categoryPrepare));
+    this.store.editCategory(categoryPrepare);
     this.sendRequest = true;
   }
 
   onRemove(): void {
     const titleUrl = this.categoryEditForm.get('titleUrl').value;
-    this.store.dispatch(new actions.RemoveCategory(titleUrl));
+    this.store.removeCategory(titleUrl);
     this.sendRequest = true;
   }
 

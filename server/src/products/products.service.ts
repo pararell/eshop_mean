@@ -1,9 +1,17 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { GetProductsDto } from './dto/get-products';
-import { Product, ProductModel, ProductsWithPagination } from './models/product.model';
+import {
+  Product,
+  ProductModel,
+  ProductsWithPagination,
+} from './models/product.model';
 import { GetProductDto } from './dto/get-product';
 import { Category, CategoryModel } from './models/category.model';
 import { User } from '../auth/models/user.model';
@@ -17,13 +25,25 @@ export class ProductsService {
     @InjectModel('Category') private categoryModel: Model<CategoryModel>,
   ) {}
 
-  async getProducts(getProductsDto: GetProductsDto, lang: string): Promise<ProductsWithPagination> {
+  async getProducts(
+    getProductsDto: GetProductsDto,
+    lang: string,
+  ): Promise<ProductsWithPagination> {
     const { page, sort, category, search, maxPrice } = getProductsDto;
     const searchQuery = search ? { titleUrl: new RegExp(search, 'i') } : {};
-    const categoryQuery = category ? { [`tags`]: new RegExp(category, 'i') } : {};
-    const maxPriceQuery = maxPrice ? { [`${lang}.salePrice`]: { $lte: maxPrice } } : {};
+    const categoryQuery = category
+      ? { [`tags`]: new RegExp(category, 'i') }
+      : {};
+    const maxPriceQuery = maxPrice
+      ? { [`${lang}.salePrice`]: { $lte: maxPrice } }
+      : {};
 
-    const query = { ...searchQuery, ...categoryQuery, ...maxPriceQuery, ...{ [`${lang}.visibility`]: true } };
+    const query = {
+      ...searchQuery,
+      ...categoryQuery,
+      ...maxPriceQuery,
+      ...{ [`${lang}.visibility`]: true },
+    };
     const options = {
       page: parseFloat(page),
       sort: this.prepareSort(sort, lang),
@@ -32,26 +52,38 @@ export class ProductsService {
       price: 'salePrice',
     };
 
-    const productsWithPagination = await this.productModel.paginate(query, options);
+    const productsWithPagination = await this.productModel.paginate(
+      query,
+      options,
+    );
 
     return {
       ...productsWithPagination,
-      all: productsWithPagination.all.map((product) => prepareProduct(product, lang, true)),
+      all: productsWithPagination.all.map((product) =>
+        prepareProduct(product, lang, true),
+      ),
     };
   }
 
   async getCategories(lang: string): Promise<Category[]> {
     const query = { [`${lang}.visibility`]: true };
-    const categories = await this.categoryModel.find(query).sort(`${lang}.position`);
+    const categories = await this.categoryModel
+      .find(query)
+      .sort(`${lang}.position`);
     return this.prepareCategories(categories, lang);
   }
 
   async getProductsTitles(search: string): Promise<string[]> {
-    const products = await this.productModel.find({ titleUrl: new RegExp(search, 'i') });
+    const products = await this.productModel.find({
+      titleUrl: new RegExp(search, 'i'),
+    });
     return products.map((product) => product.titleUrl);
   }
 
-  async getProductByName(name: string, getProductDto: GetProductDto): Promise<Product> {
+  async getProductByName(
+    name: string,
+    getProductDto: GetProductDto,
+  ): Promise<Product> {
     const { lang } = getProductDto;
     const found = await this.productModel.findOne({ titleUrl: name });
 
@@ -63,7 +95,9 @@ export class ProductsService {
   }
 
   async addProduct(productReq, user: User): Promise<void> {
-    const found = await this.productModel.findOne({ titleUrl: productReq.titleUrl });
+    const found = await this.productModel.findOne({
+      titleUrl: productReq.titleUrl,
+    });
     if (found) {
       throw new BadRequestException();
     }
@@ -84,7 +118,11 @@ export class ProductsService {
 
   async editProduct(productReq): Promise<void> {
     const { titleUrl } = productReq;
-    const found = await this.productModel.findOneAndUpdate({ titleUrl }, productReq, { upsert: true });
+    const found = await this.productModel.findOneAndUpdate(
+      { titleUrl },
+      productReq,
+      { upsert: true },
+    );
 
     if (!found) {
       throw new NotFoundException(`Product with title ${titleUrl} not found`);
@@ -114,7 +152,11 @@ export class ProductsService {
 
   async editCategory(categoryReq): Promise<void> {
     const { titleUrl } = categoryReq;
-    const found = await this.categoryModel.findOneAndUpdate({ titleUrl }, categoryReq, { upsert: true });
+    const found = await this.categoryModel.findOneAndUpdate(
+      { titleUrl },
+      categoryReq,
+      { upsert: true },
+    );
 
     if (!found) {
       throw new NotFoundException(`Category with title ${titleUrl} not found`);
@@ -167,7 +209,10 @@ export class ProductsService {
         const titleUrl = category.replace(/ /g, '_').toLowerCase();
         const addCategory = {
           titleUrl,
-          mainImage: { url: product.mainImage.url, name: product.mainImage.name },
+          mainImage: {
+            url: product.mainImage.url,
+            name: product.mainImage.name,
+          },
           dateAdded: Date.now(),
           ...languages.reduce(
             (prev, lang) => ({
@@ -210,9 +255,13 @@ export class ProductsService {
         ...product.toObject(),
         tags: product.tags.filter((tag) => tag !== category),
       };
-      const found = await this.productModel.findOneAndUpdate({ titleUrl: product.titleUrl }, productReq, {
-        upsert: true,
-      });
+      const found = await this.productModel.findOneAndUpdate(
+        { titleUrl: product.titleUrl },
+        productReq,
+        {
+          upsert: true,
+        },
+      );
     });
   };
 }

@@ -1,15 +1,15 @@
+import { toObservable } from '@angular/core/rxjs-interop';
 import { WindowService } from './window.service';
 import { map } from 'rxjs/operators';
-import { Inject, Injectable, Optional, PLATFORM_ID } from '@angular/core';
+import { Inject, Injectable, Optional, PLATFORM_ID, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
-import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
-import { Store } from '@ngrx/store';
 
-import * as fromRoot from '../store/reducers';
 import { environment } from '../../environments/environment';
 import { Translations } from '../shared/models';
 import { accessTokenKey } from '../shared/constants';
+import { SignalStoreSelectors } from '../store/signal.store.selectors';
+import { combineLatest } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +22,6 @@ export class ApiService {
   constructor(
     private readonly http: HttpClient,
     private readonly _window: WindowService,
-    private store: Store<fromRoot.State>,
     @Optional() @Inject('serverUrl') protected serverUrl: string,
     @Inject(PLATFORM_ID)
     private platformId: Object
@@ -66,18 +65,28 @@ export class ApiService {
     const categoryQuery = category ? '&category=' + category : '';
     const priceQuery = maxPrice ? '&maxPrice=' + maxPrice : '';
     const productsUrl =
-      this.apiUrl + '/api/products?lang=' + lang + '&page=' + page + '&sort=' + sort + categoryQuery + priceQuery;
+      this.apiUrl +
+      '/api/products?lang=' +
+      lang +
+      '&page=' +
+      page +
+      '&sort=' +
+      sort +
+      categoryQuery +
+      priceQuery;
     return this.http.get(productsUrl, this.requestOptions).pipe(
       map((data: any) => ({
         products: data.all.map((product) => ({
           ...product,
-          tags: product.tags.filter(Boolean).map((cat: string) => cat.toLowerCase()),
+          tags: product.tags
+            .filter(Boolean)
+            .map((cat: string) => cat.toLowerCase()),
         })),
         pagination: data.pagination,
         maxPrice: data.maxPrice,
         minPrice: data.minPrice,
         ...addCategory,
-      }))
+      })),
     );
   }
 
@@ -182,7 +191,8 @@ export class ApiService {
   removeFromCart(params: string) {
     this.ranNumber = this.ranNumber + 1;
     const randomNum = '&random=' + this.ranNumber;
-    const removeFromCartUrl = this.apiUrl + '/api/cart/remove' + params + randomNum;
+    const removeFromCartUrl =
+      this.apiUrl + '/api/cart/remove' + params + randomNum;
     return this.http.get(removeFromCartUrl, this.requestOptions);
   }
 
@@ -197,13 +207,22 @@ export class ApiService {
   }
 
   editTranslation({ lang, keys }) {
-    const translationsUpdateUrl = this.apiUrl + '/api/translations?lang=' + lang;
-    return this.http.patch(translationsUpdateUrl, { keys: keys }, this.requestOptions);
+    const translationsUpdateUrl =
+      this.apiUrl + '/api/translations?lang=' + lang;
+    return this.http.patch(
+      translationsUpdateUrl,
+      { keys: keys },
+      this.requestOptions,
+    );
   }
 
   editAllTranslation(translations: Translations[]) {
     const translationsUpdateUrl = this.apiUrl + '/api/translations/all';
-    return this.http.patch(translationsUpdateUrl, translations, this.requestOptions);
+    return this.http.patch(
+      translationsUpdateUrl,
+      translations,
+      this.requestOptions,
+    );
   }
 
   getImages() {
@@ -219,11 +238,12 @@ export class ApiService {
 
   removeImage({ image, titleUrl }) {
     const titleUrlQuery = titleUrl ? '?titleUrl=' + titleUrl : '';
-    const removeImage = this.apiUrl + '/api/admin/images/remove' + titleUrlQuery;
+    const removeImage =
+      this.apiUrl + '/api/admin/images/remove' + titleUrlQuery;
     return this.http.post(removeImage, { image }, this.requestOptions);
   }
 
-  uploadImage({fileToUpload, titleUrl}) {
+  uploadImage({ fileToUpload, titleUrl }) {
     if (isPlatformBrowser(this.platformId)) {
       const titleUrlQuery = titleUrl ? '?titleUrl=' + titleUrl : '';
       const accessToken = localStorage.getItem(accessTokenKey);
@@ -233,10 +253,14 @@ export class ApiService {
       let headers = new HttpHeaders();
       headers = headers.set('Authorization', 'Bearer ' + accessToken);
       const sendHeaders = { headers, withCredentials: true };
-      const uploadUrl = this.apiUrl + '/api/admin/images/upload' + titleUrlQuery;
+      const uploadUrl =
+        this.apiUrl + '/api/admin/images/upload' + titleUrlQuery;
 
-      return this.http.post(uploadUrl, formData,
-        {reportProgress: true, responseType: 'json', ...sendHeaders});
+      return this.http.post(uploadUrl, formData, {
+        reportProgress: true,
+        responseType: 'json',
+        ...sendHeaders,
+      });
     }
   }
 
@@ -246,13 +270,16 @@ export class ApiService {
   }
 
   getPages(query?) {
-    const titlesQueryParams = query ? `?titles=${query.titles}&lang=${query.lang}` : '';
+    const titlesQueryParams = query
+      ? `?titles=${query.titles}&lang=${query.lang}`
+      : '';
     const pagesUrl = this.apiUrl + '/api/eshop/page/all' + titlesQueryParams;
     return this.http.get(pagesUrl, this.requestOptions);
   }
 
   getPage(query) {
-    const pageUrl = this.apiUrl + '/api/eshop/page/' + query.titleUrl + '?lang=' + query.lang;
+    const pageUrl =
+      this.apiUrl + '/api/eshop/page/' + query.titleUrl + '?lang=' + query.lang;
     return this.http.get(pageUrl, this.requestOptions);
   }
 
@@ -297,7 +324,8 @@ export class ApiService {
   }
 
   setHeaders() {
-    combineLatest([this.store.select(fromRoot.getLang), this.store.select(fromRoot.getUser)]).subscribe(
+    const selectors = inject(SignalStoreSelectors);
+    combineLatest([toObservable(selectors.appLang), toObservable(selectors.user)]).subscribe(
       ([lang, user]) => {
         if (user && user.accessToken && isPlatformBrowser(this.platformId)) {
           localStorage.setItem(accessTokenKey, user.accessToken);
@@ -308,5 +336,6 @@ export class ApiService {
         this.requestOptions = { headers, withCredentials: true };
       }
     );
+
   }
 }

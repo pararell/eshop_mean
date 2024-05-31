@@ -35,16 +35,23 @@ export class OrdersController {
   async addOrder(
     @Body() orderDto: OrderDto,
     @Session() session,
-    @Headers('lang') lang: string
+    @Headers('lang') lang: string,
   ): Promise<{ error: string; result: Order; cart: any }> {
     try {
-      const successResult = await this.ordersService.addOrder(orderDto, session, lang);
+      const successResult = await this.ordersService.addOrder(
+        orderDto,
+        session,
+        lang,
+      );
       if (successResult && !successResult.error) {
         const emptyCart = new Cart({ items: [] });
         session.cart = emptyCart;
         return { ...successResult, cart: emptyCart };
       } else {
-        return { ...successResult, cart: prepareCart(session.cart, lang, session.config) };
+        return {
+          ...successResult,
+          cart: prepareCart(session.cart, lang, session.config),
+        };
       }
     } catch (e) {
       throw new UnprocessableEntityException();
@@ -55,17 +62,24 @@ export class OrdersController {
   async orderWithStripe(
     @Body() body,
     @Session() session,
-    @Headers('lang') lang: string
+    @Headers('lang') lang: string,
   ): Promise<{ error: string; result: Order; cart: any }> {
     try {
-      const successResult = await this.ordersService.orderWithStripe(body, session, lang);
+      const successResult = await this.ordersService.orderWithStripe(
+        body,
+        session,
+        lang,
+      );
 
       if (successResult && !successResult.error) {
         const emptyCart = new Cart({ items: [] });
         session.cart = emptyCart;
         return { ...successResult, cart: emptyCart };
       } else {
-        return { ...successResult, cart: prepareCart(session.cart, lang, session.config) };
+        return {
+          ...successResult,
+          cart: prepareCart(session.cart, lang, session.config),
+        };
       }
     } catch (e) {
       throw new UnprocessableEntityException();

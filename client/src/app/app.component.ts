@@ -1,21 +1,35 @@
-import { Component, ElementRef, Renderer2, PLATFORM_ID, Inject } from '@angular/core';
-import { isPlatformBrowser, isPlatformServer, Location } from '@angular/common';
-import { Store, select } from '@ngrx/store';
-import { filter, take, delay, skip, map } from 'rxjs/operators';
+import {
+  Component,
+  ElementRef,
+  Renderer2,
+  PLATFORM_ID,
+  Inject,
+} from '@angular/core';
+import {
+  CommonModule,
+  isPlatformBrowser,
+  isPlatformServer,
+} from '@angular/common';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { filter, take, delay, map, skip } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { NavigationStart, Router } from '@angular/router';
+import { NavigationStart, Router, RouterOutlet } from '@angular/router';
 
 import { TranslateService } from './services/translate.service';
 import { JsonLDService } from './services/jsonLD.service';
-import * as fromRoot from './store/reducers';
-import * as actions from './store/actions';
 import { User } from './shared/models';
-import { languages, currencyLang } from './shared/constants';
+import { currencyLang } from './shared/constants';
+import { SignalStore } from './store/signal.store';
+import { SignalStoreSelectors } from './store/signal.store.selectors';
+import { FooterComponent } from './shared/components/footer/footer.component';
+import { HeaderComponent } from './shared/components/header/header.component';
 
 @Component({
-  selector    : 'eshop-mean-app',
-  templateUrl : './app.component.html',
-  styleUrls   : ['./app.component.scss']
+  selector: 'eshop-mean-app',
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, FooterComponent, HeaderComponent],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
 
@@ -23,16 +37,16 @@ export class AppComponent {
   position = 0;
 
   constructor(
-    private elRef         : ElementRef,
-    private renderer      : Renderer2,
-    private store         : Store<fromRoot.State>,
-    private router        : Router,
-    private location      : Location,
-    private translate     : TranslateService,
-    private jsonLDService : JsonLDService,
+    private elRef: ElementRef,
+    private renderer: Renderer2,
+    private router: Router,
+    private translate: TranslateService,
+    private jsonLDService: JsonLDService,
     @Inject(PLATFORM_ID)
-    private platformId    : Object) {
-
+    private platformId: Object,
+    private signalStore: SignalStore,
+    private selectors: SignalStoreSelectors
+  ) {
     this.translate.getLang$()
       .pipe(filter(Boolean), take(1))
       .subscribe((lang: string) => {
@@ -40,46 +54,42 @@ export class AppComponent {
           lang,
           currency  : currencyLang[lang]
         };
-        this.store.dispatch(new actions.ChangeLanguage(langUpdate));
+        this.signalStore.changeLanguage(langUpdate);
     });
 
-    this.store.select(fromRoot.getLang)
+
+    toObservable(this.selectors.appLang)
       .pipe(filter(Boolean), skip(1))
       .subscribe((lang: string) => {
-        // const checkLang = this.router.url.split('/').filter(Boolean)[0];
-        // if (checkLang && languages.includes(checkLang)) {
-        //   const urlWithNewLang = this.router.url.replace(checkLang, lang);
-        //   this.location.replaceState(urlWithNewLang);
-        // }
         translate.use(lang);
     });
 
-    this.store.pipe(select(fromRoot.getPosition))
+    toObservable(this.selectors.position)
       .pipe(filter(Boolean))
       .subscribe((componentPosition: {[component: string]: number}) => {
         this.rememberScroll = {...this.rememberScroll, ...componentPosition};
         this.renderer.setProperty(this.elRef.nativeElement.querySelector('.main-scroll-wrap'), 'scrollTop', 0);
     });
 
-    this.store.select(fromRoot.getUser).pipe(filter(() => isPlatformBrowser(this.platformId)), take(1))
+    toObservable(this.selectors.user).pipe(filter(() => isPlatformBrowser(this.platformId)), take(1))
       .subscribe(user => {
         if (!user) {
-          this.store.dispatch(new actions.GetUser());
+          this.signalStore.getUser();
         }
     });
 
-    this.store.select(fromRoot.getUser).pipe(delay(100))
+    toObservable(this.selectors.user).pipe(delay(100))
       .subscribe((user: User) => {
       if (user && user.email) {
-        this.store.dispatch(new actions.GetUserOrders());
+        this.signalStore.getUserOrders();
       }
     });
 
     this.translate.getLang$()
       .pipe(filter(lang => !!lang && isPlatformBrowser(this.platformId)))
       .subscribe(lang => {
-        this.store.dispatch(new actions.GetCart(lang));
-        this.store.dispatch(new actions.GetPages({lang, titles: true}));
+        this.signalStore.getCart(lang);
+        this.signalStore.getPages({lang, titles: true});
       });
 
     if (isPlatformServer(this.platformId)) {
@@ -117,5 +127,4 @@ export class AppComponent {
       this.rememberScroll = {...this.rememberScroll, [currentComponent]: this.position};
     }
   }
-
 }

@@ -7,7 +7,13 @@ const getCategoryLangInfo = () => {
   return languages.reduce(
     (prev, lang) => ({
       ...prev,
-      [lang]: { title: String, description: String, position: Number, visibility: Boolean, menuHidden: Boolean },
+      [lang]: {
+        title: String,
+        description: String,
+        position: Number,
+        visibility: Boolean,
+        menuHidden: Boolean,
+      },
     }),
     {},
   );

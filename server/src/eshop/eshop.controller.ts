@@ -1,4 +1,15 @@
-import { Controller, Body, Session, Post, Get, UseGuards, Param, Delete, Headers, Query } from '@nestjs/common';
+import {
+  Controller,
+  Body,
+  Session,
+  Post,
+  Get,
+  UseGuards,
+  Param,
+  Delete,
+  Headers,
+  Query,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import { EshopService } from './eshop.service';
@@ -19,12 +30,19 @@ export class EshopController {
   }
 
   @Post('/contact')
-  sendContact(@Body() contactDto: ContactDto, @Session() session, @Headers('lang') lang: string): void {
+  sendContact(
+    @Body() contactDto: ContactDto,
+    @Session() session,
+    @Headers('lang') lang: string,
+  ): void {
     this.eshopService.sendContact(contactDto, session.cart, lang);
   }
 
   @Get('/page/all')
-  getPages(@Headers('lang') lang: string, @Query('titles') titles: boolean): Promise<Page[]> {
+  getPages(
+    @Headers('lang') lang: string,
+    @Query('titles') titles: boolean,
+  ): Promise<Page[]> {
     return this.eshopService.getPages(lang, titles);
   }
 
@@ -35,7 +53,10 @@ export class EshopController {
   }
 
   @Get('/page/:titleUrl')
-  getPage(@Param('titleUrl') titleUrl: string, @Headers('lang') lang: string): Promise<Page> {
+  getPage(
+    @Param('titleUrl') titleUrl: string,
+    @Headers('lang') lang: string,
+  ): Promise<Page> {
     return this.eshopService.getPage(titleUrl, lang);
   }
 

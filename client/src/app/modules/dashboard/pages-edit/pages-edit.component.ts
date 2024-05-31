@@ -1,13 +1,13 @@
+import { toObservable } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Component } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { Observable, BehaviorSubject, from } from 'rxjs';
 import { delay, take } from 'rxjs/operators';
 
-import * as fromRoot from '../../../store/reducers';
-import * as actions from '../../../store/actions';
 import { languages } from '../../../shared/constants';
 import { Page } from '../../../shared/models';
+import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
+import { SignalStore } from '../../../store/signal.store';
 
 @Component({
   selector: 'app-pages-edit',
@@ -23,15 +23,15 @@ export class PagesEditComponent {
   chosenPage = '';
   sendRequest = false;
 
-  constructor(private store: Store<fromRoot.State>, private fb: FormBuilder) {
-    this.store.dispatch(new actions.GetPages());
+  constructor(private store: SignalStore, private selectors: SignalStoreSelectors, private fb: FormBuilder) {
+    this.store.getPages();
 
     this.pagesEditForm = this.fb.group({
       titleUrl: ['', Validators.required],
       ...this.createLangForm(this.languageOptions),
     });
 
-    this.pages$ = this.store.select(fromRoot.getPages);
+    this.pages$ = toObservable(this.selectors.pages);
   }
 
   onPageEditorChange(content, lang: string): void {
@@ -71,12 +71,12 @@ export class PagesEditComponent {
 
   savePage(): void {
     const request = this.pagesEditForm.value;
-    this.store.dispatch(new actions.AddOrEditPage(request));
+    this.store.addOrEditPage(request);
     this.sendRequest = true;
   }
 
   removePage(): void {
-    this.store.dispatch(new actions.RemovePage(this.chosenPage));
+    this.store.removePage(this.chosenPage);
     this.sendRequest = true;
   }
 

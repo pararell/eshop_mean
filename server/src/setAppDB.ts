@@ -18,7 +18,7 @@ export const setAppDB = (app: NestExpressApplication): void => {
     cors({
       credentials: true,
       origin: process.env.ORIGIN,
-    })
+    }),
   );
 
   const clientP: any = mongoose
@@ -38,7 +38,7 @@ export const setAppDB = (app: NestExpressApplication): void => {
         clientPromise: clientP,
         collectionName: 'session',
       }),
-    })
+    }),
   );
 
   app.use(passport.initialize());

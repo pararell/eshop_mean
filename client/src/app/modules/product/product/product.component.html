@@ -4,17 +4,17 @@
       <i class="material-icons left">arrow_back</i>
       {{ 'Back' | translate | async }}
     </button>
-    @if (!(product$ | async) || (productLoading$ | async)) {
+    @if (!(product$()) || (productLoading$())) {
     <mat-progress-bar mode="indeterminate"> </mat-progress-bar>
     }
-    @if ((product$ | async); as product) {
-      @if (!(productLoading$ | async)) {
+    @if (product$()) {
+      @if (!productLoading$()) {
     <mat-card appearance="outlined" class="product">
-      @if (product.visibility && product.salePrice) {
+      @if (product$().visibility && product$().salePrice) {
 
       <app-product-content
-        [product]="product"
-        [categories]="categories$ | async"
+        [product]="product$()"
+        [categoriesInput]="categories$ | async"
         [cartIds]="cartIds$ | async"
         [currency]="currency$ | async"
         [lang]="lang$ | async"
@@ -25,14 +25,14 @@
       <mat-tab-group>
         <mat-tab label="{{ 'Description' | translate | async }}">
           <mat-card-content class="product-tab-content">
-            <div [innerHTML]="product?.descriptionFull"></div>
+            <div [innerHTML]="product$()?.descriptionFull"></div>
           </mat-card-content>
         </mat-tab>
         <mat-tab label="{{ 'Images' | translate | async }}">
           <mat-card-content class="product-tab-content">
             <div class="product-images">
-              @for (imageSrc of product?.images; track imageSrc; let i = $index; let f = $first; let l = $last) {
-              <div class="product-images-content" (click)="openDialog(i, product?.images)">
+              @for (imageSrc of product$()?.images; track imageSrc; let i = $index; let f = $first; let l = $last) {
+              <div class="product-images-content" (click)="openDialog(i, product$()?.images)">
                 <img class="product-images-image" [src]="imageSrc" />
               </div>
               }

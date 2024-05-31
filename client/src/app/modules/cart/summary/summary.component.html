@@ -12,7 +12,7 @@
       {{ 'SuccessOrder' | translate | async }}
     </h2>
     <app-order-info
-      [order]="order$ | async"
+      [order]="order$()"
       [lang]="lang$ | async">
     </app-order-info>
 

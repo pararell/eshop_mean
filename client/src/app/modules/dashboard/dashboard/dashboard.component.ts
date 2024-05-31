@@ -1,13 +1,13 @@
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnDestroy, Signal, ViewChild } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
-import { Store } from '@ngrx/store';
 import { map } from 'rxjs/operators';
 
-import * as fromRoot from '../../../store/reducers';
-import * as actions from '../../../store/actions'
 import { TranslateService } from '../../../services/translate.service';
 import { Product } from '../../../shared/models';
 import { MatTabGroup } from '@angular/material/tabs';
+import { SignalStore } from '../../../store/signal.store';
+import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 
 @Component({
@@ -21,19 +21,19 @@ export class DashboardComponent implements OnDestroy {
 
   productAction = '';
   lang$: Observable<string>;
-  currency$   : Observable<string>;
-  allProducts$ : Observable<Product[]>;
+  currency$   : Signal<string>;
+  allProducts$ : Signal<Product[]>;
   allProductsTitles$: Observable<string[]>;
   getProductsSub: Subscription;
   productToEditTitleUrl: string;
 
   readonly component = 'dashboard';
 
-  constructor(private translate: TranslateService, private store: Store<fromRoot.State>) {
+  constructor(private translate: TranslateService, private store: SignalStore, private selectors: SignalStoreSelectors) {
     this.lang$          = this.translate.getLang$();
-    this.currency$      = this.store.select(fromRoot.getCurrency);
-    this.allProducts$    = this.store.select(fromRoot.getAllProducts);
-    this.allProductsTitles$    = this.store.select(fromRoot.getAllProducts).pipe(
+    this.currency$      = this.selectors.currency;
+    this.allProducts$    = this.selectors.allProducts;
+    this.allProductsTitles$    = toObservable(this.selectors.allProducts).pipe(
       map((products : Product[]) => products.map(product => product.titleUrl)));
     this.getAllProducts();
   }
@@ -43,18 +43,18 @@ export class DashboardComponent implements OnDestroy {
   }
 
   getProducts(): void {
-    this.store.dispatch(new actions.GetAllProducts());
+    this.store.getAllProducts();
   }
 
   setToEditProduct(titleUrl: string): void {
     this.productToEditTitleUrl = titleUrl;
     this.tabGroup.selectedIndex = 2;
-    this.store.dispatch(new actions.UpdatePosition({ dashboard: 0 }));
+    this.store.updatePosition({ dashboard: 0 });
   }
 
   changeTab(tab: number) {
     this.tabGroup.selectedIndex = tab;
-    this.store.dispatch(new actions.GetAllProducts());
+    this.store.getAllProducts();
   }
 
   ngOnDestroy(): void {
@@ -64,7 +64,7 @@ export class DashboardComponent implements OnDestroy {
   private getAllProducts(): void {
     this.getProductsSub = this.lang$
       .subscribe((lang: string) => {
-        this.store.dispatch(new actions.GetAllProducts());
+        this.store.getAllProducts();
     });
   }
 

@@ -1,12 +1,10 @@
 import { Location } from '@angular/common';
 import { Observable } from 'rxjs';
 import { TranslateService } from './../../../services/translate.service';
-import { Component } from '@angular/core';
+import { Component, Signal } from '@angular/core';
 
-import { Store } from '@ngrx/store';
-
-import * as fromRoot from '../../../store/reducers';
 import { Order } from '../../../shared/models';
+import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 
 @Component({
   selector: 'app-summary',
@@ -14,13 +12,13 @@ import { Order } from '../../../shared/models';
   styleUrls: ['./summary.component.scss'],
 })
 export class SummaryComponent {
-  order$: Observable<Order>;
+  order$: Signal<Order>;
   lang$: Observable<string>;
 
   readonly component = 'summaryComponent';
 
-  constructor(private location: Location, private store: Store<fromRoot.State>, public translate: TranslateService) {
-    this.order$ = this.store.select(fromRoot.getOrder);
+  constructor(private location: Location, private selectors: SignalStoreSelectors, public translate: TranslateService) {
+    this.order$ = this.selectors.order;
     this.lang$ = this.translate.getLang$();
   }
 

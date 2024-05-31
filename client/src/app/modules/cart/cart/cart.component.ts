@@ -1,15 +1,16 @@
+import { toObservable } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { map, filter, take, withLatestFrom } from 'rxjs/operators';
 import { Component } from '@angular/core';
 import { Location } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { Store } from '@ngrx/store';
+
 
 import { TranslateService } from '../../../services/translate.service';
-import * as actions from '../../../store/actions';
-import * as fromRoot from '../../../store/reducers';
 import { Cart, User, Order } from '../../../shared/models';
+import { SignalStore } from '../../../store/signal.store';
+import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 
 @Component({
   selector: 'app-cart',
@@ -31,18 +32,19 @@ export class CartComponent {
   readonly component = 'cartComponent';
 
   constructor(
-    private store: Store<fromRoot.State>,
+    private store: SignalStore,
+    private selectors: SignalStoreSelectors,
     private fb: FormBuilder,
     private router: Router,
     private location: Location,
     private translate: TranslateService) {
 
-    this.store.dispatch(new actions.CleanError());
+    this.store.cleanError();
 
     this.lang$ = this.translate.getLang$();
-    this.cart$ = this.store.select(fromRoot.getCart);
-    this.order$ = this.store.select(fromRoot.getOrder).pipe(filter(order => !!order));
-    this.user$ = this.store.select(fromRoot.getUser);
+    this.cart$ = toObservable(this.selectors.cart);
+    this.order$ = toObservable(this.selectors.order).pipe(filter(order => !!order));
+    this.user$ = toObservable(this.selectors.user);
 
     this.orderForm = this.fb.group({
       name: ['', Validators.required],
@@ -54,7 +56,7 @@ export class CartComponent {
       notes: ['']
     });
 
-    this.currency$ = this.store.select(fromRoot.getCurrency);
+    this.currency$ = toObservable(this.selectors.currency);
 
     this.order$.pipe(
       filter(order => !!order),
@@ -71,7 +73,7 @@ export class CartComponent {
 
   removeFromCart(id: string): void {
     this.lang$.pipe(take(1)).subscribe(lang => {
-      this.store.dispatch(new actions.RemoveFromCart('?id=' + id + '&lang=' + lang));
+      this.store.removeFromCart('?id=' + id + '&lang=' + lang);
     });
   }
 
@@ -87,12 +89,12 @@ export class CartComponent {
         zip         : this.orderForm.value.zip,
       }]
       const paymentRequest = {...payment, ...this.orderForm.value, ...userToOrder, addresses};
-      this.store.dispatch(new actions.MakeOrderWithPayment(paymentRequest));
+      this.store.makeOrderWithPayment(paymentRequest);
     })
   }
 
   scrollToTop(): void {
-    this.store.dispatch(new actions.UpdatePosition({cartComponent: 0}));
+    this.store.updatePosition({cartComponent: 0});
   }
 
   submit(currency: string): void {
@@ -108,7 +110,7 @@ export class CartComponent {
       }];
 
       const orderRequest = {...this.orderForm.value, ...userToOrder, currency, addresses};
-      this.store.dispatch(new actions.MakeOrder(orderRequest));
+      this.store.makeOrder(orderRequest);
       this.toggleCard = false;
       this.scrollToTop();
     })

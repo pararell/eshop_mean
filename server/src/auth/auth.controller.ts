@@ -1,4 +1,13 @@
-import { Controller, Post, Body, ValidationPipe, UseGuards, Get, Req, Res } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  ValidationPipe,
+  UseGuards,
+  Get,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import { AuthCredentialDto } from './dto/auth-credential.dto';
@@ -13,17 +22,30 @@ export class AuthController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get()
-  getUser(@GetUser() user: User): { id: string; email: string; roles: string[] } {
+  getUser(@GetUser() user: User): {
+    id: string;
+    email: string;
+    roles: string[];
+  } {
     return { id: user._id, email: user.email, roles: user.roles };
   }
 
   @Post('/signup')
-  signUp(@Body(ValidationPipe) authCredentialsDto: AuthCredentialDto): Promise<void> {
+  signUp(
+    @Body(ValidationPipe) authCredentialsDto: AuthCredentialDto,
+  ): Promise<void> {
     return this.authService.signUp(authCredentialsDto);
   }
 
   @Post('/signin')
-  signIn(@Body(ValidationPipe) authCredentialsDto: AuthCredentialDto): Promise<{ accessToken: string; id: string; email: string; roles?: string[] }> {
+  signIn(
+    @Body(ValidationPipe) authCredentialsDto: AuthCredentialDto,
+  ): Promise<{
+    accessToken: string;
+    id: string;
+    email: string;
+    roles?: string[];
+  }> {
     return this.authService.signIn(authCredentialsDto);
   }
 

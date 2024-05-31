@@ -18,9 +18,7 @@ import { OrdersEditComponent } from './orders-edit/orders-edit.component';
 import { OrderEditComponent } from './orders-edit/order-edit/order-edit.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { SharedModule } from '../../shared/shared.module';
 import { TinyEditorComponent } from './tiny-editor.ts/tiny-editor.component';
-import { PipeModule } from '../../pipes/pipe.module';
 import { TranslationsEditComponent } from './translations-edit/translations-edit.component';
 import { AllProductsComponent } from './all-products/all-products.component';
 import { PagesEditComponent } from './pages-edit/pages-edit.component';
@@ -28,6 +26,9 @@ import { ThemeEditComponent } from './theme-edit/theme-edit.component';
 import { CategoriesEditComponent } from './categories-edit/categories-edit.component';
 import { ConfigEditComponent } from './config-edit/config-edit.component';
 import { OrderComponentsModule } from '../order/components/order-components.module';
+import { TranslatePipe } from '../../pipes/translate.pipe';
+import { PriceFormatPipe } from '../../pipes/price.pipe';
+import { ProductsListComponent } from '../../shared/components/products-list/products-list.component';
 
 
 const DASHBOARD_ROUTER: Routes = [
@@ -52,11 +53,11 @@ const DASHBOARD_ROUTER: Routes = [
 @NgModule({
   imports: [
     CommonModule,
-    SharedModule,
     OrderComponentsModule,
     FormsModule,
     ReactiveFormsModule,
-    PipeModule,
+    TranslatePipe,
+    PriceFormatPipe,
     RouterModule.forChild(DASHBOARD_ROUTER),
     EditorModule,
     MatButtonModule,
@@ -67,7 +68,9 @@ const DASHBOARD_ROUTER: Routes = [
     MatRadioModule,
     MatSelectModule,
     MatAutocompleteModule,
-    MatChipsModule
+    MatChipsModule,
+
+    ProductsListComponent
   ],
   declarations: [
     ProductsEditComponent,

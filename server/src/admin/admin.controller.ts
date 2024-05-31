@@ -38,9 +38,13 @@ export class AdminController {
   async addImage(
     @Session() session,
     @Body() imageDto: ImageDto,
-    @Query(ValidationPipe) addImageDto: AddProductImageDto
+    @Query(ValidationPipe) addImageDto: AddProductImageDto,
   ): Promise<Images | Product> {
-    const result = await this.adminService.addImage(session.images, imageDto, addImageDto);
+    const result = await this.adminService.addImage(
+      session.images,
+      imageDto,
+      addImageDto,
+    );
     if (!(result as Product).titleUrl) {
       session.images = result;
     }
@@ -53,9 +57,13 @@ export class AdminController {
   async uploadImage(
     @Session() session,
     @UploadedFile() file,
-    @Query(ValidationPipe) addImageDto: AddProductImageDto
+    @Query(ValidationPipe) addImageDto: AddProductImageDto,
   ): Promise<Images | Product> {
-    const result = await this.adminService.uploadImage(session.images, file, addImageDto);
+    const result = await this.adminService.uploadImage(
+      session.images,
+      file,
+      addImageDto,
+    );
     if (!(result as Product).titleUrl) {
       session.images = result;
     }
@@ -67,9 +75,13 @@ export class AdminController {
   async removeImage(
     @Session() session,
     @Body() imageDto: ImageDto,
-    @Query(ValidationPipe) addImageDto: AddProductImageDto
+    @Query(ValidationPipe) addImageDto: AddProductImageDto,
   ): Promise<Images | Product> {
-    const result = await this.adminService.removeImage(session.images, imageDto, addImageDto);
+    const result = await this.adminService.removeImage(
+      session.images,
+      imageDto,
+      addImageDto,
+    );
     if (!(result as Product).titleUrl) {
       session.images = result;
     }

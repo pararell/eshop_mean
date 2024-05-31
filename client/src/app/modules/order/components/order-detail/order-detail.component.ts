@@ -1,15 +1,15 @@
-import { map } from 'rxjs/operators';
+import { filter, map, take } from 'rxjs/operators';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { Component, Input } from '@angular/core';
+import { Component, Input, Signal } from '@angular/core';
 import { Location } from '@angular/common';
-import { Observable } from 'rxjs';
-import { Store } from '@ngrx/store';
+import { Observable, combineLatest } from 'rxjs';
 
-import * as fromRoot from '../../../../store/reducers';
-import * as actions from './../../../../store/actions';
 import { TranslateService } from '../../../../services/translate.service';
 import { Order, OrderStatus } from '../../../../shared/models';
+import { SignalStore } from '../../../../store/signal.store';
+import { SignalStoreSelectors } from '../../../../store/signal.store.selectors';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-order-detail',
@@ -19,7 +19,7 @@ import { Order, OrderStatus } from '../../../../shared/models';
 export class OrderDetailComponent {
   @Input() type: string;
 
-  order$: Observable<Order>;
+  order$: Signal<Order>;
   statusForm: FormGroup;
   orderId: string;
   statusOptions = OrderStatus;
@@ -27,7 +27,8 @@ export class OrderDetailComponent {
   lang$: Observable<string>;
 
   constructor(
-    private store: Store<fromRoot.State>,
+    private store: SignalStore,
+    private selectors: SignalStoreSelectors,
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private location: Location,
@@ -39,12 +40,12 @@ export class OrderDetailComponent {
       status: ['', Validators.required],
     });
 
-    this.route.params.pipe(map((params) => params['id'])).subscribe((params) => {
-      this.store.dispatch(new actions.GetOrder(params));
-      this.orderId = params;
+    combineLatest([ toObservable(this.selectors.user).pipe(filter(user => !!user)),this.route.params.pipe(map((params) => params['id']))]).subscribe(([_user, id]) => {
+      this.store.getOrder(id);
+      this.orderId = id;
     });
 
-    this.order$ = this.store.select(fromRoot.getOrderId);
+    this.order$ = this.selectors.order;
   }
 
   toggleForm(): void {
@@ -54,12 +55,10 @@ export class OrderDetailComponent {
   submit(): void {
     this.showForm = false;
     const status = this.statusForm.get('status').value;
-    this.store.dispatch(
-      new actions.UpdateOrder({
+    this.store.updateOrder({
         orderId: this.orderId,
         status,
-      })
-    );
+      });
   }
 
   goBack(): void {

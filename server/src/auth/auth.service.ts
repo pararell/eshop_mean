@@ -3,7 +3,10 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
-import { ConflictException, InternalServerErrorException } from '@nestjs/common';
+import {
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 
 import { GoogleUserDto } from './dto/google-user.dto';
 import { User } from './models/user.model';
@@ -38,7 +41,14 @@ export class AuthService {
     }
   }
 
-  async signIn(authCredentialsDto: AuthCredentialDto): Promise<{ accessToken: string; id: string; email: string; roles?: string[] }> {
+  async signIn(
+    authCredentialsDto: AuthCredentialDto,
+  ): Promise<{
+    accessToken: string;
+    id: string;
+    email: string;
+    roles?: string[];
+  }> {
     const { email, password } = authCredentialsDto;
     const user = await this.userModel.findOne({ email });
     const loggedUser = user && (await this.validatePassword(password, user));
@@ -58,7 +68,10 @@ export class AuthService {
     const user = await this.userModel.findOne({ email });
 
     if (!user) {
-      const googleUser = await new this.userModel({ email, googleId: profile.id });
+      const googleUser = await new this.userModel({
+        email,
+        googleId: profile.id,
+      });
       googleUser.save();
     }
 
@@ -70,7 +83,8 @@ export class AuthService {
 
   async getGoogleUser(email: string, profile: any) {
     const user = this.userModel.findOne({ email });
-    const googleUser = user || (await new this.userModel({ email, googleId: profile.id }));
+    const googleUser =
+      user || (await new this.userModel({ email, googleId: profile.id }));
 
     return googleUser;
   }
@@ -79,7 +93,10 @@ export class AuthService {
     return bcrypt.hash(password, salt);
   }
 
-  private async validatePassword(password: string, user: User): Promise<boolean> {
+  private async validatePassword(
+    password: string,
+    user: User,
+  ): Promise<boolean> {
     const hash = await bcrypt.hash(password, user.salt);
     return hash === user.password;
   }

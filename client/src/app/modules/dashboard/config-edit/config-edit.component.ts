@@ -1,13 +1,14 @@
+import { toObservable } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Component } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { Observable, BehaviorSubject, from } from 'rxjs';
 import { delay, take } from 'rxjs/operators';
 
-import * as fromRoot from '../../../store/reducers';
-import * as actions from '../../../store/actions';
+
 import { languages } from '../../../shared/constants';
 import { Config } from '../../../shared/models';
+import { SignalStore } from '../../../store/signal.store';
+import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 
 
 @Component({
@@ -24,8 +25,8 @@ export class ConfigEditComponent {
   chosenConfig = '';
   sendRequest = false;
 
-  constructor(private store: Store<fromRoot.State>, private fb: FormBuilder) {
-    this.store.dispatch(new actions.GetConfigs());
+  constructor(private store: SignalStore, private selectors: SignalStoreSelectors, private fb: FormBuilder) {
+    this.store.getConfigs();
 
     this.configEditForm = this.fb.group({
       titleUrl: ['', Validators.required],
@@ -33,7 +34,7 @@ export class ConfigEditComponent {
       ...this.createLangForm(this.languageOptions),
     });
 
-    this.configs$ = this.store.select(fromRoot.getConfigs);
+    this.configs$ = toObservable(this.selectors.configs);
   }
 
   addConfig(): void {
@@ -89,12 +90,12 @@ export class ConfigEditComponent {
       }))
       .reduce((prev, curr) => ({ ...prev, ...curr }), {}),
     }
-    this.store.dispatch(new actions.AddOrEditConfig(request));
+    this.store.addOrEditConfig(request);
     this.sendRequest = true;
   }
 
   removeConfig(): void {
-    this.store.dispatch(new actions.RemoveConfig(this.chosenConfig));
+    this.store.removeConfig(this.chosenConfig);
     this.sendRequest = true;
   }
 

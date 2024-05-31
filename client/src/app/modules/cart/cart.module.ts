@@ -11,10 +11,11 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatIconModule } from '@angular/material/icon';
 
 import { CartComponent } from './cart/cart.component';
-import { SharedModule } from '../../shared/shared.module';
-import { PipeModule } from '../../pipes/pipe.module';
 import { CardComponent } from './card/card.component';
 import { SummaryComponent } from './summary/summary.component';
+import { TranslatePipe } from '../../pipes/translate.pipe';
+import { PriceFormatPipe } from '../../pipes/price.pipe';
+import { OrderInfoComponent } from '../../shared/components/order-info/order-info.component';
 
 @NgModule({
   declarations: [
@@ -24,9 +25,9 @@ import { SummaryComponent } from './summary/summary.component';
   ],
   imports: [
     CommonModule,
-    SharedModule,
     FormsModule,
-    PipeModule,
+    TranslatePipe,
+    PriceFormatPipe,
     ReactiveFormsModule,
     MatButtonModule,
     MatInputModule,
@@ -34,6 +35,7 @@ import { SummaryComponent } from './summary/summary.component';
     MatIconModule,
     MatRadioModule,
     MatStepperModule,
+    OrderInfoComponent,
     RouterModule.forChild([
       { path: '', component: CartComponent },
       { path: 'summary', component: SummaryComponent }

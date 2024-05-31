@@ -17,9 +17,9 @@
       <mat-tab label="All products">
         <div class="dashboard-tab-content">
           <app-all-products
-            [allProducts]="allProducts$ | async"
+            [allProducts]="allProducts$()"
             [lang]="lang$ | async"
-            [currency]="currency$ | async"
+            [currency]="currency$()"
             (getAllProducts)="getProducts()"
             (editProduct)="setToEditProduct($event)">
           </app-all-products>

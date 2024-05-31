@@ -1,14 +1,15 @@
 import { filter, first, take, delay, startWith, map } from 'rxjs/operators';
 import { Component, OnInit, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Store } from '@ngrx/store';
 import { Observable, Subscription, BehaviorSubject, from } from 'rxjs';
 
-import * as fromRoot from '../../../store/reducers';
-import * as actions from '../../../store/actions';
+
 import { ApiService } from '../../../services/api.service';
 import { languages } from '../../../shared/constants';
 import { Product, Category } from '../../../shared/models';
+import { SignalStore } from '../../../store/signal.store';
+import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-products-edit',
@@ -37,19 +38,19 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
   filteredTitles$: Observable<string[]>;
   tag: string;
 
-  constructor(private fb: FormBuilder, private store: Store<fromRoot.State>, private apiService: ApiService) {
+  constructor(private fb: FormBuilder, private store: SignalStore, private selectors: SignalStoreSelectors, private apiService: ApiService) {
     this.createForm();
-    this.product$ = this.store
-      .select(fromRoot.getProduct)
+    this.product$ = toObservable(this.selectors.product)
       .pipe(filter((product) => !!product && !!product.titleUrl && !product.title));
-    this.categories$ = this.store.select(fromRoot.getCategories);
-    this.store.dispatch(new actions.GetCategories(languages[0]));
+    this.categories$ = toObservable(this.selectors.categories);
+    this.images$ = toObservable(this.selectors.productImages);
+    this.store.getCategories(languages[0]);
   }
 
   ngOnInit(): void {
-    this.store.dispatch(new actions.GetImages());
+    this.store.getImages();
     if (this.productToEditTitleUrl) {
-      this.store.dispatch(new actions.GetProduct(this.productToEditTitleUrl));
+      this.store.getProduct(this.productToEditTitleUrl);
     }
     this.filteredTitles$ = this.productEditForm.get('titleUrl').valueChanges.pipe(
       startWith(''),
@@ -58,7 +59,6 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
         return this.titles.filter((option) => option.toLowerCase().includes(filterValue));
       })
     );
-    this.images$ = this.store.select(fromRoot.getProductImages);
 
 
     this.productSub = this.product$.subscribe((product) => {
@@ -104,9 +104,9 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
     uploadImage.pipe(take(1))
     .subscribe((result: any) => {
       if (result && result.titleUrl) {
-        this.store.dispatch(new actions.GetProductSuccess(result));
+        this.store.storeProduct(result);
       } else if (result && result.all) {
-        this.store.dispatch(new actions.AddProductImagesUrlSuccess(result));
+        this.store.storeProductImages(result);
       }
     });
   }
@@ -131,7 +131,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
   onRemoveImage(image: string, type: string): void {
     const titleUrl = type === 'product' ? { titleUrl: this.productEditForm.get('titleUrl').value } : {};
 
-    this.store.dispatch(new actions.RemoveProductImage({ image: image, ...titleUrl }));
+    this.store.removeImage({ image: image, ...titleUrl });
   }
 
   setLang(lang: string): void {
@@ -179,7 +179,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
   checkImageUrl() {
     const imageUrl = this.productEditForm.get('imageUrl').value;
     const titleUrl = this.productEditForm.get('titleUrl').value;
-    this.store.dispatch(new actions.AddProductImagesUrl({ image: imageUrl, titleUrl }));
+    this.store.addProductImagesUrl({ image: imageUrl, titleUrl });
     this.testImageUrl = '';
   }
 
@@ -190,7 +190,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
   findProduct(): void {
     const titleUrl = this.productEditForm.get('titleUrl').value;
     if (titleUrl) {
-      this.store.dispatch(new actions.GetProduct(titleUrl));
+      this.store.getProduct(titleUrl);
     }
   }
 
@@ -219,7 +219,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
             ...this.prepareProductData(this.languageOptions, this.productEditForm.value),
           };
 
-          this.store.dispatch(new actions.AddProduct(productPrepare));
+          this.store.addProduct(productPrepare);
         });
         break;
 
@@ -237,7 +237,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
           ...this.prepareProductData(this.languageOptions, editProduct),
         };
 
-        this.store.dispatch(new actions.EditProduct(productPrepareEdit));
+        this.store.editProduct(productPrepareEdit);
         break;
     }
 
@@ -245,7 +245,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
   }
 
   onRemoveSubmit(): void {
-    this.store.dispatch(new actions.RemoveProduct(this.productEditForm.get('titleUrl').value));
+    this.store.removeProduct(this.productEditForm.get('titleUrl').value);
     this.sendRequest = true;
   }
 

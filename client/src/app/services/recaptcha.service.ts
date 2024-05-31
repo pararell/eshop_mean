@@ -46,7 +46,9 @@ type ActionBacklogEntry = [string, Subject<string>];
  * Use the `execute` method for executing a single action, and
  * `onExecute` observable for listening to all actions at once.
  */
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ReCaptchaV3Service {
   /** @internal */
   private readonly isBrowser: boolean;

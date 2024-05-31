@@ -4,24 +4,24 @@
       <i class="material-icons left">arrow_back</i>
       {{ 'Back' | translate | async }}
     </button>
-    @if (!(order$ | async)) {
+    @if (!(order$())) {
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-    } @if (order$ | async; as order) {
+    } @if (order$()) {
 
     <mat-card appearance="outlined" class="card">
       <mat-card-content class="order-top-content">
         <div>
-          <h4>{{ order?.orderId }}</h4>
+          <h4>{{ order$()?.orderId }}</h4>
           <div class="product-info">
             <div class="stock">
-              Status: {{ order?.status }}
+              Status: {{ order$()?.status }}
               @if (type === 'EDIT') {
               <div class="order-edit-toggle" (click)="toggleForm()">
                 {{ 'Edit' | translate | async }}
               </div>
               }
             </div>
-            <div class="price">{{ 'Amount' | translate | async }}: {{ order?.amount }} {{ order.currency }}</div>
+            <div class="price">{{ 'Amount' | translate | async }}: {{ order$()?.amount }} {{ order$().currency }}</div>
           </div>
           @if (showForm) {
           <div>
@@ -38,22 +38,22 @@
           </div>
           }
           <mat-chip-listbox class="order-tags">
-            <mat-chip-option>{{ 'Customer' | translate | async }}: {{ order?.customerEmail }}</mat-chip-option>
+            <mat-chip-option>{{ 'Customer' | translate | async }}: {{ order$()?.customerEmail }}</mat-chip-option>
           </mat-chip-listbox>
         </div>
         <div>
-          @if (order?.description) {
-          <p>{{ 'Description' | translate | async }}: {{ order?.description }}</p>
+          @if (order$()?.description) {
+          <p>{{ 'Description' | translate | async }}: {{ order$()?.description }}</p>
           }
-          <p>{{ 'Customer' | translate | async }}: {{ order?.customerEmail }}</p>
-          <p>{{ 'Created' | translate | async }}: {{ order.dateAdded | date: 'dd-MM-yy' }}</p>
-          <p>{{ 'Paid' | translate | async }}: {{ order?.outcome?.seller_message }}</p>
-          <p>{{ 'Total_price' | translate | async }}: {{ order?.cart?.totalPrice }}</p>
-          <p>{{ 'Total_quantity' | translate | async }}: {{ order?.cart?.totalQty }}</p>
+          <p>{{ 'Customer' | translate | async }}: {{ order$()?.customerEmail }}</p>
+          <p>{{ 'Created' | translate | async }}: {{ order$().dateAdded | date: 'dd-MM-yy' }}</p>
+          <p>{{ 'Paid' | translate | async }}: {{ order$()?.outcome?.seller_message }}</p>
+          <p>{{ 'Total_price' | translate | async }}: {{ order$()?.cart?.totalPrice }}</p>
+          <p>{{ 'Total_quantity' | translate | async }}: {{ order$()?.cart?.totalQty }}</p>
         </div>
       </mat-card-content>
       <mat-card-content class="order-content">
-        @if (order.addresses[0]; as address) {
+        @if (order$().addresses[0]; as address) {
         <div>
           <h4>{{ 'About_customer' | translate | async }}</h4>
           <p>{{ 'City' | translate | async }}: {{ address.city }}</p>
@@ -68,7 +68,7 @@
         }
         <div>
           <h4 class="order-cart-title">Cart</h4>
-          @for (cartItem of order?.cart?.items; track cartItem) {
+          @for (cartItem of order$()?.cart?.items; track cartItem) {
           <div>
             <div class="order-cart">
               <a [routerLink]="['/' + (lang$ | async) + '/product/' + cartItem?.item?.titleUrl]">
@@ -76,7 +76,7 @@
               </a>
               <div class="order-cart-text">
                 <span>{{ cartItem.qty }} ks </span> {{ cartItem?.item.title }} <br />
-                <span>{{ cartItem.price }} {{ order.currency }}</span>
+                <span>{{ cartItem.price }} {{ order$().currency }}</span>
               </div>
             </div>
           </div>

@@ -6,24 +6,20 @@
 // Be sure that you only ever include this mixin once!
 @include mat.core();
 
-// Define the palettes for your theme using the Material Design palettes available in palette.scss
-// (imported above). For each palette, you can optionally specify a default, lighter, and darker
-// hue. Available color palettes: https://material.io/design/color/
-$eshop-app-primary: mat.define-palette($material-primary-color);
-$eshop-app-accent:  mat.define-palette($material-secondary-color);
-
-$eshop-typography: mat.define-typography-config(
+$eshop-app-primary: mat.m2-define-palette($material-primary-color);
+$eshop-app-accent:  mat.m2-define-palette($material-secondary-color);
+$eshop-typography: mat.m2-define-typography-config(
   $font-family: 'Kanit, sans-serif',
 );
 
-$eshop-app-theme: mat.define-light-theme((
+$eshop-app-theme: mat.m2-define-light-theme((
   color: (
     primary: $eshop-app-primary,
-    accent: $eshop-app-accent,
+    accent: $eshop-app-accent
   ),
   typography:  $eshop-typography,
  ));
 
-@include mat.all-component-typographies($eshop-typography);
-@include mat.all-component-themes($eshop-app-theme);
 
+ @include mat.all-component-typographies($eshop-typography);
+ @include mat.all-component-themes($eshop-app-theme);

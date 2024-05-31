@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, Signal } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Store } from '@ngrx/store';
 
 import { TranslateService } from '../../../services/translate.service';
-import * as fromRoot from '../../../store/reducers';
-import * as actions from '../../../store/actions'
+
 import { Order } from '../../../shared/models';
+import { SignalStore } from '../../../store/signal.store';
+import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 
 @Component({
   selector: 'app-orders-edit',
@@ -14,18 +14,18 @@ import { Order } from '../../../shared/models';
 })
 export class OrdersEditComponent {
 
-  orders$: Observable<Order[]>;
+  orders$: Signal<Order[]>;
   orderUrl: string;
   lang$: Observable<string>;
 
   readonly component = 'ordersEdit';
 
-  constructor(private store: Store<fromRoot.State>, public translate: TranslateService) {
+  constructor(private store: SignalStore, private selectors: SignalStoreSelectors, public translate: TranslateService) {
 
     this.lang$ = this.translate.getLang$();
 
-    this.store.dispatch(new actions.GetOrders());
-    this.orders$ = this.store.select(fromRoot.getOrders);
+    this.store.getOrders();
+    this.orders$ = this.selectors.orders;
    }
 
 }

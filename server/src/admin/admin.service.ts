@@ -22,11 +22,21 @@ export class AdminService {
     return (await images) || new Images({ all: [] });
   }
 
-  async addImage(images: Images, imageDto: ImageDto, addImageDto: AddProductImageDto): Promise<Images | Product> {
+  async addImage(
+    images: Images,
+    imageDto: ImageDto,
+    addImageDto: AddProductImageDto,
+  ): Promise<Images | Product> {
     const { image } = imageDto;
     const { titleUrl } = addImageDto;
     const existImages = await new Images(images || { all: [] });
-    const product = titleUrl ? await this.productModel.findOneAndUpdate({ titleUrl }, { $push: { images: image } }, { new: true }) : null;
+    const product = titleUrl
+      ? await this.productModel.findOneAndUpdate(
+          { titleUrl },
+          { $push: { images: image } },
+          { new: true },
+        )
+      : null;
 
     if (!product) {
       existImages.add(image);
@@ -35,13 +45,23 @@ export class AdminService {
     return product || existImages;
   }
 
-  async uploadImage(images: Images, file, addImageDto: AddProductImageDto): Promise<Images | Product> {
+  async uploadImage(
+    images: Images,
+    file,
+    addImageDto: AddProductImageDto,
+  ): Promise<Images | Product> {
     const { titleUrl } = addImageDto;
     const existImages = await new Images(images || { all: [] });
     const uploadedImage = await this.uploadToCloudinary(file);
     const image = uploadedImage.secure_url;
 
-    const product = titleUrl ? await this.productModel.findOneAndUpdate({ titleUrl }, { $push: { images: image } }, { new: true }) : null;
+    const product = titleUrl
+      ? await this.productModel.findOneAndUpdate(
+          { titleUrl },
+          { $push: { images: image } },
+          { new: true },
+        )
+      : null;
 
     if (!product) {
       existImages.add(image);
@@ -50,11 +70,21 @@ export class AdminService {
     return product || existImages;
   }
 
-  async removeImage(images: Images, imageDto: ImageDto, addImageDto: AddProductImageDto): Promise<Images | Product> {
+  async removeImage(
+    images: Images,
+    imageDto: ImageDto,
+    addImageDto: AddProductImageDto,
+  ): Promise<Images | Product> {
     const { image } = imageDto;
     const { titleUrl } = addImageDto;
     const existImages = await new Images(images || { all: [] });
-    const product = titleUrl ? await this.productModel.findOneAndUpdate({ titleUrl }, { $pull: { images: image } }, { new: true }) : null;
+    const product = titleUrl
+      ? await this.productModel.findOneAndUpdate(
+          { titleUrl },
+          { $pull: { images: image } },
+          { new: true },
+        )
+      : null;
 
     existImages.remove(image);
 
