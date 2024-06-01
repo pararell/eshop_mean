@@ -7,9 +7,6 @@ import { HTTP_INTERCEPTORS, provideHttpClient, withFetch } from '@angular/common
 import { TranslateService } from './services/translate.service';
 import { WindowService } from './services/window.service';
 import { EnvConfigurationService } from './services/env-configuration.service';
-import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideServiceWorker } from '@angular/service-worker';
-import { environment } from './../environments/environment';
 import { BrowserHttpInterceptor } from './services/browser-http-interceptor';
 
 
@@ -26,8 +23,6 @@ export const appConfig: ApplicationConfig = {
        includePostRequests: true,
        includeRequestsWithAuthHeaders: true
      })),
-     provideAnimations(),
-     provideServiceWorker( 'ngsw-worker.js', { enabled: environment.production, registrationStrategy: 'registerWhenStable:10000' }),
      CookieService,
      {
       provide: HTTP_INTERCEPTORS,
