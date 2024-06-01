@@ -71,12 +71,7 @@ export class AppComponent {
         this.renderer.setProperty(this.elRef.nativeElement.querySelector('.main-scroll-wrap'), 'scrollTop', 0);
     });
 
-    toObservable(this.selectors.user).pipe(filter(() => isPlatformBrowser(this.platformId)), take(1))
-      .subscribe(user => {
-        if (!user) {
-          this.signalStore.getUser();
-        }
-    });
+    this.signalStore.getUser();
 
     toObservable(this.selectors.user).pipe(delay(100))
       .subscribe((user: User) => {

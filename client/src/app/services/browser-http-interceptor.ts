@@ -1,15 +1,12 @@
 import { catchError } from 'rxjs/operators';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
-import {  StateKey } from '@angular/core';
 
 @Injectable()
 export class BrowserHttpInterceptor implements HttpInterceptor {
-  key: StateKey<any>;
 
-  constructor() {
-  }
+  constructor() {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(

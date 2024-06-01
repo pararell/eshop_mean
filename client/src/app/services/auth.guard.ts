@@ -1,5 +1,5 @@
 import { inject } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivateFn, Router } from '@angular/router';
 import { SignalStoreSelectors } from '../store/signal.store.selectors';
 
 
@@ -15,7 +15,6 @@ export const AuthGuard: CanActivateFn = (_route: ActivatedRouteSnapshot): boolea
 
   return true;
 };
-
 
 
 export const AdminGuard: CanActivateFn = (_route: ActivatedRouteSnapshot): boolean => {

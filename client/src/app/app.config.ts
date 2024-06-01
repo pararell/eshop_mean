@@ -8,6 +8,7 @@ import { TranslateService } from './services/translate.service';
 import { WindowService } from './services/window.service';
 import { EnvConfigurationService } from './services/env-configuration.service';
 import { BrowserHttpInterceptor } from './services/browser-http-interceptor';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 
 export function WindowFactory() {
@@ -23,6 +24,7 @@ export const appConfig: ApplicationConfig = {
        includePostRequests: true,
        includeRequestsWithAuthHeaders: true
      })),
+     provideAnimations(),
      CookieService,
      {
       provide: HTTP_INTERCEPTORS,
