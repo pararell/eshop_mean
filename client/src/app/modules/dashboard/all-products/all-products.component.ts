@@ -1,5 +1,4 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
 
 import { Product } from '../../../shared/models';
 
@@ -10,10 +9,6 @@ import { Product } from '../../../shared/models';
   styleUrls: ['./all-products.component.scss']
 })
 export class AllProductsComponent {
-  allProduct$ : Observable<Product[]>;
-  getProductsSub: Subscription;
-  currency$   : Observable<string>;
-  lang$       : Observable<string>;
 
   @Input() allProducts: Product[];
   @Input() lang: string;

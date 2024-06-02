@@ -44,7 +44,7 @@
               }
             </div>
           </div>
-          @for (product of products | slice: 0:3; track product) {
+          @for (product of products | slice: 0:3; track product?._id) {
 
           <div class="home-product-top">
             <div class="home-product-top-content">

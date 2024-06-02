@@ -4,7 +4,7 @@
   color="primary">
   {{ 'Refresh' | translate | async }}
 </button>
-@if (allProducts) {
+@if (allProducts?.length) {
 <app-products-list
   [products]="allProducts"
   [lang]="lang"

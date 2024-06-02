@@ -16,7 +16,7 @@ import { PriceFormatPipe } from '../../../pipes/price.pipe';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductsListComponent {
-  @Input()  products    : Product[];
+  @Input()  products    : Product[] = [];
   @Input()  cartIds     : {[productId: string]: number};
   @Input()  currency    : string;
   @Input()  lang        : string;
