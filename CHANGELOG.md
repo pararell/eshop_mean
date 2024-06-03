@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.9.0](https://github.com/pararell/eshop_mean/compare/v0.8.0...v0.9.0) (2024-06-03)
+
+
+### Features
+
+* add brwoser config for service workers and animations ([fee95fb](https://github.com/pararell/eshop_mean/commit/fee95fb01e67c455317f506c54ab23923c99af3f))
+* **angular18:** small updates ([fb14a76](https://github.com/pararell/eshop_mean/commit/fb14a7691b43fba3e1922ba16d416719ce369538))
+* catch api error ([6c7309a](https://github.com/pararell/eshop_mean/commit/6c7309a5064e4d2f9859e23e2c09d4ed000b7d43))
+* code clean ([bb2df46](https://github.com/pararell/eshop_mean/commit/bb2df46bbca0a74528112e3c2232fb14b84a4444))
+* module updates ([acc4949](https://github.com/pararell/eshop_mean/commit/acc49495fad6af7b836765325092308ca5c6e6a0))
+* promo header updates ([8ee2d6f](https://github.com/pararell/eshop_mean/commit/8ee2d6f1e55609720eaf6e5e3403c5548ccfb084))
+* **zoneless:** zoneless eshop without ngrx ([956294d](https://github.com/pararell/eshop_mean/commit/956294d8e91491f384b35178804ddfdcf7505871))
+
+
+### Bug Fixes
+
+* add product images ([031c1af](https://github.com/pararell/eshop_mean/commit/031c1af4a2c8fcdd516e35456a9c968e3ab4b4ea))
+* guards, track id ([f4229d6](https://github.com/pararell/eshop_mean/commit/f4229d6c4e20eeb12909281cbea1a9c310bcf73b))
+* product images ([13a46d7](https://github.com/pararell/eshop_mean/commit/13a46d75c31a3a3c5812fa0657d62c386230a07c))
+
 ## [0.8.0](https://github.com/pararell/eshop_mean/compare/v0.7.0...v0.8.0) (2023-11-10)
 
 
