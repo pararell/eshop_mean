@@ -130,7 +130,7 @@ export class EshopService {
   }
 
   async deletePage(titleUrl: string): Promise<void> {
-    const found = await this.pageModel.findOneAndRemove({ titleUrl });
+    const found = await this.pageModel.findOneAndDelete({ titleUrl });
 
     if (!found) {
       throw new NotFoundException(`Page with title ${titleUrl} not found`);
@@ -171,7 +171,7 @@ export class EshopService {
   }
 
   async deleteTheme(titleUrl: string): Promise<void> {
-    const found = await this.themeModel.findOneAndRemove({ titleUrl });
+    const found = await this.themeModel.findOneAndDelete({ titleUrl });
 
     if (!found) {
       throw new NotFoundException(`Theme with title ${titleUrl} not found`);
@@ -212,7 +212,7 @@ export class EshopService {
   }
 
   async deleteConfig(titleUrl: string): Promise<void> {
-    const found = await this.configModel.findOneAndRemove({ titleUrl });
+    const found = await this.configModel.findOneAndDelete({ titleUrl });
 
     if (!found) {
       throw new NotFoundException(`Config with title ${titleUrl} not found`);

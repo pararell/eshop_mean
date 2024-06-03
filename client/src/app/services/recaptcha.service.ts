@@ -34,7 +34,6 @@ export interface OnExecuteErrorData {
   /**
    * The error which was encountered
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error: any;
 }
 
@@ -79,7 +78,6 @@ export class ReCaptchaV3Service {
   constructor(
     private readonly envConfigurationService: EnvConfigurationService,
     zone: NgZone,
-    // eslint-disable-next-line @typescript-eslint/ban-types
     @Inject(PLATFORM_ID) platformId: Object,
     @Optional() @Inject(RECAPTCHA_BASE_URL) baseUrl?: string,
     @Optional() @Inject(RECAPTCHA_NONCE) nonce?: string,
@@ -142,13 +140,11 @@ export class ReCaptchaV3Service {
 
   /** @internal */
   private executeActionWithSubject(action: string, subject: Subject<string>): void {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onError = (error: any) => {
       this.zone.run(() => {
         subject.error(error);
         if (this.onExecuteErrorSubject) {
           // We don't know any better at this point, unfortunately, so have to resort to `any`
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           this.onExecuteErrorSubject.next({ action, error });
         }
       });

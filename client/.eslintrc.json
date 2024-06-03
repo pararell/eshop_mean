@@ -1,5 +1,9 @@
 {
     "root": true,
+    "ignorePatterns": [
+      "*typings.d.ts",
+      "environment*"
+    ],
     "overrides": [
       {
         "files": ["*.ts"],

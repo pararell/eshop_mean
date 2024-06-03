@@ -132,7 +132,7 @@ export class ProductsService {
   }
 
   async deleteProductByName(titleUrl: string): Promise<void> {
-    const found = await this.productModel.findOneAndRemove({ titleUrl });
+    const found = await this.productModel.findOneAndDelete({ titleUrl });
 
     if (!found) {
       throw new NotFoundException(`Product with title ${titleUrl} not found`);
@@ -164,7 +164,7 @@ export class ProductsService {
   }
 
   async deleteCategoryByName(titleUrl: string): Promise<void> {
-    const found = await this.categoryModel.findOneAndRemove({ titleUrl });
+    const found = await this.categoryModel.findOneAndDelete({ titleUrl });
 
     if (!found) {
       throw new NotFoundException(`Category with title ${titleUrl} not found`);
