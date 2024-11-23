@@ -12,9 +12,10 @@ import { SignalStoreSelectors } from '../../../../store/signal.store.selectors';
 import { toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'app-order-detail',
-  templateUrl: './order-detail.component.html',
-  styleUrls: ['./order-detail.component.scss'],
+    selector: 'app-order-detail',
+    templateUrl: './order-detail.component.html',
+    styleUrls: ['./order-detail.component.scss'],
+    standalone: false
 })
 export class OrderDetailComponent {
   @Input() type: string;

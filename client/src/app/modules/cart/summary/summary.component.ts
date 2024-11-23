@@ -7,9 +7,10 @@ import { Order } from '../../../shared/models';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 
 @Component({
-  selector: 'app-summary',
-  templateUrl: './summary.component.html',
-  styleUrls: ['./summary.component.scss'],
+    selector: 'app-summary',
+    templateUrl: './summary.component.html',
+    styleUrls: ['./summary.component.scss'],
+    standalone: false
 })
 export class SummaryComponent {
   order$: Signal<Order>;

@@ -14,12 +14,11 @@ import { MatIconModule } from '@angular/material/icon';
 
 
 @Component({
-  selector: 'app-page',
-  templateUrl: './page.component.html',
-  styleUrls: ['./page.component.scss'],
-  standalone: true,
-  imports: [CommonModule, TranslatePipe, MatButtonModule, MatIconModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-page',
+    templateUrl: './page.component.html',
+    styleUrls: ['./page.component.scss'],
+    imports: [CommonModule, TranslatePipe, MatButtonModule, MatIconModule],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PageComponent {
 

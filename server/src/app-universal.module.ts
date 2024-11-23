@@ -5,7 +5,7 @@ import { dirname, join, resolve } from 'path';
 import 'reflect-metadata';
 import { Provider } from '@nestjs/common';
 import * as express from 'express';
-import { CommonEngine } from '@angular/ssr';
+import { CommonEngine } from '@angular/ssr/node';
 import { fileURLToPath } from 'url';
 import bootstrap from '../../client/src/main.server';
 

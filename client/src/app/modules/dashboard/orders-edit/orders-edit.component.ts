@@ -8,9 +8,10 @@ import { SignalStore } from '../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 
 @Component({
-  selector: 'app-orders-edit',
-  templateUrl: './orders-edit.component.html',
-  styleUrls: ['./orders-edit.component.scss']
+    selector: 'app-orders-edit',
+    templateUrl: './orders-edit.component.html',
+    styleUrls: ['./orders-edit.component.scss'],
+    standalone: false
 })
 export class OrdersEditComponent {
 

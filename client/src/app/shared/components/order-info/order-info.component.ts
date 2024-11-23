@@ -9,12 +9,11 @@ import {  MatChipsModule } from '@angular/material/chips';
 import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-order-info',
-  templateUrl: './order-info.component.html',
-  styleUrls: ['./order-info.component.scss'],
-  standalone: true,
-  imports: [CommonModule, TranslatePipe, RouterLink, MatProgressBar, MatCardModule, MatChipsModule],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-order-info',
+    templateUrl: './order-info.component.html',
+    styleUrls: ['./order-info.component.scss'],
+    imports: [CommonModule, TranslatePipe, RouterLink, MatProgressBar, MatCardModule, MatChipsModule],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrderInfoComponent {
 

@@ -4,9 +4,10 @@ import { Observable } from 'rxjs';
 import { EnvConfigurationService } from '../../../services/env-configuration.service';
 
 @Component({
-  selector: 'app-tiny-editor',
-  templateUrl: './tiny-editor.component.html',
-  styleUrls: ['./tiny-editor.component.scss']
+    selector: 'app-tiny-editor',
+    templateUrl: './tiny-editor.component.html',
+    styleUrls: ['./tiny-editor.component.scss'],
+    standalone: false
 })
 export class TinyEditorComponent {
   editorApiKey$: Observable<string>;

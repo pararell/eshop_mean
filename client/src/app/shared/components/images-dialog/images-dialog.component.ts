@@ -4,11 +4,10 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 @Component({
-  selector: 'app-images-dialog',
-  templateUrl: './images-dialog.component.html',
-  styleUrls: ['./images-dialog.component.scss'],
-  standalone: true,
-  imports: [CommonModule,TranslatePipe]
+    selector: 'app-images-dialog',
+    templateUrl: './images-dialog.component.html',
+    styleUrls: ['./images-dialog.component.scss'],
+    imports: [CommonModule, TranslatePipe]
 })
 export class ImagesDialogComponent implements OnInit {
   openImages = {};

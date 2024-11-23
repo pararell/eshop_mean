@@ -5,12 +5,10 @@ import { isPlatformBrowser } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
-  selector: 'app-carousel',
-  templateUrl: './carousel.component.html',
-  styleUrls: ['./carousel.component.scss'],
-  standalone: true,
-  imports: [MatButtonModule]
-
+    selector: 'app-carousel',
+    templateUrl: './carousel.component.html',
+    styleUrls: ['./carousel.component.scss'],
+    imports: [MatButtonModule]
 })
 export class CarouselComponent implements AfterViewInit, OnDestroy {
   @ViewChild('slides') slides: ElementRef<HTMLDivElement>;

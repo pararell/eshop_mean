@@ -5,11 +5,10 @@ import { CommonModule } from '@angular/common';
 import { MatPaginatorModule } from '@angular/material/paginator';
 
 @Component({
-  selector: 'app-pagination',
-  templateUrl: './pagination.component.html',
-  styleUrls: ['./pagination.component.scss'],
-  standalone: true,
-  imports: [CommonModule,MatPaginatorModule],
+    selector: 'app-pagination',
+    templateUrl: './pagination.component.html',
+    styleUrls: ['./pagination.component.scss'],
+    imports: [CommonModule, MatPaginatorModule]
 })
 export class PaginationComponent {
   @Input()  pagination: Pagination;

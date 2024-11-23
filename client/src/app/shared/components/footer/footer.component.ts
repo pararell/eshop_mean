@@ -10,12 +10,11 @@ import { RouterLink } from '@angular/router';
 
 
 @Component({
-  selector: 'app-footer',
-  templateUrl: './footer.component.html',
-  styleUrls: ['./footer.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
-  imports: [CommonModule, TranslatePipe, RouterLink],
+    selector: 'app-footer',
+    templateUrl: './footer.component.html',
+    styleUrls: ['./footer.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, TranslatePipe, RouterLink]
 })
 export class FooterComponent implements OnDestroy {
   currentYear = new Date().getFullYear();

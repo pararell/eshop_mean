@@ -13,9 +13,10 @@ import { SignalStore } from '../../../store/signal.store';
 
 
 @Component({
-  selector: 'app-theme-edit',
-  templateUrl: './theme-edit.component.html',
-  styleUrls: ['./theme-edit.component.scss'],
+    selector: 'app-theme-edit',
+    templateUrl: './theme-edit.component.html',
+    styleUrls: ['./theme-edit.component.scss'],
+    standalone: false
 })
 export class ThemeEditComponent {
   themes$: Observable<Theme[]>;

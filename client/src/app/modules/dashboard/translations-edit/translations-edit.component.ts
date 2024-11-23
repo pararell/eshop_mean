@@ -10,9 +10,10 @@ import { SignalStore } from '../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 
 @Component({
-  selector: 'app-translations-edit',
-  templateUrl: './translations-edit.component.html',
-  styleUrls: ['./translations-edit.component.scss'],
+    selector: 'app-translations-edit',
+    templateUrl: './translations-edit.component.html',
+    styleUrls: ['./translations-edit.component.scss'],
+    standalone: false
 })
 export class TranslationsEditComponent implements OnDestroy {
   translations$: Observable<Translations[]>;

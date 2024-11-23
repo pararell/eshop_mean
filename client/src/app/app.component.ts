@@ -25,11 +25,10 @@ import { FooterComponent } from './shared/components/footer/footer.component';
 import { HeaderComponent } from './shared/components/header/header.component';
 
 @Component({
-  selector: 'eshop-mean-app',
-  standalone: true,
-  imports: [CommonModule, RouterOutlet, FooterComponent, HeaderComponent],
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+    selector: 'eshop-mean-app',
+    imports: [CommonModule, RouterOutlet, FooterComponent, HeaderComponent],
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
 

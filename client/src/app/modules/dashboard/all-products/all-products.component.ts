@@ -4,9 +4,10 @@ import { Product } from '../../../shared/models';
 
 
 @Component({
-  selector: 'app-all-products',
-  templateUrl: './all-products.component.html',
-  styleUrls: ['./all-products.component.scss']
+    selector: 'app-all-products',
+    templateUrl: './all-products.component.html',
+    styleUrls: ['./all-products.component.scss'],
+    standalone: false
 })
 export class AllProductsComponent {
 

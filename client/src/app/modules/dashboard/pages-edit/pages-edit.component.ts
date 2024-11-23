@@ -10,9 +10,10 @@ import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 import { SignalStore } from '../../../store/signal.store';
 
 @Component({
-  selector: 'app-pages-edit',
-  templateUrl: './pages-edit.component.html',
-  styleUrls: ['./pages-edit.component.scss'],
+    selector: 'app-pages-edit',
+    templateUrl: './pages-edit.component.html',
+    styleUrls: ['./pages-edit.component.scss'],
+    standalone: false
 })
 export class PagesEditComponent {
   pages$: Observable<Page[]>;

@@ -12,9 +12,10 @@ import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 import { toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'app-products-edit',
-  templateUrl: './products-edit.component.html',
-  styleUrls: ['./products-edit.component.scss'],
+    selector: 'app-products-edit',
+    templateUrl: './products-edit.component.html',
+    styleUrls: ['./products-edit.component.scss'],
+    standalone: false
 })
 export class ProductsEditComponent implements OnInit, OnDestroy {
   @Input() action: string;

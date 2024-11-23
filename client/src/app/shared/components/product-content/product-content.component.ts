@@ -11,12 +11,11 @@ import { CartShowComponent } from '../cart-show/cart-show.component';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
-  selector: 'app-product-content',
-  templateUrl: './product-content.component.html',
-  styleUrls: ['./product-content.component.scss'],
-  standalone: true,
-  imports: [CommonModule, TranslatePipe, RouterLink, PriceFormatPipe, MatChipsModule, CartShowComponent, MatButtonModule],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-product-content',
+    templateUrl: './product-content.component.html',
+    styleUrls: ['./product-content.component.scss'],
+    imports: [CommonModule, TranslatePipe, RouterLink, PriceFormatPipe, MatChipsModule, CartShowComponent, MatButtonModule],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductContentComponent {
   categoriesInput = input<Category[]>();

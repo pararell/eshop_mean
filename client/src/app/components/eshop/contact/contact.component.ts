@@ -15,12 +15,11 @@ import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 import { MatProgressBar } from '@angular/material/progress-bar';
 
 @Component({
-  selector: 'app-contact',
-  templateUrl: './contact.component.html',
-  styleUrls: ['./contact.component.scss'],
-  standalone: true,
-  imports: [CommonModule, TranslatePipe, MatButtonModule, MatIconModule, MatProgressBar, MatInputModule, FormsModule, ReactiveFormsModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-contact',
+    templateUrl: './contact.component.html',
+    styleUrls: ['./contact.component.scss'],
+    imports: [CommonModule, TranslatePipe, MatButtonModule, MatIconModule, MatProgressBar, MatInputModule, FormsModule, ReactiveFormsModule],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ContactComponent {
   contactForm: FormGroup;

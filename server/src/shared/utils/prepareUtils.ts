@@ -60,7 +60,7 @@ export const prepareCart = (cart, lang: string, config): CartModel => {
     config[lang].shippingCost &&
     config[lang].shippingCost[shippingType]
       ? config[lang].shippingCost[shippingType]
-      : shippingCost[lang][shippingType];
+      : shippingCost[lang || 'en'][shippingType];
   const shippingTypeCost =
     totalPrice >= shippingByLang.limit ? 0 : shippingByLang.cost;
 

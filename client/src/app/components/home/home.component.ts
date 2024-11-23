@@ -26,12 +26,11 @@ import { SignalStore } from '../../store/signal.store';
 import { SignalStoreSelectors } from '../../store/signal.store.selectors';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
-  standalone: true,
-  imports: [CommonModule,MatSidenavModule, CategoriesListComponent, CarouselComponent, ProductContentComponent, ProductsListComponent, SidebarComponent, PaginationComponent, RouterLink,MatProgressBarModule, MatProgressSpinnerModule, TranslatePipe],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-home',
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.scss'],
+    imports: [CommonModule, MatSidenavModule, CategoriesListComponent, CarouselComponent, ProductContentComponent, ProductsListComponent, SidebarComponent, PaginationComponent, RouterLink, MatProgressBarModule, MatProgressSpinnerModule, TranslatePipe],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent implements OnDestroy {
   products: Signal<Product[]>;
