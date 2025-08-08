@@ -24,6 +24,7 @@ import { ProductContentComponent } from '../../shared/components/product-content
 import { ProductsListComponent } from '../../shared/components/products-list/products-list.component';
 import { SignalStore } from '../../store/signal.store';
 import { SignalStoreSelectors } from '../../store/signal.store.selectors';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
     selector: 'app-home',
@@ -51,6 +52,7 @@ export class HomeComponent implements OnDestroy {
   productsSub: Subscription;
   sortOptions = sortOptions;
   sidebarOpened = false;
+  video = null;
 
   readonly component = 'homeComponent';
 
@@ -62,7 +64,8 @@ export class HomeComponent implements OnDestroy {
     private translate: TranslateService,
     private snackBar: MatSnackBar,
     private store: SignalStore,
-    private selectors: SignalStoreSelectors
+    private selectors: SignalStoreSelectors,
+    private themeService: ThemeService
   ) {
     this.category = toSignal(this.route.params.pipe(
       map((params) => params['category']),
@@ -95,9 +98,11 @@ export class HomeComponent implements OnDestroy {
     this.categories = this.selectors.categories;
     this.pagination = this.selectors.pagination;
     this.currency = this.selectors.currency;
+    this.video = this.themeService.video;
 
     this._loadCategories();
     this._loadProducts();
+
   }
 
   addToCart(id: string): void {

@@ -15,6 +15,8 @@ export interface Color {
 })
 export class ThemeService {
 
+  video: string;
+
   constructor(
     @Inject(DOCUMENT)
     private document: Document
@@ -37,6 +39,11 @@ export class ThemeService {
       this.document.documentElement.style.setProperty(key2, value2);
     }
   }
+
+  setVideo(video: string): void {
+    this.video = video;
+  }
+
 
   private computeColors(hex: string): Color[] {
     return [

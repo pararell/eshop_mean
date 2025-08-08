@@ -8,6 +8,16 @@
     min-height: 100vh;
   }
 
+  .promo-slide-video {
+  width: 100vw;
+   object-fit: cover;
+   position: absolute;
+   left: 0;
+   right: 0;
+   top: 0;
+   bottom: 0;
+}
+
   .home {
     &-primary-header {
       color: var(--primary-color);

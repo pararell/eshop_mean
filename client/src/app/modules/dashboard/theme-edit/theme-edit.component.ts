@@ -57,6 +57,7 @@ export class ThemeEditComponent {
       this.themeService.setCSSVariable(values.freeShippingPromo, 'free-shipping-promo');
       this.themeService.setCSSVariable(`url(${values.promoSlideBackground})`, 'promo-slide-background');
       this.themeService.setCSSVariable(`${values.promoSlideBackgroundPosition}`, 'promo-slide-background-position');
+      this.themeService.setVideo(values.promoSlideVideo);
       this.themeService.setCSSVariable(values.promo, 'promo');
       this.themeService.setCSSVariable(`url(${values.logo})`, 'logo');
     })
@@ -81,6 +82,7 @@ export class ThemeEditComponent {
         this.themesEditForm.get('active').setValue(!!foundTheme.active);
         this.themesEditForm.get('freeShippingPromo').setValue(foundTheme.styles.freeShippingPromo || 'none');
         this.themesEditForm.get('promoSlideBackground').setValue(foundTheme.styles.promoSlideBackground || '');
+        this.themesEditForm.get('promoSlideVideo').setValue(foundTheme.styles.promoSlideVideo || '');
         this.themesEditForm.get('promoSlideBackgroundPosition').setValue(foundTheme.styles.promoSlideBackgroundPosition || '');
         this.themesEditForm.get('promo').setValue(foundTheme.styles.promo || 'none');
         this.themesEditForm.get('primaryColor').setValue(foundTheme.styles.primaryColor || '');
@@ -100,6 +102,7 @@ export class ThemeEditComponent {
       styles: {
         primaryColor: formValues.primaryColor,
         promoSlideBackground: formValues.promoSlideBackground,
+        promoSlideVideo: formValues.promoSlideVideo || '',
         promoSlideBackgroundPosition: formValues.promoSlideBackgroundPosition,
         secondaryColor: formValues.secondaryColor,
         backgroundColor: formValues.backgroundColor,
@@ -123,6 +126,7 @@ export class ThemeEditComponent {
       active  : false,
       freeShippingPromo: 'none',
       promoSlideBackground: '',
+      promoSlideVideo: '',
       promoSlideBackgroundPosition: 'center',
       promo: 'none',
       primaryColor: '#222222',

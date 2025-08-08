@@ -60,6 +60,9 @@ export class EnvConfigurationService {
             this.themeService.setCSSVariable(`url(${styleValue})`, 'logo');
             return;
           }
+          if (style === 'promoSlideVideo') {
+           this.themeService.setVideo(styleValue);
+          }
 
           this.themeService.setCSSVariable(styleValue, varName);
           if (style.includes('Color')) {
