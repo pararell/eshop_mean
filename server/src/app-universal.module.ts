@@ -36,14 +36,11 @@ export function setupUniversal(app: any) {
   app.set('view engine', 'html');
   app.set('views', browserDistFolder);
 
-  const rootStaticPath = '*.*';
-  // Serve static files
-  app.get(
-    rootStaticPath,
-    express.static(browserDistFolder, {
+
+
+    app.use(express.static(browserDistFolder, {
       maxAge: 600,
-    }),
-  );
+  }));
 }
 
 export const angularUniversalProviders: Provider[] = [
@@ -80,8 +77,7 @@ export class AngularUniversalModule implements OnModuleInit {
     const app = httpAdapter.getInstance();
     const serverDistFolder = dirname(fileURLToPath(import.meta.url));
     const templatePath = join(serverDistFolder, 'index.server.html');
-    const renderPath = '*';
-    app.get(renderPath, (req, res) =>
+    app.get(/(.*)/, (req, res) =>
       res.render(templatePath, {
         req,
         res,
