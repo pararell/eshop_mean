@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.2](https://github.com/pararell/eshop_mean/compare/v0.9.0...v0.9.2) (2025-08-10)
+
+
+### Features
+
+* add video option to theme ([ec81405](https://github.com/pararell/eshop_mean/commit/ec81405e6c25a20673530c2a0c19fa548c8f62db))
+* lint,packages updates ([b5e439d](https://github.com/pararell/eshop_mean/commit/b5e439d9ca437a8f0d1415ddc161bd14ac8abe39))
+* style video ([73ea451](https://github.com/pararell/eshop_mean/commit/73ea45142d687c5a3fb9f1dd1ece91529ae82cae))
+* update full height slider ([0fa1b10](https://github.com/pararell/eshop_mean/commit/0fa1b109229b3fb88ce51a316e9706387a347b27))
+
 ## [0.9.0](https://github.com/pararell/eshop_mean/compare/v0.8.0...v0.9.0) (2024-06-03)
 
 
