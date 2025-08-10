@@ -1,9 +1,9 @@
 import { SidebarComponent } from './../../shared/components/sidebar/sidebar.component';
 import { CommonModule } from '@angular/common';
-import { map, distinctUntilChanged, filter, take, skip, withLatestFrom } from 'rxjs/operators';
-import { Component, ChangeDetectionStrategy, OnDestroy, Signal, computed } from '@angular/core';
+import { map, distinctUntilChanged, filter, take, skip, withLatestFrom, delay } from 'rxjs/operators';
+import { Component, ChangeDetectionStrategy, OnDestroy, Signal, computed, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
-import { Observable, combineLatest, Subscription } from 'rxjs';
+import { Observable, combineLatest, Subscription, of } from 'rxjs';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 
@@ -33,7 +33,7 @@ import { ThemeService } from '../../services/theme.service';
     imports: [CommonModule, MatSidenavModule, CategoriesListComponent, CarouselComponent, ProductContentComponent, ProductsListComponent, SidebarComponent, PaginationComponent, RouterLink, MatProgressBarModule, MatProgressSpinnerModule, TranslatePipe],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class HomeComponent implements OnDestroy {
+export class HomeComponent implements AfterViewInit, OnDestroy {
   products: Signal<Product[]>;
   cartIds: Signal<{ [productID: string]: number }>;
   cart: Signal<Cart>;
@@ -55,6 +55,8 @@ export class HomeComponent implements OnDestroy {
   video = null;
 
   readonly component = 'homeComponent';
+
+  @ViewChild('videoRef') private videoRef: ElementRef;
 
   constructor(
     private route: ActivatedRoute,
@@ -163,6 +165,19 @@ export class HomeComponent implements OnDestroy {
 
   toggleSidebar() {
     this.sidebarOpened = !this.sidebarOpened;
+  }
+
+  ngAfterViewInit() {
+    of('delay').pipe(
+      delay(100),
+      take(1),
+    ).subscribe(() => {
+  const vid = this.videoRef?.nativeElement as HTMLVideoElement;
+    if (vid) {
+      vid.muted = true; // required in most browsers
+      vid.play().catch(err => console.log('Autoplay blocked', err));
+    }
+    });
   }
 
   ngOnDestroy(): void {

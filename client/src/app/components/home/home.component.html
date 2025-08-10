@@ -33,10 +33,10 @@
           <div class="home-promo-slide">
             <div class="home-promo-slide-background"></div>
             @if (video) {
-            <video autoplay muted loop class="promo-slide-video">
-              <source [src]="video" type="video/mp4">
-            </video>
-          }
+              <video #videoRef autoplay muted playsinline loop class="home-promo-slide-video">
+                <source [src]="video" type="video/mp4">
+              </video>
+            }
             <div class="home-promo-slide-cta">
               <div class="home-promo-slide-logo"></div>
               <h2 class="home-promo-slide-subtitle">

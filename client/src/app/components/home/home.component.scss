@@ -8,16 +8,6 @@
     min-height: 100vh;
   }
 
-  .promo-slide-video {
-  width: 100%;
-   object-fit: cover;
-   position: absolute;
-   left: 0;
-   right: 0;
-   top: 0;
-   bottom: 0;
-}
-
   .home {
     &-primary-header {
       color: var(--primary-color);
@@ -55,7 +45,7 @@
       text-align: center;
 
       &-basic {
-        display: var(--promo, none)
+        display: var(--promo, none);
       }
 
       &-shipping {
@@ -64,17 +54,20 @@
     }
 
     &-promo-slide {
-      min-height: 200px;
+      min-height: calc(100vh - 50px);
       width: 100%;
       min-width: 100%;
       z-index: 0;
       position: relative;
 
       &-background {
-        background: var(--promo-slide-background, url('https://res.cloudinary.com/dnpgh1vhi/image/upload/v1615624628/fabrizio-conti-xPFhK0MGsyw-unsplash_tkxjzp.jpg'));
+        background: var(
+          --promo-slide-background,
+          url('https://res.cloudinary.com/dnpgh1vhi/image/upload/v1615624628/fabrizio-conti-xPFhK0MGsyw-unsplash_tkxjzp.jpg')
+        );
         background-size: cover;
         background-repeat: no-repeat;
-        background-position:  var(--promo-slide-background-position, center);
+        background-position: var(--promo-slide-background-position, center);
         position: absolute;
         top: 0;
         left: 0;
@@ -82,6 +75,17 @@
         height: 100%;
         z-index: 0;
         overflow: hidden;
+      }
+
+      &-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
       }
 
       &-cta {
@@ -134,7 +138,6 @@
       }
     }
 
-
     &-product {
       background: #fff;
       position: relative;
@@ -155,7 +158,8 @@
       overflow: hidden;
       display: flex;
 
-      &:before, &:after {
+      &:before,
+      &:after {
         content: '';
         height: 100%;
         width: 50px;
