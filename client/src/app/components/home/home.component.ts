@@ -1,7 +1,7 @@
 import { SidebarComponent } from './../../shared/components/sidebar/sidebar.component';
 import { CommonModule } from '@angular/common';
 import { map, distinctUntilChanged, filter, take, skip, withLatestFrom, delay } from 'rxjs/operators';
-import { Component, ChangeDetectionStrategy, OnDestroy, Signal, computed, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnDestroy, Signal, computed, AfterViewInit, ViewChild, ElementRef, Inject, DOCUMENT } from '@angular/core';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { Observable, combineLatest, Subscription, of } from 'rxjs';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -67,7 +67,9 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     private snackBar: MatSnackBar,
     private store: SignalStore,
     private selectors: SignalStoreSelectors,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    @Inject(DOCUMENT)
+    private _document: Document,
   ) {
     this.category = toSignal(this.route.params.pipe(
       map((params) => params['category']),
@@ -172,17 +174,21 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       delay(100),
       take(1),
     ).subscribe(() => {
-  const vid = this.videoRef?.nativeElement as HTMLVideoElement;
-    if (vid) {
-      vid.muted = true; // required in most browsers
-      vid.play().catch(err => console.log('Autoplay blocked', err));
-    }
+      const vid = this.videoRef?.nativeElement as HTMLVideoElement;
+      if (vid) {
+        vid.muted = true; // required in most browsers
+        vid.play().catch(err => console.log('Autoplay blocked', err));
+      }
+      this._document.getElementById('navbar')?.classList?.add("transparent");
+      this._document.getElementById('main-content')?.classList?.add("transparent");
     });
   }
 
   ngOnDestroy(): void {
     this.categoriesSub.unsubscribe();
     this.productsSub.unsubscribe();
+      this._document.getElementById('navbar')?.classList?.remove("transparent");
+      this._document.getElementById('main-content')?.classList?.remove("transparent");
   }
 
 

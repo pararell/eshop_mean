@@ -54,7 +54,7 @@
     }
 
     &-promo-slide {
-      min-height: calc(100vh - 50px);
+      min-height: calc(100vh - 40px);
       width: 100%;
       min-width: 100%;
       z-index: 0;
@@ -90,7 +90,7 @@
 
       &-cta {
         position: relative;
-        margin: 0 auto auto auto;
+        margin: 25vh auto auto auto;
         padding: 15px 0 15px 0;
         text-align: center;
         align-items: center;
@@ -112,14 +112,14 @@
 
       &-subtitle {
         font-size: 50px;
+        line-height: 1.2;
         color: var(--primary-color);
-        margin-bottom: 15px;
+        margin-bottom: 0;
         margin-top: 12px;
       }
 
       &-text {
         padding: 10px;
-        margin-top: 40px;
         display: block;
 
         a {

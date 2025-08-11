@@ -15,6 +15,10 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
   width: 100%;
+
+  &.transparent {
+     top: 0;
+  }
 }
 
 .main {
@@ -159,5 +163,5 @@ a:hover {
 }
 
 .mdc-text-field--filled:not(.mdc-text-field--disabled) {
-  background: #fff;
+  background-color: transparent !important;
 }
