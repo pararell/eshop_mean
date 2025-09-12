@@ -285,11 +285,15 @@ getAllCategories = () => {
 }
 
 editCategory = (payload) => {
-  this.apiService.editCategory(payload);
+  this.apiService.editCategory(payload).subscribe((response: any) => {
+    console.log(response);
+  });
 }
 
 removeCategory = (payload) => {
-  this.apiService.removeCategory(payload);
+  this.apiService.removeCategory(payload).subscribe((response: any) => {
+    console.log(response);
+  });
 }
 
 getImages = () => {
