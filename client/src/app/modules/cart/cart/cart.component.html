@@ -102,7 +102,7 @@
                 </div>
               </form>
             </mat-step>
-            <mat-step [stepControl]="toggleCard">
+            <mat-step>
               <ng-template matStepLabel>{{ 'Payment_method' | translate | async }}</ng-template>
               @if (orderForm.valid) {
               <mat-radio-group class="delivery-button" [(ngModel)]="toggleCard">
@@ -164,7 +164,7 @@
 
               @if (toggleCard) {
               <app-card
-                [price]="cart?.totalPrice | priceFormat"
+                [price]="cart?.totalPrice"
                 [currency]="currency$ | async"
                 [loading]="loading$ | async"
                 (scrollToTop)="scrollToTop()"

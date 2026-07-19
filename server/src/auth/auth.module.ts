@@ -19,7 +19,7 @@ import { SessionSerializer } from './utils/session.serializer';
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: {
-        expiresIn: process.env.JWT_EXPIRATION,
+        expiresIn: process.env.JWT_EXPIRATION ? Number(process.env.JWT_EXPIRATION) || process.env.JWT_EXPIRATION as any : undefined,
       },
     }),
   ],

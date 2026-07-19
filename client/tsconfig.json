@@ -7,17 +7,25 @@
     "sourceMap": true,
     "declaration": false,
     "experimentalDecorators": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "emitDecoratorMetadata": true,
     "importHelpers": true,
     "target": "ES2022",
     "module": "ES2022",
+    "strict": false,
+    "noImplicitAny": false,
+    "noImplicitOverride": false,
+    "strictNullChecks": false,
+    "strictPropertyInitialization": false,
+    "noPropertyAccessFromIndexSignature": false,
+    "moduleDetection": "force",
     "skipLibCheck": true,
-    "useDefineForClassFields": false,
+    "useDefineForClassFields": true,
     "lib": [
       "ES2022",
       "dom"
-    ]
+    ],
+    "ignoreDeprecations": "6.0"
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
