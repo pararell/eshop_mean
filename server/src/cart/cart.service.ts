@@ -1,15 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { Cart } from './utils/cart';
 import { GetCartChangeDto } from './dto/cart-change.dto';
-import { ProductModel } from '../products/models/product.model';
+import { Product } from '../entities/product.entity';
 import { CartModel } from './models/cart.model';
 import { prepareCart } from '../shared/utils/prepareUtils';
 
 @Injectable()
 export class CartService {
-  constructor(@InjectModel('Product') private productModel: ProductModel) {}
+  constructor(@InjectRepository(Product) private productRepository: Repository<Product>) {}
 
   async getCart(session, lang: string): Promise<CartModel> {
     const { cart, config } = session;
@@ -26,7 +27,7 @@ export class CartService {
     const { id } = getCartChangeDto;
     const newCart: Cart = new Cart(cart || {});
     try {
-      const product = await this.productModel.findById(id);
+      const product = await this.productRepository.findOne({ where: { _id: id } });
       newCart.add(product, id);
       return { newCart, langCart: prepareCart(newCart, lang, config) };
     } catch {
@@ -43,7 +44,7 @@ export class CartService {
     const { id } = getCartChangeDto;
     const newCart = new Cart(cart || { items: [] });
     try {
-      const product = await this.productModel.findById(id);
+      const product = await this.productRepository.findOne({ where: { _id: id } });
 
       if (!product) {
         const itIsInCart = newCart.check(id);

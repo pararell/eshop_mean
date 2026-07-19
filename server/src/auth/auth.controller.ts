@@ -12,7 +12,7 @@ import { AuthGuard } from '@nestjs/passport';
 
 import { AuthCredentialDto } from './dto/auth-credential.dto';
 import { AuthService } from './auth.service';
-import { User } from './models/user.model';
+import { User } from '../entities/user.entity';
 import { GetUser } from './utils/get-user.decorator';
 import { GoogleUserDto } from './dto/google-user.dto';
 

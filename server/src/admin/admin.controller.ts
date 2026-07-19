@@ -17,7 +17,7 @@ import multer from 'multer';
 import { RolesGuard } from '../auth/roles.guard';
 import { AdminService } from './admin.service';
 import { Images } from './utils/images';
-import { Product } from '../products/models/product.model';
+import { Product } from '../entities/product.entity';
 import { AddProductImageDto } from './dto/add-image.dto';
 import { ImageDto } from './dto/image.dto';
 

@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import * as cloudinary from 'cloudinary';
 import * as streamifier from 'streamifier';
 
-import { ProductModel, Product } from '../products/models/product.model';
+import { Product } from '../entities/product.entity';
 import { Images } from './utils/images';
 import { AddProductImageDto } from './dto/add-image.dto';
 import { ImageDto } from './dto/image.dto';
@@ -16,7 +17,7 @@ cloudinary.v2.config({
 
 @Injectable()
 export class AdminService {
-  constructor(@InjectModel('Product') private productModel: ProductModel) {}
+  constructor(@InjectRepository(Product) private productRepository: Repository<Product>) {}
 
   async getImages(images: Images) {
     return (await images) || new Images({ all: [] });
@@ -31,12 +32,15 @@ export class AdminService {
     const { titleUrl } = addImageDto;
     const existImages = await new Images(images || { all: [] });
     const product = titleUrl
-      ? await this.productModel.findOneAndUpdate(
-          { titleUrl },
-          { $push: { images: image } },
-          { new: true },
-        )
+      ? await this.productRepository.findOne({ where: { titleUrl } })
       : null;
+
+    if (product) {
+      const updatedImages = [...(product.images || []), image];
+      await this.productRepository.update({ titleUrl }, { images: updatedImages });
+      const updated = await this.productRepository.findOne({ where: { titleUrl } });
+      return updated;
+    }
 
     if (!product) {
       existImages.add(image);
@@ -56,12 +60,15 @@ export class AdminService {
     const image = uploadedImage.secure_url;
 
     const product = titleUrl
-      ? await this.productModel.findOneAndUpdate(
-          { titleUrl },
-          { $push: { images: image } },
-          { new: true },
-        )
+      ? await this.productRepository.findOne({ where: { titleUrl } })
       : null;
+
+    if (product) {
+      const updatedImages = [...(product.images || []), image];
+      await this.productRepository.update({ titleUrl }, { images: updatedImages });
+      const updated = await this.productRepository.findOne({ where: { titleUrl } });
+      return updated;
+    }
 
     if (!product) {
       existImages.add(image);
@@ -78,17 +85,19 @@ export class AdminService {
     const { image } = imageDto;
     const { titleUrl } = addImageDto;
     const existImages = await new Images(images || { all: [] });
-    const product = titleUrl
-      ? await this.productModel.findOneAndUpdate(
-          { titleUrl },
-          { $pull: { images: image } },
-          { new: true },
-        )
-      : null;
+
+    if (titleUrl) {
+      const product = await this.productRepository.findOne({ where: { titleUrl } });
+      if (product) {
+        const updatedImages = (product.images || []).filter((img) => img !== image);
+        await this.productRepository.update({ titleUrl }, { images: updatedImages });
+        const updated = await this.productRepository.findOne({ where: { titleUrl } });
+        return updated;
+      }
+    }
 
     existImages.remove(image);
-
-    return product || existImages;
+    return existImages;
   }
 
   private async uploadToCloudinary(file): Promise<any> {

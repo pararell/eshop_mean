@@ -14,9 +14,8 @@ import { AuthGuard } from '@nestjs/passport';
 
 import { OrdersService } from './orders.service';
 import { GetUser } from '../auth/utils/get-user.decorator';
-import { User } from '../auth/models/user.model';
+import { User } from '../entities/user.entity';
 import { OrderDto } from './dto/order.dto';
-import { Order } from './models/order.model';
 import { RolesGuard } from '../auth/roles.guard';
 import { Cart } from '../cart/utils/cart';
 import { prepareCart } from '../shared/utils/prepareUtils';
@@ -36,7 +35,7 @@ export class OrdersController {
     @Body() orderDto: OrderDto,
     @Session() session,
     @Headers('lang') lang: string,
-  ): Promise<{ error: string; result: Order; cart: any }> {
+  ): Promise<{ error: string; result: any; cart: any }> {
     try {
       const successResult = await this.ordersService.addOrder(
         orderDto,
@@ -63,7 +62,7 @@ export class OrdersController {
     @Body() body,
     @Session() session,
     @Headers('lang') lang: string,
-  ): Promise<{ error: string; result: Order; cart: any }> {
+  ): Promise<{ error: string; result: any; cart: any }> {
     try {
       const successResult = await this.ordersService.orderWithStripe(
         body,

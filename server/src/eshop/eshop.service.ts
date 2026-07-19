@@ -4,37 +4,37 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { sendMsg } from '../shared/utils/email/mailer';
 import { ContactDto } from './dto/contact.dto';
 import { PageDto } from './dto/page.dto';
 import { Cart } from '../cart/utils/cart';
-import { Page } from './models/page.model';
-import { Theme } from './models/theme.model';
-import { Config } from './models/config.model';
-import { Translation } from '../translations/translation.model';
+import { Page } from '../entities/page.entity';
+import { Theme } from '../entities/theme.entity';
+import { Config } from '../entities/config.entity';
+import { Translation } from '../entities/translation.entity';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class EshopService {
   constructor(
-    @InjectModel('Page') private pageModel: Model<Page>,
-    @InjectModel('Theme') private themeModel: Model<Theme>,
-    @InjectModel('Config') private configModel: Model<Config>,
-    @InjectModel('Translation') private translationModel: Model<Translation>,
+    @InjectRepository(Page) private pageRepository: Repository<Page>,
+    @InjectRepository(Theme) private themeRepository: Repository<Theme>,
+    @InjectRepository(Config) private configRepository: Repository<Config>,
+    @InjectRepository(Translation) private translationRepository: Repository<Translation>,
     private httpService: HttpService,
   ) {}
 
   async getConfig(session): Promise<{ config: any }> {
-    const activeConfig = await this.configModel.findOne({ active: true });
+    const activeConfig = await this.configRepository.findOne({ where: { active: true } });
 
     if (activeConfig) {
       session.config = activeConfig;
     }
     try {
-      const theme = await this.themeModel.findOne({ active: true });
+      const theme = await this.themeRepository.findOne({ where: { active: true } });
       const configFomEnvToFE = Object.keys(process.env)
         .filter((key) => key.includes('FE_'))
         .reduce((prev, curr) => ({ ...prev, [curr]: process.env[curr] }), {});
@@ -64,7 +64,7 @@ export class EshopService {
     const result = await firstValueFrom(this.httpService.post(url));
     if (result.data.success) {
       try {
-        const translations = await this.translationModel.findOne({ lang });
+        const translations = await this.translationRepository.findOne({ where: { lang } });
         this.sendmail(contactDto.email, contactDto, cart, translations);
 
         if (process.env.ADMIN_EMAILS) {
@@ -83,16 +83,12 @@ export class EshopService {
   }
 
   async getPages(lang: string, titles?: boolean): Promise<Page[]> {
-    const selectQuery = titles ? { titleUrl: 1, [`${lang}.title`]: 1 } : {};
-    const pages = await this.pageModel.find({}, selectQuery);
+    const pages = await this.pageRepository.find({});
     return pages;
   }
 
   async getPage(titleUrl: string, lang: string): Promise<Page> {
-    const found = await this.pageModel.findOne(
-      { titleUrl },
-      { titleUrl: 1, [lang]: 1 },
-    );
+    const found = await this.pageRepository.findOne({ where: { titleUrl } });
 
     if (!found) {
       throw new NotFoundException(`Product with title ${titleUrl} not found`);
@@ -103,120 +99,108 @@ export class EshopService {
 
   async addOrEditPage(pageDto: PageDto): Promise<Page> {
     const { titleUrl } = pageDto;
-    const found = await this.pageModel.findOne({ titleUrl });
+    const found = await this.pageRepository.findOne({ where: { titleUrl } });
 
     if (!found) {
-      const newPage = Object.assign(pageDto, {
-        dateAdded: Date.now(),
-      });
-
+      const newPage = new Page();
+      Object.assign(newPage, pageDto, { dateAdded: new Date() });
       try {
-        const page = await new this.pageModel(newPage);
-        page.save();
-        return page;
+        return await this.pageRepository.save(newPage);
       } catch {
         throw new BadRequestException();
       }
     }
 
-    if (found) {
-      try {
-        const page = await found.updateOne(pageDto, { upsert: true });
-        return page;
-      } catch {
-        throw new BadRequestException();
-      }
+    try {
+      await this.pageRepository.update({ titleUrl }, pageDto);
+      return this.pageRepository.findOne({ where: { titleUrl } });
+    } catch {
+      throw new BadRequestException();
     }
   }
 
   async deletePage(titleUrl: string): Promise<void> {
-    const found = await this.pageModel.findOneAndDelete({ titleUrl });
+    const found = await this.pageRepository.findOne({ where: { titleUrl } });
 
     if (!found) {
       throw new NotFoundException(`Page with title ${titleUrl} not found`);
     }
+
+    await this.pageRepository.delete({ titleUrl });
   }
 
   async getThemes(): Promise<Theme[]> {
-    const themes = await this.themeModel.find({});
+    const themes = await this.themeRepository.find({});
     return themes;
   }
 
   async addOrEditTheme(themeDto: any): Promise<Theme> {
     const { titleUrl } = themeDto;
-    const found = await this.themeModel.findOne({ titleUrl });
+    const found = await this.themeRepository.findOne({ where: { titleUrl } });
 
     if (!found) {
-      const newTheme = Object.assign(themeDto, {
-        dateAdded: Date.now(),
-      });
-
+      const newTheme = new Theme();
+      Object.assign(newTheme, themeDto, { dateAdded: new Date() });
       try {
-        const theme = await new this.themeModel(newTheme);
-        theme.save();
-        return theme;
+        return await this.themeRepository.save(newTheme);
       } catch {
         throw new BadRequestException();
       }
     }
 
-    if (found) {
-      try {
-        const theme = await found.updateOne(themeDto, { upsert: true });
-        return theme;
-      } catch {
-        throw new BadRequestException();
-      }
+    try {
+      await this.themeRepository.update({ titleUrl }, themeDto);
+      return this.themeRepository.findOne({ where: { titleUrl } });
+    } catch {
+      throw new BadRequestException();
     }
   }
 
   async deleteTheme(titleUrl: string): Promise<void> {
-    const found = await this.themeModel.findOneAndDelete({ titleUrl });
+    const found = await this.themeRepository.findOne({ where: { titleUrl } });
 
     if (!found) {
       throw new NotFoundException(`Theme with title ${titleUrl} not found`);
     }
+
+    await this.themeRepository.delete({ titleUrl });
   }
 
   async getConfigs(): Promise<Config[]> {
-    const configs = await this.configModel.find({});
+    const configs = await this.configRepository.find({});
     return configs;
   }
 
   async addOrEditConfig(configDto: any): Promise<Config> {
     const { titleUrl } = configDto;
-    const found = await this.configModel.findOne({ titleUrl });
+    const found = await this.configRepository.findOne({ where: { titleUrl } });
 
     if (!found) {
-      const newConfig = Object.assign(configDto, {
-        dateAdded: Date.now(),
-      });
-
+      const newConfig = new Config();
+      Object.assign(newConfig, configDto, { dateAdded: new Date() });
       try {
-        const config = await new this.configModel(newConfig);
-        config.save();
-        return config;
+        return await this.configRepository.save(newConfig);
       } catch {
         throw new BadRequestException();
       }
     }
 
-    if (found) {
-      try {
-        const config = await found.updateOne(configDto, { upsert: true });
-        return config;
-      } catch {
-        throw new BadRequestException();
-      }
+    try {
+      await this.configRepository.update({ titleUrl }, configDto);
+      return this.configRepository.findOne({ where: { titleUrl } });
+    } catch {
+      throw new BadRequestException();
     }
   }
 
   async deleteConfig(titleUrl: string): Promise<void> {
-    const found = await this.configModel.findOneAndDelete({ titleUrl });
+    const found = await this.configRepository.findOne({ where: { titleUrl } });
 
     if (!found) {
       throw new NotFoundException(`Config with title ${titleUrl} not found`);
     }
+
+    await this.configRepository.delete({ titleUrl });
   }
 
   private sendmail = async (

@@ -1,15 +1,15 @@
 import { Logger, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import Stripe from 'stripe';
 
-import { Order, OrderStatus } from './models/order.model';
-import { User } from '../auth/models/user.model';
+import { Order } from '../entities/order.entity';
+import { User } from '../entities/user.entity';
 import { OrderDto } from './dto/order.dto';
 import { sendMsg } from '../shared/utils/email/mailer';
 import { prepareCart } from '../shared/utils/prepareUtils';
 import { CartModel } from '../cart/models/cart.model';
-import { Translation } from '../translations/translation.model';
+import { Translation } from '../entities/translation.entity';
 
 const secret = process.env.STRIPE_SECRETKEY;
 export const stripe = new Stripe(secret, { apiVersion: '2020-08-27' });
@@ -18,14 +18,15 @@ export const stripe = new Stripe(secret, { apiVersion: '2020-08-27' });
 export class OrdersService {
   private logger = new Logger('OrdersService');
   constructor(
-    @InjectModel('Order') private orderModel: Model<Order>,
-    @InjectModel('Translation') private translationModel: Model<Translation>,
+    @InjectRepository(Order) private orderRepository: Repository<Order>,
+    @InjectRepository(Translation) private translationRepository: Repository<Translation>,
   ) {}
 
   async getOrders(user: User): Promise<Order[]> {
-    const orders = await this.orderModel
-      .find({ _user: user._id })
-      .sort('-dateAdded');
+    const orders = await this.orderRepository.find({
+      where: { _user: user._id },
+      order: { dateAdded: 'DESC' },
+    });
     return orders;
   }
 
@@ -36,12 +37,13 @@ export class OrdersService {
   ): Promise<{ error: string; result: Order }> {
     const { cart, config } = session;
     const cartForLang = prepareCart(cart, lang, config);
-    const newOrder = await new this.orderModel(
-      this.createOrder(orderDto, cartForLang, 'PAYMENT_ON_DELIVERY'),
-    );
-    newOrder.save();
+    const orderData = this.createOrder(orderDto, cartForLang, 'PAYMENT_ON_DELIVERY');
+    const newOrder = new Order();
+    Object.assign(newOrder, orderData);
+    await this.orderRepository.save(newOrder);
+
     try {
-      const translations = await this.translationModel.findOne({ lang });
+      const translations = await this.translationRepository.findOne({ where: { lang } });
 
       this.sendmail(
         newOrder.customerEmail,
@@ -65,7 +67,7 @@ export class OrdersService {
   }
 
   async getAllOrders(): Promise<Order[]> {
-    const orders = await this.orderModel.find({}).sort('-dateAdded');
+    const orders = await this.orderRepository.find({ order: { dateAdded: 'DESC' } });
     return orders;
   }
 
@@ -87,14 +89,15 @@ export class OrdersService {
 
     if (charge) {
       try {
-        const newOrder = await new this.orderModel(
-          this.createOrder(requestOrder, cartForLang, 'WITH_PAYMENT'),
-        );
+        const orderData = this.createOrder(requestOrder, cartForLang, 'WITH_PAYMENT');
+        const newOrder = new Order();
+        Object.assign(newOrder, orderData);
+
         const capturePayment = await stripe.charges.capture(charge.id);
         if (capturePayment) {
-          newOrder.save();
+          await this.orderRepository.save(newOrder);
 
-          const translations = await this.translationModel.findOne({ lang });
+          const translations = await this.translationRepository.findOne({ where: { lang } });
           this.sendmail(
             newOrder.customerEmail,
             newOrder,
@@ -120,17 +123,16 @@ export class OrdersService {
   }
 
   async getOrderById(id: string): Promise<Order> {
-    const order = await this.orderModel.findOne({ orderId: id });
+    const order = await this.orderRepository.findOne({ where: { orderId: id } });
     return order;
   }
 
   async updateOrder(reqOrder): Promise<Order> {
-    const order = this.orderModel.findOneAndUpdate(
+    await this.orderRepository.update(
       { orderId: reqOrder.orderId },
       reqOrder,
-      { new: true },
     );
-    return order;
+    return this.orderRepository.findOne({ where: { orderId: reqOrder.orderId } });
   }
 
   private createOrder = (orderDto: OrderDto, cart: CartModel, type: string) => {
@@ -140,7 +142,7 @@ export class OrdersService {
       new Date().getTime() +
       't' +
       Math.floor(Math.random() * 1000 + 1);
-    const date = Date.now();
+    const date = new Date();
     const addUser = userId ? { _user: userId } : {};
     const addCard = cardId ? { cardId } : {};
 
@@ -150,7 +152,7 @@ export class OrdersService {
       currency,
       dateAdded: date,
       cart,
-      status: type === 'WITH_PAYMENT' ? OrderStatus.PAID : OrderStatus.NEW,
+      status: type === 'WITH_PAYMENT' ? 'PAID' : 'NEW',
       type,
       notes,
       customerEmail: email,
@@ -174,7 +176,7 @@ export class OrdersService {
       cart,
       currency: order.currency,
       orderId: order.orderId,
-      address: order.addresses[0],
+      address: order.addresses?.[0],
       notes: order.notes,
       date: new Date(),
     };

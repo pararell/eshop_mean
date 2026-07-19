@@ -1,7 +1,5 @@
 import { NestExpressApplication } from '@nestjs/platform-express';
 import session from 'express-session';
-import mongoose from 'mongoose';
-import MongoStore from 'connect-mongo';
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -14,6 +12,8 @@ export const setAppDB = (app: NestExpressApplication): void => {
   app.use(urlencoded({ limit: '10mb' }));
   app.use(cookieParser());
 
+  app.enable('trust proxy');
+
   app.use(
     cors({
       credentials: true,
@@ -21,23 +21,18 @@ export const setAppDB = (app: NestExpressApplication): void => {
     }),
   );
 
-  const clientP: any = mongoose
-    .connect(process.env.MONGO_URI, {})
-    .then((m) => m.connection.getClient());
-
   app.use(
     session({
       cookie: {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         secure: false,
+        httpOnly: true,
+        sameSite: 'lax',
       },
       secret: process.env.COOKIE_KEY,
-      resave: false,
-      saveUninitialized: false,
-      store: MongoStore.create({
-        clientPromise: clientP,
-        collectionName: 'session',
-      }),
+      resave: true,
+      saveUninitialized: true,
+      name: 'eshop.sid',
     }),
   );
 

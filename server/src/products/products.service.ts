@@ -3,79 +3,100 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, FindOptionsWhere, ILike, LessThanOrEqual } from 'typeorm';
 
 import { GetProductsDto } from './dto/get-products';
-import {
-  Product,
-  ProductModel,
-  ProductsWithPagination,
-} from './models/product.model';
+import { Product } from '../entities/product.entity';
 import { GetProductDto } from './dto/get-product';
-import { Category, CategoryModel } from './models/category.model';
-import { User } from '../auth/models/user.model';
+import { Category } from '../entities/category.entity';
+import { User } from '../entities/user.entity';
 import { prepareProduct } from '../shared/utils/prepareUtils';
 import { languages, paginationLimit } from '../shared/constans';
 
 @Injectable()
 export class ProductsService {
   constructor(
-    @InjectModel('Product') private productModel: ProductModel,
-    @InjectModel('Category') private categoryModel: Model<CategoryModel>,
+    @InjectRepository(Product) private productRepository: Repository<Product>,
+    @InjectRepository(Category) private categoryRepository: Repository<Category>,
   ) {}
 
   async getProducts(
     getProductsDto: GetProductsDto,
     lang: string,
-  ): Promise<ProductsWithPagination> {
+  ): Promise<any> {
     const { page, sort, category, search, maxPrice } = getProductsDto;
-    const searchQuery = search ? { titleUrl: new RegExp(search, 'i') } : {};
-    const categoryQuery = category
-      ? { [`tags`]: new RegExp(category, 'i') }
-      : {};
-    const maxPriceQuery = maxPrice
-      ? { [`${lang}.salePrice`]: { $lte: maxPrice } }
-      : {};
 
-    const query = {
-      ...searchQuery,
-      ...categoryQuery,
-      ...maxPriceQuery,
-      ...{ [`${lang}.visibility`]: true },
-    };
-    const options = {
-      page: parseFloat(page),
-      sort: this.prepareSort(sort, lang),
-      limit: paginationLimit,
-      lang,
-      price: 'salePrice',
-    };
+    const queryBuilder = this.productRepository.createQueryBuilder('product');
 
-    const productsWithPagination = await this.productModel.paginate(
-      query,
-      options,
-    );
+    if (search) {
+      queryBuilder.andWhere('product.titleUrl LIKE :search', { search: `%${search}%` });
+    }
+    if (category) {
+      queryBuilder.andWhere('product.tags LIKE :category', { category: `%${category}%` });
+    }
+    if (maxPrice) {
+      queryBuilder.andWhere(`JSON_EXTRACT(product.${lang}, '$.salePrice') <= :maxPrice`, { maxPrice: Number(maxPrice) });
+    }
+    if (lang) {
+      queryBuilder.andWhere(`JSON_EXTRACT(product.${lang}, '$.visibility') = true`);
+    }
+
+    // Sort
+    const sortMap = {
+      'newest': 'product.dateAdded',
+      'oldest': 'product.dateAdded',
+    };
+    sortMap[`${lang}.salePrice`] = `JSON_EXTRACT(product.${lang}, '$.salePrice')`;
+    sortMap[`-${lang}.salePrice`] = `JSON_EXTRACT(product.${lang}, '$.salePrice')`;
+
+    const sortField = this.prepareSort(sort, lang);
+    const sortOrder = sort?.startsWith('-') ? 'DESC' : 'ASC';
+    const cleanSort = sortOrder === 'DESC' ? sort.substring(1) : sort;
+
+    if (cleanSort === 'dateAdded') {
+      queryBuilder.orderBy('product.dateAdded', sortOrder);
+    } else {
+      queryBuilder.orderBy(`JSON_EXTRACT(product.${lang}, '$.salePrice')`, sortOrder);
+    }
+
+    const pageNum = parseFloat(page) || 1;
+    const skip = (pageNum - 1) * paginationLimit;
+    queryBuilder.skip(skip).take(paginationLimit);
+
+    const [all, total] = await queryBuilder.getManyAndCount();
+
+    // Get min/max price
+    const allProducts = await this.productRepository.find({});
+    let maxPriceValue = 0;
+    let minPriceValue = Infinity;
+    allProducts.forEach(p => {
+      const langData = p[lang];
+      if (langData && langData.salePrice) {
+        maxPriceValue = Math.max(maxPriceValue, langData.salePrice);
+        minPriceValue = Math.min(minPriceValue, langData.salePrice);
+      }
+    });
 
     return {
-      ...productsWithPagination,
-      all: productsWithPagination.all.map((product) =>
-        prepareProduct(product, lang, true),
-      ),
+      all: all.map((product) => prepareProduct(product, lang, true)),
+      total,
+      limit: paginationLimit,
+      page: pageNum,
+      pages: Math.ceil(total / paginationLimit) || 1,
+      maxPrice: maxPriceValue || Infinity,
+      minPrice: minPriceValue || 0,
     };
   }
 
   async getCategories(lang: string): Promise<Category[]> {
-    const query = { [`${lang}.visibility`]: true };
-    const categories = await this.categoryModel
-      .find(query)
-      .sort(`${lang}.position`);
+    const categories = await this.categoryRepository.find({});
     return this.prepareCategories(categories, lang);
   }
 
   async getProductsTitles(search: string): Promise<string[]> {
-    const products = await this.productModel.find({
-      titleUrl: new RegExp(search, 'i'),
+    const products = await this.productRepository.find({
+      where: { titleUrl: ILike(`%${search}%`) },
     });
     return products.map((product) => product.titleUrl);
   }
@@ -85,7 +106,7 @@ export class ProductsService {
     getProductDto: GetProductDto,
   ): Promise<Product> {
     const { lang } = getProductDto;
-    const found = await this.productModel.findOne({ titleUrl: name });
+    const found = await this.productRepository.findOne({ where: { titleUrl: name } });
 
     if (!found) {
       throw new NotFoundException(`Product with title ${name} not found`);
@@ -95,22 +116,22 @@ export class ProductsService {
   }
 
   async addProduct(productReq, user: User): Promise<void> {
-    const found = await this.productModel.findOne({
-      titleUrl: productReq.titleUrl,
+    const found = await this.productRepository.findOne({
+      where: { titleUrl: productReq.titleUrl },
     });
     if (found) {
       throw new BadRequestException();
     }
-    const newProduct = Object.assign(productReq, {
+    const newProduct = new Product();
+    Object.assign(newProduct, productReq, {
       _user: user._id,
-      dateAdded: Date.now(),
+      dateAdded: new Date(),
       images: productReq.images || [],
     });
 
     try {
-      const product = await new this.productModel(newProduct);
-      product.save();
-      this.addCategory(product);
+      const product = await this.productRepository.save(newProduct);
+      await this.addCategory(product);
     } catch {
       throw new BadRequestException();
     }
@@ -118,60 +139,61 @@ export class ProductsService {
 
   async editProduct(productReq): Promise<void> {
     const { titleUrl } = productReq;
-    const found = await this.productModel.findOneAndUpdate(
-      { titleUrl },
-      productReq,
-      { upsert: true },
-    );
+    const found = await this.productRepository.findOne({ where: { titleUrl } });
 
     if (!found) {
       throw new NotFoundException(`Product with title ${titleUrl} not found`);
-    } else {
-      this.addCategory(productReq);
     }
+
+    await this.productRepository.update({ titleUrl }, productReq);
+    await this.addCategory(productReq);
   }
 
   async deleteProductByName(titleUrl: string): Promise<void> {
-    const found = await this.productModel.findOneAndDelete({ titleUrl });
+    const found = await this.productRepository.findOne({ where: { titleUrl } });
 
     if (!found) {
       throw new NotFoundException(`Product with title ${titleUrl} not found`);
     }
+
+    await this.productRepository.delete({ titleUrl });
   }
 
   async getAllProducts(lang: string): Promise<Product[]> {
-    const products = await this.productModel.find({});
+    const products = await this.productRepository.find({});
     return products.map((product) => prepareProduct(product, lang));
   }
 
   async getAllCategories(lang: string) {
-    const categories = await this.categoryModel.find({});
-    const products = await this.productModel.find({});
+    const categories = await this.categoryRepository.find({});
+    const products = await this.productRepository.find({});
     return this.prepareAllCategories(categories, products);
   }
 
   async editCategory(categoryReq): Promise<void> {
     const { titleUrl } = categoryReq;
-    const found = await this.categoryModel.findOneAndUpdate(
-      { titleUrl },
-      categoryReq,
-      { upsert: true },
-    );
+    const found = await this.categoryRepository.findOne({ where: { titleUrl } });
 
     if (!found) {
-      throw new NotFoundException(`Category with title ${titleUrl} not found`);
+      const newCategory = new Category();
+      Object.assign(newCategory, categoryReq);
+      await this.categoryRepository.save(newCategory);
+      return;
     }
+
+    await this.categoryRepository.update({ titleUrl }, categoryReq);
   }
 
   async deleteCategoryByName(titleUrl: string): Promise<void> {
-    const found = await this.categoryModel.findOneAndDelete({ titleUrl });
+    const found = await this.categoryRepository.findOne({ where: { titleUrl } });
 
     if (!found) {
       throw new NotFoundException(`Category with title ${titleUrl} not found`);
-    } else {
-      const products = await this.productModel.find({});
-      this.removeCategoryFromProducts(titleUrl, products);
     }
+
+    await this.categoryRepository.delete({ titleUrl });
+    const products = await this.productRepository.find({});
+    await this.removeCategoryFromProducts(titleUrl, products);
   }
 
   private prepareSort = (sortParams, lang: string): string => {
@@ -185,7 +207,7 @@ export class ProductsService {
       case 'pricedesc':
         return `-${lang}.salePrice`;
       default:
-        return `-${lang}.dateAdded`;
+        return `-dateAdded`;
     }
   };
 
@@ -199,69 +221,68 @@ export class ProductsService {
       description: category[lang] ? category[lang].description : '',
       visibility: category[lang] ? category[lang].visibility : false,
       menuHidden: category[lang] ? category[lang].menuHidden : false,
+      _id: category._id,
     }));
   };
 
-  private addCategory = (product): void => {
-    product.tags
-      .filter((cat, i, arr) => arr.indexOf(cat) === i)
-      .forEach(async (category: string) => {
-        const titleUrl = category.replace(/ /g, '_').toLowerCase();
-        const addCategory = {
-          titleUrl,
-          mainImage: {
-            url: product.mainImage.url,
-            name: product.mainImage.name,
-          },
-          dateAdded: Date.now(),
-          ...languages.reduce(
-            (prev, lang) => ({
-              ...prev,
-              [lang]: {
-                title: category,
-                description: '',
-                visibility: product.tags.includes(category),
-              },
-            }),
-            {},
-          ),
-        };
-        const found = await this.categoryModel.findOne({ titleUrl });
-        if (!found) {
-          const newCategory = await new this.categoryModel(addCategory);
-          newCategory.save();
-        }
-      });
+  private addCategory = async (product): Promise<void> => {
+    const uniqueTags = product.tags?.filter((cat, i, arr) => arr.indexOf(cat) === i) || [];
+
+    for (const category of uniqueTags) {
+      const titleUrl = category.replace(/ /g, '_').toLowerCase();
+      const addCategoryData = {
+        titleUrl,
+        mainImage: {
+          url: product.mainImage?.url || '',
+          name: product.mainImage?.name || '',
+        },
+        dateAdded: new Date(),
+        ...languages.reduce(
+          (prev, lang) => ({
+            ...prev,
+            [lang]: {
+              title: category,
+              description: '',
+              visibility: product.tags?.includes(category) || false,
+            },
+          }),
+          {},
+        ),
+      };
+
+      const found = await this.categoryRepository.findOne({ where: { titleUrl } });
+      if (!found) {
+        const newCategory = new Category();
+        Object.assign(newCategory, addCategoryData);
+        await this.categoryRepository.save(newCategory);
+      }
+    }
   };
 
   private prepareAllCategories = (categories, products) => {
     return categories.map((category) => {
       const productsWithCategory = products
         .filter((product) => {
-          return !!product.tags.includes(category.titleUrl);
+          return product.tags?.includes(category.titleUrl);
         })
         .map((product) => product.titleUrl);
       return { category, productsWithCategory };
     });
   };
 
-  private removeCategoryFromProducts = (category: string, products) => {
-    products.forEach(async (product) => {
-      const productHasCategory = product.tags.includes(category);
+  private removeCategoryFromProducts = async (category: string, products) => {
+    for (const product of products) {
+      const productHasCategory = product.tags?.includes(category);
       if (!productHasCategory) {
-        return;
+        continue;
       }
       const productReq = {
-        ...product.toObject(),
         tags: product.tags.filter((tag) => tag !== category),
       };
-      const found = await this.productModel.findOneAndUpdate(
+      await this.productRepository.update(
         { titleUrl: product.titleUrl },
         productReq,
-        {
-          upsert: true,
-        },
       );
-    });
+    }
   };
 }

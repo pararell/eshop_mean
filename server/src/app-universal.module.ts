@@ -15,7 +15,7 @@ export function setupUniversal(app: any) {
   const indexHtml = join(serverDistFolder, 'index.server.html');
 
   app.engine('html', (_, options, callback) => {
-    const commonEngine = new CommonEngine();
+    const commonEngine = new CommonEngine({ allowedHosts: ['localhost'] });
     commonEngine
       .render({
         bootstrap,

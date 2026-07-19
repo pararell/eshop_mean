@@ -1,12 +1,10 @@
 import { CartModel } from '../../cart/models/cart.model';
-import { Product } from '../../products/models/product.model';
-import { shippingCost, shippingTypes } from '../constans';
 
 export const prepareProduct = (
   product,
   lang: string,
   light?: boolean,
-): Product => ({
+): any => ({
   _id: product._id,
   titleUrl: product.titleUrl,
   mainImage: product.mainImage,
@@ -16,7 +14,7 @@ export const prepareProduct = (
   dateAdded: product.dateAdded,
   ...{
     ...product[lang],
-    descriptionFull: !light ? product[lang].descriptionFull : [],
+    descriptionFull: !light ? product[lang]?.descriptionFull : [],
   },
 });
 
@@ -51,16 +49,16 @@ export const prepareCart = (cart, lang: string, config): CartModel => {
     );
 
   const shippingTypeCheck = cartLangItems.find(
-    (item) => item.shipingCostType === shippingTypes[1],
+    (item) => item.shipingCostType === 'extended',
   );
-  const shippingType = shippingTypeCheck ? shippingTypes[1] : shippingTypes[0];
+  const shippingType = shippingTypeCheck ? 'extended' : 'basic';
   const shippingByLang =
     config &&
     config[lang] &&
     config[lang].shippingCost &&
     config[lang].shippingCost[shippingType]
       ? config[lang].shippingCost[shippingType]
-      : shippingCost[lang || 'en'][shippingType];
+      : { cost: 5, limit: 100 };
   const shippingTypeCost =
     totalPrice >= shippingByLang.limit ? 0 : shippingByLang.cost;
 

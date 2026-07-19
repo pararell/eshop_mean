@@ -83,3 +83,10 @@ dist
 
 # Public builded files
 public
+
+# SQLite database files
+data/
+*.db
+
+# Seed script (contains default credentials)
+server/seed.ts

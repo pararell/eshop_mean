@@ -1,6 +1,15 @@
 import { IsString, IsNotEmpty, MaxLength, MinLength } from 'class-validator';
 import { Cart } from '../../cart/utils/cart';
-import { Address } from '../models/order.model';
+
+export interface Address {
+  name?: string;
+  line1: string;
+  line2?: string;
+  city: string;
+  zip: string;
+  country: string;
+  region?: string;
+}
 
 export class OrderDto {
   @IsString()

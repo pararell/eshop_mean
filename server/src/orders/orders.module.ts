@@ -1,19 +1,16 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { OrdersController } from './orders.controller';
-import OrderSchema from './schemas/order.schema';
+import { Order } from '../entities/order.entity';
 import { AuthModule } from '../auth/auth.module';
 import { OrdersService } from './orders.service';
 import { ConfigModule } from '@nestjs/config';
-import TranslationScheme from '../translations/schemas/translation.schema';
+import { Translation } from '../entities/translation.entity';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forFeature([
-      { name: 'Order', schema: OrderSchema },
-      { name: 'Translation', schema: TranslationScheme },
-    ]),
+    TypeOrmModule.forFeature([Order, Translation]),
     AuthModule,
   ],
   controllers: [OrdersController],

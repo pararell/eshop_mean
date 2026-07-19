@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import {
   ConflictException,
@@ -9,29 +9,30 @@ import {
 } from '@nestjs/common';
 
 import { GoogleUserDto } from './dto/google-user.dto';
-import { User } from './models/user.model';
+import { User } from '../entities/user.entity';
 import { JwtPayload } from './models/jwt-payload.interface';
 import { AuthCredentialDto } from './dto/auth-credential.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel('User') private userModel: Model<User>,
+    @InjectRepository(User) private userRepository: Repository<User>,
     private jwtService: JwtService,
   ) {}
 
   async signUp(authCredentialsDto: AuthCredentialDto): Promise<void> {
     const { email, password } = authCredentialsDto;
-    const userExist = await this.userModel.findOne({ email });
+    const userExist = await this.userRepository.findOne({ where: { email } });
     if (userExist) {
       throw new ConflictException('Username already exist');
     }
-    const user = new this.userModel(authCredentialsDto);
+    const user = new User();
+    Object.assign(user, authCredentialsDto);
     user.salt = await bcrypt.genSalt();
     user.password = await this.hashPassword(password, user.salt);
 
     try {
-      await user.save();
+      await this.userRepository.save(user);
     } catch (error) {
       if (error.code === '23505') {
         throw new ConflictException('Username already exist');
@@ -50,7 +51,7 @@ export class AuthService {
     roles?: string[];
   }> {
     const { email, password } = authCredentialsDto;
-    const user = await this.userModel.findOne({ email });
+    const user = await this.userRepository.findOne({ where: { email } });
     const loggedUser = user && (await this.validatePassword(password, user));
     const userEmail = loggedUser ? user.email : null;
     if (!userEmail) {
@@ -65,14 +66,13 @@ export class AuthService {
 
   async signInGoogle(googleUserDto: GoogleUserDto) {
     const { email, profile } = googleUserDto;
-    const user = await this.userModel.findOne({ email });
+    const user = await this.userRepository.findOne({ where: { email } });
 
     if (!user) {
-      const googleUser = await new this.userModel({
-        email,
-        googleId: profile.id,
-      });
-      googleUser.save();
+      const googleUser = new User();
+      googleUser.email = email;
+      googleUser.googleId = profile.id;
+      await this.userRepository.save(googleUser);
     }
 
     const payload: JwtPayload = { email };
@@ -82,11 +82,14 @@ export class AuthService {
   }
 
   async getGoogleUser(email: string, profile: any) {
-    const user = this.userModel.findOne({ email });
-    const googleUser =
-      user || (await new this.userModel({ email, googleId: profile.id }));
-
-    return googleUser;
+    let user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      user = new User();
+      user.email = email;
+      user.googleId = profile.id;
+      user = await this.userRepository.save(user);
+    }
+    return user;
   }
 
   private async hashPassword(password: string, salt: string): Promise<string> {

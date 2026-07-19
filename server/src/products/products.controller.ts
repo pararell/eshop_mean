@@ -15,12 +15,10 @@ import {
 
 import { ProductsService } from './products.service';
 import { GetProductsDto } from './dto/get-products';
-import { ProductsWithPagination, Product } from './models/product.model';
 import { GetProductDto } from './dto/get-product';
-import { Category } from './models/category.model';
 import { RolesGuard } from '../auth/roles.guard';
 import { GetUser } from '../auth/utils/get-user.decorator';
-import { User } from '../auth/models/user.model';
+import { User } from '../entities/user.entity';
 
 @Controller('api/products')
 export class ProductsController {
@@ -30,12 +28,12 @@ export class ProductsController {
   getProducts(
     @Query(ValidationPipe) getProductsDto: GetProductsDto,
     @Headers('lang') lang: string,
-  ): Promise<ProductsWithPagination> {
+  ): Promise<any> {
     return this.productService.getProducts(getProductsDto, lang);
   }
 
   @Get('/categories')
-  getCategories(@Headers('lang') lang: string): Promise<Category[]> {
+  getCategories(@Headers('lang') lang: string): Promise<any[]> {
     return this.productService.getCategories(lang);
   }
 
@@ -46,7 +44,7 @@ export class ProductsController {
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Get('/all')
-  getAllProducts(@Headers('lang') lang: string): Promise<Product[]> {
+  getAllProducts(@Headers('lang') lang: string): Promise<any[]> {
     return this.productService.getAllProducts(lang);
   }
 
@@ -54,7 +52,7 @@ export class ProductsController {
   getProductByName(
     @Query() getProductDto: GetProductDto,
     @Param('name') name: string,
-  ): Promise<Product> {
+  ): Promise<any> {
     return this.productService.getProductByName(name, getProductDto);
   }
 

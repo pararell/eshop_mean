@@ -16,9 +16,6 @@ import { EshopService } from './eshop.service';
 import { ContactDto } from './dto/contact.dto';
 import { PageDto } from './dto/page.dto';
 import { RolesGuard } from '../auth/roles.guard';
-import { Page } from './models/page.model';
-import { Theme } from './models/theme.model';
-import { Config } from './models/config.model';
 
 @Controller('api/eshop')
 export class EshopController {
@@ -42,13 +39,13 @@ export class EshopController {
   getPages(
     @Headers('lang') lang: string,
     @Query('titles') titles: boolean,
-  ): Promise<Page[]> {
+  ): Promise<any[]> {
     return this.eshopService.getPages(lang, titles);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Post('/page')
-  addOrEditPage(@Body() pageDto: PageDto): Promise<Page> {
+  addOrEditPage(@Body() pageDto: PageDto): Promise<any> {
     return this.eshopService.addOrEditPage(pageDto);
   }
 
@@ -56,7 +53,7 @@ export class EshopController {
   getPage(
     @Param('titleUrl') titleUrl: string,
     @Headers('lang') lang: string,
-  ): Promise<Page> {
+  ): Promise<any> {
     return this.eshopService.getPage(titleUrl, lang);
   }
 
@@ -67,13 +64,13 @@ export class EshopController {
   }
 
   @Get('/theme/all')
-  getThemes(): Promise<Theme[]> {
+  getThemes(): Promise<any[]> {
     return this.eshopService.getThemes();
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Post('/theme')
-  addOrEditTheme(@Body() themeDto): Promise<Theme> {
+  addOrEditTheme(@Body() themeDto): Promise<any> {
     return this.eshopService.addOrEditTheme(themeDto);
   }
 
@@ -84,13 +81,13 @@ export class EshopController {
   }
 
   @Get('/config/all')
-  getConfigs(): Promise<Config[]> {
+  getConfigs(): Promise<any[]> {
     return this.eshopService.getConfigs();
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Post('/config')
-  addOrEditConfig(@Body() configDto): Promise<Config> {
+  addOrEditConfig(@Body() configDto): Promise<any> {
     return this.eshopService.addOrEditConfig(configDto);
   }
 

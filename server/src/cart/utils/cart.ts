@@ -1,10 +1,9 @@
-import { Product } from '../../products/models/product.model';
-import { CartModel } from './../models/cart.model';
+import { Product } from '../../entities/product.entity';
 
 export class Cart {
-  items: Product[];
+  items: any[];
 
-  constructor(previousCart: CartModel) {
+  constructor(previousCart: { items: any[] }) {
     this.items = previousCart.items || [];
   }
 
@@ -36,7 +35,7 @@ export class Cart {
       .filter((cartItem) => cartItem.id);
   };
 
-  check = function (id: string): Product[] {
+  check = function (id: string): any {
     return this.items.find((cartItem) => cartItem.id === id);
   };
 }

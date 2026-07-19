@@ -1,18 +1,18 @@
 import { firstValueFrom } from 'rxjs';
 import { Controller, Get, Query, UseGuards, Patch, Body } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { AuthGuard } from '@nestjs/passport';
 
-import { Translation } from './translation.model';
+import { Translation } from '../entities/translation.entity';
 import { RolesGuard } from '../auth/roles.guard';
 import { countryLang, languages } from '../shared/constans';
 
 @Controller('api/translations')
 export class TranslationsController {
   constructor(
-    @InjectModel('Translation') private translationModel: Model<Translation>,
+    @InjectRepository(Translation) private translationRepository: Repository<Translation>,
     private httpService: HttpService,
   ) {}
 
@@ -27,38 +27,37 @@ export class TranslationsController {
           : '';
         const langCode = countryLang[country] || country['default'];
 
-        return await this.translationModel.findOne({ lang: langCode });
+        return await this.translationRepository.findOne({ where: { lang: langCode } });
       } catch {
-        return await this.translationModel.findOne({ lang: languages[0] });
+        return await this.translationRepository.findOne({ where: { lang: languages[0] } });
       }
     }
 
-    return await this.translationModel.findOne({ lang });
+    return await this.translationRepository.findOne({ where: { lang } });
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Get('all')
   async getAllTranslations(): Promise<Translation[]> {
-    return await this.translationModel.find({});
+    return await this.translationRepository.find({});
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Patch('all')
   async updateTranslations(@Body() translations): Promise<Translation[]> {
     const updateTranslations = translations.map(async (translation) => {
-      const langTranslation = await this.translationModel.findOne({
-        lang: translation.lang,
+      const langTranslation = await this.translationRepository.findOne({
+        where: { lang: translation.lang },
       });
       if (!langTranslation) {
-        const newTranslation = await new this.translationModel({
-          lang: translation.lang,
-          keys: translation.keys,
-        });
-        newTranslation.save();
+        const newTranslation = new Translation();
+        newTranslation.lang = translation.lang;
+        newTranslation.keys = translation.keys;
+        await this.translationRepository.save(newTranslation);
       }
-      return this.translationModel.updateOne(
+      await this.translationRepository.update(
         { lang: translation.lang },
-        { $set: { keys: translation.keys } },
+        { keys: translation.keys },
       );
     });
     return Promise.all(updateTranslations);
@@ -70,8 +69,7 @@ export class TranslationsController {
     @Query('lang') lang: string,
     @Body() translation,
   ): Promise<Translation> {
-    return await this.translationModel.findOneAndUpdate({ lang }, translation, {
-      new: true,
-    });
+    await this.translationRepository.update({ lang }, translation);
+    return this.translationRepository.findOne({ where: { lang } });
   }
 }
