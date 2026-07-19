@@ -30,7 +30,6 @@
     "start": "npm run serve:ssr"
   },
   "dependencies": {
-    "@angular/animations": "~22.0.7",
     "@angular/cdk": "~22.0.5",
     "@angular/common": "~22.0.7",
     "@angular/compiler": "~22.0.7",
@@ -38,7 +37,6 @@
     "@angular/forms": "~22.0.7",
     "@angular/material": "~22.0.5",
     "@angular/platform-browser": "~22.0.7",
-    "@angular/platform-browser-dynamic": "~22.0.7",
     "@angular/platform-server": "~22.0.7",
     "@angular/router": "~22.0.7",
     "@angular/service-worker": "~22.0.7",
