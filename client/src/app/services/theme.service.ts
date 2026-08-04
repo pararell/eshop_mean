@@ -1,4 +1,3 @@
-
 import { Injectable, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import tinycolor from "tinycolor2";
@@ -16,6 +15,7 @@ export interface Color {
 export class ThemeService {
 
   video: string;
+  private trackedVars: Map<string, string> = new Map();
 
   constructor(
     @Inject(DOCUMENT)
@@ -24,7 +24,17 @@ export class ThemeService {
 
 
   setCSSVariable(color, type: string): void {
-    this.document.documentElement.style.setProperty(`--${type}`, color);
+    const key = `--${type}`;
+    const value = color;
+
+    // Track variable locally for SSR serialization
+    this.trackedVars.set(key, value);
+
+    // Set on document element for runtime reactivity
+    this.document.documentElement.style.setProperty(key, value);
+
+    // Serialize via setAttribute - Domino serializes this into HTML output
+    this.document.documentElement.setAttribute('style', this._getStyleAttr());
   }
 
   setThemeColor = (themeColor, type: string): void => {
@@ -35,8 +45,11 @@ export class ThemeService {
       const value1 = color.hex;
       const key2 = `--${type}-contrast-${color.name}`;
       const value2 = color.darkContrast ? 'rgba(0,0,0, 0.87)' : 'rgba(255,255,255, 0.8)';
+      this.trackedVars.set(key1, value1);
+      this.trackedVars.set(key2, value2);
       this.document.documentElement.style.setProperty(key1, value1);
       this.document.documentElement.style.setProperty(key2, value2);
+      this.document.documentElement.setAttribute('style', this._getStyleAttr());
     }
   }
 
@@ -44,6 +57,13 @@ export class ThemeService {
     this.video = video;
   }
 
+  private _getStyleAttr(): string {
+    const parts: string[] = [];
+    for (const [key, value] of this.trackedVars) {
+      parts.push(`${key}: ${value}`);
+    }
+    return parts.join('; ');
+  }
 
   private computeColors(hex: string): Color[] {
     return [

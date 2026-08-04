@@ -61,10 +61,7 @@
       position: relative;
 
       &-background {
-        background: var(
-          --promo-slide-background,
-          url('https://res.cloudinary.com/dnpgh1vhi/image/upload/v1615624628/fabrizio-conti-xPFhK0MGsyw-unsplash_tkxjzp.jpg')
-        );
+        background: var(--promo-slide-background, #000);
         background-size: cover;
         background-repeat: no-repeat;
         background-position: var(--promo-slide-background-position, center);
@@ -128,7 +125,7 @@
       }
 
       &-logo {
-        background: var(--logo, url('https://res.cloudinary.com/dnpgh1vhi/image/upload/v1615640124/logo1_gvrmpd.svg'));
+        background: var(--logo, transparent);
         min-width: 180px;
         min-height: 80px;
         background-repeat: no-repeat;

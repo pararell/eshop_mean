@@ -1,7 +1,7 @@
 import { SidebarComponent } from './../../shared/components/sidebar/sidebar.component';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { map, distinctUntilChanged, filter, take, skip, withLatestFrom, delay } from 'rxjs/operators';
-import { Component, ChangeDetectionStrategy, OnDestroy, Signal, computed, AfterViewInit, ViewChild, ElementRef, Inject, DOCUMENT } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnDestroy, Signal, computed, AfterViewInit, ViewChild, ElementRef, Inject, PLATFORM_ID, DOCUMENT } from '@angular/core';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { Observable, combineLatest, Subscription, of } from 'rxjs';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -70,6 +70,8 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     private themeService: ThemeService,
     @Inject(DOCUMENT)
     private _document: Document,
+    @Inject(PLATFORM_ID)
+    private platformId: Object,
   ) {
     this.category = toSignal(this.route.params.pipe(
       map((params) => params['category']),
@@ -174,6 +176,9 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       delay(100),
       take(1),
     ).subscribe(() => {
+      if (!isPlatformBrowser(this.platformId)) {
+        return;
+      }
       const vid = this.videoRef?.nativeElement as HTMLVideoElement;
       if (vid) {
         vid.muted = true; // required in most browsers
@@ -187,8 +192,10 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.categoriesSub.unsubscribe();
     this.productsSub.unsubscribe();
+    if (isPlatformBrowser(this.platformId)) {
       this._document.getElementById('navbar')?.classList?.remove("transparent");
       this._document.getElementById('main-content')?.classList?.remove("transparent");
+    }
   }
 
 
