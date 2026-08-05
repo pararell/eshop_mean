@@ -1,63 +1,62 @@
-import { APP_BASE_HREF } from '@angular/common';
 import { DynamicModule, Module, OnModuleInit } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
-import { dirname, join, resolve } from 'path';
+import { dirname, resolve } from 'path';
 import 'reflect-metadata';
-import { Provider } from '@nestjs/common';
 import * as express from 'express';
-import { CommonEngine } from '@angular/ssr/node';
+import { AngularNodeAppEngine, writeResponseToNodeResponse } from '@angular/ssr/node';
+import { ɵsetAngularAppEngineManifest } from '@angular/ssr';
 import { fileURLToPath } from 'url';
-import bootstrap from '../../client/src/main.server';
 
-export function setupUniversal(app: any) {
+export async function setupUniversal(app: any) {
+  // Set the Angular app engine manifest, which maps URL entry points to the
+  // compiled server application bundles. This is normally done automatically
+  // by the Angular CLI when the SSR entry directly uses AngularNodeAppEngine,
+  // but with NestJS bootstrapping the app, we must set it explicitly.
+  try {
+    const { default: engineManifest } = await import(
+      new URL('./angular-app-engine-manifest.mjs', import.meta.url).href
+    );
+    ɵsetAngularAppEngineManifest(engineManifest);
+  } catch (err) {
+    // The manifest is only available when running through the Angular CLI
+    // server bundle (serve:ssr / build:ssr). Fall back to allowing Angular
+    // SSR to skip hostname validation in other contexts.
+    console.warn(
+      'Angular app engine manifest not found. SSR rendering via AngularNodeAppEngine will not be available.',
+    );
+  }
+
   const serverDistFolder = dirname(fileURLToPath(import.meta.url));
   const browserDistFolder = resolve(serverDistFolder, '../browser');
-  const indexHtml = join(serverDistFolder, 'index.server.html');
 
-  app.engine('html', (_, options, callback) => {
-    const commonEngine = new CommonEngine({ allowedHosts: ['localhost'] });
-    commonEngine
-      .render({
-        bootstrap,
-        documentFilePath: indexHtml,
-        url: `${options.req.protocol}://${options.req.get('host')}${options.req.originalUrl}`,
-        publicPath: browserDistFolder,
-        providers: [
-          {
-            provide: 'serverUrl',
-            useValue: `${options.req.protocol}://${options.req.get('host')}`,
-          },
-        ],
-      })
-      .then((html) => callback(null, html))
-      .catch((err) => callback(err));
-  });
+  // Instantiate the Angular Node.js app engine as a singleton.
+  const angularAppEngine = new AngularNodeAppEngine({ allowedHosts: ['localhost'] });
 
-  app.set('view engine', 'html');
-  app.set('views', browserDistFolder);
-
-
-
-    app.use(express.static(browserDistFolder, {
-      maxAge: 600,
+  // Serve static files from /browser
+  app.use(express.static(browserDistFolder, {
+    maxAge: 600,
   }));
+
+  // Handle Angular SSR rendering using the Angular Node.js app engine.
+  // The engine returns `null` for non-Angular routes (e.g. /api/*), in
+  // which case we delegate to the next middleware/handler via `next()`.
+  app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+    angularAppEngine
+      .handle(req)
+      .then((response) => {
+        if (response) {
+          return writeResponseToNodeResponse(response, res);
+        }
+        next();
+      })
+      .catch((err) => next(err));
+  });
 }
 
-export const angularUniversalProviders: Provider[] = [
-  {
-    provide: 'UNIVERSAL_INITIALIZER',
-    useFactory: (host: HttpAdapterHost & { template: string }) =>
-      host &&
-      host.httpAdapter &&
-      setupUniversal(host.httpAdapter.getInstance()),
-    inject: [HttpAdapterHost],
-  },
-];
-
-@Module({
-  providers: [...angularUniversalProviders],
-})
+@Module({})
 export class AngularUniversalModule implements OnModuleInit {
+  private setupDone = false;
+
   constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
   static forRoot(): DynamicModule {
@@ -67,22 +66,21 @@ export class AngularUniversalModule implements OnModuleInit {
   }
 
   async onModuleInit() {
-    if (!this.httpAdapterHost) {
+    if (this.setupDone) {
       return;
     }
-    const httpAdapter = this.httpAdapterHost.httpAdapter;
-    if (!httpAdapter) {
+    this.setupDone = true;
+
+    if (!this.httpAdapterHost || !this.httpAdapterHost.httpAdapter) {
       return;
     }
-    const app = httpAdapter.getInstance();
-    const serverDistFolder = dirname(fileURLToPath(import.meta.url));
-    const templatePath = join(serverDistFolder, 'index.server.html');
-    app.get(/(.*)/, (req, res) =>
-      res.render(templatePath, {
-        req,
-        res,
-        providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }],
-      }),
-    );
+
+    // Register the Angular SSR engine AFTER NestJS has registered its routes.
+    // If the engine middleware were added any earlier (e.g. from a provider
+    // factory, which runs before the routes are registered), it would intercept
+    // /api/* requests before NestJS can handle them. During route discovery the
+    // SSR bootstrap calls /api/eshop/config, which would then re-enter the same
+    // pending engine request -> circular wait and the app never responds.
+    await setupUniversal(this.httpAdapterHost.httpAdapter.getInstance());
   }
 }

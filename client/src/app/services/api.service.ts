@@ -1,7 +1,7 @@
 import { toObservable } from '@angular/core/rxjs-interop';
 import { WindowService } from './window.service';
 import { catchError, map } from 'rxjs/operators';
-import { Inject, Injectable, Optional, PLATFORM_ID, inject } from '@angular/core';
+import { Inject, Injectable, Optional, PLATFORM_ID, REQUEST, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 
@@ -22,7 +22,7 @@ export class ApiService {
   constructor(
     private readonly http: HttpClient,
     private readonly _window: WindowService,
-    @Optional() @Inject('serverUrl') protected serverUrl: string,
+    @Optional() @Inject(REQUEST) protected serverRequest: Request | null,
     @Inject(PLATFORM_ID)
     private platformId: Object,
   ) {
@@ -30,7 +30,7 @@ export class ApiService {
 
     if (environment.production) {
       if (isPlatformServer(this.platformId)) {
-        this.apiUrl = this.serverUrl || '';
+        this.apiUrl = this.serverRequest?.url ? new URL(this.serverRequest.url).origin : '';
       }
 
       if (isPlatformBrowser(this.platformId)) {
