@@ -39,6 +39,7 @@ body {
   background-image: var(--main-background-url);
   background-repeat: no-repeat;
   z-index: 0;
+  pointer-events: none;
 }
 
 .container, .container-mid {

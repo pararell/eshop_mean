@@ -5,209 +5,308 @@
   <div class="container">
     @if (cart$ | async; as cart) {
 
-    <div class="cart">
-      <div class="cart-with-order">
-        <ul class="cart-wrap" [class.cart-empty]="!cart?.items?.length">
-          <li class="cart-items">
-            <h2>{{ 'Cart_title' | translate | async }}</h2>
-          </li>
-          @for (cartItem of cart?.items; track cartItem; let last = $last) {
-          <li class="cart-items" [class.cart-last-item]="last">
-            <div class="cart-image-wrap">
-              <a [routerLink]="['/' + (lang$ | async) + '/product/' + cartItem?.item?.titleUrl]">
-                <img class="cart-image" src="{{ cartItem?.item?.mainImage?.url }}" />
-              </a>
-              <div class="cart-title">{{ cartItem?.item.title }}</div>
-            </div>
-            <div class="cart-item-part">{{ cartItem.qty }} ks</div>
-            <div class="cart-item-part">
-              {{ cartItem.price | priceFormat }}
-              {{ currency$ | async }}
-            </div>
-            <div class="cart-remove" (click)="removeFromCart(cartItem?.item?._id)"><i class="material-icons cart-icon">remove</i></div>
-          </li>
-          } @if (cart.shippingType) {
-          <li class="cart-items">
-            <div class="cart-image-wrap">{{ 'Shipping' | translate | async }} ({{ cart.shippingType | translate | async }})</div>
-            <div class="cart-item-part">&nbsp;</div>
-            <div class="cart-item-part">
-              {{ cart.shippingCost | priceFormat }}
-              {{ currency$ | async }}
-            </div>
-            <div class="cart-item-last-down"></div>
-          </li>
-          }
-          <li class="cart-items cart-items-last">
-            <div class="cart-image-wrap">
-              <b>{{ 'Summary' | translate | async }}</b>
-            </div>
-            <div class="cart-item-part">
-              <b>{{ cart.totalQty }} ks</b>
-            </div>
-            <div class="cart-item-part">
-              <b>
-                {{ cart.totalPrice | priceFormat }}
-                {{ currency$ | async }}
-              </b>
-            </div>
-            <div class="cart-item-last-down"></div>
-          </li>
-        </ul>
+    <div class="checkout">
+      <header class="checkout-header">
+        <h1 class="checkout-header-title">
+          <mat-icon class="checkout-header-icon">shopping_cart_checkout</mat-icon>
+          <span>{{ 'Cart_title' | translate | async }}</span>
+        </h1>
+        <p class="checkout-header-subtitle">{{ 'Make_order' | translate | async }}</p>
+      </header>
 
-        @if (!!cart?.items?.length && !(loading$ | async)) {
-        <div class="order-form-wrap">
-          <h2 class="cart-order-title">{{ 'Make_order' | translate | async }}</h2>
+      <div class="checkout-body">
+        @if (!!cart?.items?.length) {
+        <div class="checkout-main">
+          @if (loading$ | async) {
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          } @else {
           <mat-horizontal-stepper [linear]="true" #stepper>
+
             <mat-step [stepControl]="orderForm">
               <form [formGroup]="orderForm">
                 <ng-template matStepLabel>{{ 'Address' | translate | async }}</ng-template>
-                <mat-form-field class="order-field">
-                  <mat-label>
-                    {{ 'Firstname' | translate | async }}
-                    {{ 'and' | translate | async }}
-                    {{ 'Surname' | translate | async }}
-                  </mat-label>
-                  <input matInput formControlName="name" type="text" name="name" />
-                </mat-form-field>
-                <mat-form-field class="order-field">
-                  <mat-label>Email</mat-label>
-                  <input matInput formControlName="email" type="email" name="email" />
-                </mat-form-field>
-                <mat-form-field class="order-field">
-                  <mat-label>{{ 'Address' | translate | async }}</mat-label>
-                  <input matInput formControlName="address" type="text" name="address" />
-                </mat-form-field>
-                <div class="cart-address-field">
-                  <mat-form-field class="order-field-small">
-                    <mat-label>{{ 'City' | translate | async }}</mat-label>
-                    <input matInput formControlName="city" type="text" name="city" />
+                <div class="checkout-step-content">
+                  <div class="checkout-field-row">
+                    <mat-form-field class="order-field" appearance="outline">
+                      <mat-label>
+                        {{ 'Firstname' | translate | async }}
+                        {{ 'and' | translate | async }}
+                        {{ 'Surname' | translate | async }}
+                      </mat-label>
+                      <input matInput formControlName="name" type="text" name="name" />
+                    </mat-form-field>
+                    <mat-form-field class="order-field" appearance="outline">
+                      <mat-label>Email</mat-label>
+                      <input matInput formControlName="email" type="email" name="email" />
+                    </mat-form-field>
+                  </div>
+                  <mat-form-field class="order-field" appearance="outline">
+                    <mat-label>{{ 'Address' | translate | async }}</mat-label>
+                    <input matInput formControlName="address" type="text" name="address" />
                   </mat-form-field>
-                  <mat-form-field class="order-field-small">
-                    <mat-label>{{ 'ZIP' | translate | async }}</mat-label>
-                    <input matInput formControlName="zip" type="text" name="zip" />
+                  <div class="cart-address-field">
+                    <mat-form-field class="order-field-small" appearance="outline">
+                      <mat-label>{{ 'City' | translate | async }}</mat-label>
+                      <input matInput formControlName="city" type="text" name="city" />
+                    </mat-form-field>
+                    <mat-form-field class="order-field-small" appearance="outline">
+                      <mat-label>{{ 'ZIP' | translate | async }}</mat-label>
+                      <input matInput formControlName="zip" type="text" name="zip" />
+                    </mat-form-field>
+                  </div>
+                  <mat-form-field class="order-field" appearance="outline">
+                    <mat-label>{{ 'Country' | translate | async }}</mat-label>
+                    <input matInput formControlName="country" type="text" name="country" />
+                  </mat-form-field>
+                  <mat-form-field class="order-field" appearance="outline">
+                    <mat-label>{{ 'Notes' | translate | async }}</mat-label>
+                    <textarea matInput formControlName="notes" name="notes"></textarea>
                   </mat-form-field>
                 </div>
-                <mat-form-field class="order-field">
-                  <mat-label>{{ 'Country' | translate | async }}</mat-label>
-                  <input matInput formControlName="country" type="text" name="country" />
-                </mat-form-field>
-                <mat-form-field class="order-field">
-                  <mat-label>{{ 'Notes' | translate | async }}</mat-label>
-                  <textarea matInput formControlName="notes" name="notes"> </textarea>
-                </mat-form-field>
-                <div>
-                  <button class="cart-navigation-button" mat-stroked-button matStepperNext>
+                <div class="checkout-actions">
+                  <button class="cart-navigation-button cart-navigation-button--next" mat-flat-button color="primary" matStepperNext>
                     {{ 'Next' | translate | async }}
                   </button>
                 </div>
               </form>
             </mat-step>
+
             <mat-step>
-              <ng-template matStepLabel>{{ 'Payment_method' | translate | async }}</ng-template>
-              @if (orderForm.valid) {
-              <mat-radio-group class="delivery-button" [(ngModel)]="toggleCard">
-                <mat-radio-button class="payment-choice" [class.payment-choice--active]="toggleCard" [value]="true">
-                  <span class="flex">
-                    <mat-icon>credit_card</mat-icon>
-                    <span class="margin-left-small">
-                      {{ 'Pay' | translate | async }}
-                      <b>
-                        {{ cart?.totalPrice | priceFormat }}
-                        {{ currency$ | async }}
-                      </b>
-                      {{ 'with' | translate | async }}
-                      {{ 'card' | translate | async }}
-                    </span>
-                  </span>
-                </mat-radio-button>
-                <mat-radio-button class="payment-choice" [class.payment-choice--active]="!toggleCard" [value]="false">
-                  <span class="flex">
-                    <mat-icon>local_atm</mat-icon>
-                    <span class="margin-left-small">
-                      {{ 'Payment' | translate | async }}
-                      {{ 'on' | translate | async }}
-                      {{ 'delivery' | translate | async }}
-                    </span>
-                  </span>
-                </mat-radio-button>
-              </mat-radio-group>
-              }
-              <div>
-                <button class="cart-navigation-button" mat-stroked-button matStepperNext>
+              <ng-template matStepLabel>{{ 'Shipping' | translate | async }}</ng-template>
+              <div class="checkout-step-content">
+                @if (cart.shippingType) {
+                <div class="shipping-options">
+                  <div class="shipping-option shipping-option--selected" [class.shipping-option--free]="cart.shippingType === 'free'">
+                    <mat-icon class="shipping-option-icon">
+                      @if (cart.shippingType === 'free') { check_circle } @else { local_shipping }
+                    </mat-icon>
+                    <div class="shipping-option-info">
+                      <div class="shipping-option-name">{{ cart.shippingType | translate | async }}</div>
+                      <div class="shipping-option-note">
+                        {{ 'Free_shipping_limit' | translate | async }} {{ cart.shippingLimit | priceFormat }} {{ currency$ | async }}
+                      </div>
+                    </div>
+                    <div class="shipping-option-price">
+                      @if (cart.shippingCost > 0) {
+                      {{ cart.shippingCost | priceFormat }} {{ currency$ | async }}
+                      } @else {
+                      <span class="shipping-option-price--free">0 {{ currency$ | async }}</span>
+                      }
+                    </div>
+                    <mat-icon class="shipping-option-check">check_circle</mat-icon>
+                  </div>
+                </div>
+                }
+              </div>
+              <div class="checkout-actions">
+                <button class="cart-navigation-button" mat-stroked-button matStepperPrevious>
+                  {{ 'Back' | translate | async }}
+                </button>
+                <button class="cart-navigation-button cart-navigation-button--next" mat-flat-button color="primary" matStepperNext>
                   {{ 'Next' | translate | async }}
                 </button>
+              </div>
+            </mat-step>
+
+            <mat-step>
+              <ng-template matStepLabel>{{ 'Payment_method' | translate | async }}</ng-template>
+              <div class="checkout-step-content">
+                @if (orderForm.valid) {
+                <div class="delivery-button" role="radiogroup" [attr.aria-label]="'Payment_method' | translate | async">
+                  <div
+                    class="payment-choice"
+                    [class.payment-choice--active]="toggleCard"
+                    (click)="toggleCard = true"
+                    role="radio"
+                    [attr.aria-checked]="toggleCard"
+                    tabindex="0"
+                    (keydown.enter)="toggleCard = true"
+                    (keydown.space)="toggleCard = true"
+                  >
+                    <mat-icon class="payment-choice-icon">credit_card</mat-icon>
+                    <span class="payment-choice-text">
+                      <span class="payment-choice-title">
+                        {{ 'Pay' | translate | async }} {{ 'with' | translate | async }} {{ 'card' | translate | async }}
+                      </span>
+                      <span class="payment-choice-price">
+                        {{ cart?.totalPrice | priceFormat }} {{ currency$ | async }}
+                      </span>
+                    </span>
+                    <mat-icon class="payment-choice-check" [class.payment-choice-check--visible]="toggleCard">check_circle</mat-icon>
+                  </div>
+                  <div
+                    class="payment-choice"
+                    [class.payment-choice--active]="!toggleCard"
+                    (click)="toggleCard = false"
+                    role="radio"
+                    [attr.aria-checked]="!toggleCard"
+                    tabindex="0"
+                    (keydown.enter)="toggleCard = false"
+                    (keydown.space)="toggleCard = false"
+                  >
+                    <mat-icon class="payment-choice-icon">local_atm</mat-icon>
+                    <span class="payment-choice-text">
+                      <span class="payment-choice-title">
+                        {{ 'Payment' | translate | async }} {{ 'on' | translate | async }} {{ 'delivery' | translate | async }}
+                      </span>
+                      <span class="payment-choice-price">
+                        {{ 'Payment' | translate | async }} {{ 'on' | translate | async }} {{ 'delivery' | translate | async }}
+                      </span>
+                    </span>
+                    <mat-icon class="payment-choice-check" [class.payment-choice-check--visible]="!toggleCard">check_circle</mat-icon>
+                  </div>
+                </div>
+                }
+              </div>
+              <div class="checkout-actions">
                 <button class="cart-navigation-button" mat-stroked-button matStepperPrevious>
                   {{ 'Back' | translate | async }}
                 </button>
+                <button class="cart-navigation-button cart-navigation-button--next" mat-flat-button color="primary" matStepperNext>
+                  {{ 'Next' | translate | async }}
+                </button>
               </div>
             </mat-step>
+
             <mat-step>
               <ng-template matStepLabel>{{ 'Summary_and_payment' | translate | async }}</ng-template>
-              <div class="flex items-start margin-top-basic">
-                <span>{{ 'Your_summary' | translate | async }}</span>
+              <div class="checkout-step-content">
                 <div class="order-last-summary">
-                  <span>
-                    {{ orderForm.get('name').value }}
-                  </span>
-                  <span>
-                    {{ orderForm.get('email').value }}
-                  </span>
-                  <span>
-                    {{ orderForm.get('address').value }}
-                  </span>
-                  <span> {{ orderForm.get('city').value }},{{ orderForm.get('zip').value }} </span>
-                  <span>
-                    {{ orderForm.get('country').value }}
-                  </span>
+                  <div class="order-last-summary-title">
+                    <mat-icon>person</mat-icon>
+                    <span>{{ 'Your_summary' | translate | async }}</span>
+                  </div>
+                  <div class="order-last-summary-item">
+                    <span>{{ orderForm.get('name').value }}</span>
+                    <span>{{ orderForm.get('email').value }}</span>
+                  </div>
+                  <div class="order-last-summary-item">
+                    <span>{{ orderForm.get('address').value }}</span>
+                    <span>{{ orderForm.get('city').value }}, {{ orderForm.get('zip').value }}</span>
+                    <span>{{ orderForm.get('country').value }}</span>
+                  </div>
                 </div>
-              </div>
 
-              @if (toggleCard) {
-              <app-card
-                [price]="cart?.totalPrice"
-                [currency]="currency$ | async"
-                [loading]="loading$ | async"
-                (scrollToTop)="scrollToTop()"
-                (payWithCardEmit)="payWithCard($event)"
-              >
-              </app-card>
-              } @if (!toggleCard && (currency$ | async); as currency) {
-              <button
-                mat-raised-button
-                color="primary"
-                type="submit"
-                class="submit-order-button"
-                [disabled]="orderForm.invalid"
-                (click)="submit(currency)"
-              >
-                {{ 'MakeOrder' | translate | async }}
-              </button>
-              }
-              <div>
+                @if (toggleCard) {
+                <app-card
+                  [price]="cart?.totalPrice"
+                  [currency]="currency$ | async"
+                  [loading]="loading$ | async"
+                  (scrollToTop)="scrollToTop()"
+                  (payWithCardEmit)="payWithCard($event)"
+                >
+                </app-card>
+                } @if (!toggleCard && (currency$ | async); as currency) {
+                <button
+                  mat-raised-button
+                  color="primary"
+                  type="submit"
+                  class="submit-order-button"
+                  [disabled]="orderForm.invalid"
+                  (click)="submit(currency)"
+                >
+                  {{ 'MakeOrder' | translate | async }}
+                </button>
+                }
+              </div>
+              <div class="checkout-actions">
                 <button class="cart-navigation-button" mat-stroked-button matStepperPrevious>
                   {{ 'Back' | translate | async }}
                 </button>
               </div>
             </mat-step>
+
           </mat-horizontal-stepper>
+          }
         </div>
         }
-          @if ((loading$ | async)) {
-        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-        }
-          @if (!cart?.items?.length && order$ | async; as order) {
-        <div class="order-form-wrap">
-          @if (order.outcome.seller_message) { @if (order.outcome.seller_message === 'WITH_PAYMENT') {
-          <div class="pay-success">
-            {{ 'SuccessPayment' | translate | async }}
+
+        <aside class="checkout-summary" [class.checkout-summary--empty]="!cart?.items?.length">
+          @if (cart?.items?.length) {
+          <h2 class="checkout-summary-title">
+            <mat-icon class="checkout-summary-title-icon">shopping_cart</mat-icon>
+            <span>{{ 'Cart_title' | translate | async }}</span>
+          </h2>
+          <ul class="cart-wrap">
+            @for (cartItem of cart?.items; track cartItem) {
+            <li class="cart-items">
+              <div class="cart-image-wrap">
+                <a [routerLink]="['/' + (lang$ | async) + '/product/' + cartItem?.item?.titleUrl]">
+                  <img class="cart-image" src="{{ cartItem?.item?.mainImage?.url }}" />
+                </a>
+                <div class="cart-item-info">
+                  <div class="cart-title">{{ cartItem?.item.title }}</div>
+                  <div class="cart-item-part cart-item-part--qty">{{ cartItem.qty }} ks</div>
+                </div>
+              </div>
+              <div class="cart-item-part cart-item-part--price">
+                {{ cartItem.price | priceFormat }}
+                {{ currency$ | async }}
+              </div>
+              <div class="cart-remove" (click)="removeFromCart(cartItem?.item?._id)">
+                <mat-icon class="cart-icon">close</mat-icon>
+              </div>
+            </li>
+            }
+          </ul>
+          <div class="summary-totals">
+            @if (cart.shippingType) {
+            <div class="summary-row">
+              <span class="summary-row-label">
+                {{ 'Shipping' | translate | async }}
+                @if (cart.shippingType !== 'free') {
+                ({{ cart.shippingType | translate | async }})
+                }
+              </span>
+              <span class="summary-row-value">{{ cart.shippingCost | priceFormat }} {{ currency$ | async }}</span>
+            </div>
+            }
+            <div class="summary-row">
+              <span class="summary-row-label">{{ 'Total_quantity' | translate | async }}</span>
+              <span class="summary-row-value">{{ cart.totalQty }} ks</span>
+            </div>
+            <div class="summary-row summary-row--total">
+              <span class="summary-row-label">{{ 'Summary' | translate | async }}</span>
+              <span class="summary-row-value">
+                {{ cart.totalPrice | priceFormat }}
+                {{ currency$ | async }}
+              </span>
+            </div>
           </div>
-          } @if (order.outcome.seller_message === 'PAYMENT_ON_DELIVERY') {
-          <div class="pay-success">
-            {{ 'SuccessOrder' | translate | async }}
+          } @else {
+          @if (order$ | async; as order) {
+          <div class="checkout-success">
+            @if (order.outcome?.seller_message) {
+            @if (order.outcome.seller_message === 'WITH_PAYMENT') {
+            <div class="pay-success">
+              <mat-icon class="pay-success-icon">check_circle</mat-icon>
+              <span>{{ 'SuccessPayment' | translate | async }}</span>
+            </div>
+            }
+            @if (order.outcome.seller_message === 'PAYMENT_ON_DELIVERY') {
+            <div class="pay-success">
+              <mat-icon class="pay-success-icon">check_circle</mat-icon>
+              <span>{{ 'SuccessOrder' | translate | async }}</span>
+            </div>
+            }
+            }
           </div>
-          } }
-        </div>
-        }
+          } @else {
+          <div class="checkout-empty">
+            <mat-icon class="checkout-empty-icon">remove_shopping_cart</mat-icon>
+            <span class="checkout-empty-text">{{ 'Your_cart_is_empty' | translate | async }}</span>
+            <a
+              mat-raised-button
+              color="primary"
+              class="checkout-empty-link"
+              [routerLink]="['/' + (lang$ | async) + '/product/all']"
+            >
+              {{ 'Continue_shopping' | translate | async }}
+            </a>
+          </div>
+          }
+          }
+        </aside>
       </div>
     </div>
 
