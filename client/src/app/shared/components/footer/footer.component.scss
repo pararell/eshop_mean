@@ -1,31 +1,40 @@
 :host {
-  color: rgba(255,255,255,0.8);
+  color: rgba(255, 255, 255, 0.75);
 
   .footer {
-    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    background: var(--text-color);
 
     &-title {
       font-size: 20px;
       margin: 0 0 5px;
-      font-weight: 500;
+      font-weight: 600;
+      color: #ffffff;
     }
 
     &-subtitle {
       font-size: 14px;
+      color: rgba(255, 255, 255, 0.65);
     }
 
     &-copyright {
-      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+      background: #0b0f14;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 13px;
     }
 
     a {
-      color: rgba(255,255,255,0.8);
+      color: rgba(255, 255, 255, 0.7);
+
+      &:hover {
+        color: #ffffff;
+      }
     }
 
     &-links {
       text-decoration: none;
       list-style-type: none;
       padding: 0;
+      line-height: 1.9;
     }
   }
 }

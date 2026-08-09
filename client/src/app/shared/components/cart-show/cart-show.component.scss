@@ -11,12 +11,12 @@
 
     &-icon {
       cursor: pointer;
-      color:  rgba(255,255,255,0.8);
+      color: var(--accent-strong);
       font-size: 25px;
     }
 
     &-quantity {
-      color:  rgba(255,255,255,0.8);
+      color: var(--text-muted);
       line-height: 15px;
     }
   }

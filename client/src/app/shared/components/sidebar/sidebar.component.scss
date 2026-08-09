@@ -1,29 +1,34 @@
 .sidebar {
-  padding: 10px;
-  background: #fff;
+  padding: 12px;
+  background: var(--surface);
   display: flex;
   flex-flow: column;
-  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
-  justify-content: center;
-  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  justify-content: flex-start;
+  align-items: stretch;
   margin: 10px 0;
-  border-radius: 2px;
 
   &-header {
     width: 100%;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    padding: 10px 0;
+    border-top: 1px solid var(--border-color);
+    padding: 12px 4px 8px;
 
     &-top {
       border: none;
+      padding-top: 4px;
     }
   }
 
   &-title {
-    font-size: 20px;
-    font-weight: 500;
-    text-align: center;
-    margin-bottom: 5px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    text-align: left;
+    margin: 0;
   }
 
   &-select {
@@ -31,14 +36,24 @@
   }
 
   &-item {
-    color: var(--primary-color);
+    color: var(--text-color);
     width: 100%;
-    padding: 5px 10px;
+    padding: 8px 12px;
     text-transform: capitalize;
+    border-radius: var(--radius-sm);
+    margin: 2px 0;
+    font-size: 14px;
+    transition: background-color 160ms ease, color 160ms ease;
+
+    &:hover {
+      background: var(--surface-muted);
+      color: var(--accent-strong);
+    }
 
     &.active {
-      background-color: var(--primary-color);
-      color: #fff;
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+      font-weight: 500;
     }
   }
 

@@ -1,9 +1,9 @@
 ::ng-deep .mat-mdc-option .nav-autocomplete-link {
-  color: rgba(0, 0, 0, 0.87) !important;
+  color: var(--text-color) !important;
 }
 
 ::ng-deep .mat-mdc-menu-item .nav-link {
-  color: rgba(0, 0, 0, 0.87) !important;
+  color: var(--text-color) !important;
 }
 
 :host {
@@ -12,7 +12,7 @@
   ::ng-deep .mat-mdc-input-element {
     padding: 2px 5px !important;
     font-size: 16px !important;
-    color: var(--primary-color);
+    color: var(--text-color);
   }
 
   ::ng-deep .mat-mdc-form-field-infix {
@@ -21,19 +21,25 @@
   }
 
   .nav {
-    padding: 0 15px;
+    padding: 0 16px;
     height: 50px;
     width: 100%;
     line-height: 50px;
-    background: rgba(255,255,255,0.8);
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     justify-content: space-between;
     z-index: 5;
     position: relative;
-    box-shadow: 0px 2px 40px 0px rgba(0, 0, 0, 0.091);
-
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 1px 8px rgba(16, 24, 40, 0.05);
 
     a {
-      color: var(--primary-color);
+      color: var(--text-color);
+
+      &:hover {
+        color: var(--accent-strong);
+      }
     }
 
     &-fixed {
@@ -83,10 +89,37 @@
       align-items: center;
       display: flex;
       flex: 1;
-      color: var(--primary-color);
+      color: var(--text-muted);
 
       &-content {
         width: 100%;
+
+        // Visible search pill — stays legible on the transparent header
+        ::ng-deep .mat-mdc-text-field-wrapper {
+          background: var(--surface-muted) !important;
+          border: 1px solid var(--border-color);
+          border-radius: 999px;
+          padding: 0 8px;
+          box-shadow: var(--shadow-xs);
+          transition: border-color 180ms ease, box-shadow 180ms ease,
+            background-color 180ms ease;
+        }
+
+        ::ng-deep .mdc-line-ripple {
+          display: none !important;
+        }
+
+        .material-icons {
+          color: var(--text-color);
+        }
+
+        &.focus-active {
+          ::ng-deep .mat-mdc-text-field-wrapper {
+            background: var(--surface) !important;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+          }
+        }
       }
 
       @media screen and (max-width: 600px) {
@@ -95,7 +128,8 @@
     }
 
     &-active-link {
-      background: rgba(0,0,0,0.1);
+      background: var(--accent-soft);
+      color: var(--accent-strong);
     }
 
     &-basic {
@@ -109,10 +143,12 @@
       align-items: center;
       margin-right: 5px;
       padding: 0 5px;
+      color: var(--text-color);
     }
 
     &-cart-icon {
       margin: 0 5px;
+      color: var(--accent-strong);
     }
 
     &-desktop {
@@ -123,13 +159,13 @@
         width: initial !important;
 
         a {
-          color: var(--primary-color) !important;
+          color: var(--text-color) !important;
           white-space: nowrap;
           font-size: 14px;
         }
 
         .mat-icon {
-          color: var(--primary-color) !important;
+          color: var(--text-color) !important;
           margin-right: 5px !important;
         }
       }
@@ -149,7 +185,7 @@
       .nav-mobile {
         display: block;
         flex: 1;
-        color: var(--primary-color);
+        color: var(--text-color);
       }
     }
 
@@ -164,8 +200,12 @@
   }
 
   select.nav-lang-select {
-    background: var(--primary-color);
-    border: none;
-    color: #ffffff;
+    background: var(--surface-muted);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-color);
+    padding: 4px 10px;
+    font-size: 13px;
+    cursor: pointer;
   }
 }

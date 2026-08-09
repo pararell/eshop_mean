@@ -10,14 +10,15 @@
 
   .home {
     &-primary-header {
-      color: var(--primary-color);
-      background: #ffffff;
+      color: var(--text-color);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
       position: relative;
-      box-shadow: 1px 0px 2px rgb(0 0 0 / 10%);
+      border-bottom: 1px solid var(--border-color);
     }
 
     &-primary-container {
-      padding: 10px;
+      padding: 8px 12px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -39,10 +40,13 @@
       top: 50px;
       left: 0;
       width: 100%;
-      background: #eee;
-      color: #222;
+      background: var(--text-color);
+      color: rgba(255, 255, 255, 0.92);
       z-index: 2;
       text-align: center;
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      box-shadow: 0 1px 6px rgba(16, 24, 40, 0.1);
 
       &-basic {
         display: var(--promo, none);
@@ -61,7 +65,7 @@
       position: relative;
 
       &-background {
-        background: var(--promo-slide-background, #000);
+        background: var(--promo-slide-background, #111827);
         background-size: cover;
         background-repeat: no-repeat;
         background-position: var(--promo-slide-background-position, center);
@@ -72,6 +76,19 @@
         height: 100%;
         z-index: 0;
         overflow: hidden;
+
+        &::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            180deg,
+            rgba(17, 24, 39, 0.35) 0%,
+            rgba(17, 24, 39, 0.15) 45%,
+            rgba(17, 24, 39, 0.55) 100%
+          );
+          pointer-events: none;
+        }
       }
 
       &-video {
@@ -102,15 +119,28 @@
 
         a {
           cursor: pointer;
-          font-size: 22px;
+          font-size: 18px;
           font-weight: 600;
+          color: #ffffff;
+          background: var(--accent-strong);
+          padding: 10px 26px;
+          border-radius: 999px;
+          display: inline-block;
+          box-shadow: 0 8px 24px -8px rgba(234, 88, 12, 0.6);
+          transition: background-color 180ms ease, transform 180ms ease;
+
+          &:hover {
+            background: var(--accent-dark);
+            transform: translateY(-1px);
+          }
         }
       }
 
       &-subtitle {
-        font-size: 50px;
-        line-height: 1.2;
-        color: var(--primary-color);
+        font-size: 48px;
+        line-height: 1.15;
+        color: #ffffff;
+        text-shadow: 0 2px 18px rgba(17, 24, 39, 0.55);
         margin-bottom: 0;
         margin-top: 12px;
       }
@@ -120,7 +150,9 @@
         display: block;
 
         a {
-          color: var(--primary-color);
+          color: #ffffff;
+          text-decoration: underline;
+          text-underline-offset: 3px;
         }
       }
 
@@ -141,13 +173,14 @@
     }
 
     &-title {
-      font-weight: 500;
+      font-weight: 600;
       margin: 0;
-      padding: 0;
+      padding: 8px 0;
       text-align: center;
-      font-size: 1.2em;
-      line-height: 1.2em;
+      font-size: 1.35em;
+      line-height: 1.2;
       text-transform: capitalize;
+      color: var(--text-color);
     }
 
     &-categories-links-wrap {
@@ -175,12 +208,20 @@
     &-title-category {
       font-weight: 500;
       margin: 0;
-      padding: 0 10px;
+      padding: 6px 14px;
       text-align: center;
-      font-size: 1.2em;
-      line-height: 1.2em;
+      font-size: 0.9em;
+      line-height: 1.2;
       text-transform: capitalize;
-      color: #333;
+      color: var(--text-muted);
+      border-radius: 999px;
+      white-space: nowrap;
+      transition: color 160ms ease, background-color 160ms ease;
+
+      &:hover {
+        color: var(--accent-strong);
+        background: var(--accent-soft);
+      }
     }
 
     &-spinner {
@@ -202,7 +243,7 @@
     }
 
     &-mobile-filter {
-      color: var(--primary-color);
+      color: var(--text-color);
       position: absolute;
       display: flex;
       cursor: pointer;
@@ -211,6 +252,7 @@
 
     &-sidebar {
       padding: 0 10px;
+      background: var(--surface);
     }
   }
 }

@@ -12,17 +12,19 @@
   .category_card {
     flex-basis: 18%;
     overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
     display: flex;
     flex-flow: column;
     justify-content: space-between;
-    background: #fff;
+    background: var(--surface);
     margin: 0.5rem 1% 1rem 1%;
     z-index: 1;
     position: relative;
     min-width: 18%;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-    border-radius: 2px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xs);
+    transition: transform 220ms ease, box-shadow 220ms ease,
+      border-color 220ms ease;
 
     @media (max-width: 1400px) {
       flex-basis: 31%;
@@ -64,38 +66,43 @@
       height: 100%;
       left: 0;
       top: 0;
-      background: rgba(0, 0, 0, 0.1);
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       justify-content: center;
+      background: linear-gradient(
+        180deg,
+        rgba(17, 24, 39, 0.02) 40%,
+        rgba(17, 24, 39, 0.78) 100%
+      );
     }
 
     &-title {
-      font-size: 25px;
-      line-height: 20px;
+      font-size: 20px;
+      line-height: 1.25;
       margin: 0;
       font-weight: 600;
       text-transform: uppercase;
-      padding: 10px;
+      letter-spacing: 0.02em;
+      padding: 10px 12px 4px;
       width: 100%;
       text-align: center;
-      color: var(--primary-color);
+      color: #ffffff;
+      text-shadow: 0 1px 3px rgba(17, 24, 39, 0.5);
     }
 
     &-description {
-      font-size: 14px;
-      line-height: 16px;
+      font-size: 13px;
+      line-height: 1.5;
       text-align: center;
-      padding: 0 10px 5px 10px;
+      padding: 0 12px 12px;
       width: 100%;
-      color: var(--primary-color);
+      color: rgba(255, 255, 255, 0.85);
       margin: 0;
     }
 
     &-info {
       display: block;
       width: 100%;
-      background: var(--background-color);
     }
 
     &-image {
@@ -107,7 +114,8 @@
       overflow: hidden;
       z-index: 2;
       display: block;
-      transition: all 0.2s ease-in-out;
+      background-color: #ffffff;
+      transition: transform 300ms ease;
       border: none;
       outline: none;
       position: relative;
@@ -118,10 +126,11 @@
     }
 
     &:hover {
-      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25), 0 8px 10px rgba(0, 0, 0, 0.22);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
 
       .category_card-image {
-        transform: scale(1.1);
+        transform: scale(1.06);
         overflow: hidden;
       }
     }

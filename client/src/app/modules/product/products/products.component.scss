@@ -10,9 +10,9 @@
 
   .products {
     &-primary-header {
-      color: var(--primary-color);
+      color: var(--text-color);
       background: #fff;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid var(--border-color);
       position: relative;
     }
 
@@ -21,10 +21,10 @@
     }
 
     &-title {
-      font-weight: 500;
+      font-weight: 600;
       margin: 0;
       padding: 0;
-      color: var(--primary-color);
+      color: var(--text-color);
       text-align: center;
       font-size: 1.2em;
       line-height: 1.2em;
@@ -35,7 +35,7 @@
       text-align: center;
       margin: 0;
       font-size: 14px;
-      color: var(--primary-color);
+      color: var(--text-muted);
       line-height: 16px;
     }
 
@@ -61,7 +61,7 @@
       display: none;
 
       @media screen and (max-width: 600px) {
-        color: var(--primary-color);
+        color: var(--text-color);
         position: absolute;
         display: flex;
         cursor: pointer;
