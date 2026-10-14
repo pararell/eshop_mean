@@ -21,12 +21,13 @@ export class AuthService {
   ) {}
 
   async signUp(authCredentialsDto: AuthCredentialDto): Promise<void> {
-    const { email, password } = authCredentialsDto;
+    const { email, password, name } = authCredentialsDto;
     const userExist = await this.userModel.findOne({ email });
     if (userExist) {
       throw new ConflictException('Username already exist');
     }
-    const user = new this.userModel(authCredentialsDto);
+    // Only copy whitelisted fields; never persist client-supplied roles or other user fields
+    const user = new this.userModel({ email, name });
     user.salt = await bcrypt.genSalt();
     user.password = await this.hashPassword(password, user.salt);
 

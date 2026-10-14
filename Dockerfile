@@ -9,7 +9,7 @@ RUN npm run build:ssr
 
 FROM node:24.4-alpine3.21
 WORKDIR /usr/src/app
-COPY --from=buildContainer /usr/src/app/package.json /usr/src/app/package-lock.json /usr/src/app/.env* ./
+COPY --from=buildContainer /usr/src/app/package.json /usr/src/app/package-lock.json ./
 RUN npm i whatwg-url
 COPY --from=buildContainer /usr/src/app/dist ./dist
 

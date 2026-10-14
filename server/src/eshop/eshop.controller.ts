@@ -34,8 +34,8 @@ export class EshopController {
     @Body() contactDto: ContactDto,
     @Session() session,
     @Headers('lang') lang: string,
-  ): void {
-    this.eshopService.sendContact(contactDto, session.cart, lang);
+  ): Promise<void> {
+    return this.eshopService.sendContact(contactDto, session.cart, lang);
   }
 
   @Get('/page/all')

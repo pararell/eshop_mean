@@ -39,7 +39,7 @@ export class OrdersService {
     const newOrder = await new this.orderModel(
       this.createOrder(orderDto, cartForLang, 'PAYMENT_ON_DELIVERY'),
     );
-    newOrder.save();
+    await newOrder.save();
     try {
       const translations = await this.translationModel.findOne({ lang });
 
@@ -92,7 +92,7 @@ export class OrdersService {
         );
         const capturePayment = await stripe.charges.capture(charge.id);
         if (capturePayment) {
-          newOrder.save();
+          await newOrder.save();
 
           const translations = await this.translationModel.findOne({ lang });
           this.sendmail(
@@ -174,7 +174,7 @@ export class OrdersService {
       cart,
       currency: order.currency,
       orderId: order.orderId,
-      address: order.addresses[0],
+      address: order.addresses?.[0],
       notes: order.notes,
       date: new Date(),
     };

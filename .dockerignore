@@ -14,3 +14,7 @@ e2e
 node_modules
 proxy.conf.js
 raml
+
+.env
+.env.*
+!.env.example
