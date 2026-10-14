@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, output } from '@angular/core';
 
 @Component({
   selector: 'app-cart-show',
@@ -9,8 +9,8 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from 
 })
 export class CartShowComponent {
   @Input() items!: number;
-  @Output() add = new EventEmitter<void>();
-  @Output() remove = new EventEmitter<void>();
+  readonly add = output<void>();
+  readonly remove = output<void>();
 
   constructor() {}
 }

@@ -1,6 +1,6 @@
 import { toObservable } from '@angular/core/rxjs-interop';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -9,15 +9,39 @@ import { ThemeService } from '../../../services/theme.service';
 import { Theme } from '../../../shared/models';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 import { SignalStore } from '../../../store/signal.store';
+import { MatFormField, MatLabel, MatSelect, MatOption } from '@angular/material/select';
+import { MatInput } from '@angular/material/input';
+import { MatButton } from '@angular/material/button';
+import { MatRadioGroup, MatRadioButton } from '@angular/material/radio';
+import { AsyncPipe } from '@angular/common';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-theme-edit',
   templateUrl: './theme-edit.component.html',
   styleUrls: ['./theme-edit.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+  imports: [
+    MatFormField,
+    MatLabel,
+    MatInput,
+    ReactiveFormsModule,
+    FormsModule,
+    MatButton,
+    MatSelect,
+    MatOption,
+    MatRadioGroup,
+    MatRadioButton,
+    AsyncPipe,
+    TranslatePipe,
+  ],
 })
 export class ThemeEditComponent {
+  private store = inject(SignalStore);
+  private selectos = inject(SignalStoreSelectors);
+  private fb = inject(FormBuilder);
+  private themeService = inject(ThemeService);
+
   themes$: Observable<Theme[] | null>;
   themesEditForm: FormGroup;
   languageOptions = languages;
@@ -26,12 +50,7 @@ export class ThemeEditComponent {
   chosenTheme = '';
   sendRequest = false;
 
-  constructor(
-    private store: SignalStore,
-    private selectos: SignalStoreSelectors,
-    private fb: FormBuilder,
-    private themeService: ThemeService,
-  ) {
+  constructor() {
     this.store.getThemes();
 
     this.themesEditForm = this.fb.group({

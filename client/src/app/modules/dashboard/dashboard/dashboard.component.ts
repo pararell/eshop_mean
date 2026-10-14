@@ -1,23 +1,51 @@
-import { Component, OnDestroy, Signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, Signal, ChangeDetectionStrategy, inject, viewChild } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { TranslateService } from '../../../services/translate.service';
 import { Product } from '../../../shared/models';
-import { MatTabGroup } from '@angular/material/tabs';
+import { MatTabGroup, MatTab, MatTabContent } from '@angular/material/tabs';
 import { SignalStore } from '../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { MatButton } from '@angular/material/button';
+import { RouterLink } from '@angular/router';
+import { AllProductsComponent } from '../all-products/all-products.component';
+import { ProductsEditComponent } from '../products-edit/products-edit.component';
+import { CategoriesEditComponent } from '../categories-edit/categories-edit.component';
+import { PagesEditComponent } from '../pages-edit/pages-edit.component';
+import { ThemeEditComponent } from '../theme-edit/theme-edit.component';
+import { ConfigEditComponent } from '../config-edit/config-edit.component';
+import { TranslationsEditComponent } from '../translations-edit/translations-edit.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+  imports: [
+    MatButton,
+    RouterLink,
+    MatTabGroup,
+    MatTab,
+    AllProductsComponent,
+    MatTabContent,
+    ProductsEditComponent,
+    CategoriesEditComponent,
+    PagesEditComponent,
+    ThemeEditComponent,
+    ConfigEditComponent,
+    TranslationsEditComponent,
+    AsyncPipe,
+  ],
 })
 export class DashboardComponent implements OnDestroy {
-  @ViewChild(MatTabGroup) tabGroup!: MatTabGroup;
+  private translate = inject(TranslateService);
+  private store = inject(SignalStore);
+  private selectors = inject(SignalStoreSelectors);
+
+  readonly tabGroup = viewChild.required(MatTabGroup);
 
   productAction = '';
   lang$: Observable<string>;
@@ -29,11 +57,7 @@ export class DashboardComponent implements OnDestroy {
 
   readonly component = 'dashboard';
 
-  constructor(
-    private translate: TranslateService,
-    private store: SignalStore,
-    private selectors: SignalStoreSelectors,
-  ) {
+  constructor() {
     this.lang$ = this.translate.getLang$();
     this.currency$ = this.selectors.currency;
     this.allProducts$ = this.selectors.allProducts;
@@ -53,12 +77,12 @@ export class DashboardComponent implements OnDestroy {
 
   setToEditProduct(titleUrl: string): void {
     this.productToEditTitleUrl = titleUrl;
-    this.tabGroup.selectedIndex = 2;
+    this.tabGroup().selectedIndex = 2;
     this.store.updatePosition({ dashboard: 0 });
   }
 
   changeTab(tab: number) {
-    this.tabGroup.selectedIndex = tab;
+    this.tabGroup().selectedIndex = tab;
     this.store.getAllProducts();
   }
 

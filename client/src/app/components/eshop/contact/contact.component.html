@@ -19,7 +19,7 @@
           {{ 'SendContact' | translate | async }}
         </button>
         @if (loading$ | async) {
-          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          <mat-progress-bar mode="indeterminate" />
         }
       </form>
       @if (sendRequestSub$ | async) {

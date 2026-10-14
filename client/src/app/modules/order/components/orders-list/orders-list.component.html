@@ -1,7 +1,7 @@
 <div class="main">
   <div class="container">
     @if (!orders) {
-      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      <mat-progress-bar mode="indeterminate" />
     }
     @if (orders) {
       <div class="orders-list-wrapper">
@@ -10,7 +10,7 @@
             <div class="card-action">
               <p>{{ 'Status' | translate | async }}: {{ order?.status }}</p>
               <div class="action-wrap">
-                <button mat-raised-button color="primary" [routerLink]="[orderUrl + $safeNavigationMigration(order?.orderId)]">
+                <button mat-raised-button color="primary" [routerLink]="[orderUrl() + $safeNavigationMigration(order?.orderId)]">
                   {{ 'Detail' | translate | async }}
                 </button>
               </div>

@@ -1,6 +1,6 @@
 import { toObservable } from '@angular/core/rxjs-interop';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Observable, BehaviorSubject, from } from 'rxjs';
 import { delay, take } from 'rxjs/operators';
 
@@ -8,15 +8,38 @@ import { languages } from '../../../shared/constants';
 import { Config, LanguageCode } from '../../../shared/models';
 import { SignalStore } from '../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
+import { MatFormField, MatLabel, MatSelect, MatOption } from '@angular/material/select';
+import { MatInput } from '@angular/material/input';
+import { MatButton } from '@angular/material/button';
+import { MatRadioGroup, MatRadioButton } from '@angular/material/radio';
+import { AsyncPipe } from '@angular/common';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-config-edit',
   templateUrl: './config-edit.component.html',
   styleUrls: ['./config-edit.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+  imports: [
+    MatFormField,
+    MatLabel,
+    MatInput,
+    ReactiveFormsModule,
+    FormsModule,
+    MatButton,
+    MatSelect,
+    MatOption,
+    MatRadioGroup,
+    MatRadioButton,
+    AsyncPipe,
+    TranslatePipe,
+  ],
 })
 export class ConfigEditComponent {
+  private store = inject(SignalStore);
+  private selectors = inject(SignalStoreSelectors);
+  private fb = inject(FormBuilder);
+
   configs$: Observable<Config[] | null>;
   configEditForm: FormGroup;
   languageOptions = languages;
@@ -25,11 +48,7 @@ export class ConfigEditComponent {
   chosenConfig = '';
   sendRequest = false;
 
-  constructor(
-    private store: SignalStore,
-    private selectors: SignalStoreSelectors,
-    private fb: FormBuilder,
-  ) {
+  constructor() {
     this.store.getConfigs();
 
     this.configEditForm = this.fb.group({

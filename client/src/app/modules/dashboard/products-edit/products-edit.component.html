@@ -18,13 +18,13 @@
   </div>
   <form class="product_edit-form" [formGroup]="productEditForm" novalidate>
     <div class="product_edit-full-input">
-      @if (!titles || !titles.length || action === 'add') {
+      @if (!titles() || !titles()!.length || action === 'add') {
         <mat-form-field class="product_edit-field">
           <mat-label>Title Url</mat-label>
           <input matInput formControlName="titleUrl" type="text" name="titleUrl" (change)="formatTitleUrl($event)" />
         </mat-form-field>
       }
-      @if (titles && titles.length && action !== 'add') {
+      @if (titles() && titles()!.length && action !== 'add') {
         <mat-form-field class="product_edit-field">
           <input matInput placeholder="TitleUrl" aria-label="TitleUrl" [matAutocomplete]="auto" formControlName="titleUrl" />
           <mat-autocomplete #auto="matAutocomplete" (optionSelected)="findProduct()">
@@ -198,7 +198,7 @@
       }
       <h3 class="product_edit-subtitle">Full Description (for chosen language/market)</h3>
       @if (descriptionFullSub$ | async; as descriptionFull) {
-        <app-tiny-editor [description]="descriptionFull[chooseLang]" (editorContentChange)="onEditorChange($event)"> </app-tiny-editor>
+        <app-tiny-editor [description]="descriptionFull[chooseLang]" (editorContentChange)="onEditorChange($event)" />
       }
       <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!productEditForm.valid">
         {{ 'Save' | translate | async }}

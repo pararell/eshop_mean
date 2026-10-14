@@ -1,5 +1,5 @@
 import { debounceTime, take, delay } from 'rxjs/operators';
-import { Component, OnInit, PLATFORM_ID, Inject, Signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, Signal, ChangeDetectionStrategy, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Observable, BehaviorSubject, of } from 'rxjs';
@@ -42,6 +42,11 @@ import { MatButtonModule } from '@angular/material/button';
   ],
 })
 export class HeaderComponent implements OnInit {
+  private _platformId = inject(PLATFORM_ID);
+  private store = inject(SignalStore);
+  private selectors = inject(SignalStoreSelectors);
+  translate = inject(TranslateService);
+
   user$!: Signal<User | null>;
   cart$!: Signal<Cart | null>;
   productTitles$!: Signal<string[]>;
@@ -54,13 +59,7 @@ export class HeaderComponent implements OnInit {
 
   readonly query: FormControl = new FormControl();
 
-  constructor(
-    @Inject(PLATFORM_ID)
-    private _platformId: object,
-    private store: SignalStore,
-    private selectors: SignalStoreSelectors,
-    public translate: TranslateService,
-  ) {
+  constructor() {
     this.lang$ = this.translate.getLang$();
 
     this.googleAuthUrl = environment.apiUrl + '/api/auth/google';

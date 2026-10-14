@@ -1,5 +1,5 @@
 @if (!order) {
-  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  <mat-progress-bar mode="indeterminate" />
 }
 @if (order) {
   <mat-card appearance="outlined" class="card">
@@ -44,7 +44,7 @@
         @for (cartItem of order?.cart?.items; track cartItem) {
           <div>
             <div class="order-cart">
-              <a [routerLink]="['/' + lang + '/product/' + $safeNavigationMigration(cartItem?.item?.titleUrl)]">
+              <a [routerLink]="['/' + lang() + '/product/' + $safeNavigationMigration(cartItem?.item?.titleUrl)]">
                 <img class="order-cart-img" src="{{ cartItem?.item?.mainImage?.url }}" />
               </a>
               <div class="order-cart-text">

@@ -1,4 +1,4 @@
-import { Component, ElementRef, Renderer2, PLATFORM_ID, Inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ElementRef, Renderer2, PLATFORM_ID, ChangeDetectionStrategy, inject } from '@angular/core';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, take, delay, map, skip } from 'rxjs/operators';
@@ -21,20 +21,21 @@ import { HeaderComponent } from './shared/components/header/header.component';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
+  private elRef = inject(ElementRef);
+  private renderer = inject(Renderer2);
+  private router = inject(Router);
+  private translate = inject(TranslateService);
+  private jsonLDService = inject(JsonLDService);
+  private platformId = inject(PLATFORM_ID);
+  private signalStore = inject(SignalStore);
+  private selectors = inject(SignalStoreSelectors);
+
   rememberScroll: { [component: string]: number } = {};
   position = 0;
 
-  constructor(
-    private elRef: ElementRef,
-    private renderer: Renderer2,
-    private router: Router,
-    private translate: TranslateService,
-    private jsonLDService: JsonLDService,
-    @Inject(PLATFORM_ID)
-    private platformId: object,
-    private signalStore: SignalStore,
-    private selectors: SignalStoreSelectors,
-  ) {
+  constructor() {
+    const translate = this.translate;
+
     this.translate
       .getLang$()
       .pipe(filter(Boolean), take(1))

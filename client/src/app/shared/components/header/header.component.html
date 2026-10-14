@@ -34,11 +34,11 @@
         <mat-icon>menu</mat-icon>
       </button>
       <mat-menu #menu="matMenu" [overlapTrigger]="false">
-        <ng-container *ngTemplateOutlet="menuItems"></ng-container>
+        <ng-container *ngTemplateOutlet="menuItems" />
       </mat-menu>
     </div>
     <div class="nav-desktop">
-      <ng-container *ngTemplateOutlet="menuItems"></ng-container>
+      <ng-container *ngTemplateOutlet="menuItems" />
     </div>
   </div>
 </mat-toolbar>

@@ -8,7 +8,7 @@ import type { ReCaptchaV3 } from '../utils/recaptcha.types';
 declare const grecaptcha: ReCaptchaV3;
 
 import { isPlatformBrowser } from '@angular/common';
-import { Inject, Injectable, InjectionToken, NgZone, Optional, PLATFORM_ID } from '@angular/core';
+import { Injectable, InjectionToken, NgZone, PLATFORM_ID, inject } from '@angular/core';
 import { Observable, Subject, filter, take } from 'rxjs';
 
 import { loader } from '../utils/loadRecaptchaScript';
@@ -51,6 +51,8 @@ type ActionBacklogEntry = [string, Subject<string>];
   providedIn: 'root',
 })
 export class ReCaptchaV3Service {
+  private readonly envConfigurationService = inject(EnvConfigurationService);
+
   /** @internal */
   private readonly isBrowser: boolean;
   /** @internal */
@@ -60,11 +62,11 @@ export class ReCaptchaV3Service {
   /** @internal */
   private actionBacklog: ActionBacklogEntry[] | undefined;
   /** @internal */
-  private nonce?: string;
+  private nonce?: string | null;
   /** @internal */
-  private language?: string;
+  private language?: string | null;
   /** @internal */
-  private baseUrl?: string;
+  private baseUrl?: string | null;
   /** @internal */
   private grecaptcha?: ReCaptchaV3;
 
@@ -77,14 +79,13 @@ export class ReCaptchaV3Service {
   /** @internal */
   private onExecuteErrorObservable!: Observable<OnExecuteErrorData>;
 
-  constructor(
-    private readonly envConfigurationService: EnvConfigurationService,
-    zone: NgZone,
-    @Inject(PLATFORM_ID) platformId: object,
-    @Optional() @Inject(RECAPTCHA_BASE_URL) baseUrl?: string,
-    @Optional() @Inject(RECAPTCHA_NONCE) nonce?: string,
-    @Optional() @Inject(RECAPTCHA_LANGUAGE) language?: string,
-  ) {
+  constructor() {
+    const zone = inject(NgZone);
+    const platformId = inject(PLATFORM_ID);
+    const baseUrl = inject(RECAPTCHA_BASE_URL, { optional: true });
+    const nonce = inject(RECAPTCHA_NONCE, { optional: true });
+    const language = inject(RECAPTCHA_LANGUAGE, { optional: true });
+
     this.zone = zone;
     this.isBrowser = isPlatformBrowser(platformId);
     this.nonce = nonce;

@@ -2,6 +2,5 @@
   {{ 'Refresh' | translate | async }}
 </button>
 @if (allProducts?.length) {
-  <app-products-list [products]="allProducts" [lang]="lang" [showEdit]="true" [currency]="currency" (editProduct)="editProduct.emit($event)">
-  </app-products-list>
+  <app-products-list [products]="allProducts" [lang]="lang()" [showEdit]="true" [currency]="currency()" (editProduct)="editProduct.emit($event)" />
 }

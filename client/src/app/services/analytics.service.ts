@@ -1,6 +1,6 @@
 import { WindowService } from './window.service';
 import { DOCUMENT, isPlatformServer } from '@angular/common';
-import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 
 declare const dataLayer: unknown[];
 
@@ -8,13 +8,9 @@ declare const dataLayer: unknown[];
   providedIn: 'root',
 })
 export class AnalyticsService {
-  constructor(
-    @Inject(DOCUMENT)
-    private _document: Document,
-    private window: WindowService,
-    @Inject(PLATFORM_ID)
-    private _platformId: object,
-  ) {}
+  private _document = inject<Document>(DOCUMENT);
+  private window = inject(WindowService);
+  private _platformId = inject(PLATFORM_ID);
 
   initial(config: { FE_ANALYTICS_TOKEN?: string }) {
     if (!isPlatformServer(this._platformId) && config.FE_ANALYTICS_TOKEN) {

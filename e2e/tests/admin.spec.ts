@@ -57,3 +57,19 @@ test('admin edits a product price', async ({ page, request }) => {
   const product = await (await request.get(`/api/products/${E2E.bike.titleUrl}?lang=en`)).json();
   expect(product.salePrice).toBe(55);
 });
+
+test('admin opens the order list and an order detail', async ({ page }) => {
+  await page.goto('/en/dashboard/orders');
+  const list = page.locator('app-orders-list');
+  await expect(list).toContainText('seed@e2e.test');
+
+  // The Detail link is built from the orderUrl input + orderId
+  // closest element around the seeded order that contains its own Detail button
+  const seededOrder = list.getByText('seed@e2e.test').locator('xpath=ancestor::*[.//button[normalize-space()="Detail"]][1]');
+  await seededOrder.getByRole('button', { name: 'Detail' }).click();
+  await expect(page).toHaveURL(`/en/dashboard/orders/${E2E.order.orderId}`);
+  const detail = page.locator('app-order-detail');
+  await expect(detail).toContainText('Status: NEW');
+  await expect(detail).toContainText(`${E2E.order.amount} EUR`);
+  await expect(detail).toContainText(E2E.order.customer);
+});

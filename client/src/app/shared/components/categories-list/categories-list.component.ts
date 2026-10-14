@@ -1,4 +1,4 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input } from '@angular/core';
 
 import { Category } from '../../models';
 import { CarouselComponent } from '../carousel/carousel.component';
@@ -13,9 +13,9 @@ import { CommonModule } from '@angular/common';
   imports: [CarouselComponent, RouterLink, CommonModule],
 })
 export class CategoriesListComponent {
-  @Input() categories!: Category[];
-  @Input() lang!: string;
-  @Input() withSlider = true;
+  readonly categories = input.required<Category[]>();
+  readonly lang = input.required<string>();
+  readonly withSlider = input(true);
 
   constructor() {}
 }

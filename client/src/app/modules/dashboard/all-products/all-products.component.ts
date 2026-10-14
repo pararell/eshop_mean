@@ -1,21 +1,25 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, input, output } from '@angular/core';
 
 import { Product } from '../../../shared/models';
+import { MatButton } from '@angular/material/button';
+import { ProductsListComponent } from '../../../shared/components/products-list/products-list.component';
+import { AsyncPipe } from '@angular/common';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-all-products',
   templateUrl: './all-products.component.html',
   styleUrls: ['./all-products.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+  imports: [MatButton, ProductsListComponent, AsyncPipe, TranslatePipe],
 })
 export class AllProductsComponent {
   @Input() allProducts!: Product[];
-  @Input() lang!: string;
-  @Input() currency!: string;
+  readonly lang = input.required<string>();
+  readonly currency = input.required<string>();
 
-  @Output() getAllProducts = new EventEmitter();
-  @Output() editProduct = new EventEmitter<string>();
+  readonly getAllProducts = output();
+  readonly editProduct = output<string>();
 
   constructor() {}
 }

@@ -1,22 +1,51 @@
 import { toObservable } from '@angular/core/rxjs-interop';
 import { delay, map, take, startWith, switchMap } from 'rxjs/operators';
-import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Observable, BehaviorSubject, from } from 'rxjs';
 
 import { languages } from '../../../shared/constants';
 import { AllCategories, CategoryRaw } from '../../../shared/models';
 import { SignalStore } from '../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
+import { MatFormField, MatLabel, MatSelect, MatOption } from '@angular/material/select';
+import { MatInput } from '@angular/material/input';
+import { MatAutocompleteTrigger, MatAutocomplete } from '@angular/material/autocomplete';
+import { MatButton } from '@angular/material/button';
+import { MatChipListbox, MatChipOption } from '@angular/material/chips';
+import { MatRadioGroup, MatRadioButton } from '@angular/material/radio';
+import { AsyncPipe } from '@angular/common';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-categories-edit',
   templateUrl: './categories-edit.component.html',
   styleUrls: ['./categories-edit.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+  imports: [
+    MatFormField,
+    MatLabel,
+    MatSelect,
+    ReactiveFormsModule,
+    FormsModule,
+    MatOption,
+    MatInput,
+    MatAutocompleteTrigger,
+    MatAutocomplete,
+    MatButton,
+    MatChipListbox,
+    MatChipOption,
+    MatRadioGroup,
+    MatRadioButton,
+    AsyncPipe,
+    TranslatePipe,
+  ],
 })
 export class CategoriesEditComponent {
+  private fb = inject(FormBuilder);
+  private store = inject(SignalStore);
+  private selectors = inject(SignalStoreSelectors);
+
   categoryEditForm!: FormGroup;
   sendRequest = false;
   categories$: Observable<AllCategories>;
@@ -27,11 +56,7 @@ export class CategoriesEditComponent {
   mainImageType = false;
   subCategory!: string;
 
-  constructor(
-    private fb: FormBuilder,
-    private store: SignalStore,
-    private selectors: SignalStoreSelectors,
-  ) {
+  constructor() {
     this.createForm();
     this.categories$ = toObservable(this.selectors.allCategories);
     this.store.getAllCategories();

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, input, output } from '@angular/core';
 import { of } from 'rxjs';
 import { take, delay } from 'rxjs/operators';
 import { MatSliderModule } from '@angular/material/slider';
@@ -19,19 +19,24 @@ import { PriceFormatPipe } from '../../../pipes/price.pipe';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {
-  @Input() categories!: Category[];
-  @Input() activeCategory?: string;
-  @Input() minPrice: number = 0;
-  @Input() maxPrice: number = Infinity;
+  readonly categories = input.required<Category[]>();
+  readonly activeCategory = input<string>();
+  readonly minPrice = input<number>(0);
+  readonly maxPrice = input<number>(Infinity);
   @Input() price!: number;
-  @Input() sortOptions!: { name: string; id: string }[];
-  @Input() choosenSort!: string;
-  @Input() currency!: string;
-  @Input() lang!: string;
+  readonly sortOptions = input.required<
+    {
+      name: string;
+      id: string;
+    }[]
+  >();
+  readonly choosenSort = input.required<string>();
+  readonly currency = input.required<string>();
+  readonly lang = input.required<string>();
 
-  @Output() changePrice = new EventEmitter<number>();
-  @Output() changeSort = new EventEmitter<string>();
-  @Output() changeCategory = new EventEmitter<string>();
+  readonly changePrice = output<number>();
+  readonly changeSort = output<string>();
+  readonly changeCategory = output<string>();
 
   productsUrl!: string;
   categoryUrl!: string;

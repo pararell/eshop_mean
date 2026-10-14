@@ -12,8 +12,8 @@ function loadRecaptchaScript(
   renderMode: 'explicit' | string,
   onLoaded: (grecaptcha: ReCaptchaV3) => void,
   urlParams: string,
-  url?: string,
-  nonce?: string,
+  url?: string | null,
+  nonce?: string | null,
 ): void {
   window.ng2recaptchaloaded = () => {
     onLoaded(grecaptcha);

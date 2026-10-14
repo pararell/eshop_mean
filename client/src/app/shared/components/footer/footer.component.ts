@@ -1,5 +1,5 @@
 import type { LanguageCode } from '@eshop/shared';
-import { ChangeDetectionStrategy, Component, OnDestroy, Signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, Signal, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { TranslateService } from '../../../services/translate.service';
@@ -17,15 +17,16 @@ import { RouterLink } from '@angular/router';
   imports: [CommonModule, TranslatePipe, RouterLink],
 })
 export class FooterComponent implements OnDestroy {
+  private selectors = inject(SignalStoreSelectors);
+
   currentYear = new Date().getFullYear();
   lang!: LanguageCode;
   getPagesSub: Subscription;
   pages$!: Signal<Page[] | null>;
 
-  constructor(
-    translate: TranslateService,
-    private selectors: SignalStoreSelectors,
-  ) {
+  constructor() {
+    const translate = inject(TranslateService);
+
     this.getPagesSub = translate.getLang$().subscribe((lang) => {
       this.lang = lang as LanguageCode;
       this.pages$ = this.selectors.pages;

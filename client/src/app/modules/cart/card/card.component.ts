@@ -8,42 +8,42 @@ type CardElement = StripeCardElement & {
   addEventListener(event: 'change', handler: (event: StripeCardElementChangeEvent) => void): void;
 };
 
-import { Component, Input, EventEmitter, Inject, PLATFORM_ID, ViewChild, ElementRef, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
-import { isPlatformServer, DOCUMENT } from '@angular/common';
+import { Component, PLATFORM_ID, ElementRef, OnInit, ChangeDetectionStrategy, inject, input, output, viewChild } from '@angular/core';
+import { isPlatformServer, DOCUMENT, AsyncPipe } from '@angular/common';
 import { take } from 'rxjs/operators';
 import { BehaviorSubject } from 'rxjs';
 
 import { EnvConfigurationService } from '../../../services/env-configuration.service';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { MatButton } from '@angular/material/button';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-card',
   templateUrl: './card.component.html',
   styleUrls: ['./card.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+  imports: [ReactiveFormsModule, FormsModule, MatButton, MatProgressBar, AsyncPipe, TranslatePipe],
 })
 export class CardComponent implements OnInit {
-  /** Formatted total from the cart page (a string, see audit BUG-21) */
-  @Input() price!: string | number;
-  @Input() currency!: string;
-  @Input() loading!: boolean;
+  private envConfigurationService = inject(EnvConfigurationService);
+  private _document = inject<Document>(DOCUMENT);
+  private _platformId = inject(PLATFORM_ID);
 
-  @Output() scrollToTop = new EventEmitter();
-  @Output() payWithCardEmit = new EventEmitter();
-  @ViewChild('cardElement') cardElement!: ElementRef;
+  /** Formatted total from the cart page (a string, see audit BUG-21) */
+  readonly price = input.required<string | number>();
+  readonly currency = input.required<string>();
+  readonly loading = input.required<boolean>();
+
+  readonly scrollToTop = output();
+  readonly payWithCardEmit = output<{ token: Token; amount: string | number; currency: string }>();
+  readonly cardElement = viewChild.required<ElementRef>('cardElement');
 
   stripe!: StripeClient;
   card!: CardElement;
   cardErrorSub$ = new BehaviorSubject('INVALID');
   loadingPayment = false;
-
-  constructor(
-    private envConfigurationService: EnvConfigurationService,
-    @Inject(DOCUMENT)
-    private _document: Document,
-    @Inject(PLATFORM_ID)
-    private _platformId: object,
-  ) {}
 
   ngOnInit() {
     if (!isPlatformServer(this._platformId) && typeof Stripe !== 'object') {
@@ -78,7 +78,7 @@ export class CardComponent implements OnInit {
   }
 
   private stripeTokenHandler(token: Token) {
-    const payment = { token: token, amount: this.price, currency: this.currency };
+    const payment = { token: token, amount: this.price(), currency: this.currency() };
     this.payWithCardEmit.emit(payment);
   }
 
@@ -91,7 +91,7 @@ export class CardComponent implements OnInit {
         const elements = this.stripe.elements();
 
         this.card = elements.create('card') as CardElement;
-        this.card.mount(this.cardElement.nativeElement);
+        this.card.mount(this.cardElement().nativeElement);
 
         this.card.addEventListener('change', ({ error, complete }) => {
           const cardError = error && error.message ? error.message : complete ? '' : 'INVALID';

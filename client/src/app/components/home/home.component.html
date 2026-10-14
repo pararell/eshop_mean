@@ -14,8 +14,7 @@
       (changePrice)="priceRange($event)"
       (changeSort)="changeSort($event)"
       (changeCategory)="changeCategory()"
-    >
-    </app-sidebar>
+    />
   </mat-drawer>
   <mat-drawer-content>
     <div class="main">
@@ -61,8 +60,7 @@
                     [withLink]="true"
                     (addProduct)="addToCart($event)"
                     (removeProduct)="removeFromCart($event)"
-                  >
-                  </app-product-content>
+                  />
                 </div>
               </div>
             }
@@ -89,11 +87,11 @@
       }
       <div class="container">
         @if (loadingProducts()) {
-          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          <mat-progress-bar mode="indeterminate" />
         }
         @if (categories(); as categories) {
           <div>
-            <app-categories-list [categories]="categories" [lang]="lang()!"> </app-categories-list>
+            <app-categories-list [categories]="categories" [lang]="lang()!" />
           </div>
         }
       </div>
@@ -106,7 +104,7 @@
       }
       <div class="container">
         @if (loadingProducts()) {
-          <mat-spinner class="home-spinner"></mat-spinner>
+          <mat-spinner class="home-spinner" />
         }
         @if (products(); as products) {
           <div>
@@ -118,10 +116,9 @@
               [lang]="lang()!"
               (addProduct)="addToCart($event)"
               (removeProduct)="removeFromCart($event)"
-            >
-            </app-products-list>
+            />
             @if (pagination(); as pagination) {
-              <app-pagination [class.disabled]="loadingProducts()" [pagination]="pagination" (changePage)="changePage($event)"> </app-pagination>
+              <app-pagination [class.disabled]="loadingProducts()" [pagination]="pagination" (changePage)="changePage($event)" />
             }
           </div>
         }

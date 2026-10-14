@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, input, computed } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, input, computed, output } from '@angular/core';
 
 import { Product, Category } from '../../models';
 import { CommonModule } from '@angular/common';
@@ -24,12 +24,12 @@ export class ProductContentComponent {
   );
   @Input() product!: Product;
   @Input() cartIds!: { [productId: string]: number };
-  @Input() currency!: string;
-  @Input() lang!: string;
-  @Input() withLink = false;
+  readonly currency = input.required<string>();
+  readonly lang = input.required<string>();
+  readonly withLink = input(false);
 
-  @Output() addProduct = new EventEmitter<string>();
-  @Output() removeProduct = new EventEmitter<string>();
+  readonly addProduct = output<string>();
+  readonly removeProduct = output<string>();
 
   constructor() {}
 

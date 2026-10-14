@@ -92,6 +92,18 @@ async function seed(uri) {
     en: { shippingCost: { basic: { cost: E2E.shipping, limit: 1000 }, extended: { cost: 10, limit: 2000 } } },
   });
   await db.collection('translations').insertOne({ lang: 'en', keys: {} });
+  await db.collection('orders').insertOne({
+    orderId: E2E.order.orderId,
+    amount: E2E.order.amount,
+    currency: 'EUR',
+    status: 'NEW',
+    type: 'PAYMENT_ON_DELIVERY',
+    customerEmail: 'seed@e2e.test',
+    outcome: { seller_message: 'PAYMENT_ON_DELIVERY' },
+    addresses: [{ name: E2E.order.customer, line1: 'Main 1', city: 'Bratislava', zip: '81101', country: 'SK' }],
+    cart: { items: [], totalPrice: E2E.order.amount, totalQty: 1, shippingCost: 5, shippingLimit: 1000, shippingType: 'basic' },
+    dateAdded: new Date('2026-03-01'),
+  });
 
   await conn.close();
 }

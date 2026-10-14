@@ -2,10 +2,10 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { JsonLDService } from './../../../services/jsonLD.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { filter, map, take, distinctUntilChanged, skip, withLatestFrom } from 'rxjs/operators';
-import { Component, OnDestroy, Signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, Signal, ChangeDetectionStrategy, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, combineLatest, Subscription } from 'rxjs';
-import { Location } from '@angular/common';
+import { Location, AsyncPipe } from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -14,15 +14,33 @@ import { ImagesDialogComponent } from '../../../shared/components/images-dialog/
 import { TranslateService } from '../../../services/translate.service';
 import { SignalStore } from '../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
+import { MatButton } from '@angular/material/button';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatCard, MatCardContent } from '@angular/material/card';
+import { ProductContentComponent } from '../../../shared/components/product-content/product-content.component';
+import { MatTabGroup, MatTab } from '@angular/material/tabs';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-product',
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+  imports: [MatButton, MatProgressBar, MatCard, ProductContentComponent, MatTabGroup, MatTab, MatCardContent, AsyncPipe, TranslatePipe],
 })
 export class ProductComponent implements OnDestroy {
+  private route = inject(ActivatedRoute);
+  private store = inject(SignalStore);
+  private selectors = inject(SignalStoreSelectors);
+  private location = inject(Location);
+  private meta = inject(Meta);
+  private title = inject(Title);
+  dialog = inject(MatDialog);
+  private snackBar = inject(MatSnackBar);
+  private router = inject(Router);
+  private translate = inject(TranslateService);
+  private jsonLDService = inject(JsonLDService);
+
   categories$: Observable<Category[]>;
   productLoading$: Signal<boolean>;
   currency$: Observable<string>;
@@ -32,19 +50,7 @@ export class ProductComponent implements OnDestroy {
   product$: Signal<Product | null>;
   cartIds$: Observable<{ [productId: string]: number }>;
 
-  constructor(
-    private route: ActivatedRoute,
-    private store: SignalStore,
-    private selectors: SignalStoreSelectors,
-    private location: Location,
-    private meta: Meta,
-    private title: Title,
-    public dialog: MatDialog,
-    private snackBar: MatSnackBar,
-    private router: Router,
-    private translate: TranslateService,
-    private jsonLDService: JsonLDService,
-  ) {
+  constructor() {
     this.lang$ = this.translate.getLang$();
     this.categories$ = toObservable(this.selectors.categories);
     this.routeSub = combineLatest([this.lang$, this.route.params.pipe(map((params) => params['id']))]).subscribe(([lang, id]) => {

@@ -5,16 +5,16 @@
       <div id="card-info" #cardElement></div>
       <button
         class="card-button"
-        [disabled]="(!!(cardErrorSub$ | async) && !loading) || loadingPayment"
+        [disabled]="(!!(cardErrorSub$ | async) && !loading()) || loadingPayment"
         mat-raised-button
         color="primary"
         id="submit-button"
         type="submit"
       >
-        {{ 'MakeOrder' | translate | async }} {{ 'and' | translate | async }} {{ 'Pay' | translate | async }} {{ price }} {{ currency }}
+        {{ 'MakeOrder' | translate | async }} {{ 'and' | translate | async }} {{ 'Pay' | translate | async }} {{ price() }} {{ currency() }}
       </button>
-      @if (loading) {
-        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      @if (loading()) {
+        <mat-progress-bar mode="indeterminate" />
       }
       @if (cardErrorSub$ | async; as cardError) {
         <div class="card-errors" id="card-errors" role="alert">

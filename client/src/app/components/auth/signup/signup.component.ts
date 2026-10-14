@@ -1,5 +1,5 @@
 import { take } from 'rxjs/operators';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -19,15 +19,15 @@ import { SignalStore } from '../../../store/signal.store';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignUpComponent {
+  private translate = inject(TranslateService);
+  private _fb = inject(FormBuilder);
+  private store = inject(SignalStore);
+  private router = inject(Router);
+
   signUpForm: FormGroup;
   lang$: Observable<string>;
 
-  constructor(
-    private translate: TranslateService,
-    private _fb: FormBuilder,
-    private store: SignalStore,
-    private router: Router,
-  ) {
+  constructor() {
     this.lang$ = this.translate.getLang$();
 
     this.signUpForm = this._fb.group({

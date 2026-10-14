@@ -92,7 +92,7 @@ On failure, Playwright keeps a trace, a screenshot and the error context in
 
 Line coverage is about 75% of server code. `prepareUtils.ts` and `cart.ts` are at 100%, and `orders.service.ts` at 95%.
 
-### E2E: 13 tests
+### E2E: 14 tests
 
 | Flow                                                                                                                                                                                                        | Spec               |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
@@ -101,7 +101,7 @@ Line coverage is about 75% of server code. `prepareUtils.ts` and `cart.ts` are a
 | Checkout, cash on delivery: address → payment → order; confirmation shown; cart emptied; order stored with server-side total                                                                                | `checkout.spec.ts` |
 | Checkout, card: Stripe.js card element → `createToken` → the token, currency, email and address are sent to `/api/orders/stripe` (the API response is stubbed; the server side is covered by the API tests) | `checkout.spec.ts` |
 | Signup → login → logout; wrong password                                                                                                                                                                     | `auth.spec.ts`     |
-| Admin login → create product (appears in the shop) → edit product price                                                                                                                                     | `admin.spec.ts`    |
+| Admin login → create product (appears in the shop) → edit product price; order list → order detail                                                                                                          | `admin.spec.ts`    |
 
 ## Known failures
 

@@ -5,7 +5,7 @@
       {{ 'Back' | translate | async }}
     </button>
     @if (!product$() || productLoading$()) {
-      <mat-progress-bar mode="indeterminate"> </mat-progress-bar>
+      <mat-progress-bar mode="indeterminate" />
     }
     @if (product$()) {
       @if (!productLoading$()) {
@@ -19,8 +19,7 @@
               [lang]="(lang$ | async)!"
               (addProduct)="cartEvent($event, 'add')"
               (removeProduct)="cartEvent($event, 'remove')"
-            >
-            </app-product-content>
+            />
             <mat-tab-group>
               <mat-tab label="{{ 'Description' | translate | async }}">
                 <mat-card-content class="product-tab-content">

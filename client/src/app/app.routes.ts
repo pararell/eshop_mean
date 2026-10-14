@@ -7,12 +7,12 @@ import { AuthGuard, AdminGuard } from './services/auth.guard';
 
 const langRoutes = languages.map((lang) => {
   return [
-    { path: lang + '/product', loadChildren: () => import('./modules/product/product.module').then((m) => m.ProductModule) },
-    { path: lang + '/cart', loadChildren: () => import('./modules/cart/cart.module').then((m) => m.CartModule) },
-    { path: lang + '/orders', loadChildren: () => import('./modules/order/order.module').then((m) => m.OrderModule), canActivate: [AuthGuard] },
+    { path: lang + '/product', loadChildren: () => import('./modules/product/routes').then((m) => m.PRODUCT_ROUTES) },
+    { path: lang + '/cart', loadChildren: () => import('./modules/cart/routes').then((m) => m.CART_ROUTES) },
+    { path: lang + '/orders', loadChildren: () => import('./modules/order/routes').then((m) => m.ORDER_ROUTES), canActivate: [AuthGuard] },
     {
       path: lang + '/dashboard',
-      loadChildren: () => import('./modules/dashboard/dashboard.module').then((m) => m.DashboardModule),
+      loadChildren: () => import('./modules/dashboard/routes').then((m) => m.DASHBOARD_ROUTES),
       canActivate: [AdminGuard],
     },
     { path: lang + '/eshop', loadChildren: () => import('./components/eshop/routes').then((m) => m.ESHOP_ROUTER) },

@@ -1,5 +1,5 @@
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Injectable, Injector } from '@angular/core';
+import { Injectable, Injector, inject } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 
 import { ApiService } from './api.service';
@@ -11,11 +11,11 @@ import { take } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class TranslateService {
+  private injector = inject(Injector);
+
   translationsSub$: BehaviorSubject<{ [key: string]: string }> = new BehaviorSubject({});
   languageSub$ = new BehaviorSubject('');
   lang!: string;
-
-  constructor(private injector: Injector) {}
 
   private get apiService(): ApiService {
     return this.injector.get(ApiService);

@@ -1,5 +1,5 @@
 import { toObservable } from '@angular/core/rxjs-interop';
-import { ChangeDetectionStrategy, Component, Signal, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Signal, signal, inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
@@ -21,18 +21,18 @@ import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignInComponent {
+  private translate = inject(TranslateService);
+  private store = inject(SignalStore);
+  private selectors = inject(SignalStoreSelectors);
+  private fb = inject(FormBuilder);
+
   signInForm: FormGroup;
   lang$: Observable<string>;
   loading$: Observable<boolean>;
   sendRequest$ = signal(false);
   user$: Signal<User | null>;
 
-  constructor(
-    private translate: TranslateService,
-    private store: SignalStore,
-    private selectors: SignalStoreSelectors,
-    private fb: FormBuilder,
-  ) {
+  constructor() {
     this.lang$ = this.translate.getLang$();
     this.loading$ = toObservable(this.selectors.authLoading);
     this.user$ = this.selectors.user;

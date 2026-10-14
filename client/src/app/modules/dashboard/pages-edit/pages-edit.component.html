@@ -42,7 +42,7 @@
         </mat-form-field>
       </div>
       @if (pagesEditForm.get(chooseLang)!.value; as langValue) {
-        <app-tiny-editor [description]="langValue.contentHTML" (editorContentChange)="onPageEditorChange($event, chooseLang)"> </app-tiny-editor>
+        <app-tiny-editor [description]="langValue.contentHTML" (editorContentChange)="onPageEditorChange($event, chooseLang)" />
       }
     </form>
   }

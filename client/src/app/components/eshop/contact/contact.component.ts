@@ -1,7 +1,7 @@
 import { MatInputModule } from '@angular/material/input';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { FormGroup, FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ChangeDetectionStrategy, Component, Signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Signal, inject } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 
@@ -22,17 +22,17 @@ import { MatProgressBar } from '@angular/material/progress-bar';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactComponent {
+  private fb = inject(FormBuilder);
+  private store = inject(SignalStore);
+  private selectors = inject(SignalStoreSelectors);
+  private recaptchaV3Service = inject(ReCaptchaV3Service);
+
   contactForm: FormGroup;
   loading$: Observable<boolean>;
   error$: Signal<string>;
   sendRequestSub$ = new BehaviorSubject(false);
 
-  constructor(
-    private fb: FormBuilder,
-    private store: SignalStore,
-    private selectors: SignalStoreSelectors,
-    private recaptchaV3Service: ReCaptchaV3Service,
-  ) {
+  constructor() {
     this.contactForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', Validators.compose([Validators.required, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,4}$')])],

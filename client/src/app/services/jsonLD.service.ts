@@ -1,10 +1,12 @@
 import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
 })
 export class JsonLDService {
+  private _document = inject<Document>(DOCUMENT);
+
   scriptType = 'application/ld+json';
   websiteSchema = {
     '@context': 'http://schema.org',
@@ -30,8 +32,6 @@ export class JsonLDService {
       email: 'miro218@gmail.com',
     },
   };
-
-  constructor(@Inject(DOCUMENT) private _document: Document) {}
 
   removeStructuredData(className?: string): void {
     const els: Element[] = [];

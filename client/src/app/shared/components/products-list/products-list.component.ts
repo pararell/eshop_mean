@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, input, output } from '@angular/core';
 
 import { Product } from '../../models';
 import { TranslatePipe } from '../../../pipes/translate.pipe';
@@ -15,14 +15,14 @@ import { PriceFormatPipe } from '../../../pipes/price.pipe';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductsListComponent {
-  @Input() products: Product[] = [];
+  readonly products = input<Product[]>([]);
   @Input() cartIds!: { [productId: string]: number };
-  @Input() currency!: string;
-  @Input() lang!: string;
-  @Input() showEdit = false;
-  @Output() addProduct = new EventEmitter<string>();
-  @Output() removeProduct = new EventEmitter<string>();
-  @Output() editProduct = new EventEmitter<string>();
+  readonly currency = input.required<string>();
+  readonly lang = input.required<string>();
+  readonly showEdit = input(false);
+  readonly addProduct = output<string>();
+  readonly removeProduct = output<string>();
+  readonly editProduct = output<string>();
 
   constructor() {}
 

@@ -1,5 +1,5 @@
 import { SignalStoreSelectors } from './signal.store.selectors';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import type {
   CategoryInput,
   ContactRequest,
@@ -24,10 +24,8 @@ const keepAsIs = <T>(value: unknown): T => value as T;
   providedIn: 'root',
 })
 export class SignalStore {
-  constructor(
-    private apiService: ApiService,
-    private selectors: SignalStoreSelectors,
-  ) {}
+  private apiService = inject(ApiService);
+  private selectors = inject(SignalStoreSelectors);
 
   signIn = (payload: SignInRequest) => {
     this.selectors.userState.update((state) => ({ ...state, loading: true }));

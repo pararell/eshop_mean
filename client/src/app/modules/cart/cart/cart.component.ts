@@ -1,24 +1,62 @@
 import { toObservable } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { filter, take, withLatestFrom } from 'rxjs/operators';
-import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { Location } from '@angular/common';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Location, AsyncPipe } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
 
 import { TranslateService } from '../../../services/translate.service';
 import { Cart, User, Order } from '../../../shared/models';
 import { SignalStore } from '../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatStepper, MatStep, MatStepLabel, MatStepperNext, MatStepperPrevious } from '@angular/material/stepper';
+import { MatFormField, MatLabel } from '@angular/material/select';
+import { MatInput } from '@angular/material/input';
+import { MatButton } from '@angular/material/button';
+import { MatRadioGroup, MatRadioButton } from '@angular/material/radio';
+import { MatIcon } from '@angular/material/icon';
+import { CardComponent } from '../card/card.component';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
+import { PriceFormatPipe } from '../../../pipes/price.pipe';
 
 @Component({
   selector: 'app-cart',
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+  imports: [
+    MatProgressBar,
+    RouterLink,
+    MatStepper,
+    MatStep,
+    ReactiveFormsModule,
+    MatStepLabel,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatButton,
+    MatStepperNext,
+    MatRadioGroup,
+    FormsModule,
+    MatRadioButton,
+    MatIcon,
+    MatStepperPrevious,
+    CardComponent,
+    AsyncPipe,
+    TranslatePipe,
+    PriceFormatPipe,
+  ],
 })
 export class CartComponent {
+  private store = inject(SignalStore);
+  private selectors = inject(SignalStoreSelectors);
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+  private location = inject(Location);
+  private translate = inject(TranslateService);
+
   cart$: Observable<Cart | null>;
   lang$: Observable<string>;
   order$: Observable<Order>;
@@ -32,14 +70,7 @@ export class CartComponent {
 
   readonly component = 'cartComponent';
 
-  constructor(
-    private store: SignalStore,
-    private selectors: SignalStoreSelectors,
-    private fb: FormBuilder,
-    private router: Router,
-    private location: Location,
-    private translate: TranslateService,
-  ) {
+  constructor() {
     this.store.cleanError();
 
     this.lang$ = this.translate.getLang$();

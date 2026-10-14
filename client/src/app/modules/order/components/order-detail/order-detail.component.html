@@ -5,7 +5,7 @@
       {{ 'Back' | translate | async }}
     </button>
     @if (!order$()) {
-      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      <mat-progress-bar mode="indeterminate" />
     }
     @if (order$()) {
       <mat-card appearance="outlined" class="card">
@@ -15,7 +15,7 @@
             <div class="product-info">
               <div class="stock">
                 Status: {{ order$()?.status }}
-                @if (type === 'EDIT') {
+                @if (type() === 'EDIT') {
                   <div class="order-edit-toggle" (click)="toggleForm()">
                     {{ 'Edit' | translate | async }}
                   </div>

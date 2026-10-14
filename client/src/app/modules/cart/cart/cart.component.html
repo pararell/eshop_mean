@@ -1,6 +1,6 @@
 <div class="main">
   @if (!(cart$ | async)) {
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <mat-progress-bar mode="indeterminate" />
   }
   <div class="container">
     @if (cart$ | async; as cart) {
@@ -172,8 +172,7 @@
                       [loading]="(loading$ | async)!"
                       (scrollToTop)="scrollToTop()"
                       (payWithCardEmit)="payWithCard($event)"
-                    >
-                    </app-card>
+                    />
                   }
                   @if (!toggleCard && (currency$ | async); as currency) {
                     <button
@@ -197,7 +196,7 @@
             </div>
           }
           @if (loading$ | async) {
-            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            <mat-progress-bar mode="indeterminate" />
           }
           @if (!cart?.items?.length ? (order$ | async) : null; as order) {
             <div class="order-form-wrap">

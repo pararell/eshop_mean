@@ -8,10 +8,10 @@ import {
   Signal,
   computed,
   AfterViewInit,
-  ViewChild,
   ElementRef,
-  Inject,
   DOCUMENT,
+  inject,
+  viewChild,
 } from '@angular/core';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { combineLatest, Subscription, of } from 'rxjs';
@@ -58,6 +58,17 @@ import { ThemeService } from '../../services/theme.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent implements AfterViewInit, OnDestroy {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private meta = inject(Meta);
+  private title = inject(Title);
+  private translate = inject(TranslateService);
+  private snackBar = inject(MatSnackBar);
+  private store = inject(SignalStore);
+  private selectors = inject(SignalStoreSelectors);
+  private themeService = inject(ThemeService);
+  private _document = inject<Document>(DOCUMENT);
+
   products: Signal<Product[] | null>;
   cartIds: Signal<{ [productID: string]: number }>;
   cart: Signal<Cart | null>;
@@ -80,21 +91,9 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
   readonly component = 'homeComponent';
 
-  @ViewChild('videoRef') private videoRef!: ElementRef;
+  private readonly videoRef = viewChild.required<ElementRef>('videoRef');
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private meta: Meta,
-    private title: Title,
-    private translate: TranslateService,
-    private snackBar: MatSnackBar,
-    private store: SignalStore,
-    private selectors: SignalStoreSelectors,
-    private themeService: ThemeService,
-    @Inject(DOCUMENT)
-    private _document: Document,
-  ) {
+  constructor() {
     this.category = toSignal(this.route.params.pipe(map((params) => params['category'])));
     this.page = toSignal(
       this.route.queryParams.pipe(
@@ -199,7 +198,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     of('delay')
       .pipe(delay(100), take(1))
       .subscribe(() => {
-        const vid = this.videoRef?.nativeElement as HTMLVideoElement;
+        const vid = this.videoRef()?.nativeElement as HTMLVideoElement;
         if (vid) {
           vid.muted = true; // required in most browsers
           vid.play().catch((err) => console.log('Autoplay blocked', err));

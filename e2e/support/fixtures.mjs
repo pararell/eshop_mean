@@ -4,6 +4,7 @@ export const E2E = {
   car: { titleUrl: 'e2e-car', title: 'E2E Car', price: 25 },
   bike: { titleUrl: 'e2e-bike', title: 'E2E Bike', price: 60 },
   shipping: 5,
+  order: { orderId: 'order-e2e-seed', amount: 30, customer: 'Seed Customer' },
 };
 
 /** Every variable the server reads; external services get harmless test values. */

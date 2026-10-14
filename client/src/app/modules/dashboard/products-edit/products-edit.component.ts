@@ -1,6 +1,6 @@
 import { filter, first, take, delay, startWith, map } from 'rxjs/operators';
-import { Component, OnInit, Input, OnDestroy, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, Input, OnDestroy, ChangeDetectionStrategy, inject, input, output } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Observable, Subscription, BehaviorSubject, from } from 'rxjs';
 
 import { ApiService } from '../../../services/api.service';
@@ -9,20 +9,53 @@ import { Category, ProductInput, ProductRaw } from '../../../shared/models';
 import { SignalStore } from '../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { MatFormField, MatLabel, MatSelect, MatOption } from '@angular/material/select';
+import { MatInput } from '@angular/material/input';
+import { MatAutocompleteTrigger, MatAutocomplete } from '@angular/material/autocomplete';
+import { MatButton } from '@angular/material/button';
+import { MatRadioGroup, MatRadioButton } from '@angular/material/radio';
+import { MatChipListbox, MatChipOption } from '@angular/material/chips';
+import { TinyEditorComponent } from '../tiny-editor.ts/tiny-editor.component';
+import { AsyncPipe, UpperCasePipe } from '@angular/common';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-products-edit',
   templateUrl: './products-edit.component.html',
   styleUrls: ['./products-edit.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+  imports: [
+    MatFormField,
+    MatLabel,
+    MatSelect,
+    ReactiveFormsModule,
+    FormsModule,
+    MatOption,
+    MatInput,
+    MatAutocompleteTrigger,
+    MatAutocomplete,
+    MatButton,
+    MatRadioGroup,
+    MatRadioButton,
+    MatChipListbox,
+    MatChipOption,
+    TinyEditorComponent,
+    AsyncPipe,
+    UpperCasePipe,
+    TranslatePipe,
+  ],
 })
 export class ProductsEditComponent implements OnInit, OnDestroy {
-  @Input() action!: string;
-  @Input() titles!: string[];
-  @Input() productToEditTitleUrl!: string;
+  private fb = inject(FormBuilder);
+  private store = inject(SignalStore);
+  private selectors = inject(SignalStoreSelectors);
+  private apiService = inject(ApiService);
 
-  @Output() changeTab = new EventEmitter<number>();
+  @Input() action!: string;
+  readonly titles = input<string[]>();
+  readonly productToEditTitleUrl = input<string>();
+
+  readonly changeTab = output<number>();
 
   productEditForm!: FormGroup;
   images$: Observable<string[]>;
@@ -39,12 +72,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
   filteredTitles$!: Observable<string[]>;
   tag!: string;
 
-  constructor(
-    private fb: FormBuilder,
-    private store: SignalStore,
-    private selectors: SignalStoreSelectors,
-    private apiService: ApiService,
-  ) {
+  constructor() {
     this.createForm();
     // In the dashboard the product slot holds the raw (all-language) product, hence no `title`
     this.product$ = toObservable(this.selectors.product).pipe(
@@ -57,14 +85,15 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.store.getImages();
-    if (this.productToEditTitleUrl) {
-      this.store.getProduct(this.productToEditTitleUrl);
+    const productToEditTitleUrl = this.productToEditTitleUrl();
+    if (productToEditTitleUrl) {
+      this.store.getProduct(productToEditTitleUrl);
     }
     this.filteredTitles$ = this.productEditForm.get('titleUrl')!.valueChanges.pipe(
       startWith(''),
       map((value) => {
         const filterValue = value.toLowerCase();
-        return this.titles.filter((option) => option.toLowerCase().includes(filterValue));
+        return this.titles()!.filter((option) => option.toLowerCase().includes(filterValue));
       }),
     );
 
@@ -105,7 +134,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const uploadImage = this.apiService.uploadImage({ fileToUpload: files[0], titleUrl: this.productToEditTitleUrl });
+    const uploadImage = this.apiService.uploadImage({ fileToUpload: files[0], titleUrl: this.productToEditTitleUrl() });
 
     // Only reachable in the browser, where uploadImage() returns an observable
     uploadImage!.pipe(take(1)).subscribe((uploaded) => {

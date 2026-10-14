@@ -167,18 +167,18 @@ Guard legend:
 
 **Routing** (`app.routes.ts`): routes are generated for each language prefix.
 
-| Path                                                             | Loads                         | Guard        |
-| ---------------------------------------------------------------- | ----------------------------- | ------------ |
-| `/`                                                              | `HomeComponent`               | –            |
-| `/404`                                                           | `NotFoundComponent`           | –            |
-| `/:lang/product/{all, category/:category, :id}`                  | `ProductModule` (lazy)        | –            |
-| `/:lang/cart` and `/:lang/cart/summary`                          | `CartModule` (lazy, checkout) | –            |
-| `/:lang/orders` and `/:lang/orders/:id`                          | `OrderModule` (lazy)          | `AuthGuard`  |
-| `/:lang/dashboard`, `…/orders`, `…/orders/:id`, `…/translations` | `DashboardModule` (lazy)      | `AdminGuard` |
-| `/:lang/eshop/{contact, :titleUrl}`                              | standalone eshop components   | –            |
-| `/:lang/authorize/{signin, signup}`                              | standalone auth components    | –            |
-| `/jwtToken/:accessToken`                                         | Google OAuth landing          | –            |
-| `**`                                                             | redirects to `/404`           | –            |
+| Path                                                             | Loads                                     | Guard        |
+| ---------------------------------------------------------------- | ----------------------------------------- | ------------ |
+| `/`                                                              | `HomeComponent`                           | –            |
+| `/404`                                                           | `NotFoundComponent`                       | –            |
+| `/:lang/product/{all, category/:category, :id}`                  | `modules/product/routes.ts` (lazy)        | –            |
+| `/:lang/cart` and `/:lang/cart/summary`                          | `modules/cart/routes.ts` (lazy, checkout) | –            |
+| `/:lang/orders` and `/:lang/orders/:id`                          | `modules/order/routes.ts` (lazy)          | `AuthGuard`  |
+| `/:lang/dashboard`, `…/orders`, `…/orders/:id`, `…/translations` | `modules/dashboard/routes.ts` (lazy)      | `AdminGuard` |
+| `/:lang/eshop/{contact, :titleUrl}`                              | standalone eshop components               | –            |
+| `/:lang/authorize/{signin, signup}`                              | standalone auth components                | –            |
+| `/jwtToken/:accessToken`                                         | Google OAuth landing                      | –            |
+| `**`                                                             | redirects to `/404`                       | –            |
 
 The admin sections (products, categories, pages, theme, config) are tabs inside the
 dashboard component, not routes.

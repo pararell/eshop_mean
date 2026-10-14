@@ -1,6 +1,6 @@
 import type { LanguageCode } from '@eshop/shared';
 import { CommonModule, Location } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Signal, inject } from '@angular/core';
 import { Observable, combineLatest, Subscription } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
@@ -21,18 +21,18 @@ import { MatIconModule } from '@angular/material/icon';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageComponent {
+  private location = inject(Location);
+  private route = inject(ActivatedRoute);
+  private store = inject(SignalStore);
+  private selectors = inject(SignalStoreSelectors);
+  private translate = inject(TranslateService);
+
   lang$: Observable<LanguageCode>;
   titleUrl$: Observable<string>;
   page$: Signal<Page | null>;
   pageSub: Subscription;
 
-  constructor(
-    private location: Location,
-    private route: ActivatedRoute,
-    private store: SignalStore,
-    private selectors: SignalStoreSelectors,
-    private translate: TranslateService,
-  ) {
+  constructor() {
     this.lang$ = this.translate.getLang$().pipe(filter((lang): lang is LanguageCode => !!lang));
     this.titleUrl$ = this.route.params.pipe(map((params) => params['titleUrl']));
     this.page$ = this.selectors.page;

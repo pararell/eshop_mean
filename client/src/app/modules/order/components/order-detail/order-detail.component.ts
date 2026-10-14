@@ -1,8 +1,8 @@
 import { filter, map } from 'rxjs/operators';
-import { FormGroup, Validators, FormBuilder } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { Component, Input, Signal, ChangeDetectionStrategy } from '@angular/core';
-import { Location } from '@angular/common';
+import { FormGroup, Validators, FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { Component, Signal, ChangeDetectionStrategy, inject, input } from '@angular/core';
+import { Location, AsyncPipe, DatePipe, KeyValuePipe } from '@angular/common';
 import { Observable, combineLatest } from 'rxjs';
 
 import { TranslateService } from '../../../../services/translate.service';
@@ -10,16 +10,44 @@ import { Order, OrderStatus } from '../../../../shared/models';
 import { SignalStore } from '../../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../../store/signal.store.selectors';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { MatButton } from '@angular/material/button';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatCard, MatCardContent } from '@angular/material/card';
+import { MatSelect, MatOption } from '@angular/material/select';
+import { MatChipListbox, MatChipOption } from '@angular/material/chips';
+import { TranslatePipe } from '../../../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-order-detail',
   templateUrl: './order-detail.component.html',
   styleUrls: ['./order-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+  imports: [
+    MatButton,
+    MatProgressBar,
+    MatCard,
+    MatCardContent,
+    ReactiveFormsModule,
+    MatSelect,
+    MatOption,
+    MatChipListbox,
+    MatChipOption,
+    RouterLink,
+    AsyncPipe,
+    DatePipe,
+    KeyValuePipe,
+    TranslatePipe,
+  ],
 })
 export class OrderDetailComponent {
-  @Input() type!: string;
+  private store = inject(SignalStore);
+  private selectors = inject(SignalStoreSelectors);
+  private route = inject(ActivatedRoute);
+  private fb = inject(FormBuilder);
+  private location = inject(Location);
+  translate = inject(TranslateService);
+
+  readonly type = input.required<string>();
 
   order$: Signal<Order | null>;
   statusForm: FormGroup;
@@ -28,14 +56,7 @@ export class OrderDetailComponent {
   showForm = false;
   lang$: Observable<string>;
 
-  constructor(
-    private store: SignalStore,
-    private selectors: SignalStoreSelectors,
-    private route: ActivatedRoute,
-    private fb: FormBuilder,
-    private location: Location,
-    public translate: TranslateService,
-  ) {
+  constructor() {
     this.lang$ = this.translate.getLang$();
 
     this.statusForm = this.fb.group({

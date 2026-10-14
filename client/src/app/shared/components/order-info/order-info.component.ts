@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Order } from './../../models';
 
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, input } from '@angular/core';
 import { TranslatePipe } from '../../../pipes/translate.pipe';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatCardModule } from '@angular/material/card';
@@ -17,7 +17,7 @@ import { RouterLink } from '@angular/router';
 })
 export class OrderInfoComponent {
   @Input() order!: Order;
-  @Input() lang!: string;
+  readonly lang = input.required<string>();
 
   trackById(_index: number, item: { _id?: string }) {
     return item._id;

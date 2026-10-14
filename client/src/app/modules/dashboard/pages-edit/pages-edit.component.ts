@@ -1,6 +1,6 @@
 import { toObservable } from '@angular/core/rxjs-interop';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Observable, BehaviorSubject, from } from 'rxjs';
 import { delay, take } from 'rxjs/operators';
 
@@ -8,15 +8,37 @@ import { languages } from '../../../shared/constants';
 import { Page } from '../../../shared/models';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 import { SignalStore } from '../../../store/signal.store';
+import { MatFormField, MatLabel, MatSelect, MatOption } from '@angular/material/select';
+import { MatInput } from '@angular/material/input';
+import { MatButton } from '@angular/material/button';
+import { TinyEditorComponent } from '../tiny-editor.ts/tiny-editor.component';
+import { AsyncPipe } from '@angular/common';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-pages-edit',
   templateUrl: './pages-edit.component.html',
   styleUrls: ['./pages-edit.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false,
+  imports: [
+    MatFormField,
+    MatLabel,
+    MatInput,
+    ReactiveFormsModule,
+    FormsModule,
+    MatButton,
+    MatSelect,
+    MatOption,
+    TinyEditorComponent,
+    AsyncPipe,
+    TranslatePipe,
+  ],
 })
 export class PagesEditComponent {
+  private store = inject(SignalStore);
+  private selectors = inject(SignalStoreSelectors);
+  private fb = inject(FormBuilder);
+
   pages$: Observable<Page[] | null>;
   pagesEditForm: FormGroup;
   languageOptions = languages;
@@ -25,11 +47,7 @@ export class PagesEditComponent {
   chosenPage = '';
   sendRequest = false;
 
-  constructor(
-    private store: SignalStore,
-    private selectors: SignalStoreSelectors,
-    private fb: FormBuilder,
-  ) {
+  constructor() {
     this.store.getPages();
 
     this.pagesEditForm = this.fb.group({

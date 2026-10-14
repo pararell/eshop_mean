@@ -1,7 +1,7 @@
 import { toObservable } from '@angular/core/rxjs-interop';
 import { WindowService } from './window.service';
 import { catchError, map } from 'rxjs/operators';
-import { Inject, Injectable, Optional, PLATFORM_ID, inject } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject, InjectionToken } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { combineLatest, Observable, of } from 'rxjs';
@@ -63,21 +63,23 @@ export interface PagesQuery {
   lang: string;
 }
 
+/** Legacy string token provided by the SSR engine (server/src/app-universal.module.ts). */
+const SERVER_URL = 'serverUrl' as unknown as InjectionToken<string>;
+
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
+  private readonly http = inject(HttpClient);
+  private readonly _window = inject(WindowService);
+  protected serverUrl = inject(SERVER_URL, { optional: true });
+  private platformId = inject(PLATFORM_ID);
+
   apiUrl = environment.apiUrl;
   requestOptions = {};
   ranNumber = 0;
 
-  constructor(
-    private readonly http: HttpClient,
-    private readonly _window: WindowService,
-    @Optional() @Inject('serverUrl') protected serverUrl: string,
-    @Inject(PLATFORM_ID)
-    private platformId: object,
-  ) {
+  constructor() {
     this.setHeaders();
 
     if (environment.production) {

@@ -1,22 +1,22 @@
-@if (withSlider) {
+@if (withSlider()) {
   <app-carousel [intervalForSlider]="15000">
-    <ng-container *ngTemplateOutlet="categoriesTemplate"></ng-container>
+    <ng-container *ngTemplateOutlet="categoriesTemplate" />
   </app-carousel>
 }
-@if (!withSlider) {
+@if (!withSlider()) {
   <div class="categories-list">
-    <ng-container *ngTemplateOutlet="categoriesTemplate"></ng-container>
+    <ng-container *ngTemplateOutlet="categoriesTemplate" />
   </div>
 }
 
 <ng-template #categoriesTemplate>
-  @for (category of categories; track category.titleUrl) {
+  @for (category of categories(); track category.titleUrl) {
     @if (!category.menuHidden) {
       <div class="category_card">
         <a
           class="category_card-image"
           [ngClass]="category.mainImage?.type ? 'category_card-image-cover' : ''"
-          [routerLink]="['/' + lang + '/product/category/' + category.titleUrl]"
+          [routerLink]="['/' + lang() + '/product/category/' + category.titleUrl]"
           [attr.aria-labelledby]="category.titleUrl"
           [style.background]="'url(' + category.mainImage?.url + ')'"
         >
