@@ -32,9 +32,11 @@ test('admin creates a product that appears in the shop', async ({ page, request 
   await form.getByRole('button', { name: 'Save' }).click();
   expect((await added).status()).toBe(201);
 
-  await expect
-    .poll(async () => (await request.get(`/api/products/${titleUrl}?lang=en`)).status())
-    .toBe(200);
+  // The dashboard list is reloaded after saving (BUG-28 regression; it used to be emptied)
+  await page.getByRole('tab', { name: 'All products' }).click();
+  await expect(page.locator('app-all-products .product_card', { hasText: 'E2E Scooter' })).toBeVisible();
+
+  await expect.poll(async () => (await request.get(`/api/products/${titleUrl}?lang=en`)).status()).toBe(200);
   await page.goto(`/en/product/${titleUrl}`);
   await expect(page.locator('mat-card.product')).toContainText('E2E Scooter');
   await expect(page.locator('mat-card.product')).toContainText('40 EUR');

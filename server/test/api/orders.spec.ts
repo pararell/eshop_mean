@@ -2,15 +2,7 @@ import request from 'supertest';
 import sgMail from '@sendgrid/mail';
 
 import { stripeMock } from '../mocks/stripe';
-import {
-  adminToken,
-  createTestApp,
-  createUser,
-  eventually,
-  loginToken,
-  productFixture,
-  TestApp,
-} from '../utils/test-app';
+import { adminToken, createTestApp, createUser, eventually, loginToken, productFixture, TestApp } from '../utils/test-app';
 
 const address = {
   name: 'Jane Doe',
@@ -152,6 +144,62 @@ describe('Orders API', () => {
       // the cart is kept so the customer can retry
       const cart = await agent.get('/api/cart').set('lang', 'en').expect(200);
       expect(cart.body.totalQty).toBe(1);
+    });
+  });
+
+  describe('currency and amount (SEC-03, BUG-01 regressions)', () => {
+    const stripeOrder = (agent: ReturnType<typeof request.agent>, lang: string, currency: string) =>
+      agent
+        .post('/api/orders/stripe')
+        .set('lang', lang)
+        .send({ token: { id: 'tok_visa' }, email: 'buyer@test.dev', addresses: [address], currency })
+        .expect(201);
+
+    it('charges in the currency of the language, ignoring the currency sent by the client', async () => {
+      const agent = await shopperWithCart(1);
+
+      await stripeOrder(agent, 'en', 'CZK');
+
+      expect(stripeMock.charges.create).toHaveBeenCalledWith(expect.objectContaining({ currency: 'EUR', amount: 3000 }));
+      const order: any = await t.model('Order').findOne({}).lean();
+      expect(order.currency).toBe('EUR');
+    });
+
+    it('uses CZK for Czech and stores it on cash-on-delivery orders too', async () => {
+      const czech = await t
+        .model('Product')
+        .create(productFixture('czech-car', { cs: { ...productFixture('x').en, title: 'Auto', salePrice: 500 } }));
+      const agent = request.agent(t.app.getHttpServer());
+      await agent
+        .get('/api/cart/add')
+        .query({ id: String(czech._id) })
+        .set('lang', 'cs')
+        .expect(200);
+
+      await agent
+        .post('/api/orders/add')
+        .set('lang', 'cs')
+        .send({ email: 'buyer@test.dev', addresses: [address], currency: 'EUR' })
+        .expect(201);
+
+      const order: any = await t.model('Order').findOne({}).lean();
+      expect(order.currency).toBe('CZK');
+      expect(order.amount).toBe(500 + 150); // cs fallback shipping: 150 CZK below 3000
+    });
+
+    it('sends Stripe an integer amount in cents for decimal prices', async () => {
+      const decimal = await t.model('Product').create(productFixture('decimal-car', { en: { ...productFixture('x').en, salePrice: 12.35 } }));
+      const agent = request.agent(t.app.getHttpServer());
+      await agent
+        .get('/api/cart/add')
+        .query({ id: String(decimal._id) })
+        .set('lang', 'en')
+        .expect(200);
+
+      await stripeOrder(agent, 'en', 'EUR');
+
+      // 12.35 + 5 shipping = 17.35, and 17.35 * 100 is 1735.0000000000002 in floating point
+      expect(stripeMock.charges.create).toHaveBeenCalledWith(expect.objectContaining({ amount: 1735 }));
     });
   });
 

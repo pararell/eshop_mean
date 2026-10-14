@@ -24,12 +24,11 @@ test('signs up a new customer who can then log in and out', async ({ page }) => 
   await expect(page.getByText('Logout')).toHaveCount(0);
 });
 
-test('rejects a wrong password', async ({ page }) => {
-  // Known bug (docs/audit.md BUG-05): the client stores the 401 error response as the user and
-  // shows SIGNIN_SUCCESS. Marked as expected failure; remove test.fail() once BUG-05 is fixed.
-  test.fail();
+test('rejects a wrong password (BUG-05 regression)', async ({ page }) => {
   const signin = page.waitForResponse((r) => r.url().includes('/api/auth/signin'));
   await signIn(page, E2E.admin.email, 'Wrong123');
   expect((await signin).status()).toBe(401);
   await expect(page.getByText('SIGNIN_SUCCESS')).toHaveCount(0);
+  // still logged out
+  await expect(page.getByText('Logout')).toHaveCount(0);
 });

@@ -32,8 +32,12 @@ export class SignalStore {
   signIn = (payload: SignInRequest) => {
     this.selectors.userState.update((state) => ({ ...state, loading: true }));
     this.apiService.signIn(payload).subscribe((response) => {
-      // Known bug (audit BUG-05): an error response is stored as the user
-      this.selectors.userState.update((state) => ({ ...state, user: response, loading: false }));
+      if (response.error) {
+        // Keep the current (logged-out) user; a failed sign-in must not look like a user (audit BUG-05)
+        this.selectors.userState.update((state) => ({ ...state, loading: false, error: true }));
+        return;
+      }
+      this.selectors.userState.update((state) => ({ ...state, user: response, loading: false, error: false }));
     });
   };
 
@@ -83,15 +87,22 @@ export class SignalStore {
     });
   };
 
+  // Save/delete endpoints answer with an empty body (null), hence `response?.error` below.
   addOrEditPage = (payload: Page) => {
     this.apiService.addOrEditPage(payload).subscribe((response) => {
-      this.selectors.eshopState.update((state) => ({ ...state, page: keepAsIs<Page>(response) }));
+      // Reload the list rather than storing the save result in it (audit BUG-28)
+      if (!response?.error) {
+        this.getPages();
+      }
     });
   };
 
   removePage = (payload: string) => {
     this.apiService.removePage(payload).subscribe((response) => {
-      this.selectors.eshopState.update((state) => ({ ...state, page: keepAsIs<Page>(response) }));
+      // Reload the list rather than storing the save result in it (audit BUG-28)
+      if (!response?.error) {
+        this.getPages();
+      }
     });
   };
 
@@ -103,13 +114,19 @@ export class SignalStore {
 
   addOrEditTheme = (payload: Theme) => {
     this.apiService.addOrEditTheme(payload).subscribe((response) => {
-      this.selectors.eshopState.update((state) => ({ ...state, themes: keepAsIs<Theme[]>(response) }));
+      // Reload the list rather than storing the save result in it (audit BUG-28)
+      if (!response?.error) {
+        this.getThemes();
+      }
     });
   };
 
   removeTheme = (payload: string) => {
     this.apiService.removeTheme(payload).subscribe((response) => {
-      this.selectors.eshopState.update((state) => ({ ...state, themes: keepAsIs<Theme[]>(response) }));
+      // Reload the list rather than storing the save result in it (audit BUG-28)
+      if (!response?.error) {
+        this.getThemes();
+      }
     });
   };
 
@@ -121,13 +138,19 @@ export class SignalStore {
 
   addOrEditConfig = (payload: ShopConfig) => {
     this.apiService.addOrEditConfig(payload).subscribe((response) => {
-      this.selectors.eshopState.update((state) => ({ ...state, configs: keepAsIs<ShopConfig[]>(response) }));
+      // Reload the list rather than storing the save result in it (audit BUG-28)
+      if (!response?.error) {
+        this.getConfigs();
+      }
     });
   };
 
   removeConfig = (payload: string) => {
     this.apiService.removeConfig(payload).subscribe((response) => {
-      this.selectors.eshopState.update((state) => ({ ...state, configs: keepAsIs<ShopConfig[]>(response) }));
+      // Reload the list rather than storing the save result in it (audit BUG-28)
+      if (!response?.error) {
+        this.getConfigs();
+      }
     });
   };
 
@@ -189,7 +212,6 @@ export class SignalStore {
   makeOrder = (payload: OrderRequest) => {
     this.selectors.productState.update((state) => ({ ...state, loading: true }));
     this.apiService.makeOrder(payload).subscribe((response) => {
-      // Known bug (audit BUG-04): no return here, so the update below overwrites the error
       if (response.error || !response) {
         this.selectors.productState.update((state) => ({
           ...state,
@@ -197,6 +219,7 @@ export class SignalStore {
           error: 'ORDER_SUBMIT_ERROR',
           loading: false,
         }));
+        return; // keep the error visible (audit BUG-04)
       }
       this.selectors.productState.update((state) => ({
         ...state,
@@ -212,7 +235,6 @@ export class SignalStore {
   makeOrderWithPayment = (payload: StripeOrderRequest) => {
     this.selectors.productState.update((state) => ({ ...state, loading: true }));
     this.apiService.handleToken(payload).subscribe((response) => {
-      // Known bug (audit BUG-04): no return here, so the update below overwrites the error
       if (response.error || !response) {
         this.selectors.productState.update((state) => ({
           ...state,
@@ -220,6 +242,7 @@ export class SignalStore {
           error: 'ORDER_SUBMIT_ERROR',
           loading: false,
         }));
+        return; // keep the error visible (audit BUG-04)
       }
       this.selectors.productState.update((state) => ({
         ...state,
@@ -268,21 +291,30 @@ export class SignalStore {
 
   addProduct = (payload: ProductInput) => {
     this.apiService.addProduct(payload).subscribe((response) => {
-      this.selectors.dashboardState.update((state) => ({ ...state, allProducts: keepAsIs<Product[]>(response) }));
+      // Reload the list rather than storing the (empty) save response in it (audit BUG-28)
+      if (!response?.error) {
+        this.getAllProducts();
+      }
     });
   };
 
   editProduct = (payload: ProductInput) => {
     this.selectors.dashboardState.update((state) => ({ ...state, loading: true }));
-    this.apiService.editProduct(payload).subscribe(() => {
+    this.apiService.editProduct(payload).subscribe((response) => {
       this.selectors.dashboardState.update((state) => ({ ...state, loading: false }));
+      if (!response?.error) {
+        this.getAllProducts();
+      }
     });
   };
 
   removeProduct = (payload: string) => {
     this.selectors.dashboardState.update((state) => ({ ...state, loading: true }));
-    this.apiService.removeProduct(payload).subscribe(() => {
+    this.apiService.removeProduct(payload).subscribe((response) => {
       this.selectors.dashboardState.update((state) => ({ ...state, loading: false }));
+      if (!response?.error) {
+        this.getAllProducts();
+      }
     });
   };
 

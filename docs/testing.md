@@ -2,10 +2,10 @@
 
 There are two test layers. Neither one needs a running database, Docker or real API keys.
 
-| Layer | Tool | What runs | Command | Time |
-|---|---|---|---|---|
-| Server unit and API tests | Jest 30 + SWC + Supertest | The real Nest `AppModule` with production middleware, against in-memory MongoDB | `npm run test:server` | about 4 s |
-| End-to-end (browser) tests | Playwright (Chromium) | The production SSR build (`dist/`) against seeded in-memory MongoDB | `npm run test:e2e` | about 30 s including the build |
+| Layer                      | Tool                      | What runs                                                                       | Command               | Time                           |
+| -------------------------- | ------------------------- | ------------------------------------------------------------------------------- | --------------------- | ------------------------------ |
+| Server unit and API tests  | Jest 30 + SWC + Supertest | The real Nest `AppModule` with production middleware, against in-memory MongoDB | `npm run test:server` | about 4 s                      |
+| End-to-end (browser) tests | Playwright (Chromium)     | The production SSR build (`dist/`) against seeded in-memory MongoDB             | `npm run test:e2e`    | about 30 s including the build |
 
 Also run `npm run typecheck`. It type-checks the client, the server, the server tests and the e2e specs. The test runners don't do this themselves, because SWC and Playwright only strip types.
 
@@ -77,42 +77,43 @@ On failure, Playwright keeps a trace, a screenshot and the error context in
 
 ## What is covered
 
-### Server: 104 tests
+### Server: 107 tests
 
-| Area | Spec | Covers |
-|---|---|---|
-| Cart logic (unit) | `src/cart/utils/cart.spec.ts` | Add, increment, decrement, remove, unknown ids |
-| Pricing (unit) | `src/shared/utils/prepareUtils.spec.ts` | Totals = sale price × qty; basic vs. extended shipping; free shipping at the limit; just-below-limit; fallback shipping table; hidden or unpriced items excluded; localized product shape |
-| Products API | `test/api/products.spec.ts` | Visible-only listing, 12-per-page pagination, all four sort orders, category and max-price filters, invalid sort → 400, detail and 404, categories by position; admin create (with auto-created category), duplicate → 400, edit, delete |
-| Auth API | `test/api/auth.spec.ts` | Signup (hashed password, no client roles: **SEC-01 regression**), duplicate → 409, weak password → 400, signin token and profile, wrong password and unknown user → 401, `GET /api/auth` with valid and invalid tokens |
-| Cart API | `test/api/cart.spec.ts` | Session persistence, totals with default and config shipping, extended shipping, free shipping, remove, missing id → 400 |
-| Orders API | `test/api/orders.spec.ts` | Cash-on-delivery order from the session cart (server total, client amount ignored, cart emptied), emails to customer and admins, invalid body → 422 without crashing (**SEC-02 regression**), Stripe charge amount, currency, token, capture → PAID order, declined charge → 422 with no order and the cart kept, user order history, admin list, get and status update |
-| Admin authorization | `test/api/admin-authorization.spec.ts` | All 23 admin endpoints reject anonymous users and non-admin users |
-| Shop API | `test/api/eshop.spec.ts` | Public config exposes `FE_*` values and the active theme but no secrets; admin page create then public read; contact: valid captcha → emails, invalid captcha → 400 without crashing (**SEC-02 regression**), captcha service down → 500 |
+| Area                | Spec                                    | Covers                                                                                                                                                                                                                                                                                                                                                                  |
+| ------------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cart logic (unit)   | `src/cart/utils/cart.spec.ts`           | Add, increment, decrement, remove, unknown ids                                                                                                                                                                                                                                                                                                                          |
+| Pricing (unit)      | `src/shared/utils/prepareUtils.spec.ts` | Totals = sale price × qty; basic vs. extended shipping; free shipping at the limit; just-below-limit; fallback shipping table; hidden or unpriced items excluded; localized product shape                                                                                                                                                                               |
+| Products API        | `test/api/products.spec.ts`             | Visible-only listing, 12-per-page pagination, all four sort orders, category and max-price filters, invalid sort → 400, detail and 404, categories by position; admin create (with auto-created category), duplicate → 400, edit, delete                                                                                                                                |
+| Auth API            | `test/api/auth.spec.ts`                 | Signup (hashed password, no client roles: **SEC-01 regression**), duplicate → 409, weak password → 400, signin token and profile, wrong password and unknown user → 401, `GET /api/auth` with valid and invalid tokens                                                                                                                                                  |
+| Cart API            | `test/api/cart.spec.ts`                 | Session persistence, totals with default and config shipping, extended shipping, free shipping, remove, missing id → 400                                                                                                                                                                                                                                                |
+| Orders API          | `test/api/orders.spec.ts`               | Cash-on-delivery order from the session cart (server total, client amount ignored, cart emptied), emails to customer and admins, invalid body → 422 without crashing (**SEC-02 regression**), Stripe charge amount, currency, token, capture → PAID order, declined charge → 422 with no order and the cart kept, user order history, admin list, get and status update |
+| Admin authorization | `test/api/admin-authorization.spec.ts`  | All 23 admin endpoints reject anonymous users and non-admin users                                                                                                                                                                                                                                                                                                       |
+| Shop API            | `test/api/eshop.spec.ts`                | Public config exposes `FE_*` values and the active theme but no secrets; admin page create then public read; contact: valid captcha → emails, invalid captcha → 400 without crashing (**SEC-02 regression**), captcha service down → 500                                                                                                                                |
 
 Line coverage is about 75% of server code. `prepareUtils.ts` and `cart.ts` are at 100%, and `orders.service.ts` at 95%.
 
-### E2E: 12 tests
+### E2E: 13 tests
 
-| Flow | Spec |
-|---|---|
-| Home page is server-rendered with products; product list with prices; category filter; product detail (title, price, description, `<title>`) | `browse.spec.ts` |
-| Add to cart, header badge, totals with shipping, cart persists across reload, remove item | `cart.spec.ts` |
-| Checkout, cash on delivery: address → payment → order; confirmation shown; cart emptied; order stored with server-side total | `checkout.spec.ts` |
+| Flow                                                                                                                                                                                                        | Spec               |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| Home page is server-rendered with products; product list with prices; category filter; product detail (title, price, description, `<title>`)                                                                | `browse.spec.ts`   |
+| Add to cart, header badge, totals with shipping, cart persists across reload, remove item                                                                                                                   | `cart.spec.ts`     |
+| Checkout, cash on delivery: address → payment → order; confirmation shown; cart emptied; order stored with server-side total                                                                                | `checkout.spec.ts` |
 | Checkout, card: Stripe.js card element → `createToken` → the token, currency, email and address are sent to `/api/orders/stripe` (the API response is stubbed; the server side is covered by the API tests) | `checkout.spec.ts` |
-| Signup → login → logout; wrong password | `auth.spec.ts` |
-| Admin login → create product (appears in the shop) → edit product price | `admin.spec.ts` |
+| Signup → login → logout; wrong password                                                                                                                                                                     | `auth.spec.ts`     |
+| Admin login → create product (appears in the shop) → edit product price                                                                                                                                     | `admin.spec.ts`    |
 
 ## Known failures
 
-Some tests pin the *correct* behavior of known bugs from [audit.md](audit.md). They are
-marked as expected failures, so the suite stays green and flags them once the bug is fixed:
+None at the moment. If a test has to pin the _correct_ behavior of a known bug, mark it with
+`test.fail()` (Playwright) or `it.failing()` (Jest), reference the audit ID, and remove the marker
+with the fix.
 
-| Test | Bug | Marker |
-|---|---|---|
-| `e2e/tests/auth.spec.ts` › rejects a wrong password | **BUG-05**: a failed sign-in is stored as the user and shows `SIGNIN_SUCCESS` | `test.fail()`, to be removed when BUG-05 is fixed |
+Regression tests for fixed findings: SEC-01, SEC-02, SEC-03, BUG-01 (`server/test/api`), and BUG-04,
+BUG-05, BUG-28 (`e2e/tests`). Each was checked to fail on the code before its fix.
 
-Other tests deliberately assert *current* behavior that the audit flags:
+Other tests deliberately assert _current_ behavior that the audit flags:
+
 - `RolesGuard` returns 401 instead of 403 (BUG-24);
 - the cart uses product snapshots (BUG-06).
 

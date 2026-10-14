@@ -87,7 +87,8 @@ export class ProductsService {
 
     try {
       const product = await new this.productModel(newProduct);
-      product.save();
+      // Await so the API only answers once the product exists (the dashboard reloads its list right after)
+      await product.save();
       this.addCategory(product);
     } catch {
       throw new BadRequestException();

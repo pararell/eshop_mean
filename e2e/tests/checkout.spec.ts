@@ -1,13 +1,5 @@
 import { expect, test } from '@playwright/test';
-import {
-  addToCart,
-  choosePayment,
-  E2E,
-  expectCartCount,
-  fillAddressStep,
-  isolateExternalServices,
-  withDb,
-} from './helpers';
+import { addToCart, choosePayment, E2E, expectCartCount, fillAddressStep, isolateExternalServices, withDb } from './helpers';
 
 test.beforeEach(({ page }) => isolateExternalServices(page));
 
@@ -75,4 +67,21 @@ test('card payment: tokenizes the card with Stripe.js and submits the token', as
     addresses: [expect.objectContaining({ name: 'Jane Doe', city: 'Bratislava' })],
   });
   await expect(page.locator('body')).toContainText('WITH_PAYMENT');
+});
+
+test('keeps the cart and checkout when the order fails (BUG-04 regression)', async ({ page }) => {
+  await page.route('**/api/orders/add', (route) => route.fulfill({ status: 500, json: { message: 'boom' } }));
+  await addToCart(page, E2E.car.titleUrl);
+  await page.goto('/en/cart');
+  await fillAddressStep(page);
+  await choosePayment(page, 'delivery');
+
+  const failed = page.waitForResponse((r) => r.url().includes('/api/orders/add'));
+  await page.locator('.submit-order-button').click();
+  expect((await failed).status()).toBe(500);
+
+  // Before the fix the error was overwritten and the cart was wiped
+  await expect(page.locator('app-cart')).toContainText(E2E.car.title);
+  await expect(page.locator('.submit-order-button')).toBeVisible();
+  await expectCartCount(page, 1);
 });

@@ -8,6 +8,7 @@ import { User } from '../auth/models/user.model';
 import { OrderDto } from './dto/order.dto';
 import { sendMsg } from '../shared/utils/email/mailer';
 import { prepareCart } from '../shared/utils/prepareUtils';
+import { currencyForLang } from '../shared/constans';
 import { CartModel } from '../cart/models/cart.model';
 import { Translation } from '../translations/translation.model';
 import type { Order as OrderData, OrderRequest, StripeOrderRequest } from '@eshop/shared';
@@ -39,7 +40,7 @@ export class OrdersService {
     const { cart, config } = session;
     // Throws without a cart; callers turn that into 422 (current behavior)
     const cartForLang = prepareCart(cart!, lang, config);
-    const newOrder = await new this.orderModel(this.createOrder(orderDto, cartForLang, 'PAYMENT_ON_DELIVERY'));
+    const newOrder = await new this.orderModel(this.createOrder(orderDto, cartForLang, 'PAYMENT_ON_DELIVERY', currencyForLang(lang)));
     await newOrder.save();
     try {
       const translations = await this.translationModel.findOne({ lang });
@@ -70,8 +71,9 @@ export class OrdersService {
     // Throws without a cart; callers turn that into 422 (current behavior)
     const cartForLang = prepareCart(cart!, lang, config);
     const charge = await stripe.charges.create({
-      amount: cartForLang.totalPrice * 100,
-      currency: body.currency,
+      // Stripe expects an integer amount in minor units; totals are float major units (audit BUG-01)
+      amount: Math.round(cartForLang.totalPrice * 100),
+      currency: currencyForLang(lang),
       description: 'Credit Card Payment',
       source: body.token.id,
       capture: false,
@@ -80,7 +82,7 @@ export class OrdersService {
 
     if (charge) {
       try {
-        const newOrder = await new this.orderModel(this.createOrder(requestOrder, cartForLang, 'WITH_PAYMENT'));
+        const newOrder = await new this.orderModel(this.createOrder(requestOrder, cartForLang, 'WITH_PAYMENT', currencyForLang(lang)));
         const capturePayment = await stripe.charges.capture(charge.id);
         if (capturePayment) {
           await newOrder.save();
@@ -115,8 +117,8 @@ export class OrdersService {
     return order;
   }
 
-  private createOrder = (orderDto: OrderRequest, cart: CartModel, type: string) => {
-    const { addresses, currency, email, userId, cardId, notes } = orderDto;
+  private createOrder = (orderDto: OrderRequest, cart: CartModel, type: string, currency: string) => {
+    const { addresses, email, userId, cardId, notes } = orderDto;
     const orderId = 'order' + new Date().getTime() + 't' + Math.floor(Math.random() * 1000 + 1);
     const date = Date.now();
     const addUser = userId ? { _user: userId } : {};

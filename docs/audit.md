@@ -57,9 +57,14 @@ Findings resolved since the audit (2026-10-14). The finding texts below are kept
 | DEP-08          | Fixed             | Docker runtime holds only `dist/` + mongoose: 783 MB → 186 MB.                                                                                                                                                                                                                                             |
 | SEC-26          | Mostly fixed      | The image runs as `node`, with `tini` as PID 1 and `CMD node …` (instant `docker stop`). A `HEALTHCHECK` is still missing.                                                                                                                                                                                 |
 | TD-15           | Fixed             | The stale `server/dist` is gone; `nest build` uses `rootDir: ./src`.                                                                                                                                                                                                                                       |
+| SEC-03          | Fixed             | The server derives the currency from the language (`currencyForLang`: en/sk → EUR, cs → CZK) for the Stripe charge and the stored order; the client value is ignored. Tests in `orders.spec.ts`.                                                                                                           |
+| BUG-01          | Fixed             | Stripe amounts are `Math.round(total * 100)`. Test with a 17.35 total (1735.0000000000002 before rounding).                                                                                                                                                                                                |
+| BUG-04          | Fixed             | `makeOrder*` stop after recording the error; a failed order keeps the cart and checkout. e2e test in `checkout.spec.ts`.                                                                                                                                                                                   |
+| BUG-05          | Fixed             | A failed sign-in no longer replaces the user (`userState.error = true`). The e2e test's `test.fail()` marker is removed.                                                                                                                                                                                   |
+| BUG-28          | Mostly fixed      | Saves and deletes reload the page/theme/config/product lists. `POST /api/products/add` now awaits the save before answering. The post-order empty cart, image results and translations (BUG-12) still use `keepAsIs()`.                                                                                    |
 
-Still open and notable: DEP-02 (Stripe SDK / PaymentIntents), SEC-03 (client-chosen currency), the
-remaining high-priority bugs (BUG-01 to BUG-04), and BUG-28 (store slot mismatches found by strict typing).
+Still open and notable: DEP-02 (Stripe SDK / PaymentIntents), BUG-02 (card captured without a guaranteed
+order) and BUG-03 (URL language ignored during SSR).
 
 ---
 

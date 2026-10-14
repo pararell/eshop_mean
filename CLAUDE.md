@@ -109,8 +109,8 @@ Verified on Node 24.15 / npm 11.12 (2026-10-14). Angular 22 requires Node `^24.1
 | Lint SCSS                                     | `npm run lint:scss`                                                                        | Runs (stylelint 17, SCSS syntax); 313 errors. The unquoted glob is shell-expanded.                                                                                                                |
 | Format                                        | `npm run format` / `npm run format:check` (Prettier, whole repo)                           | Existing code is not yet reformatted (~140 files); new commits are formatted by the hook                                                                                                          |
 | Pre-commit hook                               | husky → `lint-staged` (`.husky/pre-commit`)                                                | Runs `eslint --fix` + `prettier --write` on staged files; lint errors block the commit ; with nvm + a GUI git client (GitHub Desktop), add `~/.config/husky/init.sh` that sources `~/.nvm/nvm.sh` |
-| Server tests (unit + API)                     | `npm test` / `npm run test:server` (`:watch`, `:cov`)                                      | 104 passing, in-memory MongoDB, ~4 s                                                                                                                                                              |
-| E2E tests                                     | `npm run test:e2e` (builds first; `npx playwright install chromium` once)                  | 12 passing against the production build                                                                                                                                                           |
+| Server tests (unit + API)                     | `npm test` / `npm run test:server` (`:watch`, `:cov`)                                      | 107 passing, in-memory MongoDB, ~4 s                                                                                                                                                              |
+| E2E tests                                     | `npm run test:e2e` (builds first; `npx playwright install chromium` once)                  | 13 passing against the production build                                                                                                                                                           |
 | Release                                       | `npm run release`                                                                          | standard-version (deprecated)                                                                                                                                                                     |
 
 Broken or unused scripts (do not rely on them):
@@ -156,7 +156,8 @@ Copy `.env.example` → `.env` (gitignored, never commit it). It is read with
 - **Types:** strict mode is on. Use the shared API types from `@eshop/shared` (`import type` only; the
   file is `.d.ts`). No `any` (lint error outside tests). Use `!` only where the code already relies on
   a value being present; otherwise handle `null`/`undefined`. Known shape mismatches in the client
-  store are marked with `keepAsIs()` (audit BUG-28).
+  store are marked with `keepAsIs()` (audit BUG-28). Currency is always derived on the server
+  (`currencyForLang`), never taken from the request.
 - Server:
   - controllers hardcode the `api/...` prefix (there is no global prefix);
   - the language comes from the `lang` **request header**;
