@@ -1,5 +1,3 @@
-declare const Express: any;
-
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppSSRModule } from './app-ssr.module';
@@ -18,7 +16,7 @@ async function bootstrap() {
 
   setAppDB(app);
 
-  await app.listen(process.env.PORT);
+  await app.listen(process.env.PORT!);
   logger.log('App listening on port ' + process.env.PORT);
 }
 

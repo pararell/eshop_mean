@@ -3,17 +3,19 @@ declare global {
     ng2recaptchaloaded: () => void;
   }
 }
-declare const grecaptcha;
+import type { ReCaptchaV3 } from '../utils/recaptcha.types';
 
-import { isPlatformBrowser } from "@angular/common";
-import { Inject, Injectable, InjectionToken, NgZone, Optional, PLATFORM_ID } from "@angular/core";
-import { Observable, Subject, filter, take } from "rxjs";
+declare const grecaptcha: ReCaptchaV3;
 
-import { loader } from "../utils/loadRecaptchaScript";
-import { EnvConfigurationService } from "./env-configuration.service";
-const RECAPTCHA_LANGUAGE = new InjectionToken<string>("recaptcha-language");
-const RECAPTCHA_BASE_URL = new InjectionToken<string>("recaptcha-base-url");
-const RECAPTCHA_NONCE = new InjectionToken<string>("recaptcha-nonce-tag");
+import { isPlatformBrowser } from '@angular/common';
+import { Inject, Injectable, InjectionToken, NgZone, Optional, PLATFORM_ID } from '@angular/core';
+import { Observable, Subject, filter, take } from 'rxjs';
+
+import { loader } from '../utils/loadRecaptchaScript';
+import { EnvConfigurationService } from './env-configuration.service';
+const RECAPTCHA_LANGUAGE = new InjectionToken<string>('recaptcha-language');
+const RECAPTCHA_BASE_URL = new InjectionToken<string>('recaptcha-base-url');
+const RECAPTCHA_NONCE = new InjectionToken<string>('recaptcha-nonce-tag');
 
 export interface OnExecuteData {
   /**
@@ -34,7 +36,7 @@ export interface OnExecuteErrorData {
   /**
    * The error which was encountered
    */
-  error: any;
+  error: unknown;
 }
 
 type ActionBacklogEntry = [string, Subject<string>];
@@ -46,42 +48,42 @@ type ActionBacklogEntry = [string, Subject<string>];
  * `onExecute` observable for listening to all actions at once.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ReCaptchaV3Service {
   /** @internal */
   private readonly isBrowser: boolean;
   /** @internal */
-  private readonly siteKey: string;
+  private readonly siteKey!: string;
   /** @internal */
   private readonly zone: NgZone;
   /** @internal */
   private actionBacklog: ActionBacklogEntry[] | undefined;
   /** @internal */
-  private nonce: string;
+  private nonce?: string;
   /** @internal */
   private language?: string;
   /** @internal */
-  private baseUrl: string;
+  private baseUrl?: string;
   /** @internal */
-  private grecaptcha;
+  private grecaptcha?: ReCaptchaV3;
 
   /** @internal */
-  private onExecuteSubject: Subject<OnExecuteData>;
+  private onExecuteSubject!: Subject<OnExecuteData>;
   /** @internal */
-  private onExecuteErrorSubject: Subject<OnExecuteErrorData>;
+  private onExecuteErrorSubject!: Subject<OnExecuteErrorData>;
   /** @internal */
-  private onExecuteObservable: Observable<OnExecuteData>;
+  private onExecuteObservable!: Observable<OnExecuteData>;
   /** @internal */
-  private onExecuteErrorObservable: Observable<OnExecuteErrorData>;
+  private onExecuteErrorObservable!: Observable<OnExecuteErrorData>;
 
   constructor(
     private readonly envConfigurationService: EnvConfigurationService,
     zone: NgZone,
-    @Inject(PLATFORM_ID) platformId: Object,
+    @Inject(PLATFORM_ID) platformId: object,
     @Optional() @Inject(RECAPTCHA_BASE_URL) baseUrl?: string,
     @Optional() @Inject(RECAPTCHA_NONCE) nonce?: string,
-    @Optional() @Inject(RECAPTCHA_LANGUAGE) language?: string
+    @Optional() @Inject(RECAPTCHA_LANGUAGE) language?: string,
   ) {
     this.zone = zone;
     this.isBrowser = isPlatformBrowser(platformId);
@@ -140,7 +142,7 @@ export class ReCaptchaV3Service {
 
   /** @internal */
   private executeActionWithSubject(action: string, subject: Subject<string>): void {
-    const onError = (error: any) => {
+    const onError = (error: unknown) => {
       this.zone.run(() => {
         subject.error(error);
         if (this.onExecuteErrorSubject) {
@@ -149,44 +151,47 @@ export class ReCaptchaV3Service {
         }
       });
     };
-    this.envConfigurationService.getConfigType$('FE_RECAPTCHA_CLIENT_KEY')
-    .pipe(filter(Boolean), take(1)).subscribe((siteKey) => {
-      this.zone.runOutsideAngular(() => {
-        try {
-          this.grecaptcha.execute(siteKey, { action }).then((token: string) => {
-            this.zone.run(() => {
-              subject.next(token);
-              subject.complete();
-              if (this.onExecuteSubject) {
-                this.onExecuteSubject.next({ action, token });
-              }
-            });
-          }, onError);
-        } catch (e) {
-          onError(e);
-        }
+    this.envConfigurationService
+      .getConfigType$('FE_RECAPTCHA_CLIENT_KEY')
+      .pipe(filter(Boolean), take(1))
+      .subscribe((siteKey) => {
+        this.zone.runOutsideAngular(() => {
+          try {
+            this.grecaptcha!.execute(siteKey, { action }).then((token: string) => {
+              this.zone.run(() => {
+                subject.next(token);
+                subject.complete();
+                if (this.onExecuteSubject) {
+                  this.onExecuteSubject.next({ action, token });
+                }
+              });
+            }, onError);
+          } catch (e) {
+            onError(e);
+          }
+        });
       });
-    });
-
   }
 
   /** @internal */
   private init() {
     if (this.isBrowser) {
-      if ("grecaptcha" in window) {
+      if ('grecaptcha' in window) {
         this.grecaptcha = grecaptcha;
       } else {
-        this.envConfigurationService.getConfigType$('FE_RECAPTCHA_CLIENT_KEY')
-          .pipe(filter(Boolean), take(1)).subscribe((siteKey) => {
-            const langParam = this.language ? "&hl=" + this.language : "";
+        this.envConfigurationService
+          .getConfigType$('FE_RECAPTCHA_CLIENT_KEY')
+          .pipe(filter(Boolean), take(1))
+          .subscribe((siteKey) => {
+            const langParam = this.language ? '&hl=' + this.language : '';
             loader.loadRecaptchaScript(siteKey, this.onLoadComplete, langParam, this.baseUrl, this.nonce);
-          })
+          });
       }
     }
   }
 
   /** @internal */
-  private onLoadComplete = (grecaptcha) => {
+  private onLoadComplete = (grecaptcha: ReCaptchaV3) => {
     this.grecaptcha = grecaptcha;
     if (this.actionBacklog && this.actionBacklog.length > 0) {
       this.actionBacklog.forEach(([action, subject]) => this.executeActionWithSubject(action, subject));

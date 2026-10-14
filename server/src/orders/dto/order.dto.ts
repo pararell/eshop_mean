@@ -6,17 +6,17 @@ export class OrderDto {
   @IsString()
   @MinLength(4)
   @MaxLength(50)
-  email: string;
+  email!: string;
 
-  addresses: Address[];
-  cart: Cart;
+  addresses!: Address[];
+  cart!: Cart;
   userId?: string;
   notes?: string;
   cardId?: string;
 
   @IsNotEmpty()
-  amount: number;
+  amount!: number;
 
   @IsNotEmpty()
-  currency: string;
+  currency!: string;
 }

@@ -17,15 +17,15 @@ import { toObservable } from '@angular/core/rxjs-interop';
   standalone: false,
 })
 export class DashboardComponent implements OnDestroy {
-  @ViewChild(MatTabGroup) tabGroup: MatTabGroup;
+  @ViewChild(MatTabGroup) tabGroup!: MatTabGroup;
 
   productAction = '';
   lang$: Observable<string>;
   currency$: Signal<string>;
   allProducts$: Signal<Product[]>;
   allProductsTitles$: Observable<string[]>;
-  getProductsSub: Subscription;
-  productToEditTitleUrl: string;
+  getProductsSub!: Subscription;
+  productToEditTitleUrl!: string;
 
   readonly component = 'dashboard';
 
@@ -67,7 +67,7 @@ export class DashboardComponent implements OnDestroy {
   }
 
   private getAllProducts(): void {
-    this.getProductsSub = this.lang$.subscribe((lang: string) => {
+    this.getProductsSub = this.lang$.subscribe((_lang: string) => {
       this.store.getAllProducts();
     });
   }

@@ -4,46 +4,44 @@
       <i class="material-icons left">arrow_back</i>
       {{ 'Back' | translate | async }}
     </button>
-    @if (!(product$()) || (productLoading$())) {
-    <mat-progress-bar mode="indeterminate"> </mat-progress-bar>
+    @if (!product$() || productLoading$()) {
+      <mat-progress-bar mode="indeterminate"> </mat-progress-bar>
     }
     @if (product$()) {
       @if (!productLoading$()) {
-    <mat-card appearance="outlined" class="product">
-      @if (product$().visibility && product$().salePrice) {
-
-      <app-product-content
-        [product]="product$()"
-        [categoriesInput]="categories$ | async"
-        [cartIds]="cartIds$ | async"
-        [currency]="currency$ | async"
-        [lang]="lang$ | async"
-        (addProduct)="cartEvent($event, 'add')"
-        (removeProduct)="cartEvent($event, 'remove')"
-      >
-      </app-product-content>
-      <mat-tab-group>
-        <mat-tab label="{{ 'Description' | translate | async }}">
-          <mat-card-content class="product-tab-content">
-            <div [innerHTML]="$safeNavigationMigration(product$()?.descriptionFull)"></div>
-          </mat-card-content>
-        </mat-tab>
-        <mat-tab label="{{ 'Images' | translate | async }}">
-          <mat-card-content class="product-tab-content">
-            <div class="product-images">
-              @for (imageSrc of product$()?.images; track imageSrc; let i = $index; let f = $first; let l = $last) {
-              <div class="product-images-content" (click)="openDialog(i, $safeNavigationMigration(product$()?.images))">
-                <img class="product-images-image" [src]="imageSrc" />
-              </div>
-              }
-            </div>
-          </mat-card-content>
-        </mat-tab>
-      </mat-tab-group>
-
+        <mat-card appearance="outlined" class="product">
+          @if (product$()!.visibility && product$()!.salePrice) {
+            <app-product-content
+              [product]="product$()!"
+              [categoriesInput]="(categories$ | async) ?? undefined"
+              [cartIds]="(cartIds$ | async)!"
+              [currency]="(currency$ | async)!"
+              [lang]="(lang$ | async)!"
+              (addProduct)="cartEvent($event, 'add')"
+              (removeProduct)="cartEvent($event, 'remove')"
+            >
+            </app-product-content>
+            <mat-tab-group>
+              <mat-tab label="{{ 'Description' | translate | async }}">
+                <mat-card-content class="product-tab-content">
+                  <div [innerHTML]="$safeNavigationMigration(product$()?.descriptionFull)"></div>
+                </mat-card-content>
+              </mat-tab>
+              <mat-tab label="{{ 'Images' | translate | async }}">
+                <mat-card-content class="product-tab-content">
+                  <div class="product-images">
+                    @for (imageSrc of product$()?.images; track imageSrc; let i = $index; let f = $first; let l = $last) {
+                      <div class="product-images-content" (click)="openDialog(i, $safeNavigationMigration(product$()?.images)!)">
+                        <img class="product-images-image" [src]="imageSrc" />
+                      </div>
+                    }
+                  </div>
+                </mat-card-content>
+              </mat-tab>
+            </mat-tab-group>
+          }
+        </mat-card>
       }
-    </mat-card>
     }
-  }
   </div>
 </div>

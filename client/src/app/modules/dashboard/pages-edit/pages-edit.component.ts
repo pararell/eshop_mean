@@ -17,10 +17,10 @@ import { SignalStore } from '../../../store/signal.store';
   standalone: false,
 })
 export class PagesEditComponent {
-  pages$: Observable<Page[]>;
+  pages$: Observable<Page[] | null>;
   pagesEditForm: FormGroup;
   languageOptions = languages;
-  choosenLanguageSub$ = new BehaviorSubject(languages[0]);
+  choosenLanguageSub$ = new BehaviorSubject<string>(languages[0]);
   newPage = '';
   chosenPage = '';
   sendRequest = false;
@@ -40,27 +40,28 @@ export class PagesEditComponent {
     this.pages$ = toObservable(this.selectors.pages);
   }
 
-  onPageEditorChange(content, lang: string): void {
-    this.pagesEditForm.get(lang).get('contentHTML').setValue(content);
+  onPageEditorChange(content: string, lang: string): void {
+    this.pagesEditForm.get(lang)!.get('contentHTML')!.setValue(content);
   }
 
   addPage(): void {
     if (this.newPage) {
-      this.pagesEditForm.get('titleUrl').setValue(this.newPage);
+      this.pagesEditForm.get('titleUrl')!.setValue(this.newPage);
       this.languageOptions.forEach((lang) => {
-        this.pagesEditForm.get(lang).get('title').setValue(this.newPage);
+        this.pagesEditForm.get(lang)!.get('title')!.setValue(this.newPage);
       });
     }
   }
 
   chosePage(): void {
     if (this.chosenPage) {
-      this.pagesEditForm.get('titleUrl').setValue(this.chosenPage);
+      this.pagesEditForm.get('titleUrl')!.setValue(this.chosenPage);
       this.pages$.pipe(take(1)).subscribe((pages) => {
-        const foundPage = pages.find((page) => page.titleUrl === this.chosenPage);
+        // chosenPage comes from the loaded list, so the page exists
+        const foundPage = pages!.find((page) => page.titleUrl === this.chosenPage)!;
         this.languageOptions.forEach((lang) => {
-          this.pagesEditForm.get(lang).get('title').setValue(foundPage[lang].title);
-          this.pagesEditForm.get(lang).get('contentHTML').setValue(foundPage[lang].contentHTML);
+          this.pagesEditForm.get(lang)!.get('title')!.setValue(foundPage[lang]!.title);
+          this.pagesEditForm.get(lang)!.get('contentHTML')!.setValue(foundPage[lang]!.contentHTML);
         });
       });
     }

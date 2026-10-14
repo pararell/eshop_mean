@@ -12,29 +12,29 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PriceFormatPipe } from '../../../pipes/price.pipe';
 
 @Component({
-    selector: 'app-sidebar',
-    templateUrl: './sidebar.component.html',
-    styleUrls: ['./sidebar.component.scss'],
-    imports: [CommonModule, RouterLink, TranslatePipe, PriceFormatPipe, MatSliderModule, MatSelectModule, FormsModule, ReactiveFormsModule],
-    changeDetection: ChangeDetectionStrategy.OnPush
+  selector: 'app-sidebar',
+  templateUrl: './sidebar.component.html',
+  styleUrls: ['./sidebar.component.scss'],
+  imports: [CommonModule, RouterLink, TranslatePipe, PriceFormatPipe, MatSliderModule, MatSelectModule, FormsModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {
-  @Input() categories: Category[];
+  @Input() categories!: Category[];
   @Input() activeCategory?: string;
   @Input() minPrice: number = 0;
   @Input() maxPrice: number = Infinity;
-  @Input() price: number;
-  @Input() sortOptions: { name: string; id: string }[];
-  @Input() choosenSort: string;
-  @Input() currency: string;
-  @Input() lang: string;
+  @Input() price!: number;
+  @Input() sortOptions!: { name: string; id: string }[];
+  @Input() choosenSort!: string;
+  @Input() currency!: string;
+  @Input() lang!: string;
 
   @Output() changePrice = new EventEmitter<number>();
   @Output() changeSort = new EventEmitter<string>();
   @Output() changeCategory = new EventEmitter<string>();
 
-  productsUrl: string;
-  categoryUrl: string;
+  productsUrl!: string;
+  categoryUrl!: string;
   priceValue = 0;
 
   constructor() {}
@@ -51,7 +51,7 @@ export class SidebarComponent {
       });
   }
 
-  trackById(_index: number, item) {
+  trackById(_index: number, item: { titleUrl: string }) {
     return item.titleUrl;
   }
 }

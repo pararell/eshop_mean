@@ -1,4 +1,4 @@
-import { filter, map, take } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Component, Input, Signal, ChangeDetectionStrategy } from '@angular/core';
@@ -19,11 +19,11 @@ import { toObservable } from '@angular/core/rxjs-interop';
   standalone: false,
 })
 export class OrderDetailComponent {
-  @Input() type: string;
+  @Input() type!: string;
 
-  order$: Signal<Order>;
+  order$: Signal<Order | null>;
   statusForm: FormGroup;
-  orderId: string;
+  orderId!: string;
   statusOptions = OrderStatus;
   showForm = false;
   lang$: Observable<string>;
@@ -59,7 +59,7 @@ export class OrderDetailComponent {
 
   submit(): void {
     this.showForm = false;
-    const status = this.statusForm.get('status').value;
+    const status = this.statusForm.get('status')!.value;
     this.store.updateOrder({
       orderId: this.orderId,
       status,

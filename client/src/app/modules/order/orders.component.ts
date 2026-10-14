@@ -13,8 +13,8 @@ import { SignalStoreSelectors } from '../../store/signal.store.selectors';
   standalone: false,
 })
 export class OrdersComponent {
-  orders$: Signal<Order[]>;
-  orderUrl: string;
+  orders$: Signal<Order[] | null>;
+  orderUrl!: string;
   lang$: Observable<string>;
 
   readonly component = 'orders';

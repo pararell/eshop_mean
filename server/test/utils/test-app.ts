@@ -53,10 +53,7 @@ export async function createTestApp(): Promise<TestApp> {
 }
 
 /** Polls until `check` passes; several services persist without awaiting the write. */
-export async function eventually<T>(
-  check: () => Promise<T>,
-  { timeout = 3000, interval = 50 } = {},
-): Promise<T> {
+export async function eventually<T>(check: () => Promise<T>, { timeout = 3000, interval = 50 } = {}): Promise<T> {
   const start = Date.now();
   for (;;) {
     try {
@@ -70,7 +67,7 @@ export async function eventually<T>(
 
 export async function createUser(
   t: TestApp,
-  { email, password = 'secret1', roles = [] as string[] },
+  { email, password = 'secret1', roles = [] as string[] }: { email: string; password?: string; roles?: string[] },
 ) {
   const salt = await bcrypt.genSalt();
   const hash = await bcrypt.hash(password, salt);

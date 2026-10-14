@@ -1,3 +1,4 @@
+import type { ThemeStyles } from '@eshop/shared';
 import { AnalyticsService } from './analytics.service';
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
@@ -12,32 +13,34 @@ export interface Config {
   FE_TINYMCE_API_KEY?: string;
   FE_RECAPTCHA_CLIENT_KEY?: string;
   FE_ANALYTICS_TOKEN?: string;
-  [name: string]: any;
+  /** Active theme styles (see ThemeService) */
+  styles?: ThemeStyles;
+  [name: string]: string | ThemeStyles | undefined;
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class EnvConfigurationService {
-  public configuration$: Observable<Config>;
-  public config: Config;
+  public configuration$!: Observable<Config>;
+  public config!: Config;
 
   constructor(
     private apiService: ApiService,
     private themeService: ThemeService,
     private analyticsService: AnalyticsService,
     @Inject(PLATFORM_ID)
-    private platformId: Object
+    private platformId: object,
   ) {}
 
   getConfigType$(type: string): Observable<string> {
-    return this.configuration$.pipe(map((configuration: Config) => configuration[type]));
+    return this.configuration$.pipe(map((configuration: Config) => configuration[type] as string));
   }
 
   setTheme(conf: Config) {
     if (conf.styles) {
       Object.keys(conf.styles).map((style) => {
-        const styleValue = conf.styles[style];
+        const styleValue = conf.styles![style];
         if (styleValue) {
           const varName = style
             .split(/(?=[A-Z])/)
@@ -61,7 +64,7 @@ export class EnvConfigurationService {
             return;
           }
           if (style === 'promoSlideVideo') {
-           this.themeService.setVideo(styleValue);
+            this.themeService.setVideo(styleValue);
           }
 
           this.themeService.setCSSVariable(styleValue, varName);
@@ -84,12 +87,12 @@ export class EnvConfigurationService {
       this.configuration$ = this.apiService.getConfig().pipe(
         filter(() => isPlatformBrowser(this.platformId)),
         map((response: { config: string }) => (response.config ? JSON.parse(atob(response.config)) : {})),
-        shareReplay(1)
+        shareReplay(1),
       );
       this.configuration$
         .pipe(
           filter((conf) => !!conf),
-          take(1)
+          take(1),
         )
         .subscribe((conf) => {
           this.config = conf;

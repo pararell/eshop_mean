@@ -6,6 +6,8 @@ import { Model } from 'mongoose';
 import { AuthGuard } from '@nestjs/passport';
 
 import { Translation } from './translation.model';
+import type { Translation as TranslationData } from '@eshop/shared';
+import type { UpdateWriteOpResult } from 'mongoose';
 import { RolesGuard } from '../auth/roles.guard';
 import { countryLang, languages } from '../shared/constans';
 
@@ -17,14 +19,12 @@ export class TranslationsController {
   ) {}
 
   @Get()
-  async getTranslations(@Query('lang') lang: string): Promise<Translation> {
+  async getTranslations(@Query('lang') lang: string): Promise<Translation | null> {
     if (!lang) {
       const url = `https://geolocation-db.com/json/${process.env.GEO_LOCATION_API_KEY}`;
       try {
         const result = await firstValueFrom(this.httpService.post(url));
-        const country = result.data.country_code
-          ? result.data.country_code.toLowerCase()
-          : '';
+        const country = result.data.country_code ? result.data.country_code.toLowerCase() : '';
         const langCode = countryLang[country] || country['default'];
 
         return await this.translationModel.findOne({ lang: langCode });
@@ -44,7 +44,7 @@ export class TranslationsController {
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Patch('all')
-  async updateTranslations(@Body() translations): Promise<Translation[]> {
+  async updateTranslations(@Body() translations: TranslationData[]): Promise<UpdateWriteOpResult[]> {
     const updateTranslations = translations.map(async (translation) => {
       const langTranslation = await this.translationModel.findOne({
         lang: translation.lang,
@@ -56,20 +56,14 @@ export class TranslationsController {
         });
         newTranslation.save();
       }
-      return this.translationModel.updateOne(
-        { lang: translation.lang },
-        { $set: { keys: translation.keys } },
-      );
+      return this.translationModel.updateOne({ lang: translation.lang }, { $set: { keys: translation.keys } });
     });
     return Promise.all(updateTranslations);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Patch()
-  async updateTranslation(
-    @Query('lang') lang: string,
-    @Body() translation,
-  ): Promise<Translation> {
+  async updateTranslation(@Query('lang') lang: string, @Body() translation: Partial<TranslationData>): Promise<Translation | null> {
     return await this.translationModel.findOneAndUpdate({ lang }, translation, {
       new: true,
     });

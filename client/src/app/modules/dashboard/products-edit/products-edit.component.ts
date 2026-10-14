@@ -5,7 +5,7 @@ import { Observable, Subscription, BehaviorSubject, from } from 'rxjs';
 
 import { ApiService } from '../../../services/api.service';
 import { languages } from '../../../shared/constants';
-import { Product, Category } from '../../../shared/models';
+import { Category, ProductInput, ProductRaw } from '../../../shared/models';
 import { SignalStore } from '../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 import { toObservable } from '@angular/core/rxjs-interop';
@@ -18,26 +18,26 @@ import { toObservable } from '@angular/core/rxjs-interop';
   standalone: false,
 })
 export class ProductsEditComponent implements OnInit, OnDestroy {
-  @Input() action: string;
-  @Input() titles: string[];
-  @Input() productToEditTitleUrl: string;
+  @Input() action!: string;
+  @Input() titles!: string[];
+  @Input() productToEditTitleUrl!: string;
 
   @Output() changeTab = new EventEmitter<number>();
 
-  productEditForm: FormGroup;
+  productEditForm!: FormGroup;
   images$: Observable<string[]>;
   sendRequest = false;
   descriptionFullSub$: BehaviorSubject<{ [x: string]: string }> = new BehaviorSubject(
     languages.reduce((prev, lang) => ({ ...prev, [lang]: '' }), {}),
   );
-  product$: Observable<Product>;
+  product$: Observable<ProductRaw>;
   categories$: Observable<Category[]>;
-  productSub: Subscription;
+  productSub!: Subscription;
   languageOptions = languages;
-  choosenLanguageSub$ = new BehaviorSubject(languages[0]);
-  testImageUrl: string;
-  filteredTitles$: Observable<string[]>;
-  tag: string;
+  choosenLanguageSub$ = new BehaviorSubject<string>(languages[0]);
+  testImageUrl!: string;
+  filteredTitles$!: Observable<string[]>;
+  tag!: string;
 
   constructor(
     private fb: FormBuilder,
@@ -46,7 +46,10 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
   ) {
     this.createForm();
-    this.product$ = toObservable(this.selectors.product).pipe(filter((product) => !!product && !!product.titleUrl && !product.title));
+    // In the dashboard the product slot holds the raw (all-language) product, hence no `title`
+    this.product$ = toObservable(this.selectors.product).pipe(
+      filter((product) => !!product && !!product.titleUrl && !product.title),
+    ) as unknown as Observable<ProductRaw>;
     this.categories$ = toObservable(this.selectors.categories);
     this.images$ = toObservable(this.selectors.productImages);
     this.store.getCategories(languages[0]);
@@ -57,7 +60,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
     if (this.productToEditTitleUrl) {
       this.store.getProduct(this.productToEditTitleUrl);
     }
-    this.filteredTitles$ = this.productEditForm.get('titleUrl').valueChanges.pipe(
+    this.filteredTitles$ = this.productEditForm.get('titleUrl')!.valueChanges.pipe(
       startWith(''),
       map((value) => {
         const filterValue = value.toLowerCase();
@@ -77,7 +80,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
 
       const prepareDescFull = this.languageOptions
         .map((lang) => ({
-          [lang]: product[lang].descriptionFull.length ? product[lang].descriptionFull[0] : '',
+          [lang]: product[lang]!.descriptionFull.length ? product[lang]!.descriptionFull[0] : '',
         }))
         .reduce((prev, curr) => ({ ...prev, ...curr }), {});
 
@@ -92,8 +95,8 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
     }
   }
 
-  onFileChanged(event) {
-    const files = event.target.files;
+  onFileChanged(event: Event) {
+    const files = (event.target as HTMLInputElement).files!;
     if (files.length === 0) return;
 
     const mimeType = files[0].type;
@@ -104,18 +107,20 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
 
     const uploadImage = this.apiService.uploadImage({ fileToUpload: files[0], titleUrl: this.productToEditTitleUrl });
 
-    uploadImage.pipe(take(1)).subscribe((result: any) => {
+    // Only reachable in the browser, where uploadImage() returns an observable
+    uploadImage!.pipe(take(1)).subscribe((uploaded) => {
+      const result = uploaded as { titleUrl?: string; all?: string[] };
       if (result && result.titleUrl) {
         this.store.storeProduct(result);
       } else if (result && result.all) {
-        this.store.storeProductImages(result);
+        this.store.storeProductImages(result as { all: string[] });
       }
     });
   }
 
-  onEditorChange(value): void {
+  onEditorChange(value: string): void {
     this.choosenLanguageSub$.pipe(filter(Boolean), take(1)).subscribe((lang: string) => {
-      this.productEditForm.get(lang).patchValue({ descriptionFull: value });
+      this.productEditForm.get(lang)!.patchValue({ descriptionFull: value });
     });
   }
 
@@ -131,7 +136,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
   }
 
   onRemoveImage(image: string, type: string): void {
-    const titleUrl = type === 'product' ? { titleUrl: this.productEditForm.get('titleUrl').value } : {};
+    const titleUrl = type === 'product' ? { titleUrl: this.productEditForm.get('titleUrl')!.value } : {};
 
     this.store.removeImage({ image: image, ...titleUrl });
   }
@@ -146,7 +151,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
 
     const prepareDescFull = this.languageOptions
       .map((language) => {
-        const descriptionFull = this.productEditForm.get([language]).value.descriptionFull;
+        const descriptionFull = this.productEditForm.get([language])!.value.descriptionFull;
         return {
           [language]: typeof descriptionFull === 'string' ? descriptionFull : descriptionFull.length ? descriptionFull[0] : '',
         };
@@ -157,29 +162,29 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
 
   addTag(): void {
     if (this.tag) {
-      const formTags = this.productEditForm.value.tags.filter((tag) => tag !== this.tag);
+      const formTags = this.productEditForm.value.tags.filter((tag: string) => tag !== this.tag);
       const tags = [...formTags, this.tag.replace(/ /g, '_').toLowerCase()];
-      this.productEditForm.get('tags').setValue(tags);
+      this.productEditForm.get('tags')!.setValue(tags);
       this.tag = '';
     }
   }
 
   removeTag(tagToRemove: string): void {
-    const formTags = this.productEditForm.value.tags.filter((tag) => tag !== tagToRemove);
-    this.productEditForm.get('tags').setValue(formTags);
+    const formTags = this.productEditForm.value.tags.filter((tag: string) => tag !== tagToRemove);
+    this.productEditForm.get('tags')!.setValue(formTags);
   }
 
   addImageUrl(): void {
-    const imageUrl = this.productEditForm.get('imageUrl').value;
-    const titleUrl = this.productEditForm.get('titleUrl').value;
+    const imageUrl = this.productEditForm.get('imageUrl')!.value;
+    const titleUrl = this.productEditForm.get('titleUrl')!.value;
     if (imageUrl && titleUrl) {
       this.testImageUrl = imageUrl;
     }
   }
 
   checkImageUrl() {
-    const imageUrl = this.productEditForm.get('imageUrl').value;
-    const titleUrl = this.productEditForm.get('titleUrl').value;
+    const imageUrl = this.productEditForm.get('imageUrl')!.value;
+    const titleUrl = this.productEditForm.get('titleUrl')!.value;
     this.store.addProductImagesUrl({ image: imageUrl, titleUrl });
     this.testImageUrl = '';
   }
@@ -189,16 +194,17 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
   }
 
   findProduct(): void {
-    const titleUrl = this.productEditForm.get('titleUrl').value;
+    const titleUrl = this.productEditForm.get('titleUrl')!.value;
     if (titleUrl) {
       this.store.getProduct(titleUrl);
     }
   }
 
-  formatTitleUrl(e) {
-    if (e.target.value) {
-      const titleUrlFormated = e.target.value.replace(/\s+/g, '-').toLowerCase();
-      this.productEditForm.get('titleUrl').setValue(titleUrlFormated);
+  formatTitleUrl(e: Event) {
+    const target = e.target as HTMLInputElement;
+    if (target.value) {
+      const titleUrlFormated = target.value.replace(/\s+/g, '-').toLowerCase();
+      this.productEditForm.get('titleUrl')!.setValue(titleUrlFormated);
     }
   }
 
@@ -224,7 +230,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
         });
         break;
 
-      case 'edit':
+      case 'edit': {
         const editProduct = Object.keys(this.productEditForm.value)
           .filter((key) => !!this.productEditForm.value[key])
           .reduce((prev, curr) => ({ ...prev, [curr]: this.productEditForm.value[curr] }), {});
@@ -238,15 +244,16 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
           ...this.prepareProductData(this.languageOptions, editProduct),
         };
 
-        this.store.editProduct(productPrepareEdit);
+        this.store.editProduct(productPrepareEdit as ProductInput);
         break;
+      }
     }
 
     this.sendRequest = true;
   }
 
   onRemoveSubmit(): void {
-    this.store.removeProduct(this.productEditForm.get('titleUrl').value);
+    this.store.removeProduct(this.productEditForm.get('titleUrl')!.value);
     this.sendRequest = true;
   }
 
@@ -268,10 +275,10 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
       .reduce((prev, curr) => ({ ...prev, ...curr }), {});
   }
 
-  private prepareLangEditForm(product) {
+  private prepareLangEditForm(product: ProductRaw) {
     return this.languageOptions
-      .map((lang: string) => {
-        const productLang = product[lang];
+      .map((lang) => {
+        const productLang = product[lang]!;
         return {
           [lang]: {
             title: productLang.title || '',
@@ -289,7 +296,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
       .reduce((prev, curr) => ({ ...prev, ...curr }), {});
   }
 
-  private prepareProductData(languageOptions: Array<string>, formData) {
+  private prepareProductData(languageOptions: Array<string>, formData: Record<string, object>) {
     return languageOptions
       .map((lang: string) => ({
         [lang]: {

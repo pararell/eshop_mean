@@ -42,10 +42,10 @@ import { MatButtonModule } from '@angular/material/button';
   ],
 })
 export class HeaderComponent implements OnInit {
-  user$: Signal<User>;
-  cart$: Signal<Cart>;
-  productTitles$: Signal<string[]>;
-  userOrders$: Signal<Order[]>;
+  user$!: Signal<User | null>;
+  cart$!: Signal<Cart | null>;
+  productTitles$!: Signal<string[]>;
+  userOrders$!: Signal<Order[] | null>;
   showAutocomplete$ = new BehaviorSubject(false);
   languageOptions = languages;
   lang$: Observable<string>;
@@ -56,7 +56,7 @@ export class HeaderComponent implements OnInit {
 
   constructor(
     @Inject(PLATFORM_ID)
-    private _platformId: Object,
+    private _platformId: object,
     private store: SignalStore,
     private selectors: SignalStoreSelectors,
     public translate: TranslateService,

@@ -2,7 +2,7 @@ import { IsNotEmpty } from 'class-validator';
 
 export class GetCartChangeDto {
   @IsNotEmpty()
-  id: string;
+  id!: string;
 
   lang?: string;
 }

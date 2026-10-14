@@ -8,22 +8,21 @@ import { CartShowComponent } from '../cart-show/cart-show.component';
 import { PriceFormatPipe } from '../../../pipes/price.pipe';
 
 @Component({
-    selector: 'app-products-list',
-    templateUrl: './products-list.component.html',
-    styleUrls: ['./products-list.component.scss'],
-    imports: [CommonModule, TranslatePipe, PriceFormatPipe, RouterLink, CartShowComponent],
-    changeDetection: ChangeDetectionStrategy.OnPush
+  selector: 'app-products-list',
+  templateUrl: './products-list.component.html',
+  styleUrls: ['./products-list.component.scss'],
+  imports: [CommonModule, TranslatePipe, PriceFormatPipe, RouterLink, CartShowComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductsListComponent {
-  @Input()  products    : Product[] = [];
-  @Input()  cartIds     : {[productId: string]: number};
-  @Input()  currency    : string;
-  @Input()  lang        : string;
-  @Input()  showEdit    = false;
-  @Output() addProduct     = new EventEmitter<string>();
-  @Output() removeProduct  = new EventEmitter<string>();
-  @Output() editProduct    = new EventEmitter<string>();
-
+  @Input() products: Product[] = [];
+  @Input() cartIds!: { [productId: string]: number };
+  @Input() currency!: string;
+  @Input() lang!: string;
+  @Input() showEdit = false;
+  @Output() addProduct = new EventEmitter<string>();
+  @Output() removeProduct = new EventEmitter<string>();
+  @Output() editProduct = new EventEmitter<string>();
 
   constructor() {}
 
@@ -38,6 +37,4 @@ export class ProductsListComponent {
   onEditProduct(id: string): void {
     this.editProduct.emit(id);
   }
-
-
 }

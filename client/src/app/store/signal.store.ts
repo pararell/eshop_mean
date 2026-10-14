@@ -1,356 +1,377 @@
 import { SignalStoreSelectors } from './signal.store.selectors';
 import { Injectable } from '@angular/core';
-import { ApiService } from '../services/api.service';
-import { User } from '../shared/models';
-import { catchError, map, of } from 'rxjs';
+import type {
+  CategoryInput,
+  ContactRequest,
+  OrderRequest,
+  ProductInput,
+  ShopConfig,
+  SignInRequest,
+  SignUpRequest,
+  StripeOrderRequest,
+} from '@eshop/shared';
+import { ApiService, PagesQuery, ProductsQuery } from '../services/api.service';
+import { Cart, Order, Page, Product, Theme, Translations, User } from '../shared/models';
 
-
+/**
+ * Marks an existing state update whose value does not have the slot's declared type
+ * (e.g. a single save result written into a list). Kept as-is to preserve behavior; see
+ * docs/audit.md BUG-28. Type-only: returns its argument unchanged.
+ */
+const keepAsIs = <T>(value: unknown): T => value as T;
 
 @Injectable({
   providedIn: 'root',
 })
 export class SignalStore {
-
-
-  constructor(private apiService: ApiService,
-     private selectors: SignalStoreSelectors
+  constructor(
+    private apiService: ApiService,
+    private selectors: SignalStoreSelectors,
   ) {}
 
-signIn = (payload) => {
-  this.selectors.userState.update((state) => ({ ...state, loading: true }));
-  this.apiService.signIn(payload).subscribe((response: any) => {
-    this.selectors.userState.update((state) => ({ ...state, user: response, loading: false }));
-  });
-};
+  signIn = (payload: SignInRequest) => {
+    this.selectors.userState.update((state) => ({ ...state, loading: true }));
+    this.apiService.signIn(payload).subscribe((response) => {
+      // Known bug (audit BUG-05): an error response is stored as the user
+      this.selectors.userState.update((state) => ({ ...state, user: response, loading: false }));
+    });
+  };
 
-signUp = (payload) => {
-  this.selectors.userState.update((state) => ({ ...state, loading: true }));
-  this.apiService.signUp(payload).subscribe(() => {
-    this.selectors.userState.update((state) => ({ ...state, loading: false }));
-  });
-};
-
-getUser = () => {
-  this.selectors.userState.update((state) => ({ ...state, loading: true }));
-  this.apiService.getUser().subscribe((response: any) => {
-    if (response.error) {
+  signUp = (payload: SignUpRequest) => {
+    this.selectors.userState.update((state) => ({ ...state, loading: true }));
+    this.apiService.signUp(payload).subscribe(() => {
       this.selectors.userState.update((state) => ({ ...state, loading: false }));
-      return;
-    }
-    this.selectors.userState.update((state) => ({ ...state, user: response, loading: false }));
-  });
-};
+    });
+  };
 
-storeUser = (payload) => {
-  this.selectors.userState.update((state) => ({ ...state, user: payload, loading: false }));
-};
+  getUser = () => {
+    this.selectors.userState.update((state) => ({ ...state, loading: true }));
+    this.apiService.getUser().subscribe((response) => {
+      if (response.error) {
+        this.selectors.userState.update((state) => ({ ...state, loading: false }));
+        return;
+      }
+      this.selectors.userState.update((state) => ({ ...state, user: response, loading: false }));
+    });
+  };
 
-changeLanguage = (payload) => {
-  this.selectors.userState.update((state) => ({ ...state, lang: payload.lang, currency: payload.currency }));
-};
+  /** After the Google redirect only `{ accessToken }` is known until getUser() completes. */
+  storeUser = (payload: User | Pick<User, 'accessToken'> | null) => {
+    this.selectors.userState.update((state) => ({ ...state, user: keepAsIs<User | null>(payload), loading: false }));
+  };
 
-sendContact = (payload) => {
-  this.selectors.eshopState.update((state) => ({ ...state, loading: true }));
-  this.apiService.sendContact(payload).subscribe(() => {
-    this.selectors.eshopState.update((state) => ({ ...state, loading: false }));
-  });
-};
+  changeLanguage = (payload: { lang: string; currency: string }) => {
+    this.selectors.userState.update((state) => ({ ...state, lang: payload.lang, currency: payload.currency }));
+  };
 
-getPages = (payload?) => {
-  this.apiService.getPages(payload).subscribe((response: any) => {
-    this.selectors.eshopState.update((state) => ({ ...state, pages: response }));
-  });
-};
+  sendContact = (payload: ContactRequest) => {
+    this.selectors.eshopState.update((state) => ({ ...state, loading: true }));
+    this.apiService.sendContact(payload).subscribe(() => {
+      this.selectors.eshopState.update((state) => ({ ...state, loading: false }));
+    });
+  };
 
-getPage = (payload) => {
-  this.apiService.getPage(payload).subscribe((response: any) => {
-    this.selectors.eshopState.update((state) => ({ ...state, page: response }));
-  });
-};
+  getPages = (payload?: PagesQuery) => {
+    this.apiService.getPages(payload).subscribe((response) => {
+      this.selectors.eshopState.update((state) => ({ ...state, pages: response }));
+    });
+  };
 
-addOrEditPage = (payload) => {
-  this.apiService.addOrEditPage(payload).subscribe((response: any) => {
-    this.selectors.eshopState.update((state) => ({ ...state, page: response }));
-  });
-};
+  getPage = (payload: { titleUrl: string; lang: string }) => {
+    this.apiService.getPage(payload).subscribe((response) => {
+      this.selectors.eshopState.update((state) => ({ ...state, page: response }));
+    });
+  };
 
-removePage = (payload) => {
-  this.apiService.removePage(payload).subscribe((response: any) => {
-    this.selectors.eshopState.update((state) => ({ ...state, page: response }));
-  });
-};
+  addOrEditPage = (payload: Page) => {
+    this.apiService.addOrEditPage(payload).subscribe((response) => {
+      this.selectors.eshopState.update((state) => ({ ...state, page: keepAsIs<Page>(response) }));
+    });
+  };
 
-getThemes = () => {
-  this.apiService.getThemes().subscribe((response: any) => {
-    this.selectors.eshopState.update((state) => ({ ...state, themes: response }));
-  });
-};
+  removePage = (payload: string) => {
+    this.apiService.removePage(payload).subscribe((response) => {
+      this.selectors.eshopState.update((state) => ({ ...state, page: keepAsIs<Page>(response) }));
+    });
+  };
 
-addOrEditTheme = (payload) => {
-  this.apiService.addOrEditTheme(payload).subscribe((response: any) => {
-    this.selectors.eshopState.update((state) => ({ ...state, themes: response }));
-  });
-};
+  getThemes = () => {
+    this.apiService.getThemes().subscribe((response) => {
+      this.selectors.eshopState.update((state) => ({ ...state, themes: response }));
+    });
+  };
 
-removeTheme = (payload) => {
-  this.apiService.removeTheme(payload).subscribe((response: any) => {
-    this.selectors.eshopState.update((state) => ({ ...state, themes: response }));
-  });
-};
+  addOrEditTheme = (payload: Theme) => {
+    this.apiService.addOrEditTheme(payload).subscribe((response) => {
+      this.selectors.eshopState.update((state) => ({ ...state, themes: keepAsIs<Theme[]>(response) }));
+    });
+  };
 
-getConfigs = () => {
-  this.apiService.getConfigs().subscribe((response: any) => {
-    this.selectors.eshopState.update((state) => ({ ...state, configs: response }));
-  });
-};
+  removeTheme = (payload: string) => {
+    this.apiService.removeTheme(payload).subscribe((response) => {
+      this.selectors.eshopState.update((state) => ({ ...state, themes: keepAsIs<Theme[]>(response) }));
+    });
+  };
 
-addOrEditConfig = (payload) => {
-  this.apiService.addOrEditConfig(payload).subscribe((response: any) => {
-    this.selectors.eshopState.update((state) => ({ ...state, configs: response }));
-  });
-};
+  getConfigs = () => {
+    this.apiService.getConfigs().subscribe((response) => {
+      this.selectors.eshopState.update((state) => ({ ...state, configs: response }));
+    });
+  };
 
-removeConfig = (payload) => {
-  this.apiService.removeConfig(payload).subscribe((response: any) => {
-    this.selectors.eshopState.update((state) => ({ ...state, configs: response }));
-  });
-};
+  addOrEditConfig = (payload: ShopConfig) => {
+    this.apiService.addOrEditConfig(payload).subscribe((response) => {
+      this.selectors.eshopState.update((state) => ({ ...state, configs: keepAsIs<ShopConfig[]>(response) }));
+    });
+  };
 
-getProducts = (payload) => {
-  this.selectors.productState.update((state) => ({ ...state, loadingProducts: true }));
-  this.apiService.getProducts(payload).subscribe((response: any) => {
-    if (response.error) {
-      this.selectors.productState.update((state) => ({ ...state, loadingProducts: false }));
-      return;
-    }
-    this.selectors.productState.update((state) => ({
-      ...state,
-      products: response.products,
-      pagination: response.pagination,
-      maxPrice: response.maxPrice,
-      minPrice: response.minPrice,
-      loadingProducts: false,
-    }));
-  });
-};
+  removeConfig = (payload: string) => {
+    this.apiService.removeConfig(payload).subscribe((response) => {
+      this.selectors.eshopState.update((state) => ({ ...state, configs: keepAsIs<ShopConfig[]>(response) }));
+    });
+  };
 
-getCategories = (payload) => {
-  this.apiService.getCategories(payload).subscribe((response: any) => {
-    this.selectors.productState.update((state) => ({ ...state, categories: response }));
-  });
-};
-
-getProduct = (payload) => {
-  this.selectors.productState.update((state) => ({ ...state, loadingProduct: true }));
-  this.apiService.getProduct(payload).subscribe((response: any) => {
-    this.selectors.productState.update((state) => ({ ...state, product: response, loadingProduct: false }));
-  });
-};
-
-getProductSearch = (payload) => {
-  this.apiService.getProductsSearch(payload).subscribe((response: any) => {
-    this.selectors.productState.update((state) => ({ ...state, productsTitles: response }));
-  });
-};
-
-getCart = (payload) => {
-  this.apiService.getCart(payload).subscribe((response: any) => {
-    this.selectors.productState.update((state) => ({ ...state, cart: response }));
-  });
-};
-
-addToCart = (payload) => {
-  this.apiService.addToCart(payload).subscribe((response: any) => {
-    this.selectors.productState.update((state) => ({ ...state, cart: response }));
-  });
-};
-
-removeFromCart = (payload) => {
-  this.apiService.removeFromCart(payload).subscribe((response: any) => {
-    this.selectors.productState.update((state) => ({ ...state, cart: response }));
-  });
-};
-
-makeOrder = (payload) => {
-  this.selectors.productState.update((state) => ({ ...state, loading: true }));
-  this.apiService.makeOrder(payload).subscribe((response: any) => {
-    if (response.error || !response) {
+  getProducts = (payload: ProductsQuery) => {
+    this.selectors.productState.update((state) => ({ ...state, loadingProducts: true }));
+    this.apiService.getProducts(payload).subscribe((response) => {
+      if (response.error) {
+        this.selectors.productState.update((state) => ({ ...state, loadingProducts: false }));
+        return;
+      }
       this.selectors.productState.update((state) => ({
         ...state,
-        order: null,
-        error: 'ORDER_SUBMIT_ERROR',
-        loading: false,
+        products: response.products,
+        pagination: response.pagination,
+        maxPrice: response.maxPrice,
+        minPrice: response.minPrice,
+        loadingProducts: false,
       }));
-    }
-    this.selectors.productState.update((state) => ({
-      ...state,
-      order: response.result,
-      cart: response.cart,
-      error: response.error,
-      loading: false,
-    }));
-  });
-};
+    });
+  };
 
-makeOrderWithPayment = (payload) => {
-  this.selectors.productState.update((state) => ({ ...state, loading: true }));
-  this.apiService.handleToken(payload).subscribe((response: any) => {
-    if (response.error || !response) {
+  getCategories = (payload: string) => {
+    this.apiService.getCategories(payload).subscribe((response) => {
+      this.selectors.productState.update((state) => ({ ...state, categories: response }));
+    });
+  };
+
+  getProduct = (payload: string) => {
+    this.selectors.productState.update((state) => ({ ...state, loadingProduct: true }));
+    this.apiService.getProduct(payload).subscribe((response) => {
+      this.selectors.productState.update((state) => ({ ...state, product: response, loadingProduct: false }));
+    });
+  };
+
+  getProductSearch = (payload: string) => {
+    this.apiService.getProductsSearch(payload).subscribe((response) => {
+      this.selectors.productState.update((state) => ({ ...state, productsTitles: response }));
+    });
+  };
+
+  getCart = (payload?: string) => {
+    this.apiService.getCart(payload).subscribe((response) => {
+      this.selectors.productState.update((state) => ({ ...state, cart: response }));
+    });
+  };
+
+  addToCart = (payload: string) => {
+    this.apiService.addToCart(payload).subscribe((response) => {
+      this.selectors.productState.update((state) => ({ ...state, cart: response }));
+    });
+  };
+
+  removeFromCart = (payload: string) => {
+    this.apiService.removeFromCart(payload).subscribe((response) => {
+      this.selectors.productState.update((state) => ({ ...state, cart: response }));
+    });
+  };
+
+  makeOrder = (payload: OrderRequest) => {
+    this.selectors.productState.update((state) => ({ ...state, loading: true }));
+    this.apiService.makeOrder(payload).subscribe((response) => {
+      // Known bug (audit BUG-04): no return here, so the update below overwrites the error
+      if (response.error || !response) {
+        this.selectors.productState.update((state) => ({
+          ...state,
+          order: null,
+          error: 'ORDER_SUBMIT_ERROR',
+          loading: false,
+        }));
+      }
       this.selectors.productState.update((state) => ({
         ...state,
-        order: null,
-        error: 'ORDER_SUBMIT_ERROR',
+        order: response.result,
+        // On success the server returns an empty session cart ({ items: [] })
+        cart: keepAsIs<Cart>(response.cart),
+        error: response.error,
         loading: false,
       }));
-    }
-    this.selectors.productState.update((state) => ({
-      ...state,
-      order: response.result,
-      cart: response.cart,
-      error: response.error,
-      loading: false,
-    }));
-  });
-};
+    });
+  };
 
-getStripeSession = (payload) => {
-  this.apiService.getStripeSession(payload);
-};
+  makeOrderWithPayment = (payload: StripeOrderRequest) => {
+    this.selectors.productState.update((state) => ({ ...state, loading: true }));
+    this.apiService.handleToken(payload).subscribe((response) => {
+      // Known bug (audit BUG-04): no return here, so the update below overwrites the error
+      if (response.error || !response) {
+        this.selectors.productState.update((state) => ({
+          ...state,
+          order: null,
+          error: 'ORDER_SUBMIT_ERROR',
+          loading: false,
+        }));
+      }
+      this.selectors.productState.update((state) => ({
+        ...state,
+        order: response.result,
+        cart: keepAsIs<Cart>(response.cart),
+        error: response.error,
+        loading: false,
+      }));
+    });
+  };
 
-getUserOrders = () => {
-  this.apiService.getUserOrders().subscribe((response: any) => {
-    this.selectors.productState.update((state) => ({ ...state, userOrders: response }));
-  });
-}
+  getStripeSession = (payload: unknown) => {
+    this.apiService.getStripeSession(payload);
+  };
 
-filterPrice = (payload) => {
-  this.selectors.productState.update((state) => ({ ...state, priceFilter: payload }));
-};
+  getUserOrders = () => {
+    this.apiService.getUserOrders().subscribe((response) => {
+      this.selectors.productState.update((state) => ({ ...state, userOrders: response }));
+    });
+  };
 
-updatePosition = (payload) => {
-  this.selectors.productState.update((state) => ({ ...state, position: payload }));
-};
+  filterPrice = (payload: number) => {
+    this.selectors.productState.update((state) => ({ ...state, priceFilter: payload }));
+  };
 
-cleanError = () => {
-  this.selectors.productState.update((state) => ({ ...state, order: null, error: '' }));
-};
+  updatePosition = (payload: { [component: string]: number }) => {
+    this.selectors.productState.update((state) => ({ ...state, position: payload }));
+  };
 
-getOrders = () => {
-  this.apiService.getOrders().subscribe((response: any) => {
-    this.selectors.dashboardState.update((state) => ({ ...state, orders: response }));
-  });
-}
+  cleanError = () => {
+    this.selectors.productState.update((state) => ({ ...state, order: null, error: '' }));
+  };
 
-getOrder = (payload) => {
-  this.apiService.getOrder(payload).subscribe((response: any) => {
-    this.selectors.dashboardState.update((state) => ({ ...state, order: response }));
-    this.selectors.productState.update((state) => ({ ...state, order: response }));
-  });
-}
+  getOrders = () => {
+    this.apiService.getOrders().subscribe((response) => {
+      this.selectors.dashboardState.update((state) => ({ ...state, orders: response }));
+    });
+  };
 
-addProduct = (payload) => {
-  this.apiService.addProduct(payload).subscribe((response: any) => {
-    this.selectors.dashboardState.update((state) => ({ ...state, allProducts: response }));
-  });
-}
+  getOrder = (payload: string) => {
+    this.apiService.getOrder(payload).subscribe((response) => {
+      this.selectors.dashboardState.update((state) => ({ ...state, order: response }));
+      this.selectors.productState.update((state) => ({ ...state, order: response }));
+    });
+  };
 
-editProduct = (payload) => {
-  this.selectors.dashboardState.update((state) => ({ ...state, loading: true }));
-  this.apiService.editProduct(payload).subscribe(() => {
-    this.selectors.dashboardState.update((state) => ({ ...state, loading: false }));
-  });
-}
+  addProduct = (payload: ProductInput) => {
+    this.apiService.addProduct(payload).subscribe((response) => {
+      this.selectors.dashboardState.update((state) => ({ ...state, allProducts: keepAsIs<Product[]>(response) }));
+    });
+  };
 
-removeProduct = (payload) => {
-  this.selectors.dashboardState.update((state) => ({ ...state, loading: true }));
-  this.apiService.removeProduct(payload).subscribe(() => {
-    this.selectors.dashboardState.update((state) => ({ ...state, loading: false }));
-  });
-}
+  editProduct = (payload: ProductInput) => {
+    this.selectors.dashboardState.update((state) => ({ ...state, loading: true }));
+    this.apiService.editProduct(payload).subscribe(() => {
+      this.selectors.dashboardState.update((state) => ({ ...state, loading: false }));
+    });
+  };
 
-storeProduct = (payload) => {
-  this.selectors.productState.update((state) => ({ ...state, product: payload, loadingProduct: false}));
-}
+  removeProduct = (payload: string) => {
+    this.selectors.dashboardState.update((state) => ({ ...state, loading: true }));
+    this.apiService.removeProduct(payload).subscribe(() => {
+      this.selectors.dashboardState.update((state) => ({ ...state, loading: false }));
+    });
+  };
 
-getAllProducts = () => {
-  this.apiService.getAllProducts().subscribe((response: any) => {
-    this.selectors.dashboardState.update((state) => ({ ...state, allProducts: response }));
-  });
-}
+  storeProduct = (payload: unknown) => {
+    this.selectors.productState.update((state) => ({ ...state, product: keepAsIs<Product | null>(payload), loadingProduct: false }));
+  };
 
-getAllCategories = () => {
-  this.apiService.getAllCategories().subscribe((response: any) => {
-    this.selectors.dashboardState.update((state) => ({ ...state, allCategories: response }));
-  });
-}
+  getAllProducts = () => {
+    this.apiService.getAllProducts().subscribe((response) => {
+      this.selectors.dashboardState.update((state) => ({ ...state, allProducts: response }));
+    });
+  };
 
-editCategory = (payload) => {
-  this.apiService.editCategory(payload).subscribe((response: any) => {
-    console.log(response);
-  });
-}
+  getAllCategories = () => {
+    this.apiService.getAllCategories().subscribe((response) => {
+      this.selectors.dashboardState.update((state) => ({ ...state, allCategories: response }));
+    });
+  };
 
-removeCategory = (payload) => {
-  this.apiService.removeCategory(payload).subscribe((response: any) => {
-    console.log(response);
-  });
-}
+  editCategory = (payload: CategoryInput) => {
+    this.apiService.editCategory(payload).subscribe((response) => {
+      console.log(response);
+    });
+  };
 
-getImages = () => {
-  this.apiService.getImages().subscribe((response: any) => {
-    if (response.error) {
-      return;
-    }
-    this.selectors.dashboardState.update((state) => ({ ...state, productImages: response.all }));
-  });
-}
+  removeCategory = (payload: string) => {
+    this.apiService.removeCategory(payload).subscribe((response) => {
+      console.log(response);
+    });
+  };
 
-addProductImagesUrl = (payload) => {
-  this.apiService.addProductImagesUrl(payload).subscribe((response: any) => {
-    if (response.error) {
-      return;
-    }
-    if (response && response.titleUrl) {
-      this.selectors.productState.update((state) => ({ ...state, product: response }));
-    }
-    this.selectors.dashboardState.update((state) => ({ ...state, productImages: response.all }));
-  });
-}
+  getImages = () => {
+    this.apiService.getImages().subscribe((response) => {
+      if (response.error) {
+        return;
+      }
+      this.selectors.dashboardState.update((state) => ({ ...state, productImages: response.all }));
+    });
+  };
 
-removeImage = (payload) => {
-  this.apiService.removeImage(payload).subscribe((response: any) => {
-    if (response && response.titleUrl) {
-      this.selectors.productState.update((state) => ({ ...state, product: response }));
-    }
-    this.selectors.dashboardState.update((state) => ({ ...state, productImages: response.all }));
-  });
-}
+  addProductImagesUrl = (payload: { image: string; titleUrl?: string }) => {
+    this.apiService.addProductImagesUrl(payload).subscribe((result) => {
+      const response = result as typeof result & { titleUrl?: string; all?: string[] };
+      if (response.error) {
+        return;
+      }
+      if (response && response.titleUrl) {
+        this.selectors.productState.update((state) => ({ ...state, product: keepAsIs<Product>(response) }));
+      }
+      this.selectors.dashboardState.update((state) => ({ ...state, productImages: keepAsIs<string[]>(response.all) }));
+    });
+  };
 
-storeProductImages = (payload) => {
-  this.selectors.dashboardState.update((state) => ({ ...state, productImages: payload.all }));
-}
+  removeImage = (payload: { image: string; titleUrl?: string }) => {
+    this.apiService.removeImage(payload).subscribe((result) => {
+      const response = result as typeof result & { titleUrl?: string; all?: string[] };
+      if (response && response.titleUrl) {
+        this.selectors.productState.update((state) => ({ ...state, product: keepAsIs<Product>(response) }));
+      }
+      this.selectors.dashboardState.update((state) => ({ ...state, productImages: keepAsIs<string[]>(response.all) }));
+    });
+  };
 
-updateOrder = (payload) => {
-  this.apiService.updateOrder(payload).subscribe((response: any) => {
-    this.selectors.dashboardState.update((state) => ({ ...state, order: response }));
-  });
-}
+  storeProductImages = (payload: { all: string[] }) => {
+    this.selectors.dashboardState.update((state) => ({ ...state, productImages: payload.all }));
+  };
 
-getAllTranslations = () => {
-  this.apiService.getAllTranslations().subscribe((response: any) => {
-    this.selectors.dashboardState.update((state) => ({ ...state, translations: response }));
-  });
-}
+  updateOrder = (payload: Partial<Order> & Pick<Order, 'orderId'>) => {
+    this.apiService.updateOrder(payload).subscribe((response) => {
+      this.selectors.dashboardState.update((state) => ({ ...state, order: response }));
+    });
+  };
 
-editTranslation = (payload) => {
-  this.selectors.dashboardState.update((state) => ({ ...state, loading: true }));
-  this.apiService.editAllTranslation(payload).subscribe((response: any) => {
-    this.selectors.dashboardState.update(state => ({
-      ...state,
-      loading: false,
-      translations: state.translations.map(trans => trans._id === response._id ? response : trans)
-    }))
-  })
-};
+  getAllTranslations = () => {
+    this.apiService.getAllTranslations().subscribe((response) => {
+      this.selectors.dashboardState.update((state) => ({ ...state, translations: response }));
+    });
+  };
 
+  editTranslation = (payload: Translations[]) => {
+    this.selectors.dashboardState.update((state) => ({ ...state, loading: true }));
+    this.apiService.editAllTranslation(payload).subscribe((result) => {
+      // Known bug (audit BUG-12): the response is an array, so `_id` never matches
+      const response = keepAsIs<Translations>(result);
+      this.selectors.dashboardState.update((state) => ({
+        ...state,
+        loading: false,
+        translations: state.translations.map((trans) => (trans._id === response._id ? response : trans)),
+      }));
+    });
+  };
 }

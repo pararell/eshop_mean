@@ -1,23 +1,12 @@
 import { AuthGuard } from '@nestjs/passport';
-import {
-  Controller,
-  Get,
-  Param,
-  Query,
-  ValidationPipe,
-  Delete,
-  UseGuards,
-  Post,
-  Body,
-  Patch,
-  Headers,
-} from '@nestjs/common';
+import { Controller, Get, Param, Query, ValidationPipe, Delete, UseGuards, Post, Body, Patch, Headers } from '@nestjs/common';
 
 import { ProductsService } from './products.service';
 import { GetProductsDto } from './dto/get-products';
-import { ProductsWithPagination, Product } from './models/product.model';
+import type { CategoryInput, ProductInput } from '@eshop/shared';
+import { LocalizedProduct, Product, ProductsPage } from './models/product.model';
 import { GetProductDto } from './dto/get-product';
-import { Category } from './models/category.model';
+import { CategoryWithProducts, LocalizedCategory } from './models/category.model';
 import { RolesGuard } from '../auth/roles.guard';
 import { GetUser } from '../auth/utils/get-user.decorator';
 import { User } from '../auth/models/user.model';
@@ -27,15 +16,12 @@ export class ProductsController {
   constructor(private productService: ProductsService) {}
 
   @Get()
-  getProducts(
-    @Query(ValidationPipe) getProductsDto: GetProductsDto,
-    @Headers('lang') lang: string,
-  ): Promise<ProductsWithPagination> {
+  getProducts(@Query(ValidationPipe) getProductsDto: GetProductsDto, @Headers('lang') lang: string): Promise<ProductsPage> {
     return this.productService.getProducts(getProductsDto, lang);
   }
 
   @Get('/categories')
-  getCategories(@Headers('lang') lang: string): Promise<Category[]> {
+  getCategories(@Headers('lang') lang: string): Promise<LocalizedCategory[]> {
     return this.productService.getCategories(lang);
   }
 
@@ -46,15 +32,12 @@ export class ProductsController {
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Get('/all')
-  getAllProducts(@Headers('lang') lang: string): Promise<Product[]> {
+  getAllProducts(@Headers('lang') lang: string): Promise<LocalizedProduct[]> {
     return this.productService.getAllProducts(lang);
   }
 
   @Get('/:name')
-  getProductByName(
-    @Query() getProductDto: GetProductDto,
-    @Param('name') name: string,
-  ): Promise<Product> {
+  getProductByName(@Query() getProductDto: GetProductDto, @Param('name') name: string): Promise<LocalizedProduct | Product> {
     return this.productService.getProductByName(name, getProductDto);
   }
 
@@ -66,25 +49,25 @@ export class ProductsController {
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Post('/add')
-  addProduct(@Body() productReq, @GetUser() user: User): Promise<void> {
+  addProduct(@Body() productReq: ProductInput, @GetUser() user: User): Promise<void> {
     return this.productService.addProduct(productReq, user);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Patch('/edit')
-  editProduct(@Body() productReq): Promise<void> {
+  editProduct(@Body() productReq: ProductInput): Promise<void> {
     return this.productService.editProduct(productReq);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Get('/categories/all')
-  getAllCategories(@Headers('lang') lang: string): Promise<any> {
+  getAllCategories(@Headers('lang') lang: string): Promise<CategoryWithProducts[]> {
     return this.productService.getAllCategories(lang);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Patch('/categories/edit')
-  editCategory(@Body() categoryReq): Promise<void> {
+  editCategory(@Body() categoryReq: CategoryInput): Promise<void> {
     return this.productService.editCategory(categoryReq);
   }
 

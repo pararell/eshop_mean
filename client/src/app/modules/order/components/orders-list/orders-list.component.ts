@@ -10,8 +10,8 @@ import { Order } from '../../../../shared/models';
   standalone: false,
 })
 export class OrdersListComponent {
-  @Input() orders: Order[];
-  @Input() orderUrl: string;
+  @Input() orders!: Order[];
+  @Input() orderUrl!: string;
 
   constructor() {}
 }

@@ -5,7 +5,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable, BehaviorSubject, from } from 'rxjs';
 
 import { languages } from '../../../shared/constants';
-import { Category } from '../../../shared/models';
+import { AllCategories, CategoryRaw } from '../../../shared/models';
 import { SignalStore } from '../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 
@@ -17,15 +17,15 @@ import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
   standalone: false,
 })
 export class CategoriesEditComponent {
-  categoryEditForm: FormGroup;
+  categoryEditForm!: FormGroup;
   sendRequest = false;
-  categories$: Observable<{ category: Category; productsWithCategory: string[] }[]>;
+  categories$: Observable<AllCategories>;
   languageOptions = languages;
-  choosenLanguageSub$ = new BehaviorSubject(languages[0]);
+  choosenLanguageSub$ = new BehaviorSubject<string>(languages[0]);
   categoryProductsTitlesUrl: string[] = [];
   filteredTitles$: Observable<string[]>;
   mainImageType = false;
-  subCategory: string;
+  subCategory!: string;
 
   constructor(
     private fb: FormBuilder,
@@ -36,7 +36,7 @@ export class CategoriesEditComponent {
     this.categories$ = toObservable(this.selectors.allCategories);
     this.store.getAllCategories();
 
-    this.filteredTitles$ = this.categoryEditForm.get('titleUrl').valueChanges.pipe(
+    this.filteredTitles$ = this.categoryEditForm.get('titleUrl')!.valueChanges.pipe(
       startWith(''),
       switchMap((query: string) => {
         const filterValue = query.toLowerCase();
@@ -68,16 +68,18 @@ export class CategoriesEditComponent {
   }
 
   editCategory(): void {
-    const titleUrl = this.categoryEditForm.get('titleUrl').value;
+    const titleUrl = this.categoryEditForm.get('titleUrl')!.value;
     this.categories$
       .pipe(
         take(1),
         map((categories) => categories.find((category) => category.category.titleUrl === titleUrl)),
       )
-      .subscribe((all) => {
+      .subscribe((found) => {
+        // titleUrl comes from the loaded list, so the category exists
+        const all = found!;
         const category = all.category;
         this.categoryProductsTitlesUrl = all.productsWithCategory;
-        this.mainImageType = !!category.mainImage.type;
+        this.mainImageType = !!category.mainImage!.type;
         const newForm = {
           titleUrl: category.titleUrl,
           mainImage: category.mainImage && category.mainImage.url ? category.mainImage.url : '',
@@ -103,23 +105,23 @@ export class CategoriesEditComponent {
   }
 
   onRemove(): void {
-    const titleUrl = this.categoryEditForm.get('titleUrl').value;
+    const titleUrl = this.categoryEditForm.get('titleUrl')!.value;
     this.store.removeCategory(titleUrl);
     this.sendRequest = true;
   }
 
   addSubCategory(): void {
-    if (this.subCategory && this.subCategory !== this.categoryEditForm.get('titleUrl').value) {
-      const formSubCategories = this.categoryEditForm.value.subCategories.filter((subCat) => subCat !== this.subCategory);
+    if (this.subCategory && this.subCategory !== this.categoryEditForm.get('titleUrl')!.value) {
+      const formSubCategories = this.categoryEditForm.value.subCategories.filter((subCat: string) => subCat !== this.subCategory);
       const subCategories = [...formSubCategories, this.subCategory.replace(/ /g, '_').toLowerCase()];
-      this.categoryEditForm.get('subCategories').setValue(subCategories);
+      this.categoryEditForm.get('subCategories')!.setValue(subCategories);
       this.subCategory = '';
     }
   }
 
   removeSubCategory(subCatToRemove: string): void {
-    const formSubCategories = this.categoryEditForm.value.subCategories.filter((subCat) => subCat !== subCatToRemove);
-    this.categoryEditForm.get('subCategories').setValue(formSubCategories);
+    const formSubCategories = this.categoryEditForm.value.subCategories.filter((subCat: string) => subCat !== subCatToRemove);
+    this.categoryEditForm.get('subCategories')!.setValue(formSubCategories);
   }
 
   private _createLangForm(languageOptions: Array<string>) {
@@ -136,10 +138,10 @@ export class CategoriesEditComponent {
       .reduce((prev, curr) => ({ ...prev, ...curr }), {});
   }
 
-  private prepareLangEditForm(category) {
+  private prepareLangEditForm(category: CategoryRaw) {
     return this.languageOptions
-      .map((lang: string) => {
-        const categoryLang = category[lang] || {};
+      .map((lang) => {
+        const categoryLang: Partial<NonNullable<CategoryRaw['en']>> = category[lang] || {};
         return {
           [lang]: {
             title: categoryLang.title || '',

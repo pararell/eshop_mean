@@ -1,15 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  UseGuards,
-  Session,
-  Param,
-  Patch,
-  UnprocessableEntityException,
-  Headers,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Session, Param, Patch, UnprocessableEntityException, Headers } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import { OrdersService } from './orders.service';
@@ -20,6 +9,11 @@ import { Order } from './models/order.model';
 import { RolesGuard } from '../auth/roles.guard';
 import { Cart } from '../cart/utils/cart';
 import { prepareCart } from '../shared/utils/prepareUtils';
+import type { Order as OrderData, StripeOrderRequest } from '@eshop/shared';
+import { CartModel } from '../cart/models/cart.model';
+import { ShopSession } from '../shared/types/session';
+
+type OrderResponse = { error: string; result: Order | null; cart: CartModel | Cart };
 
 @Controller('api/orders')
 export class OrdersController {
@@ -32,17 +26,9 @@ export class OrdersController {
   }
 
   @Post('/add')
-  async addOrder(
-    @Body() orderDto: OrderDto,
-    @Session() session,
-    @Headers('lang') lang: string,
-  ): Promise<{ error: string; result: Order; cart: any }> {
+  async addOrder(@Body() orderDto: OrderDto, @Session() session: ShopSession, @Headers('lang') lang: string): Promise<OrderResponse> {
     try {
-      const successResult = await this.ordersService.addOrder(
-        orderDto,
-        session,
-        lang,
-      );
+      const successResult = await this.ordersService.addOrder(orderDto, session, lang);
       if (successResult && !successResult.error) {
         const emptyCart = new Cart({ items: [] });
         session.cart = emptyCart;
@@ -50,7 +36,7 @@ export class OrdersController {
       } else {
         return {
           ...successResult,
-          cart: prepareCart(session.cart, lang, session.config),
+          cart: prepareCart(session.cart!, lang, session.config),
         };
       }
     } catch (e) {
@@ -59,17 +45,9 @@ export class OrdersController {
   }
 
   @Post('/stripe')
-  async orderWithStripe(
-    @Body() body,
-    @Session() session,
-    @Headers('lang') lang: string,
-  ): Promise<{ error: string; result: Order; cart: any }> {
+  async orderWithStripe(@Body() body: StripeOrderRequest, @Session() session: ShopSession, @Headers('lang') lang: string): Promise<OrderResponse> {
     try {
-      const successResult = await this.ordersService.orderWithStripe(
-        body,
-        session,
-        lang,
-      );
+      const successResult = await this.ordersService.orderWithStripe(body, session, lang);
 
       if (successResult && !successResult.error) {
         const emptyCart = new Cart({ items: [] });
@@ -78,7 +56,7 @@ export class OrdersController {
       } else {
         return {
           ...successResult,
-          cart: prepareCart(session.cart, lang, session.config),
+          cart: prepareCart(session.cart!, lang, session.config),
         };
       }
     } catch (e) {
@@ -100,7 +78,7 @@ export class OrdersController {
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Patch()
-  updateOrder(@Body() order) {
+  updateOrder(@Body() order: Partial<OrderData> & Pick<OrderData, 'orderId'>) {
     return this.ordersService.updateOrder(order);
   }
 }

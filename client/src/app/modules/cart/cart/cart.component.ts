@@ -1,6 +1,6 @@
 import { toObservable } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { map, filter, take, withLatestFrom } from 'rxjs/operators';
+import { filter, take, withLatestFrom } from 'rxjs/operators';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Location } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -19,16 +19,16 @@ import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
   standalone: false,
 })
 export class CartComponent {
-  cart$: Observable<Cart>;
+  cart$: Observable<Cart | null>;
   lang$: Observable<string>;
   order$: Observable<Order>;
-  user$: Observable<User>;
+  user$: Observable<User | null>;
   orderForm: FormGroup;
   currency$: Observable<string>;
   toggleCard = false;
-  productUrl: string;
-  loading$: Observable<boolean>;
-  error$: Observable<string>;
+  productUrl!: string;
+  loading$!: Observable<boolean>;
+  error$!: Observable<string>;
 
   readonly component = 'cartComponent';
 
@@ -65,7 +65,7 @@ export class CartComponent {
         withLatestFrom(this.lang$),
         take(1),
       )
-      .subscribe(([order, lang]) => {
+      .subscribe(([_order, lang]) => {
         this.router.navigate(['/' + lang + '/cart/summary']);
       });
   }
@@ -80,8 +80,8 @@ export class CartComponent {
     });
   }
 
-  payWithCard(payment): void {
-    this.user$.pipe(take(1)).subscribe((user: User) => {
+  payWithCard(payment: { token: { id: string }; amount: string | number; currency: string }): void {
+    this.user$.pipe(take(1)).subscribe((user) => {
       const userToOrder = user ? { userId: user.id } : {};
       const addresses = [
         {
@@ -103,7 +103,7 @@ export class CartComponent {
   }
 
   submit(currency: string): void {
-    this.user$.pipe(take(1)).subscribe((user: User) => {
+    this.user$.pipe(take(1)).subscribe((user) => {
       const userToOrder = user ? { userId: user.id } : {};
       const addresses = [
         {

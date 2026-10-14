@@ -23,8 +23,8 @@ import { MatButtonModule } from '@angular/material/button';
   imports: [MatButtonModule],
 })
 export class CarouselComponent implements AfterViewInit, OnDestroy {
-  @ViewChild('slides') slides: ElementRef<HTMLDivElement>;
-  @ViewChild('slideContainer') slideContainer: ElementRef<HTMLDivElement>;
+  @ViewChild('slides') slides!: ElementRef<HTMLDivElement>;
+  @ViewChild('slideContainer') slideContainer!: ElementRef<HTMLDivElement>;
 
   @Input() intervalForSlider = 10000;
   @Input() withBackground = false;
@@ -32,12 +32,12 @@ export class CarouselComponent implements AfterViewInit, OnDestroy {
   @Input() showArrows = true;
 
   showArrowsSig = signal(false);
-  autoSlideSub: Subscription;
+  autoSlideSub!: Subscription;
   dragging = false;
 
   constructor(
     @Inject(PLATFORM_ID)
-    private platformId: Object,
+    private platformId: object,
   ) {}
 
   onClickLeft() {
@@ -76,11 +76,12 @@ export class CarouselComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  onDrag(e, type: string) {
+  /** Also bound to touch events, which have no movementX (pre-existing; see audit UI-11) */
+  onDrag(e: Event, type: string) {
     this.dragging = type === 'down' ? true : type === 'up' ? false : this.dragging;
     if (this.dragging && type === 'move') {
       const slidesElement = this.slides.nativeElement;
-      slidesElement.scrollLeft += e.movementX * -50;
+      slidesElement.scrollLeft += (e as MouseEvent).movementX * -50;
     }
   }
 

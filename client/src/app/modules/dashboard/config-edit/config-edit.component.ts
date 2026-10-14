@@ -5,7 +5,7 @@ import { Observable, BehaviorSubject, from } from 'rxjs';
 import { delay, take } from 'rxjs/operators';
 
 import { languages } from '../../../shared/constants';
-import { Config } from '../../../shared/models';
+import { Config, LanguageCode } from '../../../shared/models';
 import { SignalStore } from '../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 
@@ -17,10 +17,10 @@ import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
   standalone: false,
 })
 export class ConfigEditComponent {
-  configs$: Observable<Config[]>;
+  configs$: Observable<Config[] | null>;
   configEditForm: FormGroup;
   languageOptions = languages;
-  choosenLanguageSub$ = new BehaviorSubject(languages[0]);
+  choosenLanguageSub$ = new BehaviorSubject<string>(languages[0]);
   newConfig = '';
   chosenConfig = '';
   sendRequest = false;
@@ -43,25 +43,26 @@ export class ConfigEditComponent {
 
   addConfig(): void {
     if (this.newConfig) {
-      this.configEditForm.get('titleUrl').setValue(this.newConfig);
+      this.configEditForm.get('titleUrl')!.setValue(this.newConfig);
     }
   }
 
   choseConfig(): void {
     if (this.chosenConfig) {
-      this.configEditForm.get('titleUrl').setValue(this.chosenConfig);
+      this.configEditForm.get('titleUrl')!.setValue(this.chosenConfig);
       this.configs$.pipe(take(1)).subscribe((configs) => {
-        const foundConfig = configs.find((config) => config.titleUrl === this.chosenConfig);
+        // chosenConfig comes from the loaded list, so the config exists
+        const foundConfig = configs!.find((config) => config.titleUrl === this.chosenConfig)!;
         const newForm = {
           titleUrl: foundConfig.titleUrl,
           active: foundConfig.active,
           ...this.languageOptions
             .map((lang: string) => ({
               [lang]: {
-                basicShippingCost: foundConfig[lang].shippingCost?.basic.cost || 0,
-                basicShippingLimit: foundConfig[lang].shippingCost?.basic.limit || 0,
-                extendedShippingCost: foundConfig[lang].shippingCost?.extended.cost || 0,
-                extendedShippingLimit: foundConfig[lang].shippingCost?.extended.limit || 0,
+                basicShippingCost: foundConfig[lang as LanguageCode]!.shippingCost?.basic.cost || 0,
+                basicShippingLimit: foundConfig[lang as LanguageCode]!.shippingCost?.basic.limit || 0,
+                extendedShippingCost: foundConfig[lang as LanguageCode]!.shippingCost?.extended.cost || 0,
+                extendedShippingLimit: foundConfig[lang as LanguageCode]!.shippingCost?.extended.limit || 0,
               },
             }))
             .reduce((prev, curr) => ({ ...prev, ...curr }), {}),

@@ -4,24 +4,25 @@ Guidance for AI agents and contributors working in this repository.
 Deeper references: [docs/architecture.md](docs/architecture.md) (modules, data flow, schemas),
 [docs/audit.md](docs/audit.md) (known issues, prioritized), [docs/testing.md](docs/testing.md) (how to run and write tests).
 
-Before finishing any change: `npm run typecheck && npm test`, plus `npm run test:e2e` for anything
+Before finishing any change: `npm run typecheck && npm run lint && npm test`, plus `npm run test:e2e` for anything
 touching the client, SSR or checkout. Tests never call real external services; keep it that way.
 
 ## What this is
 
 eshop_mean is a multi-language (en / sk / cs) e-commerce app with an admin area:
+
 - products, categories, pages, themes, shop config and translations;
 - Stripe card payments or cash on delivery;
 - Cloudinary image uploads, SendGrid emails;
 - Google login and email/password login (JWT).
 
-| Layer | Tech |
-|---|---|
-| Frontend | Angular 22.2 (zoneless, SSR + hydration), Angular Material (M2 theme), custom signal store |
-| Backend | NestJS 12 on Express 5, Passport (JWT + Google OAuth 2.0) |
-| Database | MongoDB via Mongoose 8.24 (plain `new Schema()`), sessions in MongoDB via `connect-mongo` |
-| Tooling | One root `package.json`, TypeScript 6.0 (non-strict), Angular CLI (`@angular/build`), Nest CLI, Prettier, ESLint (client flat config; server broken), stylelint |
-| Deploy | Docker image (`Dockerfile`), single Node process |
+| Layer    | Tech                                                                                                                                                                                                           |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Frontend | Angular 22.2 (zoneless, SSR + hydration), Angular Material (M2 theme), custom signal store                                                                                                                     |
+| Backend  | NestJS 12 on Express 5, Passport (JWT + Google OAuth 2.0)                                                                                                                                                      |
+| Database | MongoDB via Mongoose 8.24 (plain `new Schema()`), sessions in MongoDB via `connect-mongo`                                                                                                                      |
+| Tooling  | One root `package.json`, TypeScript 6.0 **strict** (+ Angular `strictTemplates`), Angular CLI (`@angular/build`), Nest CLI, ESLint flat config (`eslint.config.mjs`), Prettier, stylelint, husky + lint-staged |
+| Deploy   | Docker image (`Dockerfile`, ~186 MB, non-root, tini), single Node process                                                                                                                                      |
 
 ## Runtime topology (important)
 
@@ -43,11 +44,13 @@ SSR only renders for allowed hosts (`CommonEngine` SSRF protection): the hostnam
 `SERVER_URL` plus localhost (see `server/src/app-universal.module.ts`).
 
 **Development is two processes:**
+
 - API: Nest on `:4000` via `server/src/main.ts` (`npm run start:dev`).
 - Client: `ng serve` on `:3000` (`npm run start:client`). It calls the API at
   `environment.apiUrl = http://localhost:4000`, and CORS allows `ORIGIN`.
 
 Root files:
+
 - `server-ssr.ts`: used.
 - `server-express.ts`: **dead** (stock Angular SSR server, referenced nowhere).
 
@@ -82,34 +85,36 @@ server/                         NestJS app (server/nest-cli.json, server/tsconfi
     models/                     TS interfaces (often out of sync with schemas)
     dto/                        class-validator DTOs (validation only where a pipe is applied)
   src/shared/                   constans.ts (languages, shipping defaults), utils (cart pricing, paginate, email)
+shared/types/index.d.ts         API/data types shared by client and server (`import type ... from '@eshop/shared'`)
 docs/                           architecture.md, audit.md, testing.md
 e2e/                            Playwright specs + seeded test server (support/start-server.mjs)
 server/test/                    API specs, Jest setup, mocks (unit specs live next to code: src/**/*.spec.ts)
-Dockerfile                      2-stage build, runs `npm run start`
+Dockerfile                      build stage + runtime with only dist/ and mongoose; `node dist/eshop/server/server.mjs`
 ```
 
 ## Commands
 
 Verified on Node 24.15 / npm 11.12 (2026-10-14). Angular 22 requires Node `^24.15.0`; Docker uses `node:24.21-alpine3.24`.
 
-| Task | Command | Status |
-|---|---|---|
-| Install | `npm ci` | OK |
-| Dev API (watch, :4000) | `npm run start:dev` | OK. Needs `MONGO_URI` etc. in `.env`. |
-| Dev client (:3000) | `npm run start:client` | OK |
-| Production build (client + SSR + bundled API) | `npm run build:ssr` (`build:client` is equivalent) | OK, about 10 s, many "not ESM" and Sass deprecation warnings |
-| Run production build | `npm start` (= `node dist/eshop/server/server.mjs`) | OK. Needs `PORT` and the env vars. |
-| Server-only compile check | `npx nest build -c server/nest-cli.json` | OK (output in `server/dist`, not used in prod) |
-| Type-check | `npm run typecheck` (client, server, server tests, e2e) | OK (app code non-strict) |
-| Lint client | `npm run lint:client` (`ng lint`, config `client/eslint.config.mjs`) | Runs; currently 184 errors (`prefer-inject`, `prefer-on-push-component-change-detection`, `prefer-standalone`) |
-| Lint server | `npm run lint` | **Broken.** ESLint 9 finds no flat config (`server/.eslintrc.json` is legacy), and the glob references a nonexistent `apps/`. **Note:** the script passes `--fix`. |
-| Lint SCSS | `npm run lint:scss` | Runs (stylelint 17, SCSS syntax); 313 errors. The unquoted glob is shell-expanded. |
-| Format | `npm run format` | Server files only |
-| Server tests (unit + API) | `npm test` / `npm run test:server` (`:watch`, `:cov`) | 104 passing, in-memory MongoDB, ~4 s |
-| E2E tests | `npm run test:e2e` (builds first; `npx playwright install chromium` once) | 12 passing against the production build |
-| Release | `npm run release` | standard-version (deprecated) |
+| Task                                          | Command                                                                                    | Status                                                                                                                                                                                            |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Install                                       | `npm ci`                                                                                   | OK                                                                                                                                                                                                |
+| Dev API (watch, :4000)                        | `npm run start:dev`                                                                        | OK. Needs `MONGO_URI` etc. in `.env`.                                                                                                                                                             |
+| Dev client (:3000)                            | `npm run start:client`                                                                     | OK                                                                                                                                                                                                |
+| Production build (client + SSR + bundled API) | `npm run build:ssr` (`build:client` is equivalent)                                         | OK, about 10 s, many "not ESM" and Sass deprecation warnings                                                                                                                                      |
+| Run production build                          | `npm start` (= `node dist/eshop/server/server.mjs`)                                        | OK. Needs `PORT` and the env vars.                                                                                                                                                                |
+| Server-only compile check                     | `npx nest build -c server/nest-cli.json`                                                   | OK (output in `server/dist`, not used in prod)                                                                                                                                                    |
+| Type-check                                    | `npm run typecheck` (client, server, server tests, e2e)                                    | OK, `strict: true` everywhere, 0 errors                                                                                                                                                           |
+| Lint                                          | `npm run lint` (whole repo; `lint:fix` to autofix; `lint:client` = `ng lint`, same config) | 0 errors; 184 warnings = Angular migration suggestions (`prefer-inject`, `prefer-standalone`, OnPush), see audit TD-03                                                                            |
+| Lint SCSS                                     | `npm run lint:scss`                                                                        | Runs (stylelint 17, SCSS syntax); 313 errors. The unquoted glob is shell-expanded.                                                                                                                |
+| Format                                        | `npm run format` / `npm run format:check` (Prettier, whole repo)                           | Existing code is not yet reformatted (~140 files); new commits are formatted by the hook                                                                                                          |
+| Pre-commit hook                               | husky → `lint-staged` (`.husky/pre-commit`)                                                | Runs `eslint --fix` + `prettier --write` on staged files; lint errors block the commit ; with nvm + a GUI git client (GitHub Desktop), add `~/.config/husky/init.sh` that sources `~/.nvm/nvm.sh` |
+| Server tests (unit + API)                     | `npm test` / `npm run test:server` (`:watch`, `:cov`)                                      | 104 passing, in-memory MongoDB, ~4 s                                                                                                                                                              |
+| E2E tests                                     | `npm run test:e2e` (builds first; `npx playwright install chromium` once)                  | 12 passing against the production build                                                                                                                                                           |
+| Release                                       | `npm run release`                                                                          | standard-version (deprecated)                                                                                                                                                                     |
 
 Broken or unused scripts (do not rely on them):
+
 - `dev:ssr`: the `serve-ssr` target doesn't exist.
 - `start:debug`: no root nest config.
 - `start:client:https`: needs `localhost.key` / `localhost.crt`, which are not in the repo; `certificate.config` can generate them.
@@ -122,24 +127,24 @@ Copy `.env.example` → `.env` (gitignored, never commit it). It is read with
 `ConfigModule.forRoot()` / dotenv, from the working directory. All server code reads raw
 `process.env`; there is no validation.
 
-| Variable | Used for | Read in |
-|---|---|---|
-| `PORT` | HTTP port (`.env.example`: 4000) | `server/src/main.ts`, `main-ssr.ts` |
-| `MONGO_URI` | MongoDB connection (opened twice: Mongoose and the session store) | `app.module.ts`, `setAppDB.ts` |
-| `ORIGIN` | CORS origin; OAuth redirect target; SSR allowed host | `setAppDB.ts`, `auth/auth.controller.ts`, `app-universal.module.ts` |
-| `SERVER_URL` | Google OAuth callback base; SSR allowed host | `auth/strategy/google.strategy.ts`, `app-universal.module.ts` |
-| `NG_ALLOWED_HOSTS` | Optional comma-separated SSR host allow-list; overrides the derived list | Angular `CommonEngine` |
-| `COOKIE_KEY` | express-session secret | `setAppDB.ts` |
-| `JWT_SECRET`, `JWT_EXPIRATION` | JWT signing / expiry (e.g. `7d`) | `auth/auth.module.ts`, `auth/strategy/jwt.strategy.ts` |
-| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Google login | `auth/strategy/google.strategy.ts` |
-| `STRIPE_SECRETKEY` | Stripe charges (read at import time) | `orders/orders.service.ts` |
-| `CLOUDINARY_NAME`, `CLOUDINARY_KEY`, `CLOUDINARY_SECRET` | Image upload (import time) | `admin/admin.service.ts` |
-| `SENDGRID_KEY`, `EMAIL_FROM` | Transactional email (import time) | `shared/utils/email/mailer.ts` |
-| `ADMIN_EMAILS` | Comma-separated list notified on orders/contact | `orders.service.ts`, `eshop.service.ts`, email templates |
-| `RECAPTCHA_SERVER_KEY` | Contact-form captcha verification | `eshop/eshop.service.ts` |
-| `GEO_LOCATION_API_KEY` | geolocation-db lookup for the default language | `translations/translations.controller.ts` |
-| `FE_STRIPE_PUBLISHABLE_KEY`, `FE_TINYMCE_API_KEY`, `FE_RECAPTCHA_CLIENT_KEY`, `FE_ANALYTICS_TOKEN` | **Public.** Every env var whose name contains `FE_` is sent to the browser by `GET /api/eshop/config`. | `eshop/eshop.service.ts` |
-| `STRIPE_PUBLISHABLE_KEY` | Listed in `.env.example` but unused | none |
+| Variable                                                                                           | Used for                                                                                               | Read in                                                             |
+| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| `PORT`                                                                                             | HTTP port (`.env.example`: 4000)                                                                       | `server/src/main.ts`, `main-ssr.ts`                                 |
+| `MONGO_URI`                                                                                        | MongoDB connection (opened twice: Mongoose and the session store)                                      | `app.module.ts`, `setAppDB.ts`                                      |
+| `ORIGIN`                                                                                           | CORS origin; OAuth redirect target; SSR allowed host                                                   | `setAppDB.ts`, `auth/auth.controller.ts`, `app-universal.module.ts` |
+| `SERVER_URL`                                                                                       | Google OAuth callback base; SSR allowed host                                                           | `auth/strategy/google.strategy.ts`, `app-universal.module.ts`       |
+| `NG_ALLOWED_HOSTS`                                                                                 | Optional comma-separated SSR host allow-list; overrides the derived list                               | Angular `CommonEngine`                                              |
+| `COOKIE_KEY`                                                                                       | express-session secret                                                                                 | `setAppDB.ts`                                                       |
+| `JWT_SECRET`, `JWT_EXPIRATION`                                                                     | JWT signing / expiry (e.g. `7d`)                                                                       | `auth/auth.module.ts`, `auth/strategy/jwt.strategy.ts`              |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`                                                         | Google login                                                                                           | `auth/strategy/google.strategy.ts`                                  |
+| `STRIPE_SECRETKEY`                                                                                 | Stripe charges (read at import time)                                                                   | `orders/orders.service.ts`                                          |
+| `CLOUDINARY_NAME`, `CLOUDINARY_KEY`, `CLOUDINARY_SECRET`                                           | Image upload (import time)                                                                             | `admin/admin.service.ts`                                            |
+| `SENDGRID_KEY`, `EMAIL_FROM`                                                                       | Transactional email (import time)                                                                      | `shared/utils/email/mailer.ts`                                      |
+| `ADMIN_EMAILS`                                                                                     | Comma-separated list notified on orders/contact                                                        | `orders.service.ts`, `eshop.service.ts`, email templates            |
+| `RECAPTCHA_SERVER_KEY`                                                                             | Contact-form captcha verification                                                                      | `eshop/eshop.service.ts`                                            |
+| `GEO_LOCATION_API_KEY`                                                                             | geolocation-db lookup for the default language                                                         | `translations/translations.controller.ts`                           |
+| `FE_STRIPE_PUBLISHABLE_KEY`, `FE_TINYMCE_API_KEY`, `FE_RECAPTCHA_CLIENT_KEY`, `FE_ANALYTICS_TOKEN` | **Public.** Every env var whose name contains `FE_` is sent to the browser by `GET /api/eshop/config`. | `eshop/eshop.service.ts`                                            |
+| `STRIPE_PUBLISHABLE_KEY`                                                                           | Listed in `.env.example` but unused                                                                    | none                                                                |
 
 ## Code conventions
 
@@ -147,7 +152,11 @@ Copy `.env.example` → `.env` (gitignored, never commit it). It is read with
 - **Conventional Commits** (`feat:`, `fix:`, `chore:`, `docs:`, `test:` …). CHANGELOG.md is
   generated by standard-version.
 - **One branch per step**, based on `master`. Never commit to `master` directly.
-- Prettier: single quotes, trailing commas (`.prettierrc`); `.editorconfig` uses 2 spaces.
+- Prettier: single quotes, 150 columns (`.prettierrc`); `.editorconfig` uses 2 spaces.
+- **Types:** strict mode is on. Use the shared API types from `@eshop/shared` (`import type` only; the
+  file is `.d.ts`). No `any` (lint error outside tests). Use `!` only where the code already relies on
+  a value being present; otherwise handle `null`/`undefined`. Known shape mismatches in the client
+  store are marked with `keepAsIs()` (audit BUG-28).
 - Server:
   - controllers hardcode the `api/...` prefix (there is no global prefix);
   - the language comes from the `lang` **request header**;

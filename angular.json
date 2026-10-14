@@ -40,10 +40,7 @@
                 "output": "."
               }
             ],
-            "styles": [
-              "client/src/assets/fonts/material-icons/material-icons.css",
-              "client/src/styles/index.scss"
-            ],
+            "styles": ["client/src/assets/fonts/material-icons/material-icons.css", "client/src/styles/index.scss"],
             "externalDependencies": [
               "@nestjs/microservices",
               "@nestjs/microservices/microservices-module",
@@ -111,19 +108,14 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "eslintConfig": "client/eslint.config.mjs",
-            "lintFilePatterns": [
-              "client/**/*.ts",
-              "client/**/*.html"
-            ]
+            "eslintConfig": "eslint.config.mjs",
+            "lintFilePatterns": ["client/**/*.ts", "client/**/*.html"]
           }
         }
       }
     }
   },
   "cli": {
-    "schematicCollections": [
-      "@angular-eslint/schematics"
-    ]
+    "schematicCollections": ["@angular-eslint/schematics"]
   }
 }

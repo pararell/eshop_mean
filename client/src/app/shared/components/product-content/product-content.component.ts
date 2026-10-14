@@ -11,24 +11,25 @@ import { CartShowComponent } from '../cart-show/cart-show.component';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
-    selector: 'app-product-content',
-    templateUrl: './product-content.component.html',
-    styleUrls: ['./product-content.component.scss'],
-    imports: [CommonModule, TranslatePipe, RouterLink, PriceFormatPipe, MatChipsModule, CartShowComponent, MatButtonModule],
-    changeDetection: ChangeDetectionStrategy.OnPush
+  selector: 'app-product-content',
+  templateUrl: './product-content.component.html',
+  styleUrls: ['./product-content.component.scss'],
+  imports: [CommonModule, TranslatePipe, RouterLink, PriceFormatPipe, MatChipsModule, CartShowComponent, MatButtonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductContentComponent {
   categoriesInput = input<Category[]>();
-  categoriesToShow = computed(() => (this.categoriesInput() || []).reduce((prev, cat) => ({...prev, [cat.titleUrl]: cat.title }), {}));
-  @Input()  product    : Product;
-  @Input()  cartIds     : {[productId: string]: number};
-  @Input()  currency    : string;
-  @Input()  lang        : string;
-  @Input()  withLink      = false;
+  categoriesToShow = computed(() =>
+    (this.categoriesInput() || []).reduce<Record<string, string>>((prev, cat) => ({ ...prev, [cat.titleUrl]: cat.title }), {}),
+  );
+  @Input() product!: Product;
+  @Input() cartIds!: { [productId: string]: number };
+  @Input() currency!: string;
+  @Input() lang!: string;
+  @Input() withLink = false;
 
-  @Output() addProduct     = new EventEmitter<string>();
-  @Output() removeProduct  = new EventEmitter<string>();
-
+  @Output() addProduct = new EventEmitter<string>();
+  @Output() removeProduct = new EventEmitter<string>();
 
   constructor() {}
 

@@ -1,4 +1,4 @@
-import { Component, Inject, PLATFORM_ID, OnInit, Signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Inject, PLATFORM_ID, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { map, take, filter } from 'rxjs/operators';
@@ -18,7 +18,7 @@ export class JwtTokenComponent implements OnInit {
     private store: SignalStore,
     private router: Router,
     @Inject(PLATFORM_ID)
-    private platformId: Object,
+    private platformId: object,
   ) {}
 
   ngOnInit(): void {

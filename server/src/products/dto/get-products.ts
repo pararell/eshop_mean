@@ -3,18 +3,13 @@ import { SortOptions } from '../models/sort.enum';
 
 export class GetProductsDto {
   @IsNotEmpty()
-  lang: string;
+  lang!: string;
 
   @IsNotEmpty()
-  page: string;
+  page!: string;
 
-  @IsIn([
-    SortOptions.newest,
-    SortOptions.oldest,
-    SortOptions.priceasc,
-    SortOptions.pricedesc,
-  ])
-  sort: SortOptions;
+  @IsIn([SortOptions.newest, SortOptions.oldest, SortOptions.priceasc, SortOptions.pricedesc])
+  sort!: SortOptions;
 
   category?: string;
 

@@ -1,4 +1,5 @@
+import type { Profile } from 'passport-google-oauth20';
 export class GoogleUserDto {
-  profile: any;
-  email: string;
+  profile!: Profile;
+  email!: string;
 }

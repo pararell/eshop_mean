@@ -7,41 +7,35 @@
         [routerLink]="['/' + (lang$ | async) + '/dashboard/orders']"
         mat-raised-button
         color="primary"
-        aria-label="Orders">
+        aria-label="Orders"
+      >
         Orders
       </button>
     </div>
-    <mat-tab-group #MatTabGroup
-      backgroundColor="primary"
-      animationDuration="0ms">
+    <mat-tab-group #MatTabGroup backgroundColor="primary" animationDuration="0ms">
       <mat-tab label="All products">
         <div class="dashboard-tab-content">
           <app-all-products
             [allProducts]="allProducts$()"
-            [lang]="lang$ | async"
+            [lang]="(lang$ | async)!"
             [currency]="currency$()"
             (getAllProducts)="getProducts()"
-            (editProduct)="setToEditProduct($event)">
+            (editProduct)="setToEditProduct($event)"
+          >
           </app-all-products>
         </div>
       </mat-tab>
       <mat-tab label="Add product">
         <ng-template matTabContent>
           <div class="dashboard-tab-content">
-            <app-products-edit
-              [action]="'add'"
-              (changeTab)="changeTab($event)">
-            </app-products-edit>
+            <app-products-edit [action]="'add'" (changeTab)="changeTab($event)"> </app-products-edit>
           </div>
         </ng-template>
       </mat-tab>
       <mat-tab label="Edit product">
         <ng-template matTabContent>
           <div class="dashboard-tab-content">
-            <app-products-edit
-              [titles]="allProductsTitles$ | async"
-              [productToEditTitleUrl]="productToEditTitleUrl"
-              [action]="'edit'">
+            <app-products-edit [titles]="(allProductsTitles$ | async)!" [productToEditTitleUrl]="productToEditTitleUrl" [action]="'edit'">
             </app-products-edit>
           </div>
         </ng-template>

@@ -1,15 +1,4 @@
-import {
-  Controller,
-  Get,
-  UseGuards,
-  Session,
-  Post,
-  Query,
-  Body,
-  ValidationPipe,
-  UseInterceptors,
-  UploadedFile,
-} from '@nestjs/common';
+import { Controller, Get, UseGuards, Session, Post, Query, Body, ValidationPipe, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import multer from 'multer';
@@ -20,6 +9,7 @@ import { Images } from './utils/images';
 import { Product } from '../products/models/product.model';
 import { AddProductImageDto } from './dto/add-image.dto';
 import { ImageDto } from './dto/image.dto';
+import { ShopSession } from '../shared/types/session';
 
 const storage = multer.memoryStorage();
 
@@ -29,23 +19,19 @@ export class AdminController {
   constructor(private adminService: AdminService) {}
 
   @Get('/images')
-  getImages(@Session() session): Promise<Images> {
+  getImages(@Session() session: ShopSession): Promise<Pick<Images, 'all'>> {
     return this.adminService.getImages(session.images);
   }
 
   @Post('/images/add')
   async addImage(
-    @Session() session,
+    @Session() session: ShopSession,
     @Body() imageDto: ImageDto,
     @Query(ValidationPipe) addImageDto: AddProductImageDto,
   ): Promise<Images | Product> {
-    const result = await this.adminService.addImage(
-      session.images,
-      imageDto,
-      addImageDto,
-    );
+    const result = await this.adminService.addImage(session.images, imageDto, addImageDto);
     if (!(result as Product).titleUrl) {
-      session.images = result;
+      session.images = result as Images;
     }
 
     return result;
@@ -54,17 +40,13 @@ export class AdminController {
   @Post('/images/upload')
   @UseInterceptors(FileInterceptor('file', { storage }))
   async uploadImage(
-    @Session() session,
-    @UploadedFile() file,
+    @Session() session: ShopSession,
+    @UploadedFile() file: Express.Multer.File,
     @Query(ValidationPipe) addImageDto: AddProductImageDto,
   ): Promise<Images | Product> {
-    const result = await this.adminService.uploadImage(
-      session.images,
-      file,
-      addImageDto,
-    );
+    const result = await this.adminService.uploadImage(session.images, file, addImageDto);
     if (!(result as Product).titleUrl) {
-      session.images = result;
+      session.images = result as Images;
     }
 
     return result;
@@ -72,17 +54,13 @@ export class AdminController {
 
   @Post('/images/remove')
   async removeImage(
-    @Session() session,
+    @Session() session: ShopSession,
     @Body() imageDto: ImageDto,
     @Query(ValidationPipe) addImageDto: AddProductImageDto,
   ): Promise<Images | Product> {
-    const result = await this.adminService.removeImage(
-      session.images,
-      imageDto,
-      addImageDto,
-    );
+    const result = await this.adminService.removeImage(session.images, imageDto, addImageDto);
     if (!(result as Product).titleUrl) {
-      session.images = result;
+      session.images = result as Images;
     }
 
     return result;

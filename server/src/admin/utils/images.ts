@@ -5,14 +5,14 @@ export class Images {
     this.all = previousImages.all || [];
   }
 
-  add = function (newImage: string): void {
+  add = function (this: Images, newImage: string): void {
     const found = this.all.filter((image) => image === newImage).length;
     if (!found) {
       this.all = [...this.all, newImage];
     }
   };
 
-  remove = function (newImage: string): void {
+  remove = function (this: Images, newImage: string): void {
     this.all = this.all.filter((image) => image !== newImage);
   };
 }

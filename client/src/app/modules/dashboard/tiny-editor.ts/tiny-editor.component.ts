@@ -20,7 +20,7 @@ export class TinyEditorComponent {
     this.editorApiKey$ = envConfigurationService.getConfigType$('FE_TINYMCE_API_KEY');
   }
 
-  onEditorChange(value): void {
+  onEditorChange(value: string): void {
     this.editorContentChange.emit(value);
   }
 }

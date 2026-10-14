@@ -1,9 +1,7 @@
+import type { ProductRaw, ShopConfig } from '@eshop/shared';
 import { prepareCart, prepareProduct } from './prepareUtils';
 
-const product = (
-  id: string,
-  en: Partial<{ salePrice: number; visibility: boolean; shipping: string }> = {},
-) => ({
+const product = (id: string, en: Partial<{ salePrice: number; visibility: boolean; shipping: string }> = {}): ProductRaw => ({
   _id: id,
   titleUrl: id,
   tags: ['cars'],
@@ -15,17 +13,21 @@ const product = (
     descriptionFull: ['<p>full</p>'],
     salePrice: 10,
     regularPrice: 12,
+    onSale: false,
+    stock: 'onStock',
     visibility: true,
     shipping: 'basic',
     ...en,
   },
 });
 
-const cartOf = (...lines: [ReturnType<typeof product>, number][]) => ({
+const cartOf = (...lines: [ProductRaw, number][]) => ({
   items: lines.map(([item, qty]) => ({ item, id: item._id, qty })),
 });
 
-const config = {
+const config: ShopConfig = {
+  titleUrl: 'test',
+  active: true,
   en: {
     shippingCost: {
       basic: { cost: 4, limit: 50 },
@@ -73,11 +75,7 @@ describe('prepareCart', () => {
   });
 
   it('uses extended shipping when any item requires it', () => {
-    const cart = prepareCart(
-      cartOf([product('a'), 1], [product('b', { shipping: 'extended' }), 1]),
-      'en',
-      config,
-    );
+    const cart = prepareCart(cartOf([product('a'), 1], [product('b', { shipping: 'extended' }), 1]), 'en', config);
     expect(cart.shippingType).toBe('extended');
     expect(cart.shippingCost).toBe(9);
     expect(cart.totalPrice).toBe(20 + 9);
@@ -106,11 +104,7 @@ describe('prepareCart', () => {
 
   it('excludes hidden products and products without a price', () => {
     const cart = prepareCart(
-      cartOf(
-        [product('a'), 1],
-        [product('hidden', { visibility: false }), 3],
-        [product('free', { salePrice: 0 }), 2],
-      ),
+      cartOf([product('a'), 1], [product('hidden', { visibility: false }), 3], [product('free', { salePrice: 0 }), 2]),
       'en',
       config,
     );

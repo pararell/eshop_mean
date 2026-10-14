@@ -16,7 +16,7 @@ async function bootstrap() {
   setAppDB(app);
 
   const port = process.env.PORT;
-  await app.listen(port);
+  await app.listen(port!);
   logger.log('App listening on port ' + port);
 }
 

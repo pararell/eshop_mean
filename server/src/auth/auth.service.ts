@@ -1,12 +1,10 @@
+import type { Profile } from 'passport-google-oauth20';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
-import {
-  ConflictException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { ConflictException, InternalServerErrorException } from '@nestjs/common';
 
 import { GoogleUserDto } from './dto/google-user.dto';
 import { User } from './models/user.model';
@@ -34,7 +32,7 @@ export class AuthService {
     try {
       await user.save();
     } catch (error) {
-      if (error.code === '23505') {
+      if ((error as { code?: string }).code === '23505') {
         throw new ConflictException('Username already exist');
       } else {
         throw new InternalServerErrorException();
@@ -42,9 +40,7 @@ export class AuthService {
     }
   }
 
-  async signIn(
-    authCredentialsDto: AuthCredentialDto,
-  ): Promise<{
+  async signIn(authCredentialsDto: AuthCredentialDto): Promise<{
     accessToken: string;
     id: string;
     email: string;
@@ -53,7 +49,7 @@ export class AuthService {
     const { email, password } = authCredentialsDto;
     const user = await this.userModel.findOne({ email });
     const loggedUser = user && (await this.validatePassword(password, user));
-    const userEmail = loggedUser ? user.email : null;
+    const userEmail = loggedUser ? user!.email : null;
     if (!userEmail) {
       throw new UnauthorizedException('Invalid credential');
     }
@@ -61,7 +57,7 @@ export class AuthService {
     const payload: JwtPayload = { email };
     const accessToken = await this.jwtService.sign(payload);
 
-    return { accessToken, id: user._id, roles: user.roles, email };
+    return { accessToken, id: user!._id, roles: user!.roles, email };
   }
 
   async signInGoogle(googleUserDto: GoogleUserDto) {
@@ -82,10 +78,9 @@ export class AuthService {
     return accessToken;
   }
 
-  async getGoogleUser(email: string, profile: any) {
+  async getGoogleUser(email: string, profile: Profile) {
     const user = this.userModel.findOne({ email });
-    const googleUser =
-      user || (await new this.userModel({ email, googleId: profile.id }));
+    const googleUser = user || (await new this.userModel({ email, googleId: profile.id }));
 
     return googleUser;
   }
@@ -94,11 +89,9 @@ export class AuthService {
     return bcrypt.hash(password, salt);
   }
 
-  private async validatePassword(
-    password: string,
-    user: User,
-  ): Promise<boolean> {
-    const hash = await bcrypt.hash(password, user.salt);
+  private async validatePassword(password: string, user: User): Promise<boolean> {
+    // Throws for users without a password (e.g. Google sign-ups); audit BUG-23
+    const hash = await bcrypt.hash(password, user.salt!);
     return hash === user.password;
   }
 }

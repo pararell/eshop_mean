@@ -14,11 +14,11 @@
     "module": "ES2022",
     "skipLibCheck": true,
     "useDefineForClassFields": false,
-    "strict": false,
-    "lib": [
-      "ES2022",
-      "dom"
-    ]
+    "strict": true,
+    "paths": {
+      "@eshop/shared": ["../shared/types/index.d.ts"]
+    },
+    "lib": ["ES2022", "dom"]
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,

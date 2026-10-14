@@ -1,9 +1,6 @@
 <div class="main">
   <div class="container">
-    <button
-      (click)="goBack()"
-      mat-raised-button
-      color="primary">
+    <button (click)="goBack()" mat-raised-button color="primary">
       <i class="material-icons left">arrow_back</i>
       {{ 'Back' | translate | async }}
     </button>
@@ -11,10 +8,6 @@
     <h2>
       {{ 'SuccessOrder' | translate | async }}
     </h2>
-    <app-order-info
-      [order]="order$()"
-      [lang]="lang$ | async">
-    </app-order-info>
-
+    <app-order-info [order]="order$()!" [lang]="(lang$ | async)!"> </app-order-info>
   </div>
 </div>

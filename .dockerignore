@@ -2,8 +2,7 @@
 .git*
 .htmlhintrc
 .prettierrc
-.stylelintrc
-.eslinttrc
+.stylelintrc.json
 .svgorc
 .vscode
 CHANGELOG.md
@@ -12,6 +11,12 @@ builds
 coverage
 e2e
 node_modules
+# build output and test artifacts are recreated inside the image
+dist
+server/dist
+.angular
+test-results
+playwright-report
 proxy.conf.js
 raml
 

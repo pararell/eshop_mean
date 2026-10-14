@@ -1,13 +1,24 @@
 import { SidebarComponent } from './../../shared/components/sidebar/sidebar.component';
 import { CommonModule } from '@angular/common';
-import { map, distinctUntilChanged, filter, take, skip, withLatestFrom, delay } from 'rxjs/operators';
-import { Component, ChangeDetectionStrategy, OnDestroy, Signal, computed, AfterViewInit, ViewChild, ElementRef, Inject, DOCUMENT } from '@angular/core';
+import { map, distinctUntilChanged, filter, take, skip, delay } from 'rxjs/operators';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  OnDestroy,
+  Signal,
+  computed,
+  AfterViewInit,
+  ViewChild,
+  ElementRef,
+  Inject,
+  DOCUMENT,
+} from '@angular/core';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
-import { Observable, combineLatest, Subscription, of } from 'rxjs';
+import { combineLatest, Subscription, of } from 'rxjs';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 
-import {MatSnackBar, MatSnackBarRef} from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -15,7 +26,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateService } from '../../services/translate.service';
 import { sortOptions } from '../../shared/constants';
 
-import { Product, Category, Pagination, Cart } from '../../shared/models';
+import { Product, Category, Cart } from '../../shared/models';
 import { CarouselComponent } from '../../shared/components/carousel/carousel.component';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
@@ -23,40 +34,53 @@ import { CategoriesListComponent } from '../../shared/components/categories-list
 import { ProductContentComponent } from '../../shared/components/product-content/product-content.component';
 import { ProductsListComponent } from '../../shared/components/products-list/products-list.component';
 import { SignalStore } from '../../store/signal.store';
-import { SignalStoreSelectors } from '../../store/signal.store.selectors';
+import { PaginationState, SignalStoreSelectors } from '../../store/signal.store.selectors';
 import { ThemeService } from '../../services/theme.service';
 
 @Component({
-    selector: 'app-home',
-    templateUrl: './home.component.html',
-    styleUrls: ['./home.component.scss'],
-    imports: [CommonModule, MatSidenavModule, CategoriesListComponent, CarouselComponent, ProductContentComponent, ProductsListComponent, SidebarComponent, PaginationComponent, RouterLink, MatProgressBarModule, MatProgressSpinnerModule, TranslatePipe],
-    changeDetection: ChangeDetectionStrategy.OnPush
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.scss'],
+  imports: [
+    CommonModule,
+    MatSidenavModule,
+    CategoriesListComponent,
+    CarouselComponent,
+    ProductContentComponent,
+    ProductsListComponent,
+    SidebarComponent,
+    PaginationComponent,
+    RouterLink,
+    MatProgressBarModule,
+    MatProgressSpinnerModule,
+    TranslatePipe,
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent implements AfterViewInit, OnDestroy {
-  products: Signal<Product[]>;
+  products: Signal<Product[] | null>;
   cartIds: Signal<{ [productID: string]: number }>;
-  cart: Signal<Cart>;
+  cart: Signal<Cart | null>;
   loadingProducts: Signal<boolean>;
   categories: Signal<Category[]>;
-  pagination: Signal<Pagination>;
+  pagination: Signal<PaginationState>;
   category: Signal<string>;
   filterPrice: Signal<number>;
-  maxPrice: Signal<number>;
-  minPrice: Signal<number>;
-  page: Signal<number>;
+  maxPrice: Signal<number | null>;
+  minPrice: Signal<number | null>;
+  page: Signal<number | undefined>;
   sortBy: Signal<string>;
   currency: Signal<string>;
-  lang: Signal<string>;
-  categoriesSub: Subscription;
-  productsSub: Subscription;
+  lang: Signal<string | undefined>;
+  categoriesSub!: Subscription;
+  productsSub!: Subscription;
   sortOptions = sortOptions;
   sidebarOpened = false;
-  video = null;
+  video: string | null = null;
 
   readonly component = 'homeComponent';
 
-  @ViewChild('videoRef') private videoRef: ElementRef;
+  @ViewChild('videoRef') private videoRef!: ElementRef;
 
   constructor(
     private route: ActivatedRoute,
@@ -71,30 +95,27 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     @Inject(DOCUMENT)
     private _document: Document,
   ) {
-    this.category = toSignal(this.route.params.pipe(
-      map((params) => params['category']),
-    ));
-    this.page = toSignal(this.route.queryParams.pipe(
-      map((params) => params['page']),
-      map((page) => parseFloat(page))
-    ));
-    this.sortBy = toSignal(this.route.queryParams.pipe(
-      map((params) => params['sort'])
-    ));
+    this.category = toSignal(this.route.params.pipe(map((params) => params['category'])));
+    this.page = toSignal(
+      this.route.queryParams.pipe(
+        map((params) => params['page']),
+        map((page) => parseFloat(page)),
+      ),
+    );
+    this.sortBy = toSignal(this.route.queryParams.pipe(map((params) => params['sort'])));
     this.lang = toSignal(this.translate.getLang$().pipe(filter((lang: string) => !!lang)));
     this.cart = this.selectors.cart;
     this.maxPrice = this.selectors.maxPrice;
-    this.minPrice =  this.selectors.minPrice;
+    this.minPrice = this.selectors.minPrice;
     this.filterPrice = this.selectors.priceFilter;
-    this.loadingProducts =  this.selectors.loadingProducts;
-    this.products =  this.selectors.products;
+    this.loadingProducts = this.selectors.loadingProducts;
+    this.products = this.selectors.products;
     this.cartIds = computed(() => {
       if (!this.cart()) {
-          return {};
-        }
-        return this.cart().items && this.cart().items.length ? this.cart().items.reduce((prev, curr) => ({ ...prev, [curr.id]: curr.qty }), {}) : {}
+        return {};
       }
-    );
+      return this.cart()!.items && this.cart()!.items.length ? this.cart()!.items.reduce((prev, curr) => ({ ...prev, [curr.id]: curr.qty }), {}) : {};
+    });
 
     this.title.setTitle('Eshop Mean');
     this.meta.updateTag({ name: 'description', content: 'Angular - Node.js - Eshop application - MEAN Eshop with dashboard' });
@@ -106,23 +127,28 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
     this._loadCategories();
     this._loadProducts();
-
   }
 
   addToCart(id: string): void {
     this.store.addToCart('?id=' + id);
 
-    this.translate.getTranslations$()
-      .pipe(map(translations => translations
-        ? {message: translations['ADDED_TO_CART'] || 'Added to cart', action: translations['TO_CART'] || 'To Cart'}
-        : {message: 'Added to cart', action: 'To Cart'}
-        ),take(1))
-      .subscribe(({message, action}) => {
-        let snackBarRef = this.snackBar.open(message, action, {duration: 3000});
-        snackBarRef.onAction().pipe(
-            take(1))
+    this.translate
+      .getTranslations$()
+      .pipe(
+        map((translations) =>
+          translations
+            ? { message: translations['ADDED_TO_CART'] || 'Added to cart', action: translations['TO_CART'] || 'To Cart' }
+            : { message: 'Added to cart', action: 'To Cart' },
+        ),
+        take(1),
+      )
+      .subscribe(({ message, action }) => {
+        const snackBarRef = this.snackBar.open(message, action, { duration: 3000 });
+        snackBarRef
+          .onAction()
+          .pipe(take(1))
           .subscribe(() => {
-            this.router.navigate(['/' + this.lang() + '/cart'])
+            this.router.navigate(['/' + this.lang() + '/cart']);
           });
       });
   }
@@ -157,7 +183,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   changeSort(sort: string): void {
     if (this.category()) {
       this.router.navigate(['/' + this.lang() + '/product/category/' + this.category()], {
-        queryParams: { sort , page: this.page() || 1 },
+        queryParams: { sort, page: this.page() || 1 },
       });
     } else {
       this.router.navigate(['/' + this.lang() + '/product/all'], { queryParams: { sort, page: this.page() || 1 } });
@@ -170,36 +196,36 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    of('delay').pipe(
-      delay(100),
-      take(1),
-    ).subscribe(() => {
-      const vid = this.videoRef?.nativeElement as HTMLVideoElement;
-      if (vid) {
-        vid.muted = true; // required in most browsers
-        vid.play().catch(err => console.log('Autoplay blocked', err));
-      }
-      this._document.getElementById('navbar')?.classList?.add("transparent");
-      this._document.getElementById('main-content')?.classList?.add("transparent");
-    });
+    of('delay')
+      .pipe(delay(100), take(1))
+      .subscribe(() => {
+        const vid = this.videoRef?.nativeElement as HTMLVideoElement;
+        if (vid) {
+          vid.muted = true; // required in most browsers
+          vid.play().catch((err) => console.log('Autoplay blocked', err));
+        }
+        this._document.getElementById('navbar')?.classList?.add('transparent');
+        this._document.getElementById('main-content')?.classList?.add('transparent');
+      });
   }
 
   ngOnDestroy(): void {
     this.categoriesSub.unsubscribe();
     this.productsSub.unsubscribe();
-      this._document.getElementById('navbar')?.classList?.remove("transparent");
-      this._document.getElementById('main-content')?.classList?.remove("transparent");
+    this._document.getElementById('navbar')?.classList?.remove('transparent');
+    this._document.getElementById('main-content')?.classList?.remove('transparent');
   }
-
 
   private _loadCategories(): void {
     if (!this.categories()?.length) {
-      this.store.getCategories(this.lang());
+      this.store.getCategories(this.lang()!);
     }
 
-    this.categoriesSub = toObservable(this.lang).pipe(distinctUntilChanged(), skip(1)).subscribe((lang: string) => {
-      this.store.getCategories(lang);
-    });
+    this.categoriesSub = toObservable(this.lang)
+      .pipe(distinctUntilChanged(), skip(1))
+      .subscribe((lang) => {
+        this.store.getCategories(lang!);
+      });
   }
 
   private _loadProducts(): void {
@@ -209,10 +235,10 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       toObservable(this.filterPrice).pipe(distinctUntilChanged()),
       this.route.queryParams.pipe(
         map((params) => ({ page: params['page'], sort: params['sort'] })),
-        distinctUntilChanged()
+        distinctUntilChanged(),
       ),
     ]).subscribe(([lang, category, filterPrice, { page, sort }]) => {
-      this.store.getProducts({ lang, category, maxPrice: filterPrice, page: page || 1, sort: sort || 'newest' });
+      this.store.getProducts({ lang: lang!, category, maxPrice: filterPrice, page: page || 1, sort: sort || 'newest' });
     });
   }
 }

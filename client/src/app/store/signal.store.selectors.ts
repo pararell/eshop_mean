@@ -1,59 +1,60 @@
-import { User, Page, Theme, Config, Product, Cart, Category, Order, Pagination, Translations } from '../shared/models';
+import { User, Page, Theme, Config, Product, Cart, Category, Order, Pagination, Translations, AllCategories } from '../shared/models';
 import { languages, currencyLang } from '../shared/constants';
 import { signal, computed, Injectable } from '@angular/core';
 
+/** Before the first load the pagination has no `limit`. */
+export type PaginationState = Pick<Pagination, 'page' | 'pages' | 'total'> & Partial<Pagination>;
+
 export interface UserState {
   loading: boolean;
-  user: User;
+  user: User | null;
   lang: string;
   currency: string;
   error: boolean;
 }
 
-
 export interface EshopState {
   loading: boolean;
   error: string;
-  pages: Page[];
-  page: Page;
-  themes: Theme[];
-  configs: Config[];
+  pages: Page[] | null;
+  page: Page | null;
+  themes: Theme[] | null;
+  configs: Config[] | null;
 }
 
 export interface ProductState {
-  products: Product[];
+  products: Product[] | null;
   loadingProducts: boolean;
   categories: Array<Category>;
-  pagination: Pagination;
-  product: Product;
+  pagination: PaginationState;
+  product: Product | null;
   loadingProduct: boolean;
-  cart: Cart;
-  userOrders: Order[];
-  order: Order;
+  cart: Cart | null;
+  userOrders: Order[] | null;
+  order: Order | null;
   productsTitles: Array<string>;
   priceFilter: number;
-  maxPrice: number;
-  minPrice: number;
-  position: { [component: string]: number };
+  maxPrice: number | null;
+  minPrice: number | null;
+  position: { [component: string]: number } | null;
   loading: boolean;
   error: string;
 }
 
 export interface DashboardState {
-  orders: Order[];
-  order: Order;
+  orders: Order[] | null;
+  order: Order | null;
   productImages: Array<string>;
   translations: Array<Translations>;
   allProducts: Array<Product>;
-  allCategories: Array<{ category: Category; productsWithCategory: string[] }>;
+  allCategories: AllCategories;
   loading: boolean;
 }
-
 
 @Injectable({
   providedIn: 'root',
 })
-export class SignalStoreSelectors{
+export class SignalStoreSelectors {
   public userState = signal<UserState>({
     loading: false,
     user: null,
@@ -104,38 +105,38 @@ export class SignalStoreSelectors{
     loading: false,
   });
 
-public readonly user = computed(() => this.userState().user);
-public readonly appLang = computed(() =>  this.userState().lang);
-public readonly currency = computed(() =>  this.userState().currency);
-public readonly authLoading = computed(() =>  this.userState().loading);
+  public readonly user = computed(() => this.userState().user);
+  public readonly appLang = computed(() => this.userState().lang);
+  public readonly currency = computed(() => this.userState().currency);
+  public readonly authLoading = computed(() => this.userState().loading);
 
-public readonly eshopLoading = computed(() =>  this.eshopState().loading);
-public readonly eshopError = computed(() =>  this.eshopState().error);
-public readonly pages = computed(() =>  this.eshopState().pages);
-public readonly page = computed(() =>  this.eshopState().page);
-public readonly themes = computed(() =>  this.eshopState().themes);
-public readonly configs = computed(() =>  this.eshopState().configs);
+  public readonly eshopLoading = computed(() => this.eshopState().loading);
+  public readonly eshopError = computed(() => this.eshopState().error);
+  public readonly pages = computed(() => this.eshopState().pages);
+  public readonly page = computed(() => this.eshopState().page);
+  public readonly themes = computed(() => this.eshopState().themes);
+  public readonly configs = computed(() => this.eshopState().configs);
 
-public readonly products = computed(() =>  this.productState().products);
-public readonly loadingProducts = computed(() =>  this.productState().loadingProducts);
-public readonly categories = computed(() =>  this.productState().categories);
-public readonly pagination = computed(() =>  this.productState().pagination);
-public readonly product = computed(() =>  this.productState().product);
-public readonly cart = computed(() =>  this.productState().cart);
-public readonly productLoading = computed(() =>  this.productState().loadingProduct);
-public readonly userOrders = computed(() =>  this.productState().userOrders);
-public readonly order = computed(() =>  this.productState().order);
-public readonly productsTitles = computed(() =>  this.productState().productsTitles);
-public readonly priceFilter = computed(() =>  this.productState().priceFilter);
-public readonly maxPrice = computed(() =>  this.productState().maxPrice);
-public readonly minPrice = computed(() =>  this.productState().minPrice);
-public readonly position = computed(() =>  this.productState().position);
+  public readonly products = computed(() => this.productState().products);
+  public readonly loadingProducts = computed(() => this.productState().loadingProducts);
+  public readonly categories = computed(() => this.productState().categories);
+  public readonly pagination = computed(() => this.productState().pagination);
+  public readonly product = computed(() => this.productState().product);
+  public readonly cart = computed(() => this.productState().cart);
+  public readonly productLoading = computed(() => this.productState().loadingProduct);
+  public readonly userOrders = computed(() => this.productState().userOrders);
+  public readonly order = computed(() => this.productState().order);
+  public readonly productsTitles = computed(() => this.productState().productsTitles);
+  public readonly priceFilter = computed(() => this.productState().priceFilter);
+  public readonly maxPrice = computed(() => this.productState().maxPrice);
+  public readonly minPrice = computed(() => this.productState().minPrice);
+  public readonly position = computed(() => this.productState().position);
 
-public readonly orders = computed(() =>  this.dashboardState().orders);
-public readonly dashboardOrder = computed(() =>  this.dashboardState().order);
-public readonly productImages = computed(() =>  this.dashboardState().productImages);
-public readonly translations = computed(() =>  this.dashboardState().translations);
-public readonly allProducts = computed(() =>  this.dashboardState().allProducts);
-public readonly allCategories = computed(() =>  this.dashboardState().allCategories);
-public readonly dashboardLoading = computed(() =>  this.dashboardState().loading);
+  public readonly orders = computed(() => this.dashboardState().orders);
+  public readonly dashboardOrder = computed(() => this.dashboardState().order);
+  public readonly productImages = computed(() => this.dashboardState().productImages);
+  public readonly translations = computed(() => this.dashboardState().translations);
+  public readonly allProducts = computed(() => this.dashboardState().allProducts);
+  public readonly allCategories = computed(() => this.dashboardState().allCategories);
+  public readonly dashboardLoading = computed(() => this.dashboardState().loading);
 }

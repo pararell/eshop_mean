@@ -1,10 +1,6 @@
-import { Product } from '../../products/models/product.model';
+import type { LocalizedCart, SessionCart, SessionCartItem } from '@eshop/shared';
 
-export interface CartModel {
-  totalQty?: number;
-  totalPrice?: number;
-  shippingCost?: number;
-  shippingLimit?: number;
-  shippingType?: string;
-  items: Product[];
-}
+export type { SessionCart, SessionCartItem };
+
+/** Cart prepared for one language (API response). */
+export type CartModel = LocalizedCart;

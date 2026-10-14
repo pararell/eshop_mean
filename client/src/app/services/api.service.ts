@@ -4,12 +4,64 @@ import { catchError, map } from 'rxjs/operators';
 import { Inject, Injectable, Optional, PLATFORM_ID, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
+import { combineLatest, Observable, of } from 'rxjs';
+import type {
+  CategoryInput,
+  ContactRequest,
+  CurrentUser,
+  Order,
+  OrderRequest,
+  OrderResult,
+  Page,
+  Pagination,
+  ProductInput,
+  ProductRaw,
+  PublicConfigResponse,
+  ShopConfig,
+  SignInRequest,
+  SignInResponse,
+  SignUpRequest,
+  StripeOrderRequest,
+  Theme,
+  Translation,
+} from '@eshop/shared';
 
 import { environment } from '../../environments/environment';
-import { Translations } from '../shared/models';
+import { AllCategories, Cart, Category, Product, Translations } from '../shared/models';
 import { accessTokenKey } from '../shared/constants';
 import { SignalStoreSelectors } from '../store/signal.store.selectors';
-import { combineLatest, of } from 'rxjs';
+
+/**
+ * API calls never throw: an HTTP error is emitted as `{ error }` instead of the response, and
+ * callers check `response.error`. The success type is kept for convenience, so on error only
+ * `error` is actually present. Note that order responses also carry `error: ''` on success.
+ */
+export type ApiResponse<T> = T & { error?: unknown };
+
+/** `GET /api/products`, reshaped for the store. */
+export interface ProductsResult {
+  products: Product[];
+  pagination: Pagination;
+  maxPrice: number | null;
+  minPrice: number | null;
+  category?: string;
+}
+
+export interface ProductsQuery {
+  lang: string;
+  page: number | string;
+  sort: string;
+  category?: string;
+  maxPrice?: number;
+}
+
+/** Admin image library, or the updated product when an image was attached to one. */
+export type ImagesResult = { all: string[] } | ProductRaw;
+
+export interface PagesQuery {
+  titles: boolean;
+  lang: string;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -24,7 +76,7 @@ export class ApiService {
     private readonly _window: WindowService,
     @Optional() @Inject('serverUrl') protected serverUrl: string,
     @Inject(PLATFORM_ID)
-    private platformId: Object,
+    private platformId: object,
   ) {
     this.setHeaders();
 
@@ -39,283 +91,203 @@ export class ApiService {
     }
   }
 
+  /** Maps HTTP errors to `{ error }` values (see ApiResponse). */
+  private handle<T>(request: Observable<T>): Observable<ApiResponse<T>> {
+    return request.pipe(
+      map((response) => response as ApiResponse<T>),
+      catchError((error: Error) => of({ error } as ApiResponse<T>)),
+    );
+  }
+
   getConfig() {
     const configUrl = this.apiUrl + '/api/eshop/config';
-    return this.http.get(configUrl, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.get<PublicConfigResponse>(configUrl, this.requestOptions));
   }
 
   getUser() {
     const userUrl = this.apiUrl + '/api/auth';
-    return this.http.get(userUrl, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.get<CurrentUser>(userUrl, this.requestOptions));
   }
 
-  signIn(req) {
+  signIn(req: SignInRequest) {
     const sendContact = this.apiUrl + '/api/auth/signin';
-    return this.http.post(sendContact, req, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.post<SignInResponse>(sendContact, req, this.requestOptions));
   }
 
-  signUp(req) {
+  signUp(req: SignUpRequest) {
     const sendContact = this.apiUrl + '/api/auth/signup';
-    return this.http.post(sendContact, req, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.post<unknown>(sendContact, req, this.requestOptions));
   }
 
-  getProducts(req) {
+  getProducts(req: ProductsQuery): Observable<ApiResponse<ProductsResult>> {
     const { lang, page, sort, category, maxPrice } = req;
     const addCategory = category ? { category } : {};
     const categoryQuery = category ? '&category=' + category : '';
     const priceQuery = maxPrice ? '&maxPrice=' + maxPrice : '';
     const productsUrl = this.apiUrl + '/api/products?lang=' + lang + '&page=' + page + '&sort=' + sort + categoryQuery + priceQuery;
-    return this.http.get(productsUrl, this.requestOptions).pipe(
-      map((data: any) => ({
-        products: data.all.map((product) => ({
-          ...product,
-          tags: product.tags.filter(Boolean).map((cat: string) => cat.toLowerCase()),
+    return this.http
+      .get<{ all: Product[]; pagination: Pagination; maxPrice: number | null; minPrice: number | null }>(productsUrl, this.requestOptions)
+      .pipe(
+        map((data) => ({
+          products: data.all.map((product) => ({
+            ...product,
+            tags: product.tags.filter(Boolean).map((cat: string) => cat.toLowerCase()),
+          })),
+          pagination: data.pagination,
+          maxPrice: data.maxPrice,
+          minPrice: data.minPrice,
+          ...addCategory,
         })),
-        pagination: data.pagination,
-        maxPrice: data.maxPrice,
-        minPrice: data.minPrice,
-        ...addCategory,
-      })),
-      catchError((error: Error) => of({ error })),
-    );
+        catchError((error: Error) => of({ error } as ApiResponse<ProductsResult>)),
+      );
   }
 
   getCategories(lang: string) {
     const categoriesUrl = this.apiUrl + '/api/products/categories?lang=' + lang;
-    return this.http.get(categoriesUrl, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.get<Category[]>(categoriesUrl, this.requestOptions));
   }
 
   getProductsSearch(query: string) {
     const productUrl = this.apiUrl + '/api/products/search?query=' + query;
-    return this.http.get(productUrl, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.get<string[]>(productUrl, this.requestOptions));
   }
 
-  getProduct(params) {
+  /** `params` is `<titleUrl>` (admin, raw product) or `<titleUrl>?lang=xx` (localized product). */
+  getProduct(params: string) {
     const productUrl = this.apiUrl + '/api/products/' + params;
-    return this.http.get(productUrl, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.get<Product>(productUrl, this.requestOptions));
   }
 
-  addProduct(product) {
+  addProduct(product: ProductInput) {
     const addProduct = this.apiUrl + '/api/products/add';
-    return this.http.post(addProduct, product, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.post<unknown>(addProduct, product, this.requestOptions));
   }
 
-  editProduct(product) {
+  editProduct(product: ProductInput) {
     const eidtProduct = this.apiUrl + '/api/products/edit';
-    return this.http.patch(eidtProduct, product, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.patch<unknown>(eidtProduct, product, this.requestOptions));
   }
 
   getAllProducts() {
     const productUrl = this.apiUrl + '/api/products/all';
-    return this.http.get(productUrl, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.get<Product[]>(productUrl, this.requestOptions));
   }
 
   removeProduct(name: string) {
     const removeProduct = this.apiUrl + '/api/products/' + name;
-    return this.http.delete(removeProduct, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.delete<unknown>(removeProduct, this.requestOptions));
   }
 
   getAllCategories() {
     const categoriesUrl = this.apiUrl + '/api/products/categories/all';
-    return this.http.get(categoriesUrl, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.get<AllCategories>(categoriesUrl, this.requestOptions));
   }
 
-  editCategory(category) {
+  editCategory(category: CategoryInput) {
     const eidtCategory = this.apiUrl + '/api/products/categories/edit';
-    return this.http.patch(eidtCategory, category, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.patch<unknown>(eidtCategory, category, this.requestOptions));
   }
 
   removeCategory(name: string) {
     const removeCategory = this.apiUrl + '/api/products/categories/' + name;
-    return this.http.delete(removeCategory, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.delete<unknown>(removeCategory, this.requestOptions));
   }
 
-  handleToken(token) {
+  handleToken(token: StripeOrderRequest) {
     const tokenUrl = this.apiUrl + '/api/orders/stripe';
-    return this.http.post(tokenUrl, token, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.post<OrderResult>(tokenUrl, token, this.requestOptions));
   }
 
-  makeOrder(req) {
+  makeOrder(req: OrderRequest) {
     const addOrder = this.apiUrl + '/api/orders/add';
-    return this.http.post(addOrder, req, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.post<OrderResult>(addOrder, req, this.requestOptions));
   }
 
   getUserOrders() {
     const userOrderUrl = this.apiUrl + '/api/orders';
-    return this.http.get(userOrderUrl, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.get<Order[]>(userOrderUrl, this.requestOptions));
   }
 
   getOrders() {
     const ordersUrl = this.apiUrl + '/api/orders/all';
-    return this.http.get(ordersUrl, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.get<Order[]>(ordersUrl, this.requestOptions));
   }
 
   getOrder(id: string) {
     const orderUrl = this.apiUrl + '/api/orders/' + id;
-    return this.http.get(orderUrl, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.get<Order>(orderUrl, this.requestOptions));
   }
 
-  updateOrder(req) {
+  updateOrder(req: Partial<Order> & Pick<Order, 'orderId'>) {
     const orderUpdateUrl = this.apiUrl + '/api/orders';
-    return this.http.patch(orderUpdateUrl, req, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.patch<Order>(orderUpdateUrl, req, this.requestOptions));
   }
 
-  getStripeSession(req) {
+  /** Unused: the server has no such endpoint and the store never subscribes (audit TD-07). */
+  getStripeSession(req: unknown) {
     const stripeSessionUrl = this.apiUrl + '/api/orders/stripe/session';
-    return this.http.post(stripeSessionUrl, req, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.post<unknown>(stripeSessionUrl, req, this.requestOptions));
   }
 
   getCart(lang?: string) {
     const withLangQuery = lang ? '?lang=' + lang : '';
     const cartUrl = this.apiUrl + '/api/cart' + withLangQuery;
-    return this.http.get(cartUrl, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.get<Cart>(cartUrl, this.requestOptions));
   }
 
   addToCart(params: string) {
     this.ranNumber = this.ranNumber + 1;
     const randomNum = '&random=' + this.ranNumber;
     const addToCartUrl = this.apiUrl + '/api/cart/add' + params + randomNum;
-    return this.http.get(addToCartUrl, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.get<Cart>(addToCartUrl, this.requestOptions));
   }
 
   removeFromCart(params: string) {
     this.ranNumber = this.ranNumber + 1;
     const randomNum = '&random=' + this.ranNumber;
     const removeFromCartUrl = this.apiUrl + '/api/cart/remove' + params + randomNum;
-    return this.http.get(removeFromCartUrl, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.get<Cart>(removeFromCartUrl, this.requestOptions));
   }
 
   getLangTranslations(lang: string) {
     const translationsUrl = this.apiUrl + '/api/translations?lang=' + lang;
-    return this.http.get(translationsUrl).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.get<Translation | null>(translationsUrl));
   }
 
   getAllTranslations() {
     const translationsUrl = this.apiUrl + '/api/translations/all';
-    return this.http.get(translationsUrl, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.get<Translations[]>(translationsUrl, this.requestOptions));
   }
 
-  editTranslation({ lang, keys }) {
+  editTranslation({ lang, keys }: Pick<Translation, 'lang' | 'keys'>) {
     const translationsUpdateUrl = this.apiUrl + '/api/translations?lang=' + lang;
-    return this.http.patch(translationsUpdateUrl, { keys: keys }, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.patch<Translation>(translationsUpdateUrl, { keys: keys }, this.requestOptions));
   }
 
   editAllTranslation(translations: Translations[]) {
     const translationsUpdateUrl = this.apiUrl + '/api/translations/all';
-    return this.http.patch(translationsUpdateUrl, translations, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.patch<unknown[]>(translationsUpdateUrl, translations, this.requestOptions));
   }
 
   getImages() {
     const getImages = this.apiUrl + '/api/admin/images';
-    return this.http.get(getImages, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.get<{ all: string[] }>(getImages, this.requestOptions));
   }
 
-  addProductImagesUrl({ image, titleUrl }) {
+  addProductImagesUrl({ image, titleUrl }: { image: string; titleUrl?: string }) {
     const titleUrlQuery = titleUrl ? '?titleUrl=' + titleUrl : '';
     const addImageUrl = this.apiUrl + '/api/admin/images/add' + titleUrlQuery;
-    return this.http.post(addImageUrl, { image }, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.post<ImagesResult>(addImageUrl, { image }, this.requestOptions));
   }
 
-  removeImage({ image, titleUrl }) {
+  removeImage({ image, titleUrl }: { image: string; titleUrl?: string }) {
     const titleUrlQuery = titleUrl ? '?titleUrl=' + titleUrl : '';
     const removeImage = this.apiUrl + '/api/admin/images/remove' + titleUrlQuery;
-    return this.http.post(removeImage, { image }, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.post<ImagesResult>(removeImage, { image }, this.requestOptions));
   }
 
-  uploadImage({ fileToUpload, titleUrl }) {
+  /** Returns undefined during SSR (no upload possible there). */
+  uploadImage({ fileToUpload, titleUrl }: { fileToUpload: File; titleUrl?: string }) {
     if (isPlatformBrowser(this.platformId)) {
       const titleUrlQuery = titleUrl ? '?titleUrl=' + titleUrl : '';
       const accessToken = localStorage.getItem(accessTokenKey);
@@ -327,106 +299,71 @@ export class ApiService {
       const sendHeaders = { headers, withCredentials: true };
       const uploadUrl = this.apiUrl + '/api/admin/images/upload' + titleUrlQuery;
 
-      return this.http
-        .post(uploadUrl, formData, {
+      return this.handle(
+        this.http.post<ImagesResult>(uploadUrl, formData, {
           reportProgress: true,
           responseType: 'json',
           ...sendHeaders,
-        })
-        .pipe(
-          map((response: any) => response),
-          catchError((error: Error) => of({ error })),
-        );
+        }),
+      );
     }
+    return undefined;
   }
 
-  sendContact(req) {
+  sendContact(req: ContactRequest) {
     const sendContact = this.apiUrl + '/api/eshop/contact';
-    return this.http.post(sendContact, req, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.post<unknown>(sendContact, req, this.requestOptions));
   }
 
-  getPages(query?) {
+  getPages(query?: PagesQuery) {
     const titlesQueryParams = query ? `?titles=${query.titles}&lang=${query.lang}` : '';
     const pagesUrl = this.apiUrl + '/api/eshop/page/all' + titlesQueryParams;
-    return this.http.get(pagesUrl, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.get<Page[]>(pagesUrl, this.requestOptions));
   }
 
-  getPage(query) {
+  getPage(query: { titleUrl: string; lang: string }) {
     const pageUrl = this.apiUrl + '/api/eshop/page/' + query.titleUrl + '?lang=' + query.lang;
-    return this.http.get(pageUrl, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.get<Page | null>(pageUrl, this.requestOptions));
   }
 
-  addOrEditPage(pageReq) {
+  addOrEditPage(pageReq: Page) {
     const pageUrl = this.apiUrl + '/api/eshop/page';
-    return this.http.post(pageUrl, pageReq, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.post<unknown>(pageUrl, pageReq, this.requestOptions));
   }
 
   removePage(titleUrl: string) {
     const pageUrl = this.apiUrl + '/api/eshop/page/' + titleUrl;
-    return this.http.delete(pageUrl, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.delete<unknown>(pageUrl, this.requestOptions));
   }
 
   getThemes() {
     const themesUrl = this.apiUrl + '/api/eshop/theme/all';
-    return this.http.get(themesUrl, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.get<Theme[]>(themesUrl, this.requestOptions));
   }
 
-  addOrEditTheme(themeReq) {
+  addOrEditTheme(themeReq: Theme) {
     const themeUrl = this.apiUrl + '/api/eshop/theme';
-    return this.http.post(themeUrl, themeReq, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.post<unknown>(themeUrl, themeReq, this.requestOptions));
   }
 
   removeTheme(titleUrl: string) {
     const themeUrl = this.apiUrl + '/api/eshop/theme/' + titleUrl;
-    return this.http.delete(themeUrl, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.delete<unknown>(themeUrl, this.requestOptions));
   }
 
   getConfigs() {
     const configsUrl = this.apiUrl + '/api/eshop/config/all';
-    return this.http.get(configsUrl, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.get<ShopConfig[]>(configsUrl, this.requestOptions));
   }
 
-  addOrEditConfig(configReq) {
+  addOrEditConfig(configReq: ShopConfig) {
     const configUrl = this.apiUrl + '/api/eshop/config';
-    return this.http.post(configUrl, configReq, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.post<unknown>(configUrl, configReq, this.requestOptions));
   }
 
   removeConfig(titleUrl: string) {
     const configUrl = this.apiUrl + '/api/eshop/config/' + titleUrl;
-    return this.http.delete(configUrl, this.requestOptions).pipe(
-      map((response: any) => response),
-      catchError((error: Error) => of({ error })),
-    );
+    return this.handle(this.http.delete<unknown>(configUrl, this.requestOptions));
   }
 
   setHeaders() {

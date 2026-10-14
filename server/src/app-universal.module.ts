@@ -25,13 +25,15 @@ function getAllowedHosts(): string[] {
   return [...hosts];
 }
 
-export function setupUniversal(app: any) {
+export function setupUniversal(app: express.Express) {
   const serverDistFolder = dirname(fileURLToPath(import.meta.url));
   const browserDistFolder = resolve(serverDistFolder, '../browser');
   const indexHtml = join(serverDistFolder, 'index.server.html');
   const allowedHosts = getAllowedHosts();
 
-  app.engine('html', (_, options, callback) => {
+  app.engine('html', (_: string, renderOptions: object, callback: (err: unknown, html?: string) => void) => {
+    // res.render() below passes { req, res, providers }
+    const options = renderOptions as { req: express.Request; res: express.Response };
     const commonEngine = new CommonEngine({ allowedHosts });
     commonEngine
       .render({
@@ -53,20 +55,17 @@ export function setupUniversal(app: any) {
   app.set('view engine', 'html');
   app.set('views', browserDistFolder);
 
-
-
-    app.use(express.static(browserDistFolder, {
+  app.use(
+    express.static(browserDistFolder, {
       maxAge: 600,
-  }));
+    }),
+  );
 }
 
 export const angularUniversalProviders: Provider[] = [
   {
     provide: 'UNIVERSAL_INITIALIZER',
-    useFactory: (host: HttpAdapterHost & { template: string }) =>
-      host &&
-      host.httpAdapter &&
-      setupUniversal(host.httpAdapter.getInstance()),
+    useFactory: (host: HttpAdapterHost & { template: string }) => host && host.httpAdapter && setupUniversal(host.httpAdapter.getInstance()),
     inject: [HttpAdapterHost],
   },
 ];
@@ -94,7 +93,7 @@ export class AngularUniversalModule implements OnModuleInit {
     const app = httpAdapter.getInstance();
     const serverDistFolder = dirname(fileURLToPath(import.meta.url));
     const templatePath = join(serverDistFolder, 'index.server.html');
-    app.get(/(.*)/, (req, res) =>
+    app.get(/(.*)/, (req: express.Request, res: express.Response) =>
       res.render(templatePath, {
         req,
         res,

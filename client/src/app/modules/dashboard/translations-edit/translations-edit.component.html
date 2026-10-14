@@ -18,31 +18,29 @@
       </div>
     </div>
     <div class="translations-subform">
-      @for (translation of (translationSub$ | async); track translation; let i = $index) {
-      <div>
-        <div [formGroup]="languageForm.controls[translation.lang]">
-          <h1>{{ translation.lang }}</h1>
+      @for (translation of translationSub$ | async; track translation; let i = $index) {
+        <div>
+          <div [formGroup]="langGroup(translation.lang)">
+            <h1>{{ translation.lang }}</h1>
 
-          @for (sentence of translation.keys | keyvalue; track sentence) {
-
-          <div class="translation-sentence">
-            @if (!i) {
-            <button class="translations-button" (click)="removeTranslation(sentence.key)" mat-mini-fab color="accent">-</button>
+            @for (sentence of translation.keys | keyvalue; track sentence) {
+              <div class="translation-sentence">
+                @if (!i) {
+                  <button class="translations-button" (click)="removeTranslation(sentence.key)" mat-mini-fab color="accent">-</button>
+                }
+                <mat-form-field class="product_edit-field">
+                  <mat-label>{{ sentence.key }}</mat-label>
+                  <input matInput [formControlName]="sentence.key" />
+                </mat-form-field>
+              </div>
             }
-            <mat-form-field class="product_edit-field">
-              <mat-label>{{ sentence.key }}</mat-label>
-              <input matInput [formControlName]="sentence.key" />
-            </mat-form-field>
           </div>
-
-          }
+          <mat-form-field>
+            <mat-label>{{ translation.lang }} JSON</mat-label>
+            <textarea class="translation-textarea" matInput [formControlName]="translation.lang + '_json'"> </textarea>
+          </mat-form-field>
+          <br />
         </div>
-        <mat-form-field>
-          <mat-label>{{ translation.lang }} JSON</mat-label>
-          <textarea class="translation-textarea" matInput [formControlName]="translation.lang + '_json'"> </textarea>
-        </mat-form-field>
-        <br />
-      </div>
       }
     </div>
   </form>

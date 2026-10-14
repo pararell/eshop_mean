@@ -14,7 +14,7 @@ import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
   standalone: false,
 })
 export class SummaryComponent {
-  order$: Signal<Order>;
+  order$: Signal<Order | null>;
   lang$: Observable<string>;
 
   readonly component = 'summaryComponent';

@@ -4,12 +4,12 @@
       [class.disabled]="loadingProducts()"
       [categories]="categories()"
       [price]="filterPrice()"
-      [maxPrice]="maxPrice()"
-      [minPrice]="minPrice()"
+      [maxPrice]="maxPrice()!"
+      [minPrice]="minPrice()!"
       [activeCategory]="category()"
       [sortOptions]="sortOptions"
       [currency]="currency()"
-      [lang]="lang()"
+      [lang]="lang()!"
       [choosenSort]="sortBy()"
       (changePrice)="priceRange($event)"
       (changeSort)="changeSort($event)"
@@ -20,109 +20,110 @@
   <mat-drawer-content>
     <div class="main">
       @if (cart(); as cart) {
-      <div class="home-promo">
-        <span class="home-promo-basic">
-          {{ 'Home_promo' | translate | async }}
-        </span>
-        <span class="home-promo-shipping"> {{ 'Free_shipping_limit' | translate | async }} {{ cart.shippingLimit }} {{ currency() }} </span>
-      </div>
+        <div class="home-promo">
+          <span class="home-promo-basic">
+            {{ 'Home_promo' | translate | async }}
+          </span>
+          <span class="home-promo-shipping"> {{ 'Free_shipping_limit' | translate | async }} {{ cart.shippingLimit }} {{ currency() }} </span>
+        </div>
       }
       @if (products(); as products) {
-      <div class="home-product">
-        <app-carousel [intervalForSlider]="30000" [absoluteArrows]="true">
-          <div class="home-promo-slide">
-            <div class="home-promo-slide-background"></div>
-            @if (video) {
-              <video #videoRef autoplay muted playsinline loop class="home-promo-slide-video">
-                <source [src]="video" type="video/mp4">
-              </video>
+        <div class="home-product">
+          <app-carousel [intervalForSlider]="30000" [absoluteArrows]="true">
+            <div class="home-promo-slide">
+              <div class="home-promo-slide-background"></div>
+              @if (video) {
+                <video #videoRef autoplay muted playsinline loop class="home-promo-slide-video">
+                  <source [src]="video" type="video/mp4" />
+                </video>
+              }
+              <div class="home-promo-slide-cta">
+                <div class="home-promo-slide-logo"></div>
+                <h2 class="home-promo-slide-subtitle">
+                  {{ 'Eshop_subtitle' | translate | async }}
+                </h2>
+                @if ('Home_promo_text_link' | translate | async; as promoText) {
+                  <span class="home-promo-slide-text">
+                    <a [href]="'Home_promo_link' | translate | async"> {{ promoText }}</a>
+                  </span>
+                }
+              </div>
+            </div>
+            @for (product of products | slice: 0 : 3; track product?._id) {
+              <div class="home-product-top">
+                <div class="home-product-top-content">
+                  <app-product-content
+                    [product]="product"
+                    [categoriesInput]="categories()"
+                    [cartIds]="cartIds()"
+                    [currency]="currency()"
+                    [lang]="lang()!"
+                    [withLink]="true"
+                    (addProduct)="addToCart($event)"
+                    (removeProduct)="removeFromCart($event)"
+                  >
+                  </app-product-content>
+                </div>
+              </div>
             }
-            <div class="home-promo-slide-cta">
-              <div class="home-promo-slide-logo"></div>
-              <h2 class="home-promo-slide-subtitle">
-                {{ 'Eshop_subtitle' | translate | async }}
-              </h2>
-              @if (('Home_promo_text_link' | translate | async); as promoText) {
-              <span class="home-promo-slide-text">
-                <a [href]="'Home_promo_link' | translate | async"> {{ promoText }}</a>
-              </span>
-              }
-            </div>
-          </div>
-          @for (product of products | slice: 0:3; track product?._id) {
-
-          <div class="home-product-top">
-            <div class="home-product-top-content">
-              <app-product-content
-              [product]="product"
-              [categoriesInput]="categories()"
-              [cartIds]="cartIds()"
-              [currency]="currency()"
-              [lang]="lang()"
-              [withLink]="true"
-              (addProduct)="addToCart($event)"
-              (removeProduct)="removeFromCart($event)"
-            >
-            </app-product-content>
-            </div>
-          </div>
-          }
-        </app-carousel>
-      </div>
-      } @if ((categories())?.length) {
-      <div class="home-primary-header">
-        <div class="home-primary-container">
-          <span class="home-mobile-filter" (click)="toggleSidebar()">
-            <i class="material-icons md-16">filter_list</i>
-          </span>
-          <div class="home-categories-links-wrap">
-            <div class="home-categories-links">
-              @for (cat of categories(); track cat) {
-              <a class="home-title-category" [routerLink]="['/' + lang() + '/product/category/' + cat.titleUrl]">
-                {{ cat.title }}
-              </a>
-              }
+          </app-carousel>
+        </div>
+      }
+      @if (categories()?.length) {
+        <div class="home-primary-header">
+          <div class="home-primary-container">
+            <span class="home-mobile-filter" (click)="toggleSidebar()">
+              <i class="material-icons md-16">filter_list</i>
+            </span>
+            <div class="home-categories-links-wrap">
+              <div class="home-categories-links">
+                @for (cat of categories(); track cat) {
+                  <a class="home-title-category" [routerLink]="['/' + lang() + '/product/category/' + cat.titleUrl]">
+                    {{ cat.title }}
+                  </a>
+                }
+              </div>
             </div>
           </div>
         </div>
-      </div>
       }
       <div class="container">
         @if (loadingProducts()) {
-        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-        } @if (categories(); as categories) {
-        <div>
-          <app-categories-list [categories]="categories" [lang]="lang()"> </app-categories-list>
-        </div>
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        }
+        @if (categories(); as categories) {
+          <div>
+            <app-categories-list [categories]="categories" [lang]="lang()!"> </app-categories-list>
+          </div>
         }
       </div>
       @if (products()) {
-      <div class="home-primary-header">
-        <div class="home-primary-container">
-          <h1 class="home-title">{{ 'Products' | translate | async }}</h1>
+        <div class="home-primary-header">
+          <div class="home-primary-container">
+            <h1 class="home-title">{{ 'Products' | translate | async }}</h1>
+          </div>
         </div>
-      </div>
       }
       <div class="container">
         @if (loadingProducts()) {
-        <mat-spinner class="home-spinner"></mat-spinner>
+          <mat-spinner class="home-spinner"></mat-spinner>
         }
         @if (products(); as products) {
-        <div>
-          <app-products-list
-            [class.disabled]="loadingProducts()"
-            [products]="products"
-            [cartIds]="cartIds()"
-            [currency]="currency()"
-            [lang]="lang()"
-            (addProduct)="addToCart($event)"
-            (removeProduct)="removeFromCart($event)"
-          >
-          </app-products-list>
-          @if (pagination(); as pagination) {
-          <app-pagination [class.disabled]="loadingProducts()" [pagination]="pagination" (changePage)="changePage($event)"> </app-pagination>
-          }
-        </div>
+          <div>
+            <app-products-list
+              [class.disabled]="loadingProducts()"
+              [products]="products"
+              [cartIds]="cartIds()"
+              [currency]="currency()"
+              [lang]="lang()!"
+              (addProduct)="addToCart($event)"
+              (removeProduct)="removeFromCart($event)"
+            >
+            </app-products-list>
+            @if (pagination(); as pagination) {
+              <app-pagination [class.disabled]="loadingProducts()" [pagination]="pagination" (changePage)="changePage($event)"> </app-pagination>
+            }
+          </div>
         }
       </div>
     </div>

@@ -1,15 +1,4 @@
-import {
-  Controller,
-  Body,
-  Session,
-  Post,
-  Get,
-  UseGuards,
-  Param,
-  Delete,
-  Headers,
-  Query,
-} from '@nestjs/common';
+import { Controller, Body, Session, Post, Get, UseGuards, Param, Delete, Headers, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import { EshopService } from './eshop.service';
@@ -20,43 +9,39 @@ import { Page } from './models/page.model';
 import { Theme } from './models/theme.model';
 import { Config } from './models/config.model';
 
+import type { PublicConfigResponse, ShopConfig, Theme as ThemeData } from '@eshop/shared';
+import type { UpdateWriteOpResult } from 'mongoose';
+import { ShopSession } from '../shared/types/session';
+
+type UpsertResult<T> = T | UpdateWriteOpResult | undefined;
+
 @Controller('api/eshop')
 export class EshopController {
   constructor(private eshopService: EshopService) {}
 
   @Get('/config')
-  getConfig(@Session() session): Promise<{ config: string }> {
+  getConfig(@Session() session: ShopSession): Promise<PublicConfigResponse> {
     return this.eshopService.getConfig(session);
   }
 
   @Post('/contact')
-  sendContact(
-    @Body() contactDto: ContactDto,
-    @Session() session,
-    @Headers('lang') lang: string,
-  ): Promise<void> {
+  sendContact(@Body() contactDto: ContactDto, @Session() session: ShopSession, @Headers('lang') lang: string): Promise<void> {
     return this.eshopService.sendContact(contactDto, session.cart, lang);
   }
 
   @Get('/page/all')
-  getPages(
-    @Headers('lang') lang: string,
-    @Query('titles') titles: boolean,
-  ): Promise<Page[]> {
+  getPages(@Headers('lang') lang: string, @Query('titles') titles: boolean): Promise<Page[]> {
     return this.eshopService.getPages(lang, titles);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Post('/page')
-  addOrEditPage(@Body() pageDto: PageDto): Promise<Page> {
+  addOrEditPage(@Body() pageDto: PageDto): Promise<UpsertResult<Page>> {
     return this.eshopService.addOrEditPage(pageDto);
   }
 
   @Get('/page/:titleUrl')
-  getPage(
-    @Param('titleUrl') titleUrl: string,
-    @Headers('lang') lang: string,
-  ): Promise<Page> {
+  getPage(@Param('titleUrl') titleUrl: string, @Headers('lang') lang: string): Promise<Page | null> {
     return this.eshopService.getPage(titleUrl, lang);
   }
 
@@ -73,7 +58,7 @@ export class EshopController {
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Post('/theme')
-  addOrEditTheme(@Body() themeDto): Promise<Theme> {
+  addOrEditTheme(@Body() themeDto: ThemeData): Promise<UpsertResult<Theme>> {
     return this.eshopService.addOrEditTheme(themeDto);
   }
 
@@ -90,7 +75,7 @@ export class EshopController {
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Post('/config')
-  addOrEditConfig(@Body() configDto): Promise<Config> {
+  addOrEditConfig(@Body() configDto: ShopConfig): Promise<UpsertResult<Config>> {
     return this.eshopService.addOrEditConfig(configDto);
   }
 

@@ -5,15 +5,15 @@ export class ContactDto {
   @IsString()
   @MinLength(4)
   @MaxLength(50)
-  email: string;
+  email!: string;
 
-  name: string;
-
-  @IsNotEmpty()
-  @IsString()
-  notes: string;
+  name!: string;
 
   @IsNotEmpty()
   @IsString()
-  token: string;
+  notes!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  token!: string;
 }

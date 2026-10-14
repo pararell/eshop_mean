@@ -3,7 +3,8 @@ import { IsString, IsNotEmpty } from 'class-validator';
 export class PageDto {
   @IsNotEmpty()
   @IsString()
-  titleUrl: string;
+  titleUrl!: string;
 
-  [lang: string]: any | { title: string; contentHTML: string };
+  /** Per-language content: `en: { title, contentHTML }`, ... */
+  [lang: string]: unknown;
 }

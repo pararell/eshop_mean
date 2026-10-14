@@ -5,14 +5,12 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from 
   templateUrl: './cart-show.component.html',
   styleUrls: ['./cart-show.component.scss'],
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CartShowComponent {
-  @Input()  items  :  number;
-  @Output() add    = new EventEmitter<void>();
+  @Input() items!: number;
+  @Output() add = new EventEmitter<void>();
   @Output() remove = new EventEmitter<void>();
 
-  constructor() { }
-
-
+  constructor() {}
 }

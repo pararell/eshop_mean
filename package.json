@@ -11,8 +11,8 @@
     "start:dev": "NODE_ENV=development nest start --watch config ./server/nest-cli.json --path ./server/tsconfig.json",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node server/dist/main",
-    "format": "prettier --write \"server/**/*.ts\"",
-    "lint": "eslint \"{server,apps}/**/*.ts\" --fix",
+    "format": "prettier --write .",
+    "lint": "eslint .",
     "ng": "ng ",
     "start:client": "ng serve --port 3000",
     "start:client:https": "ng serve --port 3000 --ssl=true --ssl-key=localhost.key --ssl-cert=localhost.crt",
@@ -33,7 +33,10 @@
     "test:e2e:ui": "playwright test -c e2e/playwright.config.ts --ui",
     "release": "standard-version",
     "start": "npm run serve:ssr",
-    "typecheck": "tsc --noEmit -p client/tsconfig.app.json && tsc --noEmit -p server/tsconfig.json && tsc -p server/tsconfig.spec.json && tsc -p e2e/tsconfig.json"
+    "typecheck": "tsc --noEmit -p client/tsconfig.app.json && tsc --noEmit -p server/tsconfig.json && tsc -p server/tsconfig.spec.json && tsc -p e2e/tsconfig.json",
+    "format:check": "prettier --check .",
+    "lint:fix": "eslint . --fix",
+    "prepare": "husky"
   },
   "dependencies": {
     "@angular/animations": "22.2.2",
@@ -94,10 +97,12 @@
     "@angular/cli": "22.2.2",
     "@angular/compiler-cli": "22.2.2",
     "@angular/language-service": "22.2.2",
+    "@eslint/js": "^9.39.5",
     "@nestjs/cli": "^12.0.8",
     "@nestjs/schematics": "^12.0.7",
     "@nestjs/testing": "^12.1.3",
     "@playwright/test": "^1.64.0",
+    "@stripe/stripe-js": "^10.1.0",
     "@swc/core": "^1.16.18",
     "@swc/jest": "^0.2.39",
     "@types/compression": "^1.8.1",
@@ -112,12 +117,16 @@
     "@types/passport-jwt": "^4.0.1",
     "@types/streamifier": "^0.1.2",
     "@types/supertest": "^7.2.1",
+    "@types/tinycolor2": "^1.4.6",
     "@typescript-eslint/eslint-plugin": "^8.71.2",
     "@typescript-eslint/parser": "^8.71.2",
     "angular-eslint": "^22.6.0",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.13.0",
+    "husky": "^9.1.7",
     "jest": "^30.5.2",
+    "lint-staged": "^17.6.0",
     "mongodb-memory-server-core": "^11.3.0",
     "postcss-scss": "^4.0.9",
     "prettier": "^3.6.2",
@@ -138,5 +147,14 @@
   },
   "browserslist": [
     "> 5%"
-  ]
+  ],
+  "lint-staged": {
+    "*.{ts,js,mjs,cjs,html}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{scss,css,json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
 }

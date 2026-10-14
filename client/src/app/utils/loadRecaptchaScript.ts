@@ -4,11 +4,13 @@ declare global {
   }
 }
 
-declare const grecaptcha;
+import type { ReCaptchaV3 } from './recaptcha.types';
+
+declare const grecaptcha: ReCaptchaV3;
 
 function loadRecaptchaScript(
-  renderMode: "explicit" | string,
-  onLoaded: (grecaptcha) => void,
+  renderMode: 'explicit' | string,
+  onLoaded: (grecaptcha: ReCaptchaV3) => void,
   urlParams: string,
   url?: string,
   nonce?: string,
@@ -16,9 +18,9 @@ function loadRecaptchaScript(
   window.ng2recaptchaloaded = () => {
     onLoaded(grecaptcha);
   };
-  const script = document.createElement("script");
-  script.innerHTML = "";
-  const baseUrl = url || "https://www.google.com/recaptcha/api.js";
+  const script = document.createElement('script');
+  script.innerHTML = '';
+  const baseUrl = url || 'https://www.google.com/recaptcha/api.js';
 
   script.src = `${baseUrl}?render=${renderMode}&onload=ng2recaptchaloaded${urlParams}`;
   if (nonce) {

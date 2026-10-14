@@ -1,7 +1,6 @@
-
 import { Injectable, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import tinycolor from "tinycolor2";
+import tinycolor from 'tinycolor2';
 
 export interface Color {
   name: string;
@@ -9,25 +8,22 @@ export interface Color {
   darkContrast: boolean;
 }
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ThemeService {
-
-  video: string;
+  video!: string;
 
   constructor(
     @Inject(DOCUMENT)
-    private document: Document
-    ) {}
+    private document: Document,
+  ) {}
 
-
-  setCSSVariable(color, type: string): void {
+  setCSSVariable(color: string, type: string): void {
     this.document.documentElement.style.setProperty(`--${type}`, color);
   }
 
-  setThemeColor = (themeColor, type: string): void => {
+  setThemeColor = (themeColor: string, type: string): void => {
     const colorPalette = this.computeColors(themeColor);
 
     for (const color of colorPalette) {
@@ -38,12 +34,11 @@ export class ThemeService {
       this.document.documentElement.style.setProperty(key1, value1);
       this.document.documentElement.style.setProperty(key2, value2);
     }
-  }
+  };
 
   setVideo(video: string): void {
     this.video = video;
   }
-
 
   private computeColors(hex: string): Color[] {
     return [
@@ -60,17 +55,16 @@ export class ThemeService {
       this.getColorObject(tinycolor(hex).lighten(50).saturate(30), 'A100'),
       this.getColorObject(tinycolor(hex).lighten(30).saturate(30), 'A200'),
       this.getColorObject(tinycolor(hex).lighten(10).saturate(15), 'A400'),
-      this.getColorObject(tinycolor(hex).lighten(5).saturate(5), 'A700')
+      this.getColorObject(tinycolor(hex).lighten(5).saturate(5), 'A700'),
     ];
   }
 
-  private getColorObject(value, name): Color {
+  private getColorObject(value: tinycolor.Instance, name: string): Color {
     const c = tinycolor(value);
     return {
       name: name,
       hex: c.toHexString(),
-      darkContrast: c.isLight()
+      darkContrast: c.isLight(),
     };
   }
-
 }

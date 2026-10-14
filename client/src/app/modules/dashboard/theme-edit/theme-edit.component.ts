@@ -18,10 +18,10 @@ import { SignalStore } from '../../../store/signal.store';
   standalone: false,
 })
 export class ThemeEditComponent {
-  themes$: Observable<Theme[]>;
+  themes$: Observable<Theme[] | null>;
   themesEditForm: FormGroup;
   languageOptions = languages;
-  choosenLanguageSub$ = new BehaviorSubject(languages[0]);
+  choosenLanguageSub$ = new BehaviorSubject<string>(languages[0]);
   newTheme = '';
   chosenTheme = '';
   sendRequest = false;
@@ -64,7 +64,7 @@ export class ThemeEditComponent {
 
   addTheme(): void {
     if (this.newTheme) {
-      this.themesEditForm.get('titleUrl').setValue(this.newTheme);
+      this.themesEditForm.get('titleUrl')!.setValue(this.newTheme);
       const newForm = {
         titleUrl: this.newTheme,
         ...this.startFormValues(),
@@ -75,20 +75,21 @@ export class ThemeEditComponent {
 
   choseTheme(): void {
     if (this.chosenTheme) {
-      this.themesEditForm.get('titleUrl').setValue(this.chosenTheme);
+      this.themesEditForm.get('titleUrl')!.setValue(this.chosenTheme);
       this.themes$.pipe(take(1)).subscribe((themes) => {
-        const foundTheme = themes.find((theme) => theme.titleUrl === this.chosenTheme);
-        this.themesEditForm.get('active').setValue(!!foundTheme.active);
-        this.themesEditForm.get('freeShippingPromo').setValue(foundTheme.styles.freeShippingPromo || 'none');
-        this.themesEditForm.get('promoSlideBackground').setValue(foundTheme.styles.promoSlideBackground || '');
-        this.themesEditForm.get('promoSlideVideo').setValue(foundTheme.styles.promoSlideVideo || '');
-        this.themesEditForm.get('promoSlideBackgroundPosition').setValue(foundTheme.styles.promoSlideBackgroundPosition || '');
-        this.themesEditForm.get('promo').setValue(foundTheme.styles.promo || 'none');
-        this.themesEditForm.get('primaryColor').setValue(foundTheme.styles.primaryColor || '');
-        this.themesEditForm.get('secondaryColor').setValue(foundTheme.styles.secondaryColor || '');
-        this.themesEditForm.get('backgroundColor').setValue(foundTheme.styles.backgroundColor || '');
-        this.themesEditForm.get('mainBackground').setValue(foundTheme.styles.mainBackground || '');
-        this.themesEditForm.get('logo').setValue(foundTheme.styles.logo || '');
+        // The chosen title comes from the loaded list, so both are present here
+        const foundTheme = themes!.find((theme) => theme.titleUrl === this.chosenTheme)!;
+        this.themesEditForm.get('active')!.setValue(!!foundTheme.active);
+        this.themesEditForm.get('freeShippingPromo')!.setValue(foundTheme.styles.freeShippingPromo || 'none');
+        this.themesEditForm.get('promoSlideBackground')!.setValue(foundTheme.styles.promoSlideBackground || '');
+        this.themesEditForm.get('promoSlideVideo')!.setValue(foundTheme.styles.promoSlideVideo || '');
+        this.themesEditForm.get('promoSlideBackgroundPosition')!.setValue(foundTheme.styles.promoSlideBackgroundPosition || '');
+        this.themesEditForm.get('promo')!.setValue(foundTheme.styles.promo || 'none');
+        this.themesEditForm.get('primaryColor')!.setValue(foundTheme.styles.primaryColor || '');
+        this.themesEditForm.get('secondaryColor')!.setValue(foundTheme.styles.secondaryColor || '');
+        this.themesEditForm.get('backgroundColor')!.setValue(foundTheme.styles.backgroundColor || '');
+        this.themesEditForm.get('mainBackground')!.setValue(foundTheme.styles.mainBackground || '');
+        this.themesEditForm.get('logo')!.setValue(foundTheme.styles.logo || '');
       });
     }
   }

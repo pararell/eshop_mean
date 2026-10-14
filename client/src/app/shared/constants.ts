@@ -1,24 +1,27 @@
-export const languages = ['en', 'sk', 'cs'];
+import type { LanguageCode } from '@eshop/shared';
 
-export const currencyLang = {
+export const languages: LanguageCode[] = ['en', 'sk', 'cs'];
+
+export const currencyLang: Record<string, string> = {
   default: 'EUR',
-  'en' : 'EUR',
-  'sk' : 'EUR',
-  'cs' : 'CZK'
-}
+  en: 'EUR',
+  sk: 'EUR',
+  cs: 'CZK',
+};
 
 export const countryLang = {
   default: 'en',
-  'en' : 'en',
-  'sk' : 'sk',
-  'cz' : 'cs',
-}
+  en: 'en',
+  sk: 'sk',
+  cz: 'cs',
+};
 
 export const accessTokenKey = 'accessToken';
 
-export const sortOptions = [{
-  name: 'Newest',
-  id: 'newest',
+export const sortOptions = [
+  {
+    name: 'Newest',
+    id: 'newest',
   },
   {
     name: 'Oldest',
@@ -31,6 +34,7 @@ export const sortOptions = [{
   {
     name: 'Price-decs',
     id: 'pricedesc',
-}];
+  },
+];
 
 export const imageTypes = ['contain', 'cover'];

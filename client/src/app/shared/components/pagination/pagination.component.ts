@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
-import { Pagination } from '../../models';
+import { PaginationState } from '../../../store/signal.store.selectors';
 
 import { MatPaginatorModule } from '@angular/material/paginator';
 
@@ -11,7 +11,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
   imports: [MatPaginatorModule],
 })
 export class PaginationComponent {
-  @Input() pagination: Pagination;
+  /** `limit` is unknown until the first products response */
+  @Input() pagination!: PaginationState;
 
   @Output() changePage = new EventEmitter<number>();
 

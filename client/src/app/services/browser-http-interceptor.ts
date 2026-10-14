@@ -1,23 +1,22 @@
 import { catchError } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
+import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HttpErrorResponse } from '@angular/common/http';
 
 @Injectable()
 export class BrowserHttpInterceptor implements HttpInterceptor {
-
   constructor() {}
 
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     return next.handle(request).pipe(
-      catchError((error: HttpResponse<any>) => {
+      catchError((error: HttpErrorResponse) => {
         this._handleError(error.url, error.status);
-        return throwError(() => (error));
-      }));
+        return throwError(() => error);
+      }),
+    );
   }
 
-
-  private _handleError(url: string, statusCode: number): void {
+  private _handleError(url: string | null, statusCode: number): void {
     switch (statusCode) {
       case 404:
         console.warn('HTTP status code: 404: ', url, statusCode);
@@ -36,5 +35,4 @@ export class BrowserHttpInterceptor implements HttpInterceptor {
         break;
     }
   }
-
 }

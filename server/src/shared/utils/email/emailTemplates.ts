@@ -1,7 +1,14 @@
-const emailTemplates = (cart, order, translations) => {
-  const keys = translations ? translations['keys'] : {};
+import type { LocalizedCart, LocalizedCartItem } from '@eshop/shared';
+import type { EmailTranslations, OrderEmail } from './email.types';
 
-  function prepareCartItems(items, currency) {
+const emailTemplates = (
+  cart: LocalizedCart,
+  order: OrderEmail,
+  translations: EmailTranslations,
+) => {
+  const keys: Record<string, string> = translations ? translations['keys'] : {};
+
+  function prepareCartItems(items: LocalizedCartItem[], currency: string) {
     return items.map((product) => {
       return `<div style="background-color:transparent;">
         <div
@@ -507,11 +514,11 @@ const emailTemplates = (cart, order, translations) => {
                                                                   <span style="font-size: 16px; line-height: 24px;">
                                                                   ${
                                                                     order
-                                                                      .address
+                                                                      .address!
                                                                       .line1
                                                                   }   ${
                                                                     order
-                                                                      .address
+                                                                      .address!
                                                                       .line2
                                                                   }</span>
                                                               </p>
@@ -519,11 +526,11 @@ const emailTemplates = (cart, order, translations) => {
                                                                   <span style="font-size: 16px; line-height: 24px;">
                                                                   ${
                                                                     order
-                                                                      .address
+                                                                      .address!
                                                                       .city
                                                                   },${
                                                                     order
-                                                                      .address
+                                                                      .address!
                                                                       .zip
                                                                   }</span>
                                                               </p>
@@ -531,7 +538,7 @@ const emailTemplates = (cart, order, translations) => {
                                                                   <span style="font-size: 16px; line-height: 24px;">
                                                                   ${
                                                                     order
-                                                                      .address
+                                                                      .address!
                                                                       .country
                                                                   }</span>
                                                               </p>

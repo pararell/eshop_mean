@@ -5,13 +5,16 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-export const AuthGuard: CanActivateFn = (_route: ActivatedRouteSnapshot): Observable<any> => {
+// Known issue (docs/audit.md BUG-12): the guards emit the user / an optional boolean and rely on
+// the router treating falsy values as "deny". Kept as-is; the casts only make that explicit.
+
+export const AuthGuard: CanActivateFn = (_route: ActivatedRouteSnapshot) => {
   const selectors = inject(SignalStoreSelectors);
-  return toObservable(selectors.user);
+  return toObservable(selectors.user) as unknown as Observable<boolean>;
 };
 
-export const AdminGuard: CanActivateFn = (_route: ActivatedRouteSnapshot): Observable<any> => {
+export const AdminGuard: CanActivateFn = (_route: ActivatedRouteSnapshot) => {
   const selectors = inject(SignalStoreSelectors);
-  const admin = toObservable(selectors.user).pipe(map((user) => user?.roles.includes('admin')));
-  return admin;
+  const admin = toObservable(selectors.user).pipe(map((user) => user?.roles!.includes('admin')));
+  return admin as Observable<boolean>;
 };

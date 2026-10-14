@@ -1,6 +1,7 @@
 import emailTemplates from './emailTemplates';
+import type { EmailTranslations, EmailType } from './email.types';
 
-export function getContent(emailType, translations) {
+export function getContent(emailType: EmailType, translations: EmailTranslations): string | undefined {
   if (emailType.subject === 'Order') {
     const cart = emailType.cart;
 

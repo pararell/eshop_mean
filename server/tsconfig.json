@@ -12,11 +12,11 @@
     "incremental": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "strict": false
+    "strict": true,
+    "paths": {
+      "@eshop/shared": ["../shared/types/index.d.ts"]
+    }
   },
   "files": ["./src/main.ts"],
   "exclude": ["node_modules", "dist", "types.d.ts"]
 }
-
-
-

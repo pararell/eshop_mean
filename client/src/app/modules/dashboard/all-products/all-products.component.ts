@@ -10,9 +10,9 @@ import { Product } from '../../../shared/models';
   standalone: false,
 })
 export class AllProductsComponent {
-  @Input() allProducts: Product[];
-  @Input() lang: string;
-  @Input() currency: string;
+  @Input() allProducts!: Product[];
+  @Input() lang!: string;
+  @Input() currency!: string;
 
   @Output() getAllProducts = new EventEmitter();
   @Output() editProduct = new EventEmitter<string>();

@@ -2,6 +2,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import session from 'express-session';
 import mongoose from 'mongoose';
 import MongoStore from 'connect-mongo';
+import type { MongoClient } from 'mongodb';
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -21,9 +22,9 @@ export const setAppDB = (app: NestExpressApplication): void => {
     }),
   );
 
-  const clientP: any = mongoose
-    .connect(process.env.MONGO_URI, {})
-    .then((m) => m.connection.getClient());
+  // mongoose and connect-mongo bundle different copies of the mongodb driver, so the client types
+  // differ although the runtime object is compatible. Type-only cast.
+  const clientP = mongoose.connect(process.env.MONGO_URI!, {}).then((m) => m.connection.getClient()) as unknown as Promise<MongoClient>;
 
   app.use(
     session({
@@ -31,7 +32,7 @@ export const setAppDB = (app: NestExpressApplication): void => {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         secure: false,
       },
-      secret: process.env.COOKIE_KEY,
+      secret: process.env.COOKIE_KEY!,
       resave: false,
       saveUninitialized: false,
       store: MongoStore.create({

@@ -1,40 +1,28 @@
-import { Document, Model } from 'mongoose';
+import { Document, FilterQuery, Model } from 'mongoose';
+import type { LocalizedProduct, ProductRaw, ProductsPage } from '@eshop/shared';
 
-export interface Product extends Document<string> {
-    _id: string;
-    title: string;
-    description: string;
-    descriptionFull: string[];
-    tags: string[];
-    regularPrice: number;
-    salePrice: number;
-    titleUrl: string;
-    onSale: boolean;
-    stock: string;
-    visibility: boolean;
-    shipping?: string;
-    mainImage: { url: string; name: string };
-    images: string[];
-    _user: string;
-    dateAdded?: Date;
+export type { LocalizedProduct, ProductsPage };
+
+/** Product document: language-independent fields plus one sub-document per language. */
+export interface Product extends Document<string>, Omit<ProductRaw, '_id'> {
+  _id: string;
 }
 
 export interface PaginateOptions {
   sort: string;
-  price: string;
+  price: 'salePrice';
   page: number;
   limit: number;
   lang: string;
 }
 
-export interface ProductModel extends Model<Product> {
-    paginate(query: any, options: PaginateOptions);
+export interface PaginateResult {
+  all: Product[];
+  pagination: ProductsPage['pagination'];
+  maxPrice: number;
+  minPrice: number;
 }
 
-export interface ProductsWithPagination {
-    all: Product[];
-    total: number;
-    limit: number;
-    page: number;
-    pages: number;
+export interface ProductModel extends Model<Product> {
+  paginate(query: FilterQuery<Product>, options: PaginateOptions): Promise<PaginateResult>;
 }

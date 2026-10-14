@@ -1,22 +1,6 @@
 import { Document } from 'mongoose';
+import type { Theme as ThemeData } from '@eshop/shared';
 
-export interface Theme extends Document<string> {
+export interface Theme extends Document<string>, Omit<ThemeData, '_id'> {
   _id: string;
-  titleUrl: string;
-  dateAdded?: Date;
-  active: boolean;
-  styles:
-    | any
-    | {
-        primaryColor: string;
-        secondaryColor: string;
-        backgroundColor: string;
-        mainBackground: string;
-        freeShippingPromo: string;
-        promoSlideBackground: string;
-        promoSlideVideo: string;
-        promoSlideBackgroundPosition: string;
-        promo: string;
-        logo: string;
-      };
 }

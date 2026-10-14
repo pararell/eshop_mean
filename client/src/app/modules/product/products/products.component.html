@@ -4,12 +4,12 @@
       [class.disabled]="loadingProducts()"
       [categories]="categories()"
       [price]="filterPrice()"
-      [maxPrice]="maxPrice()"
-      [minPrice]="minPrice()"
+      [maxPrice]="maxPrice()!"
+      [minPrice]="minPrice()!"
       [activeCategory]="category()"
       [sortOptions]="sortOptions"
       [currency]="currency()"
-      [lang]="lang()"
+      [lang]="lang()!"
       [choosenSort]="sortBy()"
       (changePrice)="priceRange($event)"
       (changeSort)="changeSort($event)"
@@ -25,61 +25,63 @@
             <i class="material-icons md-16">filter_list</i>
             <span>{{ 'Filter' | translate | async }}</span>
           </div>
-          @if (!(categoryInfo())) {
-          <h1 class="products-title">{{ 'Products' | translate | async }}</h1>
-          } @if ((categoryInfo()); as categoryInfo) {
-
-          <h1 class="products-title">{{ categoryInfo.title }}</h1>
-          @if (categoryInfo.description) {
-          <p class="products-description">{{ categoryInfo.description }}</p>
-          } }
+          @if (!categoryInfo()) {
+            <h1 class="products-title">{{ 'Products' | translate | async }}</h1>
+          }
+          @if (categoryInfo(); as categoryInfo) {
+            <h1 class="products-title">{{ categoryInfo.title }}</h1>
+            @if (categoryInfo.description) {
+              <p class="products-description">{{ categoryInfo.description }}</p>
+            }
+          }
         </div>
       </div>
       <div class="container products-content">
         @if (loadingProducts()) {
-        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-        } @if (products(); as products) {
-        <div class="sidebar-layout">
-          <div class="sidebar-wrap">
-            <app-sidebar
-              class="products-sidebar-desktop"
-              [class.disabled]="loadingProducts()"
-              [categories]="categories()"
-              [price]="filterPrice()"
-              [maxPrice]="maxPrice()"
-              [minPrice]="minPrice()"
-              [activeCategory]="category()"
-              [sortOptions]="sortOptions"
-              [currency]="currency()"
-              [lang]="lang()"
-              [choosenSort]="sortBy()"
-              (changePrice)="priceRange($event)"
-              (changeSort)="changeSort($event)"
-              (changeCategory)="changeCategory()"
-            >
-            </app-sidebar>
-          </div>
-          <div class="main-wrap">
-            @if ((subCategories()); as subCategories) {
-              @if (subCategories.length && (pagination()).page === 1) {
-            <app-categories-list [categories]="subCategories" [lang]="lang()" [withSlider]="false"> </app-categories-list>
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        }
+        @if (products(); as products) {
+          <div class="sidebar-layout">
+            <div class="sidebar-wrap">
+              <app-sidebar
+                class="products-sidebar-desktop"
+                [class.disabled]="loadingProducts()"
+                [categories]="categories()"
+                [price]="filterPrice()"
+                [maxPrice]="maxPrice()!"
+                [minPrice]="minPrice()!"
+                [activeCategory]="category()"
+                [sortOptions]="sortOptions"
+                [currency]="currency()"
+                [lang]="lang()!"
+                [choosenSort]="sortBy()"
+                (changePrice)="priceRange($event)"
+                (changeSort)="changeSort($event)"
+                (changeCategory)="changeCategory()"
+              >
+              </app-sidebar>
+            </div>
+            <div class="main-wrap">
+              @if (subCategories(); as subCategories) {
+                @if (subCategories.length && pagination().page === 1) {
+                  <app-categories-list [categories]="subCategories" [lang]="lang()!" [withSlider]="false"> </app-categories-list>
+                }
               }
-            }
-            <app-products-list
-              [class.disabled]="loadingProducts()"
-              [products]="products"
-              [cartIds]="cartIds()"
-              [currency]="currency()"
-              [lang]="lang()"
-              (addProduct)="addToCart($event)"
-              (removeProduct)="removeFromCart($event)"
-            >
-            </app-products-list>
-            @if ((pagination()); as pagination) {
-            <app-pagination [class.disabled]="loadingProducts()" [pagination]="pagination" (changePage)="changePage($event)"> </app-pagination>
-            }
+              <app-products-list
+                [class.disabled]="loadingProducts()"
+                [products]="products"
+                [cartIds]="cartIds()"
+                [currency]="currency()"
+                [lang]="lang()!"
+                (addProduct)="addToCart($event)"
+                (removeProduct)="removeFromCart($event)"
+              >
+              </app-products-list>
+              @if (pagination(); as pagination) {
+                <app-pagination [class.disabled]="loadingProducts()" [pagination]="pagination" (changePage)="changePage($event)"> </app-pagination>
+              }
+            </div>
           </div>
-        </div>
         }
       </div>
     </div>

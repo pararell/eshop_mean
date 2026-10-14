@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -17,6 +13,14 @@ import { Config } from './models/config.model';
 import { Translation } from '../translations/translation.model';
 import { firstValueFrom } from 'rxjs';
 
+import type { PublicConfigResponse, SessionCart, ShopConfig, Theme as ThemeData } from '@eshop/shared';
+import type { UpdateWriteOpResult } from 'mongoose';
+import type { ContactEmail } from '../shared/utils/email/email.types';
+import { ShopSession } from '../shared/types/session';
+
+/** New document on create; Mongoose's update result on edit; undefined is unreachable but typed */
+type UpsertResult<T> = T | UpdateWriteOpResult | undefined;
+
 @Injectable()
 export class EshopService {
   constructor(
@@ -27,7 +31,7 @@ export class EshopService {
     private httpService: HttpService,
   ) {}
 
-  async getConfig(session): Promise<{ config: any }> {
+  async getConfig(session: ShopSession): Promise<PublicConfigResponse> {
     const activeConfig = await this.configModel.findOne({ active: true });
 
     if (activeConfig) {
@@ -38,26 +42,17 @@ export class EshopService {
       const configFomEnvToFE = Object.keys(process.env)
         .filter((key) => key.includes('FE_'))
         .reduce((prev, curr) => ({ ...prev, [curr]: process.env[curr] }), {});
-      const themeStyles =
-        theme && Object.keys(theme.styles).length
-          ? { styles: theme.styles }
-          : {};
+      const themeStyles = theme && Object.keys(theme.styles).length ? { styles: theme.styles } : {};
 
       return {
-        config: Buffer.from(
-          JSON.stringify({ ...configFomEnvToFE, ...themeStyles }),
-        ).toString('base64'),
+        config: Buffer.from(JSON.stringify({ ...configFomEnvToFE, ...themeStyles })).toString('base64'),
       };
     } catch {
       return { config: '' };
     }
   }
 
-  async sendContact(
-    contactDto: ContactDto,
-    cart: Cart,
-    lang: string,
-  ): Promise<void> {
+  async sendContact(contactDto: ContactDto, cart: Cart | SessionCart | undefined, lang: string): Promise<void> {
     const { token } = contactDto;
     const url = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SERVER_KEY}&response=${token}`;
 
@@ -88,11 +83,8 @@ export class EshopService {
     return pages;
   }
 
-  async getPage(titleUrl: string, lang: string): Promise<Page> {
-    const found = await this.pageModel.findOne(
-      { titleUrl },
-      { titleUrl: 1, [lang]: 1 },
-    );
+  async getPage(titleUrl: string, lang: string): Promise<Page | null> {
+    const found = await this.pageModel.findOne({ titleUrl }, { titleUrl: 1, [lang]: 1 });
 
     if (!found) {
       throw new NotFoundException(`Product with title ${titleUrl} not found`);
@@ -101,7 +93,7 @@ export class EshopService {
     return found;
   }
 
-  async addOrEditPage(pageDto: PageDto): Promise<Page> {
+  async addOrEditPage(pageDto: PageDto): Promise<UpsertResult<Page>> {
     const { titleUrl } = pageDto;
     const found = await this.pageModel.findOne({ titleUrl });
 
@@ -142,7 +134,7 @@ export class EshopService {
     return themes;
   }
 
-  async addOrEditTheme(themeDto: any): Promise<Theme> {
+  async addOrEditTheme(themeDto: ThemeData): Promise<UpsertResult<Theme>> {
     const { titleUrl } = themeDto;
     const found = await this.themeModel.findOne({ titleUrl });
 
@@ -183,7 +175,7 @@ export class EshopService {
     return configs;
   }
 
-  async addOrEditConfig(configDto: any): Promise<Config> {
+  async addOrEditConfig(configDto: ShopConfig): Promise<UpsertResult<Config>> {
     const { titleUrl } = configDto;
     const found = await this.configModel.findOne({ titleUrl });
 
@@ -219,13 +211,8 @@ export class EshopService {
     }
   }
 
-  private sendmail = async (
-    email: string,
-    contactDto: ContactDto,
-    cart: Cart,
-    translations,
-  ) => {
-    const emailType = {
+  private sendmail = async (email: string, contactDto: ContactDto, cart: Cart | SessionCart | undefined, translations: Translation | null) => {
+    const emailType: ContactEmail = {
       subject: 'Contact',
       cart,
       contact: contactDto,

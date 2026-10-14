@@ -1,6 +1,6 @@
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { map, distinctUntilChanged, filter, take, skip } from 'rxjs/operators';
-import { Component, ChangeDetectionStrategy, OnDestroy, Signal, computed, effect } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnDestroy, Signal, computed } from '@angular/core';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { combineLatest, Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -8,35 +8,35 @@ import { Meta, Title } from '@angular/platform-browser';
 
 import { TranslateService } from '../../../services/translate.service';
 import { sortOptions } from '../../../shared/constants';
-import { Product, Category, Pagination, Cart } from '../../../shared/models';
+import { Product, Category } from '../../../shared/models';
 import { SignalStore } from '../../../store/signal.store';
-import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
+import { PaginationState, SignalStoreSelectors } from '../../../store/signal.store.selectors';
 
 @Component({
-    selector: 'app-products',
-    templateUrl: './products.component.html',
-    styleUrls: ['./products.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-products',
+  templateUrl: './products.component.html',
+  styleUrls: ['./products.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class ProductsComponent implements OnDestroy {
-  products: Signal<Product[]>;
+  products: Signal<Product[] | null>;
   cartIds: Signal<{ [productID: string]: number }>;
   loadingProducts: Signal<boolean>;
   categories: Signal<Category[]>;
   subCategories: Signal<Category[]>;
-  pagination: Signal<Pagination>;
+  pagination: Signal<PaginationState>;
   category: Signal<string>;
-  categoryInfo: Signal<Category>;
+  categoryInfo: Signal<Category | undefined>;
   filterPrice: Signal<number>;
-  maxPrice: Signal<number>;
-  minPrice: Signal<number>;
-  page: Signal<number>;
+  maxPrice: Signal<number | null>;
+  minPrice: Signal<number | null>;
+  page: Signal<number | undefined>;
   sortBy: Signal<string>;
   currency: Signal<string>;
-  lang: Signal<string>;
-  categoriesSub: Subscription;
-  productsSub: Subscription;
+  lang: Signal<string | undefined>;
+  categoriesSub!: Subscription;
+  productsSub!: Subscription;
   sortOptions = sortOptions;
   sidebarOpened = false;
 
@@ -50,17 +50,11 @@ export class ProductsComponent implements OnDestroy {
     private snackBar: MatSnackBar,
     private meta: Meta,
     private title: Title,
-    private translate: TranslateService
+    private translate: TranslateService,
   ) {
-    this.category = toSignal(this.route.params.pipe(
-      map((params) => params['category'])
-    ));
-    this.page = toSignal(this.route.queryParams.pipe(
-      map((params) => parseFloat(params['page']))
-    ));
-    this.sortBy = toSignal(this.route.queryParams.pipe(
-      map((params) => params['sort'])
-    ));
+    this.category = toSignal(this.route.params.pipe(map((params) => params['category'])));
+    this.page = toSignal(this.route.queryParams.pipe(map((params) => parseFloat(params['page']))));
+    this.sortBy = toSignal(this.route.queryParams.pipe(map((params) => params['sort'])));
     this.lang = toSignal(this.translate.getLang$().pipe(filter((lang: string) => !!lang)));
 
     this.maxPrice = this.selectors.maxPrice;
@@ -73,9 +67,8 @@ export class ProductsComponent implements OnDestroy {
       if (!cart) {
         return {};
       }
-      return cart.items && cart.items.length ? cart.items.reduce((prev, curr) => ({ ...prev, [curr.id]: curr.qty }), {}) : {}
-     }
-    );
+      return cart.items && cart.items.length ? cart.items.reduce((prev, curr) => ({ ...prev, [curr.id]: curr.qty }), {}) : {};
+    });
 
     this.title.setTitle('Eshop Mean');
     this.meta.updateTag({ name: 'description', content: 'Angular - Node.js - Eshop application - MEAN Eshop with dashboard' });
@@ -83,8 +76,10 @@ export class ProductsComponent implements OnDestroy {
     this.categories = this.selectors.categories;
     this.pagination = this.selectors.pagination;
     this.currency = this.selectors.currency;
-    this.categoryInfo = computed(() => this.categories().find(cat => cat.titleUrl === this.category()));
-    this.subCategories = computed(() => this.categories().filter((cat) => this.categoryInfo() ? this.categoryInfo().subCategories.includes(cat.titleUrl) : false));
+    this.categoryInfo = computed(() => this.categories().find((cat) => cat.titleUrl === this.category()));
+    this.subCategories = computed(() =>
+      this.categories().filter((cat) => (this.categoryInfo() ? this.categoryInfo()!.subCategories!.includes(cat.titleUrl) : false)),
+    );
 
     this._loadCategories();
     this._loadProducts();
@@ -93,17 +88,23 @@ export class ProductsComponent implements OnDestroy {
   addToCart(id: string): void {
     this.store.addToCart('?id=' + id);
 
-    this.translate.getTranslations$()
-      .pipe(map(translations => translations
-        ? {message: translations['ADDED_TO_CART'] || 'Added to cart', action: translations['TO_CART'] || 'To Cart'}
-        : {message: 'Added to cart', action: 'To Cart'}
-        ),take(1))
-      .subscribe(({message, action}) => {
-        let snackBarRef = this.snackBar.open(message, action, {duration: 3000});
-        snackBarRef.onAction().pipe(
-            take(1))
+    this.translate
+      .getTranslations$()
+      .pipe(
+        map((translations) =>
+          translations
+            ? { message: translations['ADDED_TO_CART'] || 'Added to cart', action: translations['TO_CART'] || 'To Cart' }
+            : { message: 'Added to cart', action: 'To Cart' },
+        ),
+        take(1),
+      )
+      .subscribe(({ message, action }) => {
+        const snackBarRef = this.snackBar.open(message, action, { duration: 3000 });
+        snackBarRef
+          .onAction()
+          .pipe(take(1))
           .subscribe(() => {
-            this.router.navigate(['/' + this.lang() + '/cart'])
+            this.router.navigate(['/' + this.lang() + '/cart']);
           });
       });
   }
@@ -138,7 +139,7 @@ export class ProductsComponent implements OnDestroy {
   changeSort(sort: string): void {
     if (this.category()) {
       this.router.navigate(['/' + this.lang() + '/product/category/' + this.category()], {
-        queryParams: { sort , page: this.page() || 1 },
+        queryParams: { sort, page: this.page() || 1 },
       });
     } else {
       this.router.navigate(['/' + this.lang() + '/product/all'], { queryParams: { sort, page: this.page() || 1 } });
@@ -157,12 +158,14 @@ export class ProductsComponent implements OnDestroy {
 
   private _loadCategories(): void {
     if (!this.categories()?.length) {
-      this.store.getCategories(this.lang());
+      this.store.getCategories(this.lang()!);
     }
 
-    this.categoriesSub = toObservable(this.lang).pipe(distinctUntilChanged(), skip(1)).subscribe((lang: string) => {
-      this.store.getCategories(lang);
-    });
+    this.categoriesSub = toObservable(this.lang)
+      .pipe(distinctUntilChanged(), skip(1))
+      .subscribe((lang) => {
+        this.store.getCategories(lang!);
+      });
   }
 
   private _loadProducts(): void {
@@ -172,10 +175,10 @@ export class ProductsComponent implements OnDestroy {
       toObservable(this.filterPrice).pipe(distinctUntilChanged()),
       this.route.queryParams.pipe(
         map((params) => ({ page: params['page'], sort: params['sort'] })),
-        distinctUntilChanged()
+        distinctUntilChanged(),
       ),
     ]).subscribe(([lang, category, filterPrice, { page, sort }]) => {
-      this.store.getProducts({ lang, category, maxPrice: filterPrice, page: page || 1, sort: sort || 'newest' });
+      this.store.getProducts({ lang: lang!, category, maxPrice: filterPrice, page: page || 1, sort: sort || 'newest' });
     });
   }
 }

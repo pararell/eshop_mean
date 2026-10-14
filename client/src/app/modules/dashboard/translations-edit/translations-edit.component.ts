@@ -6,6 +6,9 @@ import { Observable, BehaviorSubject, Subscription } from 'rxjs';
 
 import { languages } from '../../../shared/constants';
 import { Translations } from '../../../shared/models';
+
+/** A language's dictionary while editing (new languages get a numeric placeholder id). */
+type EditableTranslation = Pick<Translations, 'lang' | 'keys'> & { _id?: string; id?: number };
 import { SignalStore } from '../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 
@@ -20,7 +23,7 @@ export class TranslationsEditComponent implements OnDestroy {
   translations$: Observable<Translations[]>;
   loading$: Observable<boolean>;
   languageForm: FormGroup;
-  translationSub$ = new BehaviorSubject([]);
+  translationSub$ = new BehaviorSubject<EditableTranslation[]>([]);
   translationsSub: Subscription;
   allLanguages = languages;
 
@@ -40,7 +43,7 @@ export class TranslationsEditComponent implements OnDestroy {
 
     this.translationsSub = this.translations$.subscribe((translations) => {
       const initTranslations = !translations.length ? this.allLanguages.map((lang, i) => ({ id: i, lang, keys: {} })) : translations;
-      initTranslations.forEach((translation: Translations) => {
+      initTranslations.forEach((translation: EditableTranslation) => {
         const keys = translation.keys ? translation.keys : {};
         const newUsergroup: FormGroup = this.fb.group({});
         Object.keys(keys).map((key) => {
@@ -55,7 +58,7 @@ export class TranslationsEditComponent implements OnDestroy {
   }
 
   addKeyToTranslation(): void {
-    const newKey = this.languageForm.get('add').value;
+    const newKey = this.languageForm.get('add')!.value;
     if (newKey) {
       this.translationSub$.pipe(take(1)).subscribe((translations) => {
         console.log(this.languageForm);
@@ -70,11 +73,11 @@ export class TranslationsEditComponent implements OnDestroy {
         this.translationSub$.next(updateTransations);
       });
 
-      this.languageForm.get('add').patchValue('');
+      this.languageForm.get('add')!.patchValue('');
     }
   }
 
-  removeTranslation(toRemove: any): void {
+  removeTranslation(toRemove: string): void {
     this.translationSub$.pipe(take(1)).subscribe((translations) => {
       const updateTransations = translations.map((translation) => {
         const langGroup = this.languageForm.get(translation.lang) as FormGroup;
@@ -91,9 +94,14 @@ export class TranslationsEditComponent implements OnDestroy {
     });
   }
 
+  /** Form group of one language's keys (created in the constructor) */
+  langGroup(lang: string): FormGroup {
+    return this.languageForm.controls[lang] as FormGroup;
+  }
+
   submitForm(): void {
     const allTranslations = Object.keys(this.languageForm.value)
-      .filter((value) => this.allLanguages.includes(value))
+      .filter((value) => (this.allLanguages as string[]).includes(value))
       .map((lang) => ({
         lang,
         keys: this.languageForm.value[lang],

@@ -1,0 +1,13 @@
+# Generated / vendored / build output
+node_modules
+dist
+server/dist
+.angular
+coverage
+server/coverage
+test-results
+playwright-report
+package-lock.json
+CHANGELOG.md
+# Email HTML is hand-tuned for mail clients
+server/src/shared/utils/email/emailTemplates.ts

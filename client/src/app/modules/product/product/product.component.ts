@@ -28,8 +28,8 @@ export class ProductComponent implements OnDestroy {
   currency$: Observable<string>;
   lang$: Observable<string>;
   routeSub: Subscription;
-  categoriesSub: Subscription;
-  product$: Signal<Product>;
+  categoriesSub!: Subscription;
+  product$: Signal<Product | null>;
   cartIds$: Observable<{ [productId: string]: number }>;
 
   constructor(
@@ -79,7 +79,7 @@ export class ProductComponent implements OnDestroy {
           take(1),
         )
         .subscribe(({ message, action }) => {
-          let snackBarRef = this.snackBar.open(message, action, { duration: 3000 });
+          const snackBarRef = this.snackBar.open(message, action, { duration: 3000 });
           snackBarRef
             .onAction()
             .pipe(withLatestFrom(this.lang$), take(1))
@@ -104,7 +104,7 @@ export class ProductComponent implements OnDestroy {
       data: { index, images },
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().subscribe((_result) => {
       console.log('The dialog was closed');
     });
   }
@@ -131,7 +131,7 @@ export class ProductComponent implements OnDestroy {
   private setMetaData(): void {
     toObservable(this.selectors.product)
       .pipe(
-        filter((product: Product) => !!product && !!product.title),
+        filter((product): product is Product => !!product && !!product.title),
         withLatestFrom(this.currency$),
         take(1),
       )

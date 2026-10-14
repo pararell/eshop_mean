@@ -7,15 +7,13 @@ import { languages } from '../shared/constants';
 import { Translations } from '../shared/models';
 import { take } from 'rxjs/operators';
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TranslateService {
-
-  translationsSub$  : BehaviorSubject<{[key: string]: string}> = new BehaviorSubject({});
-  languageSub$      = new BehaviorSubject('');
-  lang: string;
+  translationsSub$: BehaviorSubject<{ [key: string]: string }> = new BehaviorSubject({});
+  languageSub$ = new BehaviorSubject('');
+  lang!: string;
 
   constructor(private injector: Injector) {}
 
@@ -31,36 +29,37 @@ export class TranslateService {
     return this.languageSub$.asObservable();
   }
 
-  getTranslations$(): Observable<{[key: string]: string}> {
+  getTranslations$(): Observable<{ [key: string]: string }> {
     return this.translationsSub$.asObservable();
   }
 
   getTranslationsData(lang: string) {
     try {
-      return this.apiService.getLangTranslations(lang).pipe(take(1))
-       .subscribe(
-        (translations: Translations) => {
-          if (!lang && translations) {
-            this.setLang(translations.lang);
-          } else if (!lang) {
-            this.setLang(languages[0]);
-          }
-          const translationKeys = translations && translations['keys'] ? translations['keys'] : {};
-          this.translationsSub$.next(translationKeys);
-          return Object.assign({}, translationKeys);
-        },
-        error => {
-          return {};
-        }
-      );
+      return this.apiService
+        .getLangTranslations(lang)
+        .pipe(take(1))
+        .subscribe(
+          (translations: Translations) => {
+            if (!lang && translations) {
+              this.setLang(translations.lang);
+            } else if (!lang) {
+              this.setLang(languages[0]);
+            }
+            const translationKeys = translations && translations['keys'] ? translations['keys'] : {};
+            this.translationsSub$.next(translationKeys);
+            return Object.assign({}, translationKeys);
+          },
+          (_error) => {
+            return {};
+          },
+        );
     } catch {
       return {};
     }
-
   }
 
-  use(lang: string): Promise<{}> {
-    return new Promise<{}>((resolve, reject) => {
+  use(lang: string): Promise<unknown> {
+    return new Promise<unknown>((resolve, _reject) => {
       const foundLang = lang || this.cookie.get('eshop_lang');
       resolve(this.setTranslations(foundLang));
     });

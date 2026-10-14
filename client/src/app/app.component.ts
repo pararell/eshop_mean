@@ -7,7 +7,6 @@ import { NavigationStart, Router, RouterOutlet } from '@angular/router';
 
 import { TranslateService } from './services/translate.service';
 import { JsonLDService } from './services/jsonLD.service';
-import { User } from './shared/models';
 import { currencyLang } from './shared/constants';
 import { SignalStore } from './store/signal.store';
 import { SignalStoreSelectors } from './store/signal.store.selectors';
@@ -32,7 +31,7 @@ export class AppComponent {
     private translate: TranslateService,
     private jsonLDService: JsonLDService,
     @Inject(PLATFORM_ID)
-    private platformId: Object,
+    private platformId: object,
     private signalStore: SignalStore,
     private selectors: SignalStoreSelectors,
   ) {
@@ -64,7 +63,7 @@ export class AppComponent {
 
     toObservable(this.selectors.user)
       .pipe(delay(100))
-      .subscribe((user: User) => {
+      .subscribe((user) => {
         if (user && user.email) {
           this.signalStore.getUserOrders();
         }
@@ -85,7 +84,7 @@ export class AppComponent {
 
     this.router.events.pipe(
       filter((event) => event instanceof NavigationStart),
-      map((checkRoute: NavigationStart) => {
+      map((_checkRoute: NavigationStart) => {
         this.jsonLDService.insertSchema(this.jsonLDService.websiteSchema);
         this.jsonLDService.insertSchema(this.jsonLDService.orgSchema, 'structured-data-org');
       }),
@@ -93,10 +92,11 @@ export class AppComponent {
   }
 
   onScrolling(event: Event): void {
-    this.position = event['target']['scrollTop'];
+    this.position = (event.target as HTMLElement).scrollTop;
   }
 
-  onActivate(component: string): void {
+  /** `component` is the activated route component instance; some expose a `component` name. */
+  onActivate(component: { component?: string }): void {
     const currentComponent = component['component'];
     const position = currentComponent && this.rememberScroll[currentComponent] ? this.rememberScroll[currentComponent] : 0;
 
@@ -107,9 +107,9 @@ export class AppComponent {
       });
   }
 
-  onDeactivate(component: string): void {
+  onDeactivate(component: { component?: string }): void {
     if (Object.keys(component).includes('component')) {
-      const currentComponent = component['component'];
+      const currentComponent = component['component']!;
       this.rememberScroll = { ...this.rememberScroll, [currentComponent]: this.position };
     }
   }

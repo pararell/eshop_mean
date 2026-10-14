@@ -11,7 +11,7 @@ import { TranslatePipe } from '../../../pipes/translate.pipe';
   imports: [CommonModule, TranslatePipe],
 })
 export class ImagesDialogComponent implements OnInit {
-  openImages = {};
+  openImages: Record<number, boolean> = {};
 
   constructor(
     public dialogRef: MatDialogRef<ImagesDialogComponent>,

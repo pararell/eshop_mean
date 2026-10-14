@@ -4,15 +4,13 @@
       <i class="material-icons left">arrow_back</i>
       {{ 'Back' | translate | async }}
     </button>
-    @if ((lang$ | async); as lang) {
-    <div class="page">
-      @if (page$()) {
-
-      <h1>{{ page$()[lang]?.title }}</h1>
-      <div [innerHTML]="$safeNavigationMigration(page$()[lang]?.contentHTML)"></div>
-
-      }
-    </div>
+    @if (lang$ | async; as lang) {
+      <div class="page">
+        @if (page$()) {
+          <h1>{{ page$()![lang]?.title }}</h1>
+          <div [innerHTML]="$safeNavigationMigration(page$()![lang]?.contentHTML)"></div>
+        }
+      </div>
     }
   </div>
 </div>

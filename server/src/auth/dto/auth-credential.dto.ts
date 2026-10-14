@@ -8,7 +8,7 @@ export class AuthCredentialDto {
   @IsString()
   @MinLength(4)
   @MaxLength(50)
-  email: string;
+  email!: string;
 
   @IsString()
   @MinLength(5)
@@ -16,5 +16,5 @@ export class AuthCredentialDto {
   @Matches(/^(?=.*\d).{5,20}$/, {
     message: 'password too weak',
   })
-  password: string;
+  password!: string;
 }

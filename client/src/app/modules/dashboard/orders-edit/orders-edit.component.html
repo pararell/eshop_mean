@@ -1,6 +1,3 @@
-@if(orders$()?.length) {
-<app-orders-list
-  [orders]="orders$()"
-  [orderUrl]="'/' + (lang$ | async) + '/dashboard/orders/'">
-</app-orders-list>
+@if (orders$()?.length) {
+  <app-orders-list [orders]="orders$()!" [orderUrl]="'/' + (lang$ | async) + '/dashboard/orders/'"> </app-orders-list>
 }
