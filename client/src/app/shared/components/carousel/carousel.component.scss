@@ -7,7 +7,7 @@
     display: flex;
     position: relative;
     width: 100%;
-    align-items:  center;
+    align-items: center;
     border-radius: 3px;
 
     &.slider-with-background {
@@ -15,7 +15,7 @@
     }
   }
 
-  ::ng-deep .mat-mdc-raised-button.slider-arrow  {
+  ::ng-deep .mat-mdc-raised-button.slider-arrow {
     max-width: 40px;
     min-width: 40px;
     padding: 10px;

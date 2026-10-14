@@ -24,9 +24,7 @@ window.Stripe = function () {
 
 /** Keeps tests hermetic: fake Stripe.js, no TinyMCE cloud, reCAPTCHA or analytics. */
 export async function isolateExternalServices(page: Page) {
-  await page.route('https://js.stripe.com/**', (route) =>
-    route.fulfill({ contentType: 'application/javascript', body: fakeStripeJs }),
-  );
+  await page.route('https://js.stripe.com/**', (route) => route.fulfill({ contentType: 'application/javascript', body: fakeStripeJs }));
   await page.route(/tiny\.cloud|tinymce|recaptcha|googletagmanager|google-analytics/, (route) => route.abort());
 }
 
@@ -65,9 +63,7 @@ export async function choosePayment(page: Page, method: 'card' | 'delivery') {
 
 /** Direct database access for assertions (URI written by support/start-server.mjs). */
 export async function withDb<T>(fn: (db: mongoose.mongo.Db) => Promise<T>): Promise<T> {
-  const { mongoUri } = JSON.parse(
-    readFileSync(resolve(__dirname, '../../test-results/e2e-state.json'), 'utf8'),
-  );
+  const { mongoUri } = JSON.parse(readFileSync(resolve(__dirname, '../../test-results/e2e-state.json'), 'utf8'));
   const conn = await mongoose.createConnection(mongoUri).asPromise();
   try {
     return await fn(conn.db!);

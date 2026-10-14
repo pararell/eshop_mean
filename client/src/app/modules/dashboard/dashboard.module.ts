@@ -30,25 +30,24 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 import { PriceFormatPipe } from '../../pipes/price.pipe';
 import { ProductsListComponent } from '../../shared/components/products-list/products-list.component';
 
-
 const DASHBOARD_ROUTER: Routes = [
   {
     path: '',
-    component: DashboardComponent
+    component: DashboardComponent,
   },
   {
     path: 'orders',
-    component: OrdersEditComponent
+    component: OrdersEditComponent,
   },
   {
     path: 'translations',
-    component: TranslationsEditComponent
+    component: TranslationsEditComponent,
   },
   {
     path: 'orders/:id',
-    component: OrderEditComponent
-  }
-]
+    component: OrderEditComponent,
+  },
+];
 
 @NgModule({
   imports: [
@@ -70,7 +69,7 @@ const DASHBOARD_ROUTER: Routes = [
     MatAutocompleteModule,
     MatChipsModule,
 
-    ProductsListComponent
+    ProductsListComponent,
   ],
   declarations: [
     ProductsEditComponent,
@@ -83,7 +82,7 @@ const DASHBOARD_ROUTER: Routes = [
     TranslationsEditComponent,
     PagesEditComponent,
     ThemeEditComponent,
-    ConfigEditComponent
-  ]
+    ConfigEditComponent,
+  ],
 })
-export class DashboardModule { }
+export class DashboardModule {}

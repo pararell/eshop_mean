@@ -13,9 +13,7 @@
     },
     {
       "name": "serverSideRenderedPages",
-      "urls": [
-        "/**"
-      ],
+      "urls": ["/**"],
       "cacheConfig": {
         "maxSize": 100,
         "maxAge": "3d",
@@ -40,7 +38,5 @@
       }
     }
   ],
-  "navigationUrls": [
-    "!/**"
-  ]
+  "navigationUrls": ["!/**"]
 }

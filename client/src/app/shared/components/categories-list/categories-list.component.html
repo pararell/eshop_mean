@@ -1,36 +1,37 @@
 @if (withSlider) {
-<app-carousel [intervalForSlider]="15000">
-  <ng-container *ngTemplateOutlet="categoriesTemplate"></ng-container>
-</app-carousel>
-} @if (!withSlider) {
-<div class="categories-list">
-  <ng-container *ngTemplateOutlet="categoriesTemplate"></ng-container>
-</div>
+  <app-carousel [intervalForSlider]="15000">
+    <ng-container *ngTemplateOutlet="categoriesTemplate"></ng-container>
+  </app-carousel>
+}
+@if (!withSlider) {
+  <div class="categories-list">
+    <ng-container *ngTemplateOutlet="categoriesTemplate"></ng-container>
+  </div>
 }
 
 <ng-template #categoriesTemplate>
   @for (category of categories; track category.titleUrl) {
     @if (!category.menuHidden) {
-  <div class="category_card">
-    <a
-      class="category_card-image"
-      [ngClass]="category.mainImage?.type ? 'category_card-image-cover' : ''"
-      [routerLink]="['/' + lang + '/product/category/' + category.titleUrl]"
-      [attr.aria-labelledby]="category.titleUrl"
-      [style.background]="'url(' + category.mainImage?.url + ')'"
-    >
-      <span class="category_card-overlay">
-        <span class="category_card-info">
-          <h2 class="category_card-title">{{ category?.title }}</h2>
-          @if (category?.description) {
-          <p class="category_card-description">
-            {{ category?.description }}
-          </p>
-          }
-        </span>
-      </span>
-    </a>
-  </div>
+      <div class="category_card">
+        <a
+          class="category_card-image"
+          [ngClass]="category.mainImage?.type ? 'category_card-image-cover' : ''"
+          [routerLink]="['/' + lang + '/product/category/' + category.titleUrl]"
+          [attr.aria-labelledby]="category.titleUrl"
+          [style.background]="'url(' + category.mainImage?.url + ')'"
+        >
+          <span class="category_card-overlay">
+            <span class="category_card-info">
+              <h2 class="category_card-title">{{ category?.title }}</h2>
+              @if (category?.description) {
+                <p class="category_card-description">
+                  {{ category?.description }}
+                </p>
+              }
+            </span>
+          </span>
+        </a>
+      </div>
+    }
   }
-}
 </ng-template>

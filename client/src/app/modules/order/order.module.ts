@@ -16,10 +16,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 import { PriceFormatPipe } from '../../pipes/price.pipe';
 
 @NgModule({
-  declarations: [
-    OrdersComponent,
-    OrderComponent
-  ],
+  declarations: [OrdersComponent, OrderComponent],
   imports: [
     CommonModule,
     OrderComponentsModule,
@@ -33,9 +30,9 @@ import { PriceFormatPipe } from '../../pipes/price.pipe';
     MatSelectModule,
     RouterModule.forChild([
       { path: ':id', component: OrderComponent },
-      { path: '', component: OrdersComponent }
+      { path: '', component: OrdersComponent },
     ]),
   ],
-  providers: []
+  providers: [],
 })
-export class OrderModule { }
+export class OrderModule {}

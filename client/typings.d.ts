@@ -1,4 +1,4 @@
-declare var StripeCheckout:any;
+declare var StripeCheckout: any;
 declare var window: Window & typeof globalThis;
 declare var module: NodeModule;
 interface NodeModule {
@@ -6,8 +6,8 @@ interface NodeModule {
 }
 declare var process: Process;
 interface Process {
-  [name: string] : any;
+  [name: string]: any;
 }
 interface GlobalEnvironment {
-  process: Process
+  process: Process;
 }

@@ -11,10 +11,7 @@ describe('Auth API', () => {
 
   describe('POST /api/auth/signup', () => {
     it('creates a user with a hashed password', async () => {
-      await t.http
-        .post('/api/auth/signup')
-        .send({ email: 'new@test.dev', password: 'abc12', name: 'New' })
-        .expect(201);
+      await t.http.post('/api/auth/signup').send({ email: 'new@test.dev', password: 'abc12', name: 'New' }).expect(201);
 
       const user: any = await t.model('User').findOne({ email: 'new@test.dev' }).lean();
       expect(user.name).toBe('New');
@@ -34,17 +31,11 @@ describe('Auth API', () => {
 
     it('rejects a duplicate email', async () => {
       await createUser(t, { email: 'dup@test.dev' });
-      await t.http
-        .post('/api/auth/signup')
-        .send({ email: 'dup@test.dev', password: 'abc12' })
-        .expect(409);
+      await t.http.post('/api/auth/signup').send({ email: 'dup@test.dev', password: 'abc12' }).expect(409);
     });
 
     it('rejects a password without a digit', async () => {
-      await t.http
-        .post('/api/auth/signup')
-        .send({ email: 'weak@test.dev', password: 'abcdef' })
-        .expect(400);
+      await t.http.post('/api/auth/signup').send({ email: 'weak@test.dev', password: 'abcdef' }).expect(400);
     });
   });
 
@@ -52,10 +43,7 @@ describe('Auth API', () => {
     it('returns a JWT and the user profile', async () => {
       const user = await createUser(t, { email: 'user@test.dev' });
 
-      const res = await t.http
-        .post('/api/auth/signin')
-        .send({ email: 'user@test.dev', password: 'secret1' })
-        .expect(201);
+      const res = await t.http.post('/api/auth/signin').send({ email: 'user@test.dev', password: 'secret1' }).expect(201);
 
       expect(res.body).toMatchObject({ email: 'user@test.dev', id: String(user._id), roles: [] });
       expect(res.body.accessToken).toEqual(expect.any(String));
@@ -63,17 +51,11 @@ describe('Auth API', () => {
 
     it('rejects a wrong password', async () => {
       await createUser(t, { email: 'user@test.dev' });
-      await t.http
-        .post('/api/auth/signin')
-        .send({ email: 'user@test.dev', password: 'wrong1' })
-        .expect(401);
+      await t.http.post('/api/auth/signin').send({ email: 'user@test.dev', password: 'wrong1' }).expect(401);
     });
 
     it('rejects an unknown user', async () => {
-      await t.http
-        .post('/api/auth/signin')
-        .send({ email: 'nobody@test.dev', password: 'secret1' })
-        .expect(401);
+      await t.http.post('/api/auth/signin').send({ email: 'nobody@test.dev', password: 'secret1' }).expect(401);
     });
   });
 

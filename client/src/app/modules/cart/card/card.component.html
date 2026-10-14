@@ -14,14 +14,14 @@
         {{ 'MakeOrder' | translate | async }} {{ 'and' | translate | async }} {{ 'Pay' | translate | async }} {{ price }} {{ currency }}
       </button>
       @if (loading) {
-      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
       }
-      @if ((cardErrorSub$ | async); as cardError) {
-      <div class="card-errors" id="card-errors" role="alert">
-        @if (cardError !== 'INVALID') {
-        <span>{{ cardError }}</span>
-        }
-      </div>
+      @if (cardErrorSub$ | async; as cardError) {
+        <div class="card-errors" id="card-errors" role="alert">
+          @if (cardError !== 'INVALID') {
+            <span>{{ cardError }}</span>
+          }
+        </div>
       }
     </div>
   </form>

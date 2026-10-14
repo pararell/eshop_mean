@@ -17,7 +17,7 @@ body {
   width: 100%;
 
   &.transparent {
-     top: 0;
+    top: 0;
   }
 }
 
@@ -29,7 +29,7 @@ body {
 }
 
 .main::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
@@ -41,7 +41,8 @@ body {
   z-index: 0;
 }
 
-.container, .container-mid {
+.container,
+.container-mid {
   padding: 15px;
 
   @media screen and (max-width: 600px) {
@@ -57,7 +58,7 @@ body {
 .sidebar-layout {
   display: grid;
   display: -ms-grid;
-  grid-template-areas: "sidebar main";
+  grid-template-areas: 'sidebar main';
   grid-template-columns: 200px 1fr;
   -ms-grid-columns: 200px 1fr;
   grid-column-gap: 15px;
@@ -72,7 +73,7 @@ body {
   }
 
   @media screen and (max-width: 600px) {
-    grid-template-areas: "sidebar" "main";
+    grid-template-areas: 'sidebar' 'main';
     grid-template-columns: auto;
 
     .main-wrap {
@@ -152,10 +153,10 @@ a:hover {
 
 .mdc-card {
   transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
-    display: block;
-    position: relative;
-    padding: 16px;
-    border-radius: 4px;
+  display: block;
+  position: relative;
+  padding: 16px;
+  border-radius: 4px;
 }
 
 .mdc-evolution-chip__action--presentational {

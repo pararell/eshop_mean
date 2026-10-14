@@ -15,11 +15,11 @@ import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 import { MatProgressBar } from '@angular/material/progress-bar';
 
 @Component({
-    selector: 'app-contact',
-    templateUrl: './contact.component.html',
-    styleUrls: ['./contact.component.scss'],
-    imports: [CommonModule, TranslatePipe, MatButtonModule, MatIconModule, MatProgressBar, MatInputModule, FormsModule, ReactiveFormsModule],
-    changeDetection: ChangeDetectionStrategy.OnPush
+  selector: 'app-contact',
+  templateUrl: './contact.component.html',
+  styleUrls: ['./contact.component.scss'],
+  imports: [CommonModule, TranslatePipe, MatButtonModule, MatIconModule, MatProgressBar, MatInputModule, FormsModule, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactComponent {
   contactForm: FormGroup;
@@ -31,14 +31,11 @@ export class ContactComponent {
     private fb: FormBuilder,
     private store: SignalStore,
     private selectors: SignalStoreSelectors,
-    private recaptchaV3Service: ReCaptchaV3Service
+    private recaptchaV3Service: ReCaptchaV3Service,
   ) {
     this.contactForm = this.fb.group({
       name: ['', Validators.required],
-      email: [
-        '',
-        Validators.compose([Validators.required, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,4}$')]),
-      ],
+      email: ['', Validators.compose([Validators.required, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,4}$')])],
       notes: ['', Validators.required],
     });
 
@@ -54,7 +51,7 @@ export class ContactComponent {
       this.loading$
         .pipe(
           filter((loading) => !loading),
-          take(1)
+          take(1),
         )
         .subscribe(() => {
           this.sendRequestSub$.next(true);

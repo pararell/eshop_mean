@@ -9,25 +9,23 @@
         <input type="text" aria-label="Search" matInput [formControl]="query" (focus)="onFocus()" (blur)="onBlur()" [matAutocomplete]="auto" />
         <mat-autocomplete #auto="matAutocomplete">
           @for (title of productTitles$(); track title) {
-          <mat-option [value]="title" [routerLink]="['/' + (lang$ | async) + '/product/' + title]" (click)="onTitleLink()">
-            <a class="nav-autocomplete-link">{{ title }}</a>
-          </mat-option>
+            <mat-option [value]="title" [routerLink]="['/' + (lang$ | async) + '/product/' + title]" (click)="onTitleLink()">
+              <a class="nav-autocomplete-link">{{ title }}</a>
+            </mat-option>
           }
         </mat-autocomplete>
       </mat-form-field>
     </div>
     <div class="nav-basic">
       @if (cart$(); as cart) {
-
-      <a class="nav-cart-wrap" [routerLink]="['/' + (lang$ | async) + '/cart']" routerLinkActive="nav-active-link">
-        <span>{{ cart?.totalQty }}</span>
-        <i class="nav-cart-icon material-icons md-18">shopping_cart</i>
-      </a>
-
+        <a class="nav-cart-wrap" [routerLink]="['/' + (lang$ | async) + '/cart']" routerLinkActive="nav-active-link">
+          <span>{{ cart?.totalQty }}</span>
+          <i class="nav-cart-icon material-icons md-18">shopping_cart</i>
+        </a>
       }
       <select class="browser-default nav-lang-select" aria-label="Language" [ngModel]="lang$ | async" (ngModelChange)="setLang($event)">
         @for (option of languageOptions; track option) {
-        <option [value]="option">{{ option }}</option>
+          <option [value]="option">{{ option }}</option>
         }
       </select>
     </div>
@@ -48,30 +46,32 @@
 <ng-template #menuItems>
   @if (!user$()) {
     @if (googleAuthUrl) {
-  <button mat-menu-item>
-    <mat-icon>account_box</mat-icon>
-    <a class="nav-link" href="{{ googleAuthUrl }}"> {{ 'Login' | translate | async }} {{ 'with' | translate | async }} Google </a>
-  </button>
+      <button mat-menu-item>
+        <mat-icon>account_box</mat-icon>
+        <a class="nav-link" href="{{ googleAuthUrl }}"> {{ 'Login' | translate | async }} {{ 'with' | translate | async }} Google </a>
+      </button>
+    }
+    <button mat-menu-item [routerLink]="['/' + (lang$ | async) + '/authorize/signin']" routerLinkActive="nav-active-link">
+      <mat-icon>account_circle</mat-icon>
+      <a class="nav-link">{{ 'Login' | translate | async }}</a>
+    </button>
   }
-  <button mat-menu-item [routerLink]="['/' + (lang$ | async) + '/authorize/signin']" routerLinkActive="nav-active-link">
-    <mat-icon>account_circle</mat-icon>
-    <a class="nav-link">{{ 'Login' | translate | async }}</a>
-  </button>
-
-  } @if (user$()?.roles?.includes('admin')) {
-  <button mat-menu-item [routerLink]="['/' + (lang$ | async) + '/dashboard']" routerLinkActive="nav-active-link">
-    <mat-icon>dashboard</mat-icon>
-    <a class="nav-link"> {{ 'Dashboard' | translate | async }}</a>
-  </button>
-  } @if (userOrders$()?.length) {
-  <button mat-menu-item [routerLink]="['/' + (lang$ | async) + '/orders']" routerLinkActive="nav-active-link">
-    <mat-icon>assignment</mat-icon>
-    <a class="nav-link"> {{ 'Orders' | translate | async }}</a>
-  </button>
-  } @if (user$()) {
-  <button mat-menu-item (click)="onLogout()">
-    <mat-icon>exit_to_app</mat-icon>
-    <a class="nav-link"> {{ 'Logout' | translate | async }}</a>
-  </button>
+  @if (user$()?.roles?.includes('admin')) {
+    <button mat-menu-item [routerLink]="['/' + (lang$ | async) + '/dashboard']" routerLinkActive="nav-active-link">
+      <mat-icon>dashboard</mat-icon>
+      <a class="nav-link"> {{ 'Dashboard' | translate | async }}</a>
+    </button>
+  }
+  @if (userOrders$()?.length) {
+    <button mat-menu-item [routerLink]="['/' + (lang$ | async) + '/orders']" routerLinkActive="nav-active-link">
+      <mat-icon>assignment</mat-icon>
+      <a class="nav-link"> {{ 'Orders' | translate | async }}</a>
+    </button>
+  }
+  @if (user$()) {
+    <button mat-menu-item (click)="onLogout()">
+      <mat-icon>exit_to_app</mat-icon>
+      <a class="nav-link"> {{ 'Logout' | translate | async }}</a>
+    </button>
   }
 </ng-template>

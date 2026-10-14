@@ -14,13 +14,11 @@
             </a>
           </li>
           @for (page of pages$(); track page.titleUrl) {
-
-          <li>
-            <a class [routerLink]="['/' + lang + '/eshop/' + page.titleUrl]">
-              {{ page[lang]?.title || page.titleUrl }}
-            </a>
-          </li>
-
+            <li>
+              <a class [routerLink]="['/' + lang + '/eshop/' + page.titleUrl]">
+                {{ page[lang]?.title || page.titleUrl }}
+              </a>
+            </li>
           }
         </ul>
       </div>

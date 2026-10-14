@@ -25,12 +25,11 @@
     height: 50px;
     width: 100%;
     line-height: 50px;
-    background: rgba(255,255,255,0.8);
+    background: rgba(255, 255, 255, 0.8);
     justify-content: space-between;
     z-index: 5;
     position: relative;
     box-shadow: 0px 2px 40px 0px rgba(0, 0, 0, 0.091);
-
 
     a {
       color: var(--primary-color);
@@ -95,7 +94,7 @@
     }
 
     &-active-link {
-      background: rgba(0,0,0,0.1);
+      background: rgba(0, 0, 0, 0.1);
     }
 
     &-basic {

@@ -2,9 +2,9 @@
   <i class="material-icons cart_show-icon">add_shopping_cart</i>
 </div>
 @if (!!items) {
-<span class="cart_show-quantity">{{ items }} ks</span>
+  <span class="cart_show-quantity">{{ items }} ks</span>
 
-<div class="cart_show-wrap" (click)="remove.emit()">
-  <i class="material-icons cart_show-icon">remove_shopping_cart</i>
-</div>
+  <div class="cart_show-wrap" (click)="remove.emit()">
+    <i class="material-icons cart_show-icon">remove_shopping_cart</i>
+  </div>
 }

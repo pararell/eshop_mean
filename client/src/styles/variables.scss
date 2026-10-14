@@ -1,76 +1,76 @@
-@use "sass:math";
+@use 'sass:math';
 
 @use '@angular/material' as mat;
 
 // generate pallete from http://mcg.mbitson.com/
 $material-primary-color: (
-  50 : #e0e0e0,
-  100 : #b3b3b3,
-  200 :  #808080,
-  300 : #808080,
-  400 :  #4d4d4d,
-  500 :  #262626,
-  600 :  #000000,
-  700 : #000000,
-  800 : #000000,
-  900 :  #000000,
-  A100 :  #a6a6a6,
-  A200 :  #8c8c8c,
-  A400 :  #737373,
-  A700 : #666666,
+  50: #e0e0e0,
+  100: #b3b3b3,
+  200: #808080,
+  300: #808080,
+  400: #4d4d4d,
+  500: #262626,
+  600: #000000,
+  700: #000000,
+  800: #000000,
+  900: #000000,
+  A100: #a6a6a6,
+  A200: #8c8c8c,
+  A400: #737373,
+  A700: #666666,
   contrast: (
     50: #000000,
     100: #000000,
     200: #000000,
-    300: rgba(255,255,255,0.8),
-    400: rgba(255,255,255,0.8),
-    500: rgba(255,255,255,0.8),
-    600: rgba(255,255,255,0.8),
-    700: rgba(255,255,255,0.8),
-    800: rgba(255,255,255,0.8),
-    900: rgba(255,255,255,0.8),
+    300: rgba(255, 255, 255, 0.8),
+    400: rgba(255, 255, 255, 0.8),
+    500: rgba(255, 255, 255, 0.8),
+    600: rgba(255, 255, 255, 0.8),
+    700: rgba(255, 255, 255, 0.8),
+    800: rgba(255, 255, 255, 0.8),
+    900: rgba(255, 255, 255, 0.8),
     A100: #000000,
     A200: #000000,
     A400: #ffffff,
     A700: #ffffff,
-  )
+  ),
 );
 
 $material-secondary-color: (
-  50 :  #fbfbfb,
-  100 :  #f6f6f6,
-  200 :  #f0f0f0,
-  300 :  #e5e5e5,
-  500 :  #e0e0e0,
-  600 :  #dcdcdc,
-  700 :  #d8d8d8,
-  800 :  #d3d3d3,
-  900 :  #cbcbcb,
-  A100 :  #ffffff,
-  A200 : #ffffff,
-  A400 :  #ffffff,
-  A700 :  #ffffff,
+  50: #fbfbfb,
+  100: #f6f6f6,
+  200: #f0f0f0,
+  300: #e5e5e5,
+  500: #e0e0e0,
+  600: #dcdcdc,
+  700: #d8d8d8,
+  800: #d3d3d3,
+  900: #cbcbcb,
+  A100: #ffffff,
+  A200: #ffffff,
+  A400: #ffffff,
+  A700: #ffffff,
   contrast: (
-    50:  #000000,
+    50: #000000,
     100: #000000,
-    200:  #000000,
-    300:  #000000,
-    400:  #000000,
-    500:  #000000,
-    600:  #000000,
-    700:  #000000,
-    800:  #000000,
-    900:  #000000,
-    A100:  #000000,
-    A200:  #000000,
-    A400:  #000000,
-    A700:  #000000,
-  )
+    200: #000000,
+    300: #000000,
+    400: #000000,
+    500: #000000,
+    600: #000000,
+    700: #000000,
+    800: #000000,
+    900: #000000,
+    A100: #000000,
+    A200: #000000,
+    A400: #000000,
+    A700: #000000,
+  ),
 );
 
 $eshop-primary: mat.m2-define-palette($material-primary-color);
-$eshop-accent:  mat.m2-define-palette($material-secondary-color);
-$eshop-background:  mat.m2-define-palette($material-secondary-color, 50);
+$eshop-accent: mat.m2-define-palette($material-secondary-color);
+$eshop-background: mat.m2-define-palette($material-secondary-color, 50);
 
 :root {
   --primary-color: #{mat.m2-get-color-from-palette($eshop-primary)};
@@ -81,14 +81,7 @@ $eshop-background:  mat.m2-define-palette($material-secondary-color, 50);
   --main-background: '';
 }
 
-
-@mixin add-main-background(
-  $color1: var(--primary-color),
-  $color2: transparent,
-  $angle: 0deg,
-  $stripe1-width: 25px,
-  $stripe2-width: null
-) {
+@mixin add-main-background($color1: var(--primary-color), $color2: transparent, $angle: 0deg, $stripe1-width: 25px, $stripe2-width: null) {
   @if ($stripe2-width == null) {
     $stripe2-width: $stripe1-width;
   }

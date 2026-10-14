@@ -20,9 +20,11 @@ export function app(): express.Express {
   // Example Express Rest API endpoints
   // server.get('/api/**', (req, res) => { });
   // Serve static files from /browser
-   server.use(express.static(browserDistFolder, {
+  server.use(
+    express.static(browserDistFolder, {
       maxAge: '1y',
-  }));
+    }),
+  );
 
   // All regular routes use the Angular engine
   server.get(/(.*)/, (req, res, next) => {

@@ -15,10 +15,7 @@ import { TranslatePipe } from '../../../pipes/translate.pipe';
 import { PriceFormatPipe } from '../../../pipes/price.pipe';
 
 @NgModule({
-  declarations: [
-    OrdersListComponent,
-    OrderDetailComponent
-  ],
+  declarations: [OrdersListComponent, OrderDetailComponent],
   imports: [
     CommonModule,
     RouterModule,
@@ -31,10 +28,7 @@ import { PriceFormatPipe } from '../../../pipes/price.pipe';
     MatProgressBarModule,
     MatSelectModule,
   ],
-  exports: [
-    OrdersListComponent,
-    OrderDetailComponent
-  ],
-  providers: []
+  exports: [OrdersListComponent, OrderDetailComponent],
+  providers: [],
 })
-export class OrderComponentsModule { }
+export class OrderComponentsModule {}

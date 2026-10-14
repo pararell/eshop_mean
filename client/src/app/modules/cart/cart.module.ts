@@ -18,11 +18,7 @@ import { PriceFormatPipe } from '../../pipes/price.pipe';
 import { OrderInfoComponent } from '../../shared/components/order-info/order-info.component';
 
 @NgModule({
-  declarations: [
-    CartComponent,
-    CardComponent,
-    SummaryComponent
-  ],
+  declarations: [CartComponent, CardComponent, SummaryComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -38,9 +34,9 @@ import { OrderInfoComponent } from '../../shared/components/order-info/order-inf
     OrderInfoComponent,
     RouterModule.forChild([
       { path: '', component: CartComponent },
-      { path: 'summary', component: SummaryComponent }
+      { path: 'summary', component: SummaryComponent },
     ]),
   ],
-  providers: []
+  providers: [],
 })
-export class CartModule { }
+export class CartModule {}

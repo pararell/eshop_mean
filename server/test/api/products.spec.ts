@@ -1,10 +1,4 @@
-import {
-  adminToken,
-  createTestApp,
-  eventually,
-  productFixture,
-  TestApp,
-} from '../utils/test-app';
+import { adminToken, createTestApp, eventually, productFixture, TestApp } from '../utils/test-app';
 
 describe('Products API', () => {
   let t: TestApp;
@@ -27,10 +21,9 @@ describe('Products API', () => {
 
   describe('GET /api/products', () => {
     it('returns visible products in the requested language with pagination', async () => {
-      await t.model('Product').create([
-        productFixture('visible-car'),
-        productFixture('hidden-car', { en: { ...productFixture('x').en, visibility: false } }),
-      ]);
+      await t
+        .model('Product')
+        .create([productFixture('visible-car'), productFixture('hidden-car', { en: { ...productFixture('x').en, visibility: false } })]);
 
       const res = await list({}).expect(200);
 
@@ -41,9 +34,7 @@ describe('Products API', () => {
     });
 
     it('paginates by 12 per page', async () => {
-      await t.model('Product').create(
-        Array.from({ length: 14 }, (_, i) => productFixture(`car-${i}`)),
-      );
+      await t.model('Product').create(Array.from({ length: 14 }, (_, i) => productFixture(`car-${i}`)));
 
       const page1 = await list({ page: '1' }).expect(200);
       const page2 = await list({ page: '2' }).expect(200);
@@ -59,14 +50,11 @@ describe('Products API', () => {
           dateAdded: new Date(dateAdded),
           en: { ...productFixture(titleUrl).en, salePrice },
         });
-      await t.model('Product').create([
-        withPrice('mid', 20, '2026-02-01'),
-        withPrice('cheap', 10, '2026-03-01'),
-        withPrice('pricey', 30, '2026-01-01'),
-      ]);
+      await t
+        .model('Product')
+        .create([withPrice('mid', 20, '2026-02-01'), withPrice('cheap', 10, '2026-03-01'), withPrice('pricey', 30, '2026-01-01')]);
 
-      const titles = async (sort: string) =>
-        (await list({ sort }).expect(200)).body.all.map((p: any) => p.titleUrl);
+      const titles = async (sort: string) => (await list({ sort }).expect(200)).body.all.map((p: any) => p.titleUrl);
 
       expect(await titles('priceasc')).toEqual(['cheap', 'mid', 'pricey']);
       expect(await titles('pricedesc')).toEqual(['pricey', 'mid', 'cheap']);
@@ -75,10 +63,12 @@ describe('Products API', () => {
     });
 
     it('filters by category and max price', async () => {
-      await t.model('Product').create([
-        productFixture('car', { tags: ['cars'] }),
-        productFixture('bike', { tags: ['bikes'], en: { ...productFixture('b').en, salePrice: 100 } }),
-      ]);
+      await t
+        .model('Product')
+        .create([
+          productFixture('car', { tags: ['cars'] }),
+          productFixture('bike', { tags: ['bikes'], en: { ...productFixture('b').en, salePrice: 100 } }),
+        ]);
 
       const byCategory = await list({ category: 'bikes' }).expect(200);
       expect(byCategory.body.all.map((p: any) => p.titleUrl)).toEqual(['bike']);
@@ -157,11 +147,7 @@ describe('Products API', () => {
       const token = await adminToken(t);
       await t.model('Product').create(productFixture('car'));
 
-      await t.http
-        .post('/api/products/add')
-        .set('Authorization', `Bearer ${token}`)
-        .send(productFixture('car'))
-        .expect(400);
+      await t.http.post('/api/products/add').set('Authorization', `Bearer ${token}`).send(productFixture('car')).expect(400);
     });
 
     it('edits an existing product', async () => {

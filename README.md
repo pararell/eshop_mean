@@ -1,15 +1,18 @@
-![MEAN](https://res.cloudinary.com/dnpgh1vhi/image/upload/v1615640124/logo1_gvrmpd.svg) 
+![MEAN](https://res.cloudinary.com/dnpgh1vhi/image/upload/v1615640124/logo1_gvrmpd.svg)
 
 # Eshop template
+
 ![Lines of code](https://img.shields.io/tokei/lines/github/pararell/eshop_mean)
 ![GitHub repo size](https://img.shields.io/github/repo-size/pararell/eshop_mean)
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/pararell/eshop_mean)
 ![GitHub Repo stars](https://img.shields.io/github/stars/pararell/eshop_mean?style=social)
 
 ## Server : <img src="https://d33wubrfki0l68.cloudfront.net/e937e774cbbe23635999615ad5d7732decad182a/26072/logo-small.ede75a6b.svg" alt="nest.js" width="50"/> Nest.js with Express and <img src="https://webassets.mongodb.com/_com_assets/cms/mongodb_logo1-76twgcu2dm.png" alt="mongoDB" width="150"> MongoDB (Mongoose)
+
 ## Client : <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Angular_full_color_logo.svg/1200px-Angular_full_color_logo.svg.png" alt="angular" width="60"> Angular (Server-side rendering)
 
 ## Description
+
 - Eshop with products and administration
 - Typescript stack with decorators, use MongoDB and mongoose schemas, JWT Passport
 - Theming with css variables
@@ -17,11 +20,12 @@
 ![eshop-mean](https://res.cloudinary.com/dnpgh1vhi/image/upload/v1629725636/eshop-mean.png)
 
 ## Blog
+
 - more info in blog [https://miroslavsmrtic.sk/blogs](https://miroslavsmrtic.sk/blogs)
 
 <img alt="eshop-mean setup" src="https://res.cloudinary.com/dnpgh1vhi/image/upload/v1629726575/Isometric_illustration_design_concept_loading_and_maintenance_process_kjtxck.jpg" height="200" style="margin: 0; padding: 0;">
 
-## Installation 
+## Installation
 
 One package.json contain now all neccessary for Nest and Angular, so server-side rendering with Angular is possible
 
@@ -48,7 +52,7 @@ $ npm run start
 
 For another commands look to package.json
 
-## Set enviroment for BE 
+## Set enviroment for BE
 
 - Rename .env.example to .env
 
@@ -99,6 +103,7 @@ FE_STRIPE_PUBLISHABLE_KEY="FE_STRIPE_PUBLISHABLE_KEY"
 FE_TINYMCE_API_KEY="FE_TINYMCE_API_KEY"
 FE_RECAPTCHA_CLIENT_KEY="FE_RECAPTCHA_CLIENT_KEY"
 ```
+
 ## Docker
 
 ```bash

@@ -19,13 +19,13 @@
         {{ 'SignUp' | translate | async }}
       </a>
       @if (sendRequest$()) {
-      <div>
-        @if (user$()) {
-        <span class="sign-success">
-          {{ 'SIGNIN_SUCCESS' | translate | async }}
-        </span>
-        }
-      </div>
+        <div>
+          @if (user$()) {
+            <span class="sign-success">
+              {{ 'SIGNIN_SUCCESS' | translate | async }}
+            </span>
+          }
+        </div>
       }
     </div>
   </div>

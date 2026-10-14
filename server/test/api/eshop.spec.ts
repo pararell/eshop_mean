@@ -30,9 +30,7 @@ describe('Eshop API (config, pages, contact)', () => {
         styles: { primaryColor: '#000' },
       });
       // server-side secrets are never exposed
-      expect(Object.keys(config)).not.toEqual(
-        expect.arrayContaining(['STRIPE_SECRETKEY', 'JWT_SECRET', 'COOKIE_KEY', 'MONGO_URI']),
-      );
+      expect(Object.keys(config)).not.toEqual(expect.arrayContaining(['STRIPE_SECRETKEY', 'JWT_SECRET', 'COOKIE_KEY', 'MONGO_URI']));
     });
   });
 

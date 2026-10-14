@@ -18,22 +18,23 @@
         <button type="submit" class="submit-contact-button" mat-raised-button color="primary" [disabled]="contactForm.invalid" (click)="submit()">
           {{ 'SendContact' | translate | async }}
         </button>
-        @if ((loading$ | async)) {
-        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        @if (loading$ | async) {
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
         }
       </form>
-      @if ((sendRequestSub$ | async)) {
-      <div>
-        @if (error$()) {
-        <span class="contact-error">
-          {{ error$() | translate | async }}
-        </span>
-        } @if (!error$()) {
-        <span class="contact-success">
-          {{ 'CONTACT_SEND_SUCCESS' | translate | async }}
-        </span>
-        }
-      </div>
+      @if (sendRequestSub$ | async) {
+        <div>
+          @if (error$()) {
+            <span class="contact-error">
+              {{ error$() | translate | async }}
+            </span>
+          }
+          @if (!error$()) {
+            <span class="contact-success">
+              {{ 'CONTACT_SEND_SUCCESS' | translate | async }}
+            </span>
+          }
+        </div>
       }
     </div>
   </div>

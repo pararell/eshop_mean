@@ -6,5 +6,4 @@ import { mergeApplicationConfig } from '@angular/core';
 
 export const config = mergeApplicationConfig(appConfig, browserConfig);
 
-bootstrapApplication(AppComponent, appConfig)
-  .catch((err) => console.error(err));
+bootstrapApplication(AppComponent, appConfig).catch((err) => console.error(err));

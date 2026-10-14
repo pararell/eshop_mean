@@ -7,16 +7,16 @@
   </a>
   @for (category of categories; track trackById($index, category)) {
     @if (!category.menuHidden) {
-  <a
-    class="sidebar-item"
-    (click)="changeCategory.emit(category.titleUrl)"
-    [routerLink]="['/' + lang + '/product/category/' + category.titleUrl]"
-    [class.active]="activeCategory == category.titleUrl"
-  >
-    {{ category.title }}
-  </a>
+      <a
+        class="sidebar-item"
+        (click)="changeCategory.emit(category.titleUrl)"
+        [routerLink]="['/' + lang + '/product/category/' + category.titleUrl]"
+        [class.active]="activeCategory == category.titleUrl"
+      >
+        {{ category.title }}
+      </a>
+    }
   }
-}
   <div class="sidebar-sort-wrap">
     <div class="sidebar-header">
       <h3 class="sidebar-title">{{ 'Sorting' | translate | async }}</h3>
@@ -24,9 +24,9 @@
     <mat-form-field class="sidebar-select">
       <mat-select aria-label="Sort" [ngModel]="choosenSort || 'newest'" (ngModelChange)="onInputChange($event)">
         @for (option of sortOptions; track option) {
-        <mat-option [value]="option.id">
-          {{ option.name | translate | async }}
-        </mat-option>
+          <mat-option [value]="option.id">
+            {{ option.name | translate | async }}
+          </mat-option>
         }
       </mat-select>
     </mat-form-field>

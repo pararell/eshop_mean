@@ -23,10 +23,7 @@ import { PaginationComponent } from '../../shared/components/pagination/paginati
 import { SidebarComponent } from '../../shared/components/sidebar/sidebar.component';
 
 @NgModule({
-  declarations: [
-    ProductComponent,
-    ProductsComponent
-  ],
+  declarations: [ProductComponent, ProductsComponent],
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -54,6 +51,6 @@ import { SidebarComponent } from '../../shared/components/sidebar/sidebar.compon
       { path: ':id', component: ProductComponent },
     ]),
   ],
-  providers: []
+  providers: [],
 })
-export class ProductModule { }
+export class ProductModule {}

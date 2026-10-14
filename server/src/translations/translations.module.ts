@@ -6,13 +6,7 @@ import TranslationScheme from './schemas/translation.schema';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: 'Translation', schema: TranslationScheme },
-    ]),
-    AuthModule,
-    HttpModule,
-  ],
+  imports: [MongooseModule.forFeature([{ name: 'Translation', schema: TranslationScheme }]), AuthModule, HttpModule],
   controllers: [TranslationsController],
   providers: [],
   exports: [MongooseModule],

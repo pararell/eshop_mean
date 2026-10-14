@@ -1,43 +1,44 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Eshop Mean</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000" />
+    <meta name="robots" content="index, follow" />
+    <meta name="description" content="Angular - Node.js - Eshop application - MEAN Eshop with dashboard" />
+    <meta property="og:type" content="website" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <style>
+      .spinner {
+        height: 100px;
+        width: 100px;
+        animation: rotate 0.9s infinite linear;
+        border: 15px solid #000;
+        border-right-color: transparent;
+        border-radius: 50%;
+        margin: 100px auto;
+      }
 
-<head>
-  <meta charset="utf-8">
-  <title>Eshop Mean</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#000">
-  <meta name="robots" content="index, follow">
-  <meta name="description" content="Angular - Node.js - Eshop application - MEAN Eshop with dashboard">
-  <meta property="og:type" content="website">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" type="image/x-icon" href="favicon.ico" />
-<style>
-.spinner {
-  height: 100px;
-  width: 100px;
-  animation: rotate 0.9s infinite linear;
-  border: 15px solid #000;
-  border-right-color: transparent;
-  border-radius: 50%;
-  margin: 100px auto;
-}
+      @keyframes rotate {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet" />
+  </head>
 
-@keyframes rotate {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-</style>
-<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet">
-
-</head>
-
-<body class="mat-typography">
-  <eshop-mean-app>
-    <div id="spinner" class="spinner"></div>
-  </eshop-mean-app>
-</body>
-
+  <body class="mat-typography">
+    <eshop-mean-app>
+      <div id="spinner" class="spinner"></div>
+    </eshop-mean-app>
+  </body>
 </html>

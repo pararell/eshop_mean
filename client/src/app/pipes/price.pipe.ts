@@ -6,7 +6,6 @@ import { Pipe, PipeTransform } from '@angular/core';
   standalone: true,
 })
 export class PriceFormatPipe implements PipeTransform {
-
   transform(value: number): string {
     if (!value) {
       return '0';
@@ -14,5 +13,4 @@ export class PriceFormatPipe implements PipeTransform {
     const price = value.toFixed(0);
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   }
-
 }
