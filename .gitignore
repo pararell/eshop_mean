@@ -61,7 +61,8 @@ typings/
 
 # dotenv environment variables file
 .env
-.env.test
+.env.*
+!.env.example
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -76,10 +77,15 @@ dist
 # TernJS port file
 .tern-port
 
-# Config
-*.yml
-
 /.angular
 
 # Public builded files
 public
+
+# OS files
+.DS_Store
+
+# Local TLS keys and certificates
+*.key
+*.crt
+*.pem
