@@ -92,7 +92,7 @@ On failure, Playwright keeps a trace, a screenshot and the error context in
 
 Line coverage is about 75% of server code. `prepareUtils.ts` and `cart.ts` are at 100%, and `orders.service.ts` at 95%.
 
-### E2E: 14 tests
+### E2E: 18 tests
 
 | Flow                                                                                                                                                                                                        | Spec               |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
@@ -101,6 +101,7 @@ Line coverage is about 75% of server code. `prepareUtils.ts` and `cart.ts` are a
 | Checkout, cash on delivery: address → payment → order; confirmation shown; cart emptied; order stored with server-side total                                                                                | `checkout.spec.ts` |
 | Checkout, card: Stripe.js card element → `createToken` → the token, currency, email and address are sent to `/api/orders/stripe` (the API response is stubbed; the server side is covered by the API tests) | `checkout.spec.ts` |
 | Signup → login → logout; wrong password                                                                                                                                                                     | `auth.spec.ts`     |
+| Language from the URL: server-rendered `/sk` pages in Slovak (`<html lang>`, content, UI labels); switcher changes the prefix; `/sk` lists only products with Slovak content; `/` keeps the cookie language | `language.spec.ts` |
 | Admin login → create product (appears in the shop) → edit product price; order list → order detail                                                                                                          | `admin.spec.ts`    |
 
 ## Known failures
@@ -110,7 +111,7 @@ None at the moment. If a test has to pin the _correct_ behavior of a known bug, 
 with the fix.
 
 Regression tests for fixed findings: SEC-01, SEC-02, SEC-03, BUG-01 (`server/test/api`), and BUG-04,
-BUG-05, BUG-28 (`e2e/tests`). Each was checked to fail on the code before its fix.
+BUG-05, BUG-28, BUG-03 (`e2e/tests`). Each was checked to fail on the code before its fix.
 
 Other tests deliberately assert _current_ behavior that the audit flags:
 

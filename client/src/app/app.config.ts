@@ -1,3 +1,5 @@
+import { PlatformLocation } from '@angular/common';
+import { languageFromUrl } from './utils/language-url';
 import { APP_INITIALIZER, ApplicationConfig, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
@@ -35,8 +37,10 @@ export const appConfig: ApplicationConfig = {
     },
     {
       provide: APP_INITIALIZER,
-      useFactory: (translateService: TranslateService) => () => translateService.use(''),
-      deps: [TranslateService],
+      // Language from the URL prefix (also during SSR); `/` falls back to the eshop_lang cookie
+      useFactory: (translateService: TranslateService, location: PlatformLocation) => () =>
+        translateService.use(languageFromUrl(location.pathname) ?? ''),
+      deps: [TranslateService, PlatformLocation],
       multi: true,
     },
     {

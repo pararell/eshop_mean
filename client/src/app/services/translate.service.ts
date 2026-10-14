@@ -1,5 +1,6 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Injectable, Injector, inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { CookieService } from 'ngx-cookie-service';
 
 import { ApiService } from './api.service';
@@ -12,6 +13,7 @@ import { take } from 'rxjs/operators';
 })
 export class TranslateService {
   private injector = inject(Injector);
+  private document = inject(DOCUMENT);
 
   translationsSub$: BehaviorSubject<{ [key: string]: string }> = new BehaviorSubject({});
   languageSub$ = new BehaviorSubject('');
@@ -79,7 +81,10 @@ export class TranslateService {
 
   private setLang(lang: string): void {
     this.languageSub$.next(lang);
-    this.cookie.set('eshop_lang', lang);
+    // Site-wide, so the home page `/` sees the language chosen on /sk/... pages
+    this.cookie.set('eshop_lang', lang, { path: '/' });
     this.lang = lang;
+    // Also rendered during SSR (audit UI-05)
+    this.document.documentElement.lang = lang;
   }
 }

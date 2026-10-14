@@ -1,3 +1,4 @@
+import { languageFromUrl, replaceUrlLanguage } from '../../../utils/language-url';
 import { debounceTime, take, delay } from 'rxjs/operators';
 import { Component, OnInit, PLATFORM_ID, Signal, ChangeDetectionStrategy, inject } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -18,7 +19,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
 
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
@@ -42,6 +43,7 @@ import { MatButtonModule } from '@angular/material/button';
   ],
 })
 export class HeaderComponent implements OnInit {
+  private router = inject(Router);
   private _platformId = inject(PLATFORM_ID);
   private store = inject(SignalStore);
   private selectors = inject(SignalStoreSelectors);
@@ -109,6 +111,12 @@ export class HeaderComponent implements OnInit {
   }
 
   setLang(lang: string): void {
+    // On a language-prefixed page the URL decides the language (see languageGuard)
+    const url = this.router.url;
+    if (languageFromUrl(url)) {
+      this.router.navigateByUrl(replaceUrlLanguage(url, lang));
+      return;
+    }
     const langUpdate = {
       lang,
       currency: currencyLang[lang],

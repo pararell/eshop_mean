@@ -72,6 +72,8 @@ async function seed(uri) {
       mainImage: { url: '', name: '' },
       dateAdded: new Date('2026-02-01'),
       ...lang(E2E.car.title, E2E.car.price),
+      // Slovak content only for the car (the bike has none, so it is hidden on /sk pages)
+      sk: { ...lang(E2E.car.titleSk, E2E.car.price).en },
     },
     {
       titleUrl: E2E.bike.titleUrl,
@@ -91,7 +93,10 @@ async function seed(uri) {
     active: true,
     en: { shippingCost: { basic: { cost: E2E.shipping, limit: 1000 }, extended: { cost: 10, limit: 2000 } } },
   });
-  await db.collection('translations').insertOne({ lang: 'en', keys: {} });
+  await db.collection('translations').insertMany([
+    { lang: 'en', keys: {} },
+    { lang: 'sk', keys: E2E.translations.sk },
+  ]);
   await db.collection('orders').insertOne({
     orderId: E2E.order.orderId,
     amount: E2E.order.amount,

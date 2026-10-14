@@ -110,7 +110,7 @@ Verified on Node 24.15 / npm 11.12 (2026-10-14). Angular 22 requires Node `^24.1
 | Format                                        | `npm run format` / `npm run format:check` (Prettier, whole repo)                           | Existing code is not yet reformatted (~140 files); new commits are formatted by the hook                                                                                                          |
 | Pre-commit hook                               | husky → `lint-staged` (`.husky/pre-commit`)                                                | Runs `eslint --fix` + `prettier --write` on staged files; lint errors block the commit ; with nvm + a GUI git client (GitHub Desktop), add `~/.config/husky/init.sh` that sources `~/.nvm/nvm.sh` |
 | Server tests (unit + API)                     | `npm test` / `npm run test:server` (`:watch`, `:cov`)                                      | 107 passing, in-memory MongoDB, ~4 s                                                                                                                                                              |
-| E2E tests                                     | `npm run test:e2e` (builds first; `npx playwright install chromium` once)                  | 14 passing against the production build                                                                                                                                                           |
+| E2E tests                                     | `npm run test:e2e` (builds first; `npx playwright install chromium` once)                  | 18 passing against the production build                                                                                                                                                           |
 | Release                                       | `npm run release`                                                                          | standard-version (deprecated)                                                                                                                                                                     |
 
 Broken or unused scripts (do not rely on them):
@@ -178,6 +178,8 @@ Copy `.env.example` → `.env` (gitignored, never commit it). It is read with
   - DI uses `inject()`; components use signal `input()` / `output()` / `viewChild()`. Change
     detection is still explicitly `Eager` in 26 components (OnPush needs a per-component review);
   - templates use the new control flow (`@if` / `@for`);
+  - the language comes from the URL prefix (`/en|/sk|/cs`, see `languageGuard` and
+    `utils/language-url.ts`); only `/` falls back to the `eshop_lang` cookie. Link with the prefix;
   - translations use `{{ 'Key' | translate | async }}`;
   - guard browser-only APIs with `isPlatformBrowser` (SSR).
 

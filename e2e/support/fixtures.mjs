@@ -1,9 +1,10 @@
 // Seed data shared by the e2e server (start-server.mjs) and the specs.
 export const E2E = {
   admin: { email: 'admin@e2e.test', password: 'Admin123' },
-  car: { titleUrl: 'e2e-car', title: 'E2E Car', price: 25 },
+  car: { titleUrl: 'e2e-car', title: 'E2E Car', titleSk: 'E2E Auto', price: 25 },
   bike: { titleUrl: 'e2e-bike', title: 'E2E Bike', price: 60 },
   shipping: 5,
+  translations: { sk: { Back: 'Späť' } },
   order: { orderId: 'order-e2e-seed', amount: 30, customer: 'Seed Customer' },
 };
 

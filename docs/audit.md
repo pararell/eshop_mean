@@ -63,9 +63,10 @@ Findings resolved since the audit (2026-10-14). The finding texts below are kept
 | BUG-05          | Fixed             | A failed sign-in no longer replaces the user (`userState.error = true`). The e2e test's `test.fail()` marker is removed.                                                                                                                                                                                   |
 | BUG-28          | Mostly fixed      | Saves and deletes reload the page/theme/config/product lists. `POST /api/products/add` now awaits the save before answering. The post-order empty cart, image results and translations (BUG-12) still use `keepAsIs()`.                                                                                    |
 | TD-03           | Mostly fixed      | Official migrations: standalone (no NgModules left; lazy `routes.ts`), `inject()`, signal `input()`/`output()`/`viewChild()`, unused imports, self-closing tags. 26 components still opt into `Eager` change detection (OnPush needs per-component review).                                                |
+| BUG-03          | Fixed             | The URL prefix (`/en                                                                                                                                                                                                                                                                                       | /sk | /cs`) decides the language at startup (`PlatformLocation`, also during SSR) and on navigation (`languageGuard`); the switcher changes the URL. `/` keeps the cookie language; the cookie is now site-wide (`path: '/'`). e2e: `language.spec.ts`. |
+| UI-05           | Fixed             | `<html lang>` follows the active language, including in SSR output.                                                                                                                                                                                                                                        |
 
-Still open and notable: DEP-02 (Stripe SDK / PaymentIntents), BUG-02 (card captured without a guaranteed
-order) and BUG-03 (URL language ignored during SSR).
+Still open and notable: DEP-02 (Stripe SDK / PaymentIntents) and BUG-02 (card captured without a guaranteed order).
 
 ---
 
