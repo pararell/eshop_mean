@@ -435,37 +435,20 @@ erDiagram
 
 ### Migration considerations (PostgreSQL)
 
-Observations only; nothing below is decided.
+The migration is planned as a **fresh start**: the current MongoDB holds only dummy data, so nothing
+is copied except the UI translations, which are exported once as a seed file. The full plan, with
+schema, field mapping, seed, phases and deployment, is in [postgres-migration.md](postgres-migration.md).
+In short:
 
-- **Keys:** add `UNIQUE` on `users.email`, `products.title_url`, `categories.title_url`,
-  `pages.title_url`, `themes.title_url`, `configs.title_url`, `orders.order_id` and
-  `translations.lang`. Check existing data for duplicates first: none are prevented today.
-- **i18n:** choose either
-  - (a) translation tables (`product_translations(product_id, lang, title, …)`), which are
-    normalized and make adding a language data-only; or
-  - (b) JSONB per language.
-
-  Prices, visibility, stock and shipping are per language today, so they move with the
-  translation row unless the business decides otherwise.
-
-- **Product ↔ Category:** today it is a by-value string link (`tags[]`). This maps to a join
-  table `product_categories`. Tags whose category doesn't exist need a policy.
-- **Money:** store integer minor units (`numeric` or `bigint` cents) plus a currency
-  column. Today amounts are JS floats in major units, and the currency per language is
-  implicit (EUR / EUR / CZK).
-- **Stock:** today it's a free-text String. Converting to an integer needs a data-cleaning
-  rule.
-- **Order cart snapshot:** keep it as `orders.cart_snapshot JSONB` (a historical record)
-  and/or normalize into `order_items(order_id, product_id, title, unit_price, qty)`.
-  `addresses` → JSONB or an `order_addresses` table.
-- **Status:** a Postgres enum or check constraint from `OrderStatus`.
-- **Sessions:** today they're in Mongo (`connect-mongo`). The cart lives there too, so a
-  session store change (e.g. `connect-pg-simple`) affects carts.
-- **Free-form Mixed data:** `Theme.styles`, `Translation.keys`, `Category.subCategories`
-  → JSONB.
-- **Unused fields:** `User.cart`, `User.images` and `Order.amount_refunded` can be
-  dropped (verify in production data first).
-- **Timestamps:** add `created_at` / `updated_at`. Map `dateAdded` → `created_at`.
+- **Keys and constraints:** `uuidv7` primary keys (exposed as `_id`); unique slugs, emails and order
+  numbers; `NOT NULL` and enums from the start, since there's no legacy data to accommodate.
+- **i18n:** per-language `*_translations` tables (`product_translations(product_id, lang, …)`), so
+  prices, visibility, stock and shipping stay per language as today.
+- **Product ↔ category:** `tags text[]` by value for now (decision D6).
+- **Money:** `numeric(12,2)` in major units for API parity (decision D4).
+- **Order cart snapshot, addresses, theme styles, translation keys:** `jsonb`.
+- **Sessions:** `connect-pg-simple`; they start empty at the switch.
+- **Unused fields** (`User.cart`, `User.images`, `salt`) are not created.
 
 ## 6. External services
 

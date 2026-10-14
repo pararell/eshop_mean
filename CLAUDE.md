@@ -2,7 +2,7 @@
 
 Guidance for AI agents and contributors working in this repository.
 Deeper references: [docs/architecture.md](docs/architecture.md) (modules, data flow, schemas),
-[docs/audit.md](docs/audit.md) (known issues, prioritized), [docs/testing.md](docs/testing.md) (how to run and write tests).
+[docs/audit.md](docs/audit.md) (known issues, prioritized), [docs/testing.md](docs/testing.md) (how to run and write tests), [docs/postgres-migration.md](docs/postgres-migration.md) (planned DB migration).
 
 Before finishing any change: `npm run typecheck && npm run lint && npm test`, plus `npm run test:e2e` for anything
 touching the client, SSR or checkout. Tests never call real external services; keep it that way.
@@ -187,7 +187,7 @@ Copy `.env.example` → `.env` (gitignored, never commit it). It is read with
 
 - **The database layer and Mongoose schemas** (`server/src/**/schemas/*`,
   `MongooseModule` wiring, `connect-mongo` session store). A PostgreSQL migration is
-  planned. Until then, document; don't modify.
+  planned (see [docs/postgres-migration.md](docs/postgres-migration.md)). Until then, document; don't modify.
 - **The public API contract**: paths, methods, request/response shapes, the `lang` header,
   the session-based cart, and the `/jwtToken/:token` OAuth redirect. The client and
   existing deployments depend on them.
