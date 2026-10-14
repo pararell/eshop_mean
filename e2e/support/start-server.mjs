@@ -1,7 +1,7 @@
 // Starts the production build (dist/eshop/server/server.mjs) against a seeded in-memory MongoDB.
 // Used as Playwright's webServer; run `npm run build:ssr` first (npm run test:e2e does).
 import { spawn } from 'node:child_process';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { appendFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { MongoMemoryServer } from 'mongodb-memory-server-core';
@@ -27,8 +27,22 @@ const server = spawn(process.execPath, ['dist/eshop/server/server.mjs'], {
   cwd: root,
   // Explicit values override anything a local .env would provide
   env: { ...process.env, ...testEnv(baseURL), MONGO_URI: mongoUri, PORT: port },
-  stdio: 'inherit',
+  stdio: ['ignore', 'pipe', 'pipe'],
 });
+
+// Server-side errors (e.g. during SSR) don't fail a browser test by themselves, so collect them;
+// e2e/support/check-server-errors.mjs fails the run if any were logged.
+const errorLog = resolve(root, 'test-results/e2e-server-errors.log');
+writeFileSync(errorLog, '');
+const SERVER_ERROR = /uncaughtException|unhandledRejection|Unhandled promise rejection|\bNG0\d{3}\b/;
+for (const stream of [server.stdout, server.stderr]) {
+  stream.on('data', (chunk) => {
+    process.stderr.write(chunk);
+    for (const line of chunk.toString().split('\n')) {
+      if (SERVER_ERROR.test(line)) appendFileSync(errorLog, line + '\n');
+    }
+  });
+}
 
 const shutdown = async (code = 0) => {
   server.kill();

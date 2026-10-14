@@ -8,6 +8,7 @@ import { TranslationsModule } from './translations/translations.module';
 import { AdminModule } from './admin/admin.module';
 import { EshopModule } from './eshop/eshop.module';
 import { ConfigModule } from '@nestjs/config';
+import { DatabaseModule } from './db/database.module';
 // import { join } from 'path';
 // import { ServeStaticModule } from '@nestjs/serve-static';
 // import { existsSync } from 'fs';
@@ -20,6 +21,8 @@ import { ConfigModule } from '@nestjs/config';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRoot(process.env.MONGO_URI!),
+    // PostgreSQL (docs/postgres-migration.md); services are ported from MongoDB in phase 2
+    DatabaseModule,
     ProductsModule,
     CartModule,
     OrdersModule,

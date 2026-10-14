@@ -1,0 +1,23 @@
+# Local development database (docs/postgres-migration.md §7). Tests start their own disposable
+# PostgreSQL via Testcontainers and don't need this.
+#   npm run db:up
+#   DATABASE_URL=postgres://eshop:eshop@localhost:15432/eshop npm run db:migrate
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: eshop
+      POSTGRES_USER: eshop
+      POSTGRES_PASSWORD: eshop
+    ports:
+      # 15432, so 5432 stays free for a local Postgres or the SSH tunnel to the server
+      - '127.0.0.1:15432:5432'
+    volumes:
+      - eshop-postgres:/var/lib/postgresql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U eshop -d eshop']
+      interval: 5s
+      retries: 10
+
+volumes:
+  eshop-postgres:

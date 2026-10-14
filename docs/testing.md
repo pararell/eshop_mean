@@ -14,6 +14,7 @@ Also run `npm run typecheck`. It type-checks the client, the server, the server 
 ```bash
 npm ci
 npx playwright install chromium   # browser for e2e, downloaded once
+# Docker must be running: server tests start a disposable postgres:18 (Testcontainers)
 ```
 
 The first test run downloads a MongoDB binary for `mongodb-memory-server-core` into
@@ -77,7 +78,7 @@ On failure, Playwright keeps a trace, a screenshot and the error context in
 
 ## What is covered
 
-### Server: 107 tests
+### Server: 120 tests
 
 | Area                | Spec                                    | Covers                                                                                                                                                                                                                                                                                                                                                                  |
 | ------------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -103,6 +104,22 @@ Line coverage is about 75% of server code. `prepareUtils.ts` and `cart.ts` are a
 | Signup → login → logout; wrong password                                                                                                                                                                     | `auth.spec.ts`     |
 | Language from the URL: server-rendered `/sk` pages in Slovak (`<html lang>`, content, UI labels); switcher changes the prefix; `/sk` lists only products with Slovak content; `/` keeps the cookie language | `language.spec.ts` |
 | Admin login → create product (appears in the shop) → edit product price; order list → order detail                                                                                                          | `admin.spec.ts`    |
+
+### Database (PostgreSQL)
+
+- `test/setup/global-setup.cjs` starts one `postgres:18` container per run (Testcontainers), applies the
+  migrations to a template database, and `test/utils/test-db.ts` clones a fresh database per test
+  file (`createTestDatabase()`). MongoDB (in-memory) still runs alongside until the services are ported.
+- `test/db/schema.spec.ts` checks the schema rules (uuidv7 keys, per-language rows, numeric prices as
+  numbers, unique slugs/emails/order numbers, one active theme); `test/db/seed.spec.ts` checks the seed
+  (fills an empty DB, idempotent, never overwrites dashboard edits).
+
+### Server errors during e2e
+
+`e2e/support/start-server.mjs` collects uncaught exceptions, unhandled rejections and Angular runtime
+errors (`NG0xxx`) from the app's output; `e2e/support/check-server-errors.mjs` (Playwright
+`globalTeardown`) fails the run if any were logged — SSR errors otherwise go unnoticed because the page
+still renders.
 
 ## Known failures
 

@@ -48,6 +48,7 @@
               "@nestjs/websockets/socket-module",
               "cache-manager",
               "mongoose",
+              "pg",
               "whatwg-url"
             ],
             "scripts": [],

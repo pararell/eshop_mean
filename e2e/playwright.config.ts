@@ -24,6 +24,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  globalTeardown: resolve(__dirname, 'support/check-server-errors.mjs'),
   webServer: {
     command: 'node e2e/support/start-server.mjs',
     cwd: root,

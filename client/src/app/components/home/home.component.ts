@@ -91,7 +91,8 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
   readonly component = 'homeComponent';
 
-  private readonly videoRef = viewChild.required<ElementRef>('videoRef');
+  // Optional: the video only renders when the theme has a promo video
+  private readonly videoRef = viewChild<ElementRef>('videoRef');
 
   constructor() {
     this.category = toSignal(this.route.params.pipe(map((params) => params['category'])));

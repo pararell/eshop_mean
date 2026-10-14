@@ -6,5 +6,5 @@
     "types": ["jest", "node"]
   },
   "files": [],
-  "include": ["src/**/*.spec.ts", "test/**/*.ts"]
+  "include": ["drizzle.config.ts", "scripts/**/*.ts", "src/**/*.spec.ts", "test/**/*.ts"]
 }
