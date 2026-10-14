@@ -27,12 +27,31 @@ need their own approved change (see [CLAUDE.md](../CLAUDE.md)).
 | tests | 1 | 0 | 0 | 1 |
 | dependencies | 2 | 4 | 4 | 10 |
 | performance | 0 | 5 | 4 | 9 |
-| ui | 0 | 4 | 4 | 8 |
+| ui | 0 | 4 | 5 | 9 |
 | tech-debt | 0 | 6 | 9 | 15 |
-| **Total** | **16** | **44** | **41** | **101** |
+| **Total** | **16** | **44** | **42** | **102** |
 
-> ⚠️ **SEC-01 is a live privilege escalation.** Any visitor can create an admin account.
-> It should be hot-fixed ahead of the planned step order.
+## Status
+
+Findings resolved since the audit (2026-10-14). The finding texts below are kept as written, for history.
+
+| ID | Status | How |
+|---|---|---|
+| SEC-01 | Fixed | Signup only persists whitelisted fields. Regression test in `server/test/api/auth.spec.ts`. |
+| SEC-02 | Fixed | Contact, order saves and email rendering are awaited or caught; unhandled rejections are logged. Regression tests in `orders.spec.ts` and `eshop.spec.ts`. |
+| SEC-07 | Fixed | `.env*` is excluded by `.dockerignore` and no longer copied into the image. |
+| SEC-08 / DEP-01 | Fixed | Angular 22.2, Nest 12.1, Mongoose 8.24.5 and `npm audit fix`: `npm audit --omit=dev` reports 0 vulnerabilities. Remaining dev-only advisories are in the Jest and stylelint toolchains (braces has no upstream fix). |
+| SEC-19 | Mitigated | Angular 22 `CommonEngine` rejects hosts outside an allow-list (derived from `ORIGIN` / `SERVER_URL`, or `NG_ALLOWED_HOSTS`). The SSR API base URL is still built from the validated `Host` header. |
+| DEP-03, DEP-04 | Fixed | Runtime packages are moved to `dependencies`; `cors`, `body-parser`, `multer` and the missing `@types` are declared. |
+| DEP-05 | Fixed (corrected) | Removed `deepmerge`, `fastify-static`, `saslprep`, `ts-loader`, `ts-node` and `@nestjs/serve-static`. **Correction:** `class-transformer` *is* used, because Nest's `ValidationPipe` loads it at runtime, so it stays. `whatwg-url` stays while it is listed in `externalDependencies` and the Dockerfile. |
+| DEP-06 | Partly | stylelint 15 → 17 (now parses SCSS via `postcss-scss`). `standard-version`, `streamifier` and `@angular/animations` remain. |
+| DEP-07 | Fixed | `engines` uses ranges (`node ^24.15.0`). Docker uses `node:24.21-alpine3.24`. |
+| TST-01 | Fixed | Jest + Supertest API and unit tests (104) and Playwright e2e tests (12). See [testing.md](testing.md). |
+| TD-02 | Partly | The client lint uses a flat config (`client/eslint.config.mjs`). The server lint is still broken. |
+| TD-05 | Fixed | The `*.yml` rule was removed from `.gitignore`. |
+
+Still open and notable: DEP-02 (Stripe SDK / PaymentIntents), SEC-03 (client-chosen currency) and the
+remaining high-priority bugs (BUG-01 to BUG-04).
 
 ---
 
@@ -543,7 +562,8 @@ need their own approved change (see [CLAUDE.md](../CLAUDE.md)).
 - Priority: medium
 - Problem: `class-transformer`, `deepmerge`, `fastify-static`, `saslprep`, `ts-loader`,
   `ts-node`, `@nestjs/serve-static` (only in commented code), and `whatwg-url` (only an
-  `externalDependencies` entry and a Dockerfile `npm i`).
+  `externalDependencies` entry and a Dockerfile `npm i`). (Later correction: `class-transformer`
+  is required by `ValidationPipe`; see Status.)
 - Fix: verify each with a build and remove it.
 
 **DEP-06: Deprecated or abandoned packages**
@@ -691,6 +711,13 @@ need their own approved change (see [CLAUDE.md](../CLAUDE.md)).
 - Problem: CSS variables are written on every form change and never reverted, and the
   subscription is never torn down.
 - Fix: scope the preview; revert and unsubscribe on destroy.
+
+**UI-09: Payment choice only reacts to clicks on the radio and label**
+- Priority: low
+- Location: [client/src/app/modules/cart/cart/cart.component.html](../client/src/app/modules/cart/cart/cart.component.html) (`mat-radio-button.payment-choice`)
+- Problem: each payment option is styled as a large card, but clicking the card's padding does
+  nothing. Only the radio circle and its text select the option. Found while writing e2e tests.
+- Fix: make the whole card the label (or a clickable `mat-card` wrapping the radio).
 
 ## Tech debt
 

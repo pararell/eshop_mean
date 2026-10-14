@@ -2,7 +2,10 @@
 
 Guidance for AI agents and contributors working in this repository.
 Deeper references: [docs/architecture.md](docs/architecture.md) (modules, data flow, schemas),
-[docs/audit.md](docs/audit.md) (known issues, prioritized).
+[docs/audit.md](docs/audit.md) (known issues, prioritized), [docs/testing.md](docs/testing.md) (how to run and write tests).
+
+Before finishing any change: `npm run typecheck && npm test`, plus `npm run test:e2e` for anything
+touching the client, SSR or checkout. Tests never call real external services; keep it that way.
 
 ## What this is
 
@@ -16,7 +19,7 @@ eshop_mean is a multi-language (en / sk / cs) e-commerce app with an admin area:
 |---|---|
 | Frontend | Angular 22.2 (zoneless, SSR + hydration), Angular Material (M2 theme), custom signal store |
 | Backend | NestJS 12 on Express 5, Passport (JWT + Google OAuth 2.0) |
-| Database | MongoDB via Mongoose 8.4 (plain `new Schema()`), sessions in MongoDB via `connect-mongo` |
+| Database | MongoDB via Mongoose 8.24 (plain `new Schema()`), sessions in MongoDB via `connect-mongo` |
 | Tooling | One root `package.json`, TypeScript 6.0 (non-strict), Angular CLI (`@angular/build`), Nest CLI, Prettier, ESLint (client flat config; server broken), stylelint |
 | Deploy | Docker image (`Dockerfile`), single Node process |
 
@@ -79,7 +82,9 @@ server/                         NestJS app (server/nest-cli.json, server/tsconfi
     models/                     TS interfaces (often out of sync with schemas)
     dto/                        class-validator DTOs (validation only where a pipe is applied)
   src/shared/                   constans.ts (languages, shipping defaults), utils (cart pricing, paginate, email)
-docs/                           architecture.md, audit.md
+docs/                           architecture.md, audit.md, testing.md
+e2e/                            Playwright specs + seeded test server (support/start-server.mjs)
+server/test/                    API specs, Jest setup, mocks (unit specs live next to code: src/**/*.spec.ts)
 Dockerfile                      2-stage build, runs `npm run start`
 ```
 
@@ -95,12 +100,13 @@ Verified on Node 24.15 / npm 11.12 (2026-10-14). Angular 22 requires Node `^24.1
 | Production build (client + SSR + bundled API) | `npm run build:ssr` (`build:client` is equivalent) | OK, about 10 s, many "not ESM" and Sass deprecation warnings |
 | Run production build | `npm start` (= `node dist/eshop/server/server.mjs`) | OK. Needs `PORT` and the env vars. |
 | Server-only compile check | `npx nest build -c server/nest-cli.json` | OK (output in `server/dist`, not used in prod) |
-| Type-check | `npx tsc --noEmit -p client/tsconfig.app.json`, `npx tsc --noEmit -p server/tsconfig.json` | OK (non-strict) |
+| Type-check | `npm run typecheck` (client, server, server tests, e2e) | OK (app code non-strict) |
 | Lint client | `npm run lint:client` (`ng lint`, config `client/eslint.config.mjs`) | Runs; currently 184 errors (`prefer-inject`, `prefer-on-push-component-change-detection`, `prefer-standalone`) |
 | Lint server | `npm run lint` | **Broken.** ESLint 9 finds no flat config (`server/.eslintrc.json` is legacy), and the glob references a nonexistent `apps/`. **Note:** the script passes `--fix`. |
-| Lint SCSS | `npm run lint:scss` | Runs; 185 errors. The unquoted glob is shell-expanded. |
+| Lint SCSS | `npm run lint:scss` | Runs (stylelint 17, SCSS syntax); 313 errors. The unquoted glob is shell-expanded. |
 | Format | `npm run format` | Server files only |
-| Tests | none | **There are no tests and no test runner yet.** |
+| Server tests (unit + API) | `npm test` / `npm run test:server` (`:watch`, `:cov`) | 104 passing, in-memory MongoDB, ~4 s |
+| E2E tests | `npm run test:e2e` (builds first; `npx playwright install chromium` once) | 12 passing against the production build |
 | Release | `npm run release` | standard-version (deprecated) |
 
 Broken or unused scripts (do not rely on them):

@@ -22,7 +22,6 @@ import { AddProductImageDto } from './dto/add-image.dto';
 import { ImageDto } from './dto/image.dto';
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage });
 
 @Controller('api/admin')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -53,7 +52,7 @@ export class AdminController {
   }
 
   @Post('/images/upload')
-  @UseInterceptors(FileInterceptor('file', upload.single('file')))
+  @UseInterceptors(FileInterceptor('file', { storage }))
   async uploadImage(
     @Session() session,
     @UploadedFile() file,

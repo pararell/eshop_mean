@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 
-export interface Page extends Document {
+export interface Page extends Document<string> {
   _id: string;
   titleUrl: string;
   dateAdded?: Date;

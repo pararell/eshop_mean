@@ -89,3 +89,7 @@ public
 *.key
 *.crt
 *.pem
+
+# Test output
+test-results
+playwright-report

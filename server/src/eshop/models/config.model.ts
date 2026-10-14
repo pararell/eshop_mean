@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 
-export interface Config extends Document {
+export interface Config extends Document<string> {
   _id: string;
   titleUrl: string;
   dateAdded?: Date;

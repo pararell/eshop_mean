@@ -1,7 +1,7 @@
 import { Document } from 'mongoose';
 import { CartModel } from '../../cart/models/cart.model';
 
-export interface User extends Document {
+export interface User extends Document<string> {
     _id: string;
     email: string;
     password?           : string;

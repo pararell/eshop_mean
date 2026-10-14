@@ -1,10 +1,11 @@
 {
   "extends": [
     "stylelint-config-recommended",
-    "stylelint-config-standard"  ],
+    "stylelint-config-standard"
+  ],
   "ignoreFiles": [
     "dist/**",
     "node_modules/**"
-  ]
+  ],
+  "customSyntax": "postcss-scss"
 }
-
