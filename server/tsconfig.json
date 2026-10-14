@@ -8,10 +8,11 @@
     "target": "es2018",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
+    "rootDir": "./src",
     "incremental": true,
     "skipLibCheck": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "strict": false
   },
   "files": ["./src/main.ts"],
   "exclude": ["node_modules", "dist", "types.d.ts"]

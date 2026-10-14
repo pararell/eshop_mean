@@ -9,7 +9,7 @@
       @if (page$()) {
 
       <h1>{{ page$()[lang]?.title }}</h1>
-      <div [innerHTML]="page$()[lang]?.contentHTML"></div>
+      <div [innerHTML]="$safeNavigationMigration(page$()[lang]?.contentHTML)"></div>
 
       }
     </div>

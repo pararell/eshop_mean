@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtSignOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
@@ -19,7 +19,8 @@ import { SessionSerializer } from './utils/session.serializer';
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: {
-        expiresIn: process.env.JWT_EXPIRATION,
+        // e.g. '7d'; @nestjs/jwt 12 types this as a duration literal rather than string
+        expiresIn: process.env.JWT_EXPIRATION as JwtSignOptions['expiresIn'],
       },
     }),
   ],

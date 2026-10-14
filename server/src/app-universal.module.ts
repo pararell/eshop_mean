@@ -9,13 +9,30 @@ import { CommonEngine } from '@angular/ssr/node';
 import { fileURLToPath } from 'url';
 import bootstrap from '../../client/src/main.server';
 
+// Hosts SSR may render for (CommonEngine rejects others to prevent SSRF via the Host header).
+// The NG_ALLOWED_HOSTS env var, if set, takes precedence inside CommonEngine.
+function getAllowedHosts(): string[] {
+  const hosts = new Set(['localhost', '127.0.0.1']);
+  for (const url of [process.env.ORIGIN, process.env.SERVER_URL]) {
+    try {
+      if (url) {
+        hosts.add(new URL(url).hostname);
+      }
+    } catch {
+      // ignore malformed URLs
+    }
+  }
+  return [...hosts];
+}
+
 export function setupUniversal(app: any) {
   const serverDistFolder = dirname(fileURLToPath(import.meta.url));
   const browserDistFolder = resolve(serverDistFolder, '../browser');
   const indexHtml = join(serverDistFolder, 'index.server.html');
+  const allowedHosts = getAllowedHosts();
 
   app.engine('html', (_, options, callback) => {
-    const commonEngine = new CommonEngine();
+    const commonEngine = new CommonEngine({ allowedHosts });
     commonEngine
       .render({
         bootstrap,

@@ -1,14 +1,26 @@
-import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy, PLATFORM_ID, Inject, Input, signal } from '@angular/core';
+import {
+  Component,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+  OnDestroy,
+  PLATFORM_ID,
+  Inject,
+  Input,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { Subscription, timer } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
-    selector: 'app-carousel',
-    templateUrl: './carousel.component.html',
-    styleUrls: ['./carousel.component.scss'],
-    imports: [MatButtonModule]
+  selector: 'app-carousel',
+  templateUrl: './carousel.component.html',
+  styleUrls: ['./carousel.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [MatButtonModule],
 })
 export class CarouselComponent implements AfterViewInit, OnDestroy {
   @ViewChild('slides') slides: ElementRef<HTMLDivElement>;
@@ -25,7 +37,8 @@ export class CarouselComponent implements AfterViewInit, OnDestroy {
 
   constructor(
     @Inject(PLATFORM_ID)
-    private platformId : Object) { }
+    private platformId: Object,
+  ) {}
 
   onClickLeft() {
     const slidesElement = this.slides.nativeElement;
@@ -40,7 +53,7 @@ export class CarouselComponent implements AfterViewInit, OnDestroy {
     const slidesElement = this.slides.nativeElement;
     const slidesElementWIDTH = slidesElement.getBoundingClientRect().width;
     slidesElement.scrollLeft += slidesElementWIDTH;
-    if ((parseFloat((slidesElement.scrollWidth - slidesElement.scrollLeft).toFixed()) <= parseFloat(slidesElementWIDTH.toFixed()))) {
+    if (parseFloat((slidesElement.scrollWidth - slidesElement.scrollLeft).toFixed()) <= parseFloat(slidesElementWIDTH.toFixed())) {
       slidesElement.scrollLeft = 0;
     }
   }
@@ -52,19 +65,19 @@ export class CarouselComponent implements AfterViewInit, OnDestroy {
         .subscribe(() => {
           const slidesElement = this.slides.nativeElement;
           if (slidesElement.children && slidesElement.children[0]) {
-            this.showArrowsSig.set(
-              slidesElement.offsetWidth < slidesElement.children[0].clientWidth * slidesElement.children.length
-            );
+            this.showArrowsSig.set(slidesElement.offsetWidth < slidesElement.children[0].clientWidth * slidesElement.children.length);
           } else {
             this.showArrowsSig.set(true);
           }
+        });
+      this.autoSlideSub = timer(this.intervalForSlider, this.intervalForSlider).subscribe(() => {
+        this.onClickRight();
       });
-      this.autoSlideSub = timer(this.intervalForSlider, this.intervalForSlider).subscribe(() => { this.onClickRight(); })
     }
   }
 
   onDrag(e, type: string) {
-    this.dragging = type === 'down' ? true : (type === 'up' ? false : this.dragging);
+    this.dragging = type === 'down' ? true : type === 'up' ? false : this.dragging;
     if (this.dragging && type === 'move') {
       const slidesElement = this.slides.nativeElement;
       slidesElement.scrollLeft += e.movementX * -50;

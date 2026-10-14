@@ -1,20 +1,21 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 @Component({
-    selector: 'app-images-dialog',
-    templateUrl: './images-dialog.component.html',
-    styleUrls: ['./images-dialog.component.scss'],
-    imports: [CommonModule, TranslatePipe]
+  selector: 'app-images-dialog',
+  templateUrl: './images-dialog.component.html',
+  styleUrls: ['./images-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [CommonModule, TranslatePipe],
 })
 export class ImagesDialogComponent implements OnInit {
   openImages = {};
 
   constructor(
     public dialogRef: MatDialogRef<ImagesDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { index: number; images: string[] }
+    @Inject(MAT_DIALOG_DATA) public data: { index: number; images: string[] },
   ) {}
 
   ngOnInit(): void {

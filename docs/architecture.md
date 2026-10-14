@@ -1,7 +1,7 @@
 # Architecture
 
-This document describes the state of the `master` branch as of 2026-10-14 (Angular 20.2,
-NestJS 11, Mongoose 8.4). Its purpose is twofold:
+This document describes the state of the `master` branch as of 2026-10-14 (Angular 22.2,
+NestJS 12, Mongoose 8.4). Its purpose is twofold:
 1. Onboarding.
 2. Input for the planned MongoDB → PostgreSQL migration (see [Data model](#data-model)).
 
@@ -43,7 +43,7 @@ flowchart LR
   from the incoming request's protocol and `Host` header.
 - **Development:** `server/src/main.ts` (API only, `:4000`) plus `ng serve` (`:3000`).
 - **Docker** (`Dockerfile`):
-  1. The build stage (`node:24.4-alpine3.21`) runs `npm install` and then
+  1. The build stage (`node:24.21-alpine3.24`) runs `npm install` and then
      `npm run build:ssr`.
   2. The runtime stage copies `package*.json`, `.env*` and `dist`, runs `npm i whatwg-url`,
      and ends with `ENTRYPOINT npm run start`.

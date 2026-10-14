@@ -1,7 +1,7 @@
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, take } from 'rxjs/operators';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { Observable, BehaviorSubject, Subscription } from 'rxjs';
 
 import { languages } from '../../../shared/constants';
@@ -10,10 +10,11 @@ import { SignalStore } from '../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 
 @Component({
-    selector: 'app-translations-edit',
-    templateUrl: './translations-edit.component.html',
-    styleUrls: ['./translations-edit.component.scss'],
-    standalone: false
+  selector: 'app-translations-edit',
+  templateUrl: './translations-edit.component.html',
+  styleUrls: ['./translations-edit.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class TranslationsEditComponent implements OnDestroy {
   translations$: Observable<Translations[]>;
@@ -23,7 +24,11 @@ export class TranslationsEditComponent implements OnDestroy {
   translationsSub: Subscription;
   allLanguages = languages;
 
-  constructor(private store: SignalStore, private selectors: SignalStoreSelectors, private fb: FormBuilder) {
+  constructor(
+    private store: SignalStore,
+    private selectors: SignalStoreSelectors,
+    private fb: FormBuilder,
+  ) {
     this.store.getAllTranslations();
 
     this.languageForm = this.fb.group({
@@ -31,12 +36,10 @@ export class TranslationsEditComponent implements OnDestroy {
     });
 
     this.translations$ = toObservable(this.selectors.translations);
-    this.loading$ =  toObservable(this.selectors.dashboardLoading);
+    this.loading$ = toObservable(this.selectors.dashboardLoading);
 
     this.translationsSub = this.translations$.subscribe((translations) => {
-      const initTranslations = !translations.length
-        ? this.allLanguages.map((lang,i) => ({id:i,lang, keys: {}}))
-        : translations;
+      const initTranslations = !translations.length ? this.allLanguages.map((lang, i) => ({ id: i, lang, keys: {} })) : translations;
       initTranslations.forEach((translation: Translations) => {
         const keys = translation.keys ? translation.keys : {};
         const newUsergroup: FormGroup = this.fb.group({});
@@ -55,9 +58,9 @@ export class TranslationsEditComponent implements OnDestroy {
     const newKey = this.languageForm.get('add').value;
     if (newKey) {
       this.translationSub$.pipe(take(1)).subscribe((translations) => {
-        console.log(this.languageForm)
+        console.log(this.languageForm);
         const updateTransations = translations.map((translation) => {
-          console.log(translation, 'translation')
+          console.log(translation, 'translation');
           const langGroup = this.languageForm.get(translation.lang) as FormGroup;
           langGroup.addControl(newKey, new FormControl(newKey));
 
@@ -96,10 +99,14 @@ export class TranslationsEditComponent implements OnDestroy {
         keys: this.languageForm.value[lang],
       }));
     this.store.editTranslation(allTranslations);
-    this.loading$.pipe(filter(loading => !loading),take(1))
-    .subscribe(() => {
-      this.store.getAllTranslations();
-    })
+    this.loading$
+      .pipe(
+        filter((loading) => !loading),
+        take(1),
+      )
+      .subscribe(() => {
+        this.store.getAllTranslations();
+      });
   }
 
   submitJSON(): void {
@@ -110,10 +117,14 @@ export class TranslationsEditComponent implements OnDestroy {
         keys: JSON.parse(this.languageForm.value[lang]),
       }));
     this.store.editTranslation(allTranslations);
-    this.loading$.pipe(filter(loading => !loading),take(1))
+    this.loading$
+      .pipe(
+        filter((loading) => !loading),
+        take(1),
+      )
       .subscribe(() => {
         this.store.getAllTranslations();
-      })
+      });
   }
 
   ngOnDestroy(): void {

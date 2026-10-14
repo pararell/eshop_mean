@@ -1,9 +1,8 @@
 import { toObservable } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
-import {  take } from 'rxjs/operators';
-
+import { take } from 'rxjs/operators';
 
 import { languages } from '../../../shared/constants';
 import { ThemeService } from '../../../services/theme.service';
@@ -11,12 +10,12 @@ import { Theme } from '../../../shared/models';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 import { SignalStore } from '../../../store/signal.store';
 
-
 @Component({
-    selector: 'app-theme-edit',
-    templateUrl: './theme-edit.component.html',
-    styleUrls: ['./theme-edit.component.scss'],
-    standalone: false
+  selector: 'app-theme-edit',
+  templateUrl: './theme-edit.component.html',
+  styleUrls: ['./theme-edit.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class ThemeEditComponent {
   themes$: Observable<Theme[]>;
@@ -28,21 +27,21 @@ export class ThemeEditComponent {
   sendRequest = false;
 
   constructor(
-      private store: SignalStore,
-      private selectos: SignalStoreSelectors,
-      private fb: FormBuilder,
-      private themeService: ThemeService,
-      ) {
+    private store: SignalStore,
+    private selectos: SignalStoreSelectors,
+    private fb: FormBuilder,
+    private themeService: ThemeService,
+  ) {
     this.store.getThemes();
 
     this.themesEditForm = this.fb.group({
       titleUrl: ['', Validators.required],
-      ...this.startFormValues()
+      ...this.startFormValues(),
     });
 
     this.themes$ = toObservable(this.selectos.themes);
 
-    this.themesEditForm.valueChanges.subscribe(values => {
+    this.themesEditForm.valueChanges.subscribe((values) => {
       this.themeService.setCSSVariable(values.primaryColor, 'primary-color');
       this.themeService.setCSSVariable(values.secondaryColor, 'secondary-color');
       this.themeService.setCSSVariable(values.backgroundColor, 'background-color');
@@ -60,16 +59,16 @@ export class ThemeEditComponent {
       this.themeService.setVideo(values.promoSlideVideo);
       this.themeService.setCSSVariable(values.promo, 'promo');
       this.themeService.setCSSVariable(`url(${values.logo})`, 'logo');
-    })
+    });
   }
 
   addTheme(): void {
     if (this.newTheme) {
       this.themesEditForm.get('titleUrl').setValue(this.newTheme);
       const newForm = {
-        titleUrl:  this.newTheme,
-        ...this.startFormValues()
-      }
+        titleUrl: this.newTheme,
+        ...this.startFormValues(),
+      };
       this.themesEditForm.setValue(newForm);
     }
   }
@@ -98,7 +97,7 @@ export class ThemeEditComponent {
     const formValues = this.themesEditForm.value;
     const request = {
       titleUrl: formValues.titleUrl,
-      active  : formValues.active,
+      active: formValues.active,
       styles: {
         primaryColor: formValues.primaryColor,
         promoSlideBackground: formValues.promoSlideBackground,
@@ -109,9 +108,9 @@ export class ThemeEditComponent {
         mainBackground: formValues.mainBackground,
         freeShippingPromo: formValues.freeShippingPromo,
         promo: formValues.promo,
-        logo: formValues.logo
-      }
-    }
+        logo: formValues.logo,
+      },
+    };
     this.store.addOrEditTheme(request);
     this.sendRequest = true;
   }
@@ -123,7 +122,7 @@ export class ThemeEditComponent {
 
   private startFormValues() {
     return {
-      active  : false,
+      active: false,
       freeShippingPromo: 'none',
       promoSlideBackground: '',
       promoSlideVideo: '',
@@ -133,8 +132,7 @@ export class ThemeEditComponent {
       secondaryColor: '#cccccc',
       backgroundColor: '#eeeeee',
       mainBackground: '',
-      logo: ''
-    }
+      logo: '',
+    };
   }
-
 }

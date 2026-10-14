@@ -4,12 +4,12 @@
     <h2 class="product-description">{{ product?.description }}</h2>
     <div class="product-info">
       <div class="product-stock">
-        {{ product?.stock | translate | async }}
+        {{ $safeNavigationMigration(product?.stock) | translate | async }}
       </div>
       <div class="product-price">
-        <span>{{ product?.salePrice | priceFormat }} {{ currency }}</span>
+        <span>{{ $safeNavigationMigration(product?.salePrice) | priceFormat }} {{ currency }}</span>
         @if (product.regularPrice) {
-        <span class="product-before-price"> {{ product?.regularPrice | priceFormat }} {{ currency }} </span>
+        <span class="product-before-price"> {{ $safeNavigationMigration(product?.regularPrice) | priceFormat }} {{ currency }} </span>
         }
       </div>
       @if (lang) {

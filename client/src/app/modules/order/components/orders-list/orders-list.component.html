@@ -9,7 +9,7 @@
         <div class="card-action">
           <p>{{ 'Status' | translate | async }}: {{ order?.status }}</p>
           <div class="action-wrap">
-            <button mat-raised-button color="primary" [routerLink]="[orderUrl + order?.orderId]">
+            <button mat-raised-button color="primary" [routerLink]="[orderUrl + $safeNavigationMigration(order?.orderId)]">
               {{ 'Detail' | translate | async }}
             </button>
           </div>

@@ -25,14 +25,14 @@
       <mat-tab-group>
         <mat-tab label="{{ 'Description' | translate | async }}">
           <mat-card-content class="product-tab-content">
-            <div [innerHTML]="product$()?.descriptionFull"></div>
+            <div [innerHTML]="$safeNavigationMigration(product$()?.descriptionFull)"></div>
           </mat-card-content>
         </mat-tab>
         <mat-tab label="{{ 'Images' | translate | async }}">
           <mat-card-content class="product-tab-content">
             <div class="product-images">
               @for (imageSrc of product$()?.images; track imageSrc; let i = $index; let f = $first; let l = $last) {
-              <div class="product-images-content" (click)="openDialog(i, product$()?.images)">
+              <div class="product-images-content" (click)="openDialog(i, $safeNavigationMigration(product$()?.images))">
                 <img class="product-images-image" [src]="imageSrc" />
               </div>
               }

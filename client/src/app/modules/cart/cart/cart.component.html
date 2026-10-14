@@ -14,7 +14,7 @@
           @for (cartItem of cart?.items; track cartItem; let last = $last) {
           <li class="cart-items" [class.cart-last-item]="last">
             <div class="cart-image-wrap">
-              <a [routerLink]="['/' + (lang$ | async) + '/product/' + cartItem?.item?.titleUrl]">
+              <a [routerLink]="['/' + (lang$ | async) + '/product/' + $safeNavigationMigration(cartItem?.item?.titleUrl)]">
                 <img class="cart-image" src="{{ cartItem?.item?.mainImage?.url }}" />
               </a>
               <div class="cart-title">{{ cartItem?.item.title }}</div>
@@ -24,7 +24,7 @@
               {{ cartItem.price | priceFormat }}
               {{ currency$ | async }}
             </div>
-            <div class="cart-remove" (click)="removeFromCart(cartItem?.item?._id)"><i class="material-icons cart-icon">remove</i></div>
+            <div class="cart-remove" (click)="removeFromCart($safeNavigationMigration(cartItem?.item?._id))"><i class="material-icons cart-icon">remove</i></div>
           </li>
           } @if (cart.shippingType) {
           <li class="cart-items">
@@ -112,7 +112,7 @@
                     <span class="margin-left-small">
                       {{ 'Pay' | translate | async }}
                       <b>
-                        {{ cart?.totalPrice | priceFormat }}
+                        {{ $safeNavigationMigration(cart?.totalPrice) | priceFormat }}
                         {{ currency$ | async }}
                       </b>
                       {{ 'with' | translate | async }}
@@ -164,7 +164,7 @@
 
               @if (toggleCard) {
               <app-card
-                [price]="cart?.totalPrice | priceFormat"
+                [price]="$safeNavigationMigration(cart?.totalPrice) | priceFormat"
                 [currency]="currency$ | async"
                 [loading]="loading$ | async"
                 (scrollToTop)="scrollToTop()"

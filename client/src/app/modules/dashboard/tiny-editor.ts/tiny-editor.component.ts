@@ -1,13 +1,14 @@
-import { Component, Output, Input, EventEmitter } from '@angular/core';
+import { Component, Output, Input, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { EnvConfigurationService } from '../../../services/env-configuration.service';
 
 @Component({
-    selector: 'app-tiny-editor',
-    templateUrl: './tiny-editor.component.html',
-    styleUrls: ['./tiny-editor.component.scss'],
-    standalone: false
+  selector: 'app-tiny-editor',
+  templateUrl: './tiny-editor.component.html',
+  styleUrls: ['./tiny-editor.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class TinyEditorComponent {
   editorApiKey$: Observable<string>;
@@ -22,6 +23,4 @@ export class TinyEditorComponent {
   onEditorChange(value): void {
     this.editorContentChange.emit(value);
   }
-
-
 }

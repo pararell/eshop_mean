@@ -71,7 +71,7 @@
           @for (cartItem of order$()?.cart?.items; track cartItem) {
           <div>
             <div class="order-cart">
-              <a [routerLink]="['/' + (lang$ | async) + '/product/' + cartItem?.item?.titleUrl]">
+              <a [routerLink]="['/' + (lang$ | async) + '/product/' + $safeNavigationMigration(cartItem?.item?.titleUrl)]">
                 <img class="order-cart-img" src="{{ cartItem?.item?.mainImage?.url }}" />
               </a>
               <div class="order-cart-text">

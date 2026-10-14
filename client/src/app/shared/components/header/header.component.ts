@@ -1,5 +1,5 @@
 import { debounceTime, take, delay } from 'rxjs/operators';
-import { Component, OnInit, PLATFORM_ID, Inject, Signal } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, Inject, Signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Observable, BehaviorSubject, of } from 'rxjs';
@@ -22,31 +22,45 @@ import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
-    selector: 'app-header',
-    templateUrl: './header.component.html',
-    styleUrls: ['./header.component.scss'],
-    imports: [CommonModule, TranslatePipe, RouterLink, FormsModule, ReactiveFormsModule, MatIconModule, MatButtonModule, MatAutocompleteModule, MatInputModule, MatToolbarModule, MatMenuModule, MatIconModule]
+  selector: 'app-header',
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [
+    CommonModule,
+    TranslatePipe,
+    RouterLink,
+    FormsModule,
+    ReactiveFormsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatAutocompleteModule,
+    MatInputModule,
+    MatToolbarModule,
+    MatMenuModule,
+    MatIconModule,
+  ],
 })
 export class HeaderComponent implements OnInit {
-  user$             : Signal<User>;
-  cart$             : Signal<Cart>;
-  productTitles$    : Signal<string[]>;
-  userOrders$       : Signal<Order[]>;
+  user$: Signal<User>;
+  cart$: Signal<Cart>;
+  productTitles$: Signal<string[]>;
+  userOrders$: Signal<Order[]>;
   showAutocomplete$ = new BehaviorSubject(false);
-  languageOptions   = languages;
-  lang$             : Observable<string>;
-  showMobileNav     = false;
-  googleAuthUrl     : string;
+  languageOptions = languages;
+  lang$: Observable<string>;
+  showMobileNav = false;
+  googleAuthUrl: string;
 
   readonly query: FormControl = new FormControl();
 
   constructor(
     @Inject(PLATFORM_ID)
-    private _platformId : Object,
+    private _platformId: Object,
     private store: SignalStore,
     private selectors: SignalStoreSelectors,
-    public translate: TranslateService) {
-
+    public translate: TranslateService,
+  ) {
     this.lang$ = this.translate.getLang$();
 
     this.googleAuthUrl = environment.apiUrl + '/api/auth/google';
@@ -58,7 +72,7 @@ export class HeaderComponent implements OnInit {
     this.productTitles$ = this.selectors.productsTitles;
     this.userOrders$ = this.selectors.userOrders;
 
-    this.query.valueChanges.pipe(debounceTime(200)).subscribe(value => {
+    this.query.valueChanges.pipe(debounceTime(200)).subscribe((value) => {
       const sendQuery = value || 'EMPTY___QUERY';
       this.store.getProductSearch(sendQuery);
     });
@@ -69,9 +83,11 @@ export class HeaderComponent implements OnInit {
   }
 
   onBlur(): void {
-    of('blur_event').pipe(delay(300), take(1)).subscribe(() => {
-      this.showAutocomplete$.next(false);
-    })
+    of('blur_event')
+      .pipe(delay(300), take(1))
+      .subscribe(() => {
+        this.showAutocomplete$.next(false);
+      });
   }
 
   onTitleLink(): void {
@@ -86,15 +102,17 @@ export class HeaderComponent implements OnInit {
   }
 
   scrollToTop(): void {
-    of('scroll_content').pipe(delay(100), take(1)).subscribe(() => {
-      this.store.updatePosition({cartComponent: 0});
-    });
+    of('scroll_content')
+      .pipe(delay(100), take(1))
+      .subscribe(() => {
+        this.store.updatePosition({ cartComponent: 0 });
+      });
   }
 
   setLang(lang: string): void {
     const langUpdate = {
       lang,
-      currency: currencyLang[lang]
+      currency: currencyLang[lang],
     };
     this.store.changeLanguage(langUpdate);
   }

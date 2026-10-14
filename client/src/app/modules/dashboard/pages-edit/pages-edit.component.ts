@@ -1,6 +1,6 @@
 import { toObservable } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Observable, BehaviorSubject, from } from 'rxjs';
 import { delay, take } from 'rxjs/operators';
 
@@ -10,10 +10,11 @@ import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 import { SignalStore } from '../../../store/signal.store';
 
 @Component({
-    selector: 'app-pages-edit',
-    templateUrl: './pages-edit.component.html',
-    styleUrls: ['./pages-edit.component.scss'],
-    standalone: false
+  selector: 'app-pages-edit',
+  templateUrl: './pages-edit.component.html',
+  styleUrls: ['./pages-edit.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class PagesEditComponent {
   pages$: Observable<Page[]>;
@@ -24,7 +25,11 @@ export class PagesEditComponent {
   chosenPage = '';
   sendRequest = false;
 
-  constructor(private store: SignalStore, private selectors: SignalStoreSelectors, private fb: FormBuilder) {
+  constructor(
+    private store: SignalStore,
+    private selectors: SignalStoreSelectors,
+    private fb: FormBuilder,
+  ) {
     this.store.getPages();
 
     this.pagesEditForm = this.fb.group({

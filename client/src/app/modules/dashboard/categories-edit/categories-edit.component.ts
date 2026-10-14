@@ -1,9 +1,8 @@
 import { toObservable } from '@angular/core/rxjs-interop';
 import { delay, map, take, startWith, switchMap } from 'rxjs/operators';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable, BehaviorSubject, from } from 'rxjs';
-
 
 import { languages } from '../../../shared/constants';
 import { Category } from '../../../shared/models';
@@ -11,10 +10,11 @@ import { SignalStore } from '../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 
 @Component({
-    selector: 'app-categories-edit',
-    templateUrl: './categories-edit.component.html',
-    styleUrls: ['./categories-edit.component.scss'],
-    standalone: false
+  selector: 'app-categories-edit',
+  templateUrl: './categories-edit.component.html',
+  styleUrls: ['./categories-edit.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class CategoriesEditComponent {
   categoryEditForm: FormGroup;
@@ -27,7 +27,11 @@ export class CategoriesEditComponent {
   mainImageType = false;
   subCategory: string;
 
-  constructor(private fb: FormBuilder, private store: SignalStore, private selectors: SignalStoreSelectors) {
+  constructor(
+    private fb: FormBuilder,
+    private store: SignalStore,
+    private selectors: SignalStoreSelectors,
+  ) {
     this.createForm();
     this.categories$ = toObservable(this.selectors.allCategories);
     this.store.getAllCategories();
@@ -38,12 +42,10 @@ export class CategoriesEditComponent {
         const filterValue = query.toLowerCase();
         return this.categories$.pipe(
           map((categories) =>
-            categories
-              .map(({ category }) => category.titleUrl)
-              .filter((titleUrl: string) => titleUrl.toLowerCase().includes(filterValue))
-          )
+            categories.map(({ category }) => category.titleUrl).filter((titleUrl: string) => titleUrl.toLowerCase().includes(filterValue)),
+          ),
         );
-      })
+      }),
     );
   }
 
@@ -70,7 +72,7 @@ export class CategoriesEditComponent {
     this.categories$
       .pipe(
         take(1),
-        map((categories) => categories.find((category) => category.category.titleUrl === titleUrl))
+        map((categories) => categories.find((category) => category.category.titleUrl === titleUrl)),
       )
       .subscribe((all) => {
         const category = all.category;

@@ -50,6 +50,7 @@
               "@nestjs/websockets",
               "@nestjs/websockets/socket-module",
               "cache-manager",
+              "mongoose",
               "whatwg-url"
             ],
             "scripts": [],
@@ -110,6 +111,7 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
+            "eslintConfig": "client/eslint.config.mjs",
             "lintFilePatterns": [
               "client/**/*.ts",
               "client/**/*.html"

@@ -1,8 +1,7 @@
 import { filter, first, take, delay, startWith, map } from 'rxjs/operators';
-import { Component, OnInit, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable, Subscription, BehaviorSubject, from } from 'rxjs';
-
 
 import { ApiService } from '../../../services/api.service';
 import { languages } from '../../../shared/constants';
@@ -12,10 +11,11 @@ import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 import { toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
-    selector: 'app-products-edit',
-    templateUrl: './products-edit.component.html',
-    styleUrls: ['./products-edit.component.scss'],
-    standalone: false
+  selector: 'app-products-edit',
+  templateUrl: './products-edit.component.html',
+  styleUrls: ['./products-edit.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class ProductsEditComponent implements OnInit, OnDestroy {
   @Input() action: string;
@@ -28,7 +28,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
   images$: Observable<string[]>;
   sendRequest = false;
   descriptionFullSub$: BehaviorSubject<{ [x: string]: string }> = new BehaviorSubject(
-    languages.reduce((prev, lang) => ({ ...prev, [lang]: '' }), {})
+    languages.reduce((prev, lang) => ({ ...prev, [lang]: '' }), {}),
   );
   product$: Observable<Product>;
   categories$: Observable<Category[]>;
@@ -39,10 +39,14 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
   filteredTitles$: Observable<string[]>;
   tag: string;
 
-  constructor(private fb: FormBuilder, private store: SignalStore, private selectors: SignalStoreSelectors, private apiService: ApiService) {
+  constructor(
+    private fb: FormBuilder,
+    private store: SignalStore,
+    private selectors: SignalStoreSelectors,
+    private apiService: ApiService,
+  ) {
     this.createForm();
-    this.product$ = toObservable(this.selectors.product)
-      .pipe(filter((product) => !!product && !!product.titleUrl && !product.title));
+    this.product$ = toObservable(this.selectors.product).pipe(filter((product) => !!product && !!product.titleUrl && !product.title));
     this.categories$ = toObservable(this.selectors.categories);
     this.images$ = toObservable(this.selectors.productImages);
     this.store.getCategories(languages[0]);
@@ -58,9 +62,8 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
       map((value) => {
         const filterValue = value.toLowerCase();
         return this.titles.filter((option) => option.toLowerCase().includes(filterValue));
-      })
+      }),
     );
-
 
     this.productSub = this.product$.subscribe((product) => {
       const newForm = {
@@ -91,19 +94,17 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
 
   onFileChanged(event) {
     const files = event.target.files;
-    if (files.length === 0)
-        return;
+    if (files.length === 0) return;
 
     const mimeType = files[0].type;
     if (mimeType.match(/image\/*/) == null) {
-        console.log("Only images are supported.");
-        return;
+      console.log('Only images are supported.');
+      return;
     }
 
-    const uploadImage = this.apiService.uploadImage({fileToUpload:files[0], titleUrl: this.productToEditTitleUrl});
+    const uploadImage = this.apiService.uploadImage({ fileToUpload: files[0], titleUrl: this.productToEditTitleUrl });
 
-    uploadImage.pipe(take(1))
-    .subscribe((result: any) => {
+    uploadImage.pipe(take(1)).subscribe((result: any) => {
       if (result && result.titleUrl) {
         this.store.storeProduct(result);
       } else if (result && result.all) {
@@ -147,8 +148,7 @@ export class ProductsEditComponent implements OnInit, OnDestroy {
       .map((language) => {
         const descriptionFull = this.productEditForm.get([language]).value.descriptionFull;
         return {
-          [language]:
-            typeof descriptionFull === 'string' ? descriptionFull : descriptionFull.length ? descriptionFull[0] : '',
+          [language]: typeof descriptionFull === 'string' ? descriptionFull : descriptionFull.length ? descriptionFull[0] : '',
         };
       })
       .reduce((prev, curr) => ({ ...prev, ...curr }), {});

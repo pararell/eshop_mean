@@ -2,7 +2,7 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { JsonLDService } from './../../../services/jsonLD.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { filter, map, take, distinctUntilChanged, skip, withLatestFrom } from 'rxjs/operators';
-import { Component, OnDestroy, Signal } from '@angular/core';
+import { Component, OnDestroy, Signal, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, combineLatest, Subscription } from 'rxjs';
 import { Location } from '@angular/common';
@@ -16,10 +16,11 @@ import { SignalStore } from '../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 
 @Component({
-    selector: 'app-product',
-    templateUrl: './product.component.html',
-    styleUrls: ['./product.component.scss'],
-    standalone: false
+  selector: 'app-product',
+  templateUrl: './product.component.html',
+  styleUrls: ['./product.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class ProductComponent implements OnDestroy {
   categories$: Observable<Category[]>;
@@ -56,7 +57,7 @@ export class ProductComponent implements OnDestroy {
 
     this.setMetaData();
     this.productLoading$ = this.selectors.productLoading;
-    this.product$ =  this.selectors.product;
+    this.product$ = this.selectors.product;
     this.cartIds$ = toObservable(this.selectors.cart).pipe(
       filter(Boolean),
       map((cart: Cart) => cart.items.reduce((prev, curr) => ({ ...prev, [curr.id]: curr.qty }), {})),
