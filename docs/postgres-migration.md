@@ -1,12 +1,12 @@
 # MongoDB → PostgreSQL migration plan
 
-|          |                                                                                                                                                                                                             |
-| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Status   | **P1 Foundation and P2 Port modules done.** All services, the session store and the tests run on PostgreSQL. MongoDB code (Mongoose schemas, packages, `MONGO_URI`) is still in the repo, unused, until P3. |
-| Target   | PostgreSQL **18.6** on the production server (`172.105.94.117`), listening on `127.0.0.1:5432` only. Database `eshop`, user `eshop`; the password is in `/home/eshop/.env.postgres` on the server.          |
-| Source   | MongoDB via Mongoose 8.24; schemas are described in [architecture.md § Data model](architecture.md#5-data-model).                                                                                           |
-| Data     | **Fresh start.** The current MongoDB holds only dummy data. **Nothing is copied from MongoDB** (the UI translations there were incomplete too).                                                             |
-| Baseline | `master` with strict TypeScript, 107 server/API tests and 18 e2e tests (see [testing.md](testing.md)).                                                                                                      |
+|          |                                                                                                                                                                                                    |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Status   | **P1–P3 done.** All services, the session store and the tests run on PostgreSQL; MongoDB code, packages and `MONGO_URI` are removed. Next: P4 deploy (§8).                                         |
+| Target   | PostgreSQL **18.6** on the production server (`172.105.94.117`), listening on `127.0.0.1:5432` only. Database `eshop`, user `eshop`; the password is in `/home/eshop/.env.postgres` on the server. |
+| Source   | MongoDB via Mongoose 8.24; schemas are described in [architecture.md § Data model](architecture.md#5-data-model).                                                                                  |
+| Data     | **Fresh start.** The current MongoDB holds only dummy data. **Nothing is copied from MongoDB** (the UI translations there were incomplete too).                                                    |
+| Baseline | `master` with strict TypeScript, 107 server/API tests and 18 e2e tests (see [testing.md](testing.md)).                                                                                             |
 
 This document covers:
 

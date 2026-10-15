@@ -3,8 +3,8 @@
  *
  * Type-only (.d.ts): import with `import type { ... } from '@eshop/shared'`. Nothing here exists at
  * runtime, so it works in every build (Angular/esbuild, Nest tsc, Jest/SWC) without path mapping
- * at runtime. Shapes mirror the Mongoose schemas in server/src/** /schemas and the JSON the API
- * returns; see docs/architecture.md.
+ * at runtime. Shapes are the JSON the API returns (built by server/src/db/mappers.ts); see
+ * docs/architecture.md.
  */
 
 // ---------------------------------------------------------------------------------------------

@@ -67,12 +67,7 @@ export default defineConfig(
     },
   },
 
-  // Protected files (see CLAUDE.md): Mongoose schemas are frozen until the PostgreSQL migration,
-  // and the email templates contain literal non-breaking spaces
-  {
-    files: ['server/src/**/schemas/*.ts'],
-    rules: { '@typescript-eslint/no-explicit-any': 'off', '@typescript-eslint/no-empty-object-type': 'off' },
-  },
+  // The email templates contain literal non-breaking spaces
   {
     files: ['server/src/shared/utils/email/emailTemplates.ts'],
     rules: { 'no-irregular-whitespace': 'off' },

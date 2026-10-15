@@ -8,10 +8,10 @@ RUN npm ci --no-audit --no-fund
 COPY . .
 RUN npm run build:ssr
 # The bundle keeps only a few packages external (angular.json externalDependencies); of those,
-# mongoose and pg are imported at runtime. Pin them to the lockfile versions.
+# only pg is imported at runtime. Pin it to the lockfile version.
 RUN node -e "const p = require('./package-lock.json').packages; \
   require('fs').writeFileSync('runtime-package.json', JSON.stringify({ name: 'eshop-runtime', private: true, \
-  dependencies: { mongoose: p['node_modules/mongoose'].version, pg: p['node_modules/pg'].version } }))"
+  dependencies: { pg: p['node_modules/pg'].version } }))"
 
 # Runtime dependencies only (no Angular/Nest sources, no dev tooling)
 FROM node:24.21-alpine3.24 AS runtime-deps

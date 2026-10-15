@@ -2,10 +2,10 @@
 
 There are two test layers. Neither one needs a running database, Docker or real API keys.
 
-| Layer                      | Tool                      | What runs                                                                       | Command               | Time                           |
-| -------------------------- | ------------------------- | ------------------------------------------------------------------------------- | --------------------- | ------------------------------ |
-| Server unit and API tests  | Jest 30 + SWC + Supertest | The real Nest `AppModule` with production middleware, against in-memory MongoDB | `npm run test:server` | about 4 s                      |
-| End-to-end (browser) tests | Playwright (Chromium)     | The production SSR build (`dist/`) against seeded in-memory MongoDB             | `npm run test:e2e`    | about 30 s including the build |
+| Layer                      | Tool                      | What runs                                                                                | Command               | Time                           |
+| -------------------------- | ------------------------- | ---------------------------------------------------------------------------------------- | --------------------- | ------------------------------ |
+| Server unit and API tests  | Jest 30 + SWC + Supertest | The real Nest `AppModule` with production middleware, against a disposable PostgreSQL 18 | `npm run test:server` | about 4 s                      |
+| End-to-end (browser) tests | Playwright (Chromium)     | The production SSR build (`dist/`) against a seeded, disposable PostgreSQL 18            | `npm run test:e2e`    | about 30 s including the build |
 
 Also run `npm run typecheck`. It type-checks the client, the server, the server tests and the e2e specs. The test runners don't do this themselves, because SWC and Playwright only strip types.
 
@@ -17,8 +17,7 @@ npx playwright install chromium   # browser for e2e, downloaded once
 # Docker must be running: server tests start a disposable postgres:18 (Testcontainers)
 ```
 
-The first test run downloads a MongoDB binary for `mongodb-memory-server-core` into
-`~/.cache/mongodb-binaries`. This happens only once.
+The first run pulls the `postgres:18` Docker image. This happens only once.
 
 ## Running
 
@@ -43,8 +42,9 @@ On failure, Playwright keeps a trace, a screenshot and the error context in
   - Unit specs live next to the code: `src/**/*.spec.ts`.
   - API specs live in `test/api/*.spec.ts`.
 - **Database:**
-  - [test/setup/global-setup.cjs](../server/test/setup/global-setup.cjs) starts one in-memory MongoDB per run.
-  - [test/setup/env.ts](../server/test/setup/env.ts) gives each test file its own fresh database.
+  - [test/setup/global-setup.cjs](../server/test/setup/global-setup.cjs) starts one `postgres:18` container per run.
+  - `createTestApp()` ([test/utils/test-app.ts](../server/test/utils/test-app.ts)) gives each test file its own fresh database;
+    `t.model(name)` ([test-models.ts](../server/test/utils/test-models.ts)) seeds and reads it with the API document shapes.
 - **Environment:** `env.ts` sets every variable the server reads. A local `.env` can never leak
   into tests, because `ConfigModule` doesn't override variables that are already set.
 - **External services are always mocked:**
@@ -64,7 +64,7 @@ On failure, Playwright keeps a trace, a screenshot and the error context in
 
 - **Configuration:** [e2e/playwright.config.ts](../e2e/playwright.config.ts). The `webServer` runs
   [e2e/support/start-server.mjs](../e2e/support/start-server.mjs), which:
-  1. starts an in-memory MongoDB and seeds two products, two categories, an active shop
+  1. starts a disposable `postgres:18`, runs the migrations and seeds two products, two categories, an active shop
      config with 5 EUR shipping, and an admin user (see [fixtures.mjs](../e2e/support/fixtures.mjs));
   2. runs `dist/eshop/server/server.mjs` on port 4600 with explicit test environment values;
   3. writes the database URI to `test-results/e2e-state.json`, so specs can assert stored data.
@@ -109,7 +109,7 @@ Line coverage is about 75% of server code. `prepareUtils.ts` and `cart.ts` are a
 
 - `test/setup/global-setup.cjs` starts one `postgres:18` container per run (Testcontainers), applies the
   migrations to a template database, and `test/utils/test-db.ts` clones a fresh database per test
-  file (`createTestDatabase()`). MongoDB (in-memory) still runs alongside until the services are ported.
+  file (`createTestDatabase()`).
 - `test/db/schema.spec.ts` checks the schema rules (uuidv7 keys, per-language rows, numeric prices as
   numbers, unique slugs/emails/order numbers, one active theme); `test/db/seed.spec.ts` checks the seed
   (fills an empty DB, idempotent, never overwrites dashboard edits).

@@ -5,7 +5,7 @@ const port = 4600;
 const root = resolve(__dirname, '..');
 
 /**
- * Browser tests against the production build + seeded in-memory MongoDB.
+ * Browser tests against the production build + a seeded, disposable PostgreSQL 18.
  * Run with `npm run test:e2e` (builds first). See docs/testing.md.
  */
 export default defineConfig({

@@ -7,14 +7,14 @@
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/pararell/eshop_mean)
 ![GitHub Repo stars](https://img.shields.io/github/stars/pararell/eshop_mean?style=social)
 
-## Server : <img src="https://d33wubrfki0l68.cloudfront.net/e937e774cbbe23635999615ad5d7732decad182a/26072/logo-small.ede75a6b.svg" alt="nest.js" width="50"/> Nest.js with Express and <img src="https://webassets.mongodb.com/_com_assets/cms/mongodb_logo1-76twgcu2dm.png" alt="mongoDB" width="150"> MongoDB (Mongoose)
+## Server : <img src="https://d33wubrfki0l68.cloudfront.net/e937e774cbbe23635999615ad5d7732decad182a/26072/logo-small.ede75a6b.svg" alt="nest.js" width="50"/> Nest.js with Express and PostgreSQL 18 (Drizzle ORM)
 
 ## Client : <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Angular_full_color_logo.svg/1200px-Angular_full_color_logo.svg.png" alt="angular" width="60"> Angular (Server-side rendering)
 
 ## Description
 
 - Eshop with products and administration
-- Typescript stack with decorators, use MongoDB and mongoose schemas, JWT Passport
+- Typescript stack with decorators, PostgreSQL with Drizzle ORM and SQL migrations, JWT Passport
 - Theming with css variables
 
 ![eshop-mean](https://res.cloudinary.com/dnpgh1vhi/image/upload/v1629725636/eshop-mean.png)
@@ -70,8 +70,8 @@ JWT_SECRET="youhavetochoseone"
 
 COOKIE_KEY="youhavetochoseone"
 
-# DB URI
-MONGO_URI="mongodb://{user}:{password}@{host}:{port}/{databaseName}"
+# PostgreSQL (data and sessions); create the tables with `npm run db:migrate`
+DATABASE_URL="postgres://{user}:{password}@{host}:{port}/{databaseName}"
 
 # Emails
 SENDGRID_KEY="set if you want have notification for order or contact from https://sendgrid.com (ADMIN_EMAILS and user will get notification)"
@@ -114,6 +114,6 @@ docker pull pararel/eshop-mean:latest
 docker run --env-file $PathToEnv --network=host pararel/eshop-mean:latest
 
 # run docker with env set in cmd line
-docker run --e MONGO_URI=mongodbUrl --e OTHER_ENV=otherEnvValue --network=host pararel/eshop-mean:latest
+docker run --e DATABASE_URL=postgresUrl --e OTHER_ENV=otherEnvValue --network=host pararel/eshop-mean:latest
 
 ```

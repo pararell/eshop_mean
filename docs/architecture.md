@@ -49,11 +49,11 @@ flowchart LR
 - During SSR, Angular calls the API over HTTP. It uses the `serverUrl` provider, built
   from the incoming request's protocol and `Host` header.
 - **Development:** `server/src/main.ts` (API only, `:4000`) plus `ng serve` (`:3000`).
-- **Docker** (`Dockerfile`, image about 186 MB):
+- **Docker** (`Dockerfile`, image about 175 MB):
   1. **build** (`node:24.21-alpine3.24`): `npm ci`, then `npm run build:ssr`. It also writes a
-     a small `package.json` with the lockfile's `pg` and `mongoose` versions (mongoose goes in phase 3).
-  2. **runtime-deps:** installs only those. The bundle keeps
-     `pg` and `mongoose` external (`angular.json` `externalDependencies`); everything else is inlined
+     one-dependency `package.json` with the lockfile's `pg` version.
+  2. **runtime-deps:** installs only that (`pg` and its dependencies). The bundle keeps
+     `pg` external (`angular.json` `externalDependencies`); everything else is inlined
      into `dist/`.
   3. **runtime:** `dist/` plus those `node_modules`. It runs as user `node`, with `tini` as PID 1
      (so `docker stop` is immediate), and `CMD node dist/eshop/server/server.mjs`. No `.env` is

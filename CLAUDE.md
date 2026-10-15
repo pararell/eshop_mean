@@ -20,9 +20,9 @@ eshop_mean is a multi-language (en / sk / cs) e-commerce app with an admin area:
 | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Frontend | Angular 22.2 (zoneless, SSR + hydration), Angular Material (M2 theme), custom signal store                                                                                                                     |
 | Backend  | NestJS 12 on Express 5, Passport (JWT + Google OAuth 2.0)                                                                                                                                                      |
-| Database | PostgreSQL 18 via Drizzle ORM (`server/src/db/`), sessions in PostgreSQL via `connect-pg-simple`. Mongoose schemas remain as unused code until phase 3 of the migration                                        |
+| Database | PostgreSQL 18 via Drizzle ORM (`server/src/db/`), sessions in PostgreSQL via `connect-pg-simple`                                                                                                               |
 | Tooling  | One root `package.json`, TypeScript 6.0 **strict** (+ Angular `strictTemplates`), Angular CLI (`@angular/build`), Nest CLI, ESLint flat config (`eslint.config.mjs`), Prettier, stylelint, husky + lint-staged |
-| Deploy   | Docker image (`Dockerfile`, ~186 MB, non-root, tini), single Node process                                                                                                                                      |
+| Deploy   | Docker image (`Dockerfile`, ~175 MB, non-root, tini), single Node process                                                                                                                                      |
 
 ## Runtime topology (important)
 
@@ -39,7 +39,7 @@ npm start → node dist/eshop/server/server.mjs
 
 The Nest server code is **bundled by the Angular build** (esbuild). `angular.json`
 `externalDependencies` lists what stays external. `pg` must stay external (it has an optional
-`require('pg-native')`); `mongoose` is still listed until it is removed in migration phase 3.
+`require('pg-native')`).
 SSR only renders for allowed hosts (`CommonEngine` SSRF protection): the hostnames of `ORIGIN` and
 `SERVER_URL` plus localhost (see `server/src/app-universal.module.ts`).
 
@@ -81,7 +81,6 @@ server/                         NestJS app (server/nest-cli.json, server/tsconfi
   src/app-ssr.module.ts, app-universal.module.ts   SSR integration
   src/<feature>/                auth, products, cart, orders, translations, admin, eshop
     <feature>.controller.ts / .service.ts / .module.ts
-    schemas/                    old Mongoose schemas, unused (removed in migration phase 3)
     models/                     API document types (aliases of the mappers in src/db/mappers.ts)
     dto/                        class-validator DTOs (validation only where a pipe is applied)
   src/shared/                   constans.ts (languages, shipping defaults), utils (cart pricing, paginate, email)
@@ -93,7 +92,7 @@ server/src/db/                  PostgreSQL: Drizzle schema (source of truth for 
                                 (row ↔ API document shape), catalog queries, migrate, seed
 server/db/migrations/           generated SQL migrations (npm run db:generate; never edit by hand)
 server/scripts/                 db:migrate, db:seed
-Dockerfile                      build stage + runtime with only dist/, pg and mongoose; `node dist/eshop/server/server.mjs`
+Dockerfile                      build stage + runtime with only dist/ and pg; `node dist/eshop/server/server.mjs`
 ```
 
 ## Commands
@@ -135,7 +134,6 @@ Copy `.env.example` → `.env` (gitignored, never commit it). It is read with
 | Variable                                                                                           | Used for                                                                                               | Read in                                                               |
 | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
 | `PORT`                                                                                             | HTTP port (`.env.example`: 4000)                                                                       | `server/src/main.ts`, `main-ssr.ts`                                   |
-| `MONGO_URI`                                                                                        | **Unused** since phase 2 of the PostgreSQL migration; removed from `.env.example` in phase 3           | none                                                                  |
 | `DATABASE_URL`                                                                                     | PostgreSQL connection: app data and the session store (one pool)                                       | `server/src/db/database.module.ts`, `setAppDB.ts`, `server/scripts/*` |
 | `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD`                                                          | Admin created by `npm run db:seed` if missing                                                          | `server/scripts/db-seed.ts`                                           |
 | `ORIGIN`                                                                                           | CORS origin; OAuth redirect target; SSR allowed host                                                   | `setAppDB.ts`, `auth/auth.controller.ts`, `app-universal.module.ts`   |
