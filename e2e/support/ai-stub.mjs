@@ -33,10 +33,32 @@ const draftAnswer = (call) => ({
   ),
 });
 
+/** The `file` part of a multipart upload (what Cloudinary would store), or undefined */
+const uploadedImage = (raw, contentType) => {
+  const boundary = /boundary=(?:"([^"]+)"|([^;]+))/.exec(contentType ?? '');
+  if (!boundary) return undefined;
+  const delimiter = Buffer.from(`--${boundary[1] ?? boundary[2]}`);
+  let start = raw.indexOf(delimiter);
+  while (start !== -1) {
+    const next = raw.indexOf(delimiter, start + delimiter.length);
+    const part = raw.subarray(start + delimiter.length, next === -1 ? raw.length : next);
+    const headerEnd = part.indexOf('\r\n\r\n');
+    const headers = part.subarray(0, headerEnd).toString();
+    // The Cloudinary SDK sends the file as the `file` field (application/octet-stream)
+    if (/name="file"/i.test(headers)) {
+      return part.subarray(headerEnd + 4, part.length - 2); // without the trailing CRLF
+    }
+    start = next;
+  }
+  return undefined;
+};
+
 export async function startAiStub({ cloudName }) {
   const requests = [];
   let uploads = 0;
   let aiCalls = 0;
+  /** Uploaded files by upload number, served back like Cloudinary delivery would */
+  const stored = new Map();
   let url = '';
 
   const server = createServer((req, res) => {
@@ -56,11 +78,14 @@ export async function startAiStub({ cloudName }) {
 
       if (req.method === 'POST' && req.url.startsWith(`/v1_1/${cloudName}/`)) {
         uploads += 1;
+        stored.set(uploads, uploadedImage(raw, req.headers['content-type']));
         const publicId = `products/e2e-upload-${uploads}`;
         return send(200, { public_id: publicId, secure_url: `${url}/${cloudName}/image/upload/v1/${publicId}.png`, format: 'png' });
       }
       if (req.method === 'GET' && req.url.startsWith(`/${cloudName}/image/upload/`)) {
-        return send(200, PNG, 'image/png');
+        // Any transformation is ignored; the stored upload (or a 1x1 PNG) is returned as PNG
+        const upload = Number(/e2e-upload-(\d+)/.exec(req.url)?.[1]);
+        return send(200, stored.get(upload) ?? PNG, 'image/png');
       }
       if (req.method === 'POST' && req.url.includes(':generateContent')) {
         const prompt = JSON.stringify(json?.contents ?? '');

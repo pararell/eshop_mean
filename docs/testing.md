@@ -1,10 +1,10 @@
 # Testing
 
-There are two test layers. Neither one needs a running database, Docker or real API keys.
+There are two test layers. They need Docker (a disposable PostgreSQL 18 via Testcontainers) but no running database of your own and no real API keys: every external service, AI providers included, is mocked or stubbed.
 
 | Layer                      | Tool                      | What runs                                                                                | Command               | Time                           |
 | -------------------------- | ------------------------- | ---------------------------------------------------------------------------------------- | --------------------- | ------------------------------ |
-| Server unit and API tests  | Jest 30 + SWC + Supertest | The real Nest `AppModule` with production middleware, against a disposable PostgreSQL 18 | `npm run test:server` | about 4 s                      |
+| Server unit and API tests  | Jest 30 + SWC + Supertest | The real Nest `AppModule` with production middleware, against a disposable PostgreSQL 18 | `npm run test:server` | about 10 s                     |
 | End-to-end (browser) tests | Playwright (Chromium)     | The production SSR build (`dist/`) against a seeded, disposable PostgreSQL 18            | `npm run test:e2e`    | about 30 s including the build |
 
 Also run `npm run typecheck`. It type-checks the client, the server, the server tests and the e2e specs. The test runners don't do this themselves, because SWC and Playwright only strip types.
@@ -51,7 +51,11 @@ On failure, Playwright keeps a trace, a screenshot and the error context in
   - `@sendgrid/mail` → [test/mocks/sendgrid.ts](../server/test/mocks/sendgrid.ts);
   - `stripe` → [test/mocks/stripe.ts](../server/test/mocks/stripe.ts) (via `moduleNameMapper`);
   - the reCAPTCHA and geolocation HTTP calls → `httpMock` in
-    [test/utils/test-app.ts](../server/test/utils/test-app.ts).
+    [test/utils/test-app.ts](../server/test/utils/test-app.ts);
+  - AI providers: `env.ts` blanks every AI key, so the feature is off by default. Unit specs mock
+    `fetch` or inject a scripted `LlmProvider`; API specs enable the feature against
+    [test/utils/ai-stub.ts](../server/test/utils/ai-stub.ts), a local server playing Gemini, Claude
+    and Cloudinary image delivery (`AI_BASE_URL`, `AI_IMAGE_ORIGIN`).
 - **App setup:** `createTestApp()` boots `AppModule` with `setAppDB()`, so sessions, cookies and CORS
   behave as in production. `request.agent(...)` keeps the session cookie between requests,
   which is how the cart works in a browser.
@@ -66,44 +70,52 @@ On failure, Playwright keeps a trace, a screenshot and the error context in
   [e2e/support/start-server.mjs](../e2e/support/start-server.mjs), which:
   1. starts a disposable `postgres:18`, runs the migrations and seeds two products, two categories, an active shop
      config with 5 EUR shipping, and an admin user (see [fixtures.mjs](../e2e/support/fixtures.mjs));
-  2. runs `dist/eshop/server/server.mjs` on port 4600 with explicit test environment values;
-  3. writes the database URI to `test-results/e2e-state.json`, so specs can assert stored data.
+  2. starts [support/ai-stub.mjs](../e2e/support/ai-stub.mjs), a local Gemini + Cloudinary stub
+     (uploads reach it through `CLOUDINARY_URL`'s `upload_prefix`, AI calls through `AI_BASE_URL`);
+     its answers are in `E2E.ai` in `fixtures.mjs`, and a description containing `E2E_FAIL` makes it fail;
+  3. runs `dist/eshop/server/server.mjs` on port 4600 with explicit test environment values;
+  4. writes the database URI and the stub URL to `test-results/e2e-state.json`, so specs can assert
+     stored data and what the stub received (`GET <stub>/__requests`).
 - **Hermetic:**
   - in the browser, Stripe.js is replaced by a small fake, and TinyMCE, reCAPTCHA and analytics
     are blocked ([helpers.ts](../e2e/tests/helpers.ts));
   - on the server, outbound HTTPS goes to a dead local proxy, so SendGrid, Stripe and
-    reCAPTCHA are never reached.
+    reCAPTCHA are never reached; AI and Cloudinary go to the local stub.
 - **Execution:** specs run serially (one worker) against the shared server, so they create
   unique data (timestamps in emails and slugs).
 
 ## What is covered
 
-### Server: 120 tests
+### Server: 207 tests
 
-| Area                | Spec                                    | Covers                                                                                                                                                                                                                                                                                                                                                                  |
-| ------------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Cart logic (unit)   | `src/cart/utils/cart.spec.ts`           | Add, increment, decrement, remove, unknown ids                                                                                                                                                                                                                                                                                                                          |
-| Pricing (unit)      | `src/shared/utils/prepareUtils.spec.ts` | Totals = sale price × qty; basic vs. extended shipping; free shipping at the limit; just-below-limit; fallback shipping table; hidden or unpriced items excluded; localized product shape                                                                                                                                                                               |
-| Products API        | `test/api/products.spec.ts`             | Visible-only listing, 12-per-page pagination, all four sort orders, category and max-price filters, invalid sort → 400, detail and 404, categories by position; admin create (with auto-created category), duplicate → 400, edit, delete                                                                                                                                |
-| Auth API            | `test/api/auth.spec.ts`                 | Signup (hashed password, no client roles: **SEC-01 regression**), duplicate → 409, weak password → 400, signin token and profile, wrong password and unknown user → 401, `GET /api/auth` with valid and invalid tokens                                                                                                                                                  |
-| Cart API            | `test/api/cart.spec.ts`                 | Session persistence, totals with default and config shipping, extended shipping, free shipping, remove, missing id → 400                                                                                                                                                                                                                                                |
-| Orders API          | `test/api/orders.spec.ts`               | Cash-on-delivery order from the session cart (server total, client amount ignored, cart emptied), emails to customer and admins, invalid body → 422 without crashing (**SEC-02 regression**), Stripe charge amount, currency, token, capture → PAID order, declined charge → 422 with no order and the cart kept, user order history, admin list, get and status update |
-| Admin authorization | `test/api/admin-authorization.spec.ts`  | All 23 admin endpoints reject anonymous users and non-admin users                                                                                                                                                                                                                                                                                                       |
-| Shop API            | `test/api/eshop.spec.ts`                | Public config exposes `FE_*` values and the active theme but no secrets; admin page create then public read; contact: valid captcha → emails, invalid captcha → 400 without crashing (**SEC-02 regression**), captcha service down → 500                                                                                                                                |
+| Area                | Spec                                    | Covers                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ------------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cart logic (unit)   | `src/cart/utils/cart.spec.ts`           | Add, increment, decrement, remove, unknown ids                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Pricing (unit)      | `src/shared/utils/prepareUtils.spec.ts` | Totals = sale price × qty; basic vs. extended shipping; free shipping at the limit; just-below-limit; fallback shipping table; hidden or unpriced items excluded; localized product shape                                                                                                                                                                                                                                                                                                                               |
+| AI drafts (unit)    | `src/ai/*.spec.ts`                      | Config and off switch; schema (languages, category enum, no price/stock fields, provider-safe keywords) and prompt delimiters; mapping (validation, HTML sanitizing, escaping, SEO trimming, categories, slug); image URL rules (only this shop's Cloudinary); Gemini and Claude clients against mocked `fetch` (request shape, key in header, usage, every error kind); `AiService` with a scripted provider (usage log, retry, error → HTTP mapping, one request per admin, hourly/daily/monthly limits, unique slug) |
+| AI drafts API       | `test/api/ai.spec.ts`                   | Disabled → 404 and status; unknown provider → off; draft via stubbed Gemini (what is sent, sanitized result, no prices, usage row, never saved); unknown categories dropped, slug suffix; invalid answer → retry → 502; provider 429/401/500 mapping without leaking the key; timeout → 504; safety block → 422; input validation and foreign images → 422; hourly limit → 429; monthly budget → 503; draft via stubbed Claude (forced tool call)                                                                       |
+| Database module     | `src/db/database.module.spec.ts`        | Startup fails without `DATABASE_URL`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Products API        | `test/api/products.spec.ts`             | Visible-only listing, 12-per-page pagination, all four sort orders, category and max-price filters, invalid sort → 400, detail and 404, categories by position; admin create (with auto-created category), SEO title and meta description stored per language, duplicate → 400, edit, delete                                                                                                                                                                                                                            |
+| Auth API            | `test/api/auth.spec.ts`                 | Signup (hashed password, no client roles: **SEC-01 regression**), duplicate → 409, weak password → 400, signin token and profile, wrong password and unknown user → 401, `GET /api/auth` with valid and invalid tokens                                                                                                                                                                                                                                                                                                  |
+| Cart API            | `test/api/cart.spec.ts`                 | Session persistence, totals with default and config shipping, extended shipping, free shipping, remove, missing id → 400                                                                                                                                                                                                                                                                                                                                                                                                |
+| Orders API          | `test/api/orders.spec.ts`               | Cash-on-delivery order from the session cart (server total, client amount ignored, cart emptied), emails to customer and admins, invalid body → 422 without crashing (**SEC-02 regression**), Stripe charge amount, currency, token, capture → PAID order, declined charge → 422 with no order and the cart kept, user order history, admin list, get and status update                                                                                                                                                 |
+| Admin authorization | `test/api/admin-authorization.spec.ts`  | All 25 admin endpoints (including the two AI endpoints) reject anonymous users and non-admin users                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Shop API            | `test/api/eshop.spec.ts`                | Public config exposes `FE_*` values and the active theme but no secrets; admin page create then public read; contact: valid captcha → emails, invalid captcha → 400 without crashing (**SEC-02 regression**), captcha service down → 500                                                                                                                                                                                                                                                                                |
 
 Line coverage is about 75% of server code. `prepareUtils.ts` and `cart.ts` are at 100%, and `orders.service.ts` at 95%.
 
-### E2E: 18 tests
+### E2E: 21 tests
 
-| Flow                                                                                                                                                                                                        | Spec               |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
-| Home page is server-rendered with products; product list with prices; category filter; product detail (title, price, description, `<title>`)                                                                | `browse.spec.ts`   |
-| Add to cart, header badge, totals with shipping, cart persists across reload, remove item                                                                                                                   | `cart.spec.ts`     |
-| Checkout, cash on delivery: address → payment → order; confirmation shown; cart emptied; order stored with server-side total                                                                                | `checkout.spec.ts` |
-| Checkout, card: Stripe.js card element → `createToken` → the token, currency, email and address are sent to `/api/orders/stripe` (the API response is stubbed; the server side is covered by the API tests) | `checkout.spec.ts` |
-| Signup → login → logout; wrong password                                                                                                                                                                     | `auth.spec.ts`     |
-| Language from the URL: server-rendered `/sk` pages in Slovak (`<html lang>`, content, UI labels); switcher changes the prefix; `/sk` lists only products with Slovak content; `/` keeps the cookie language | `language.spec.ts` |
-| Admin login → create product (appears in the shop) → edit product price; order list → order detail                                                                                                          | `admin.spec.ts`    |
+| Flow                                                                                                                                                                                                                                                                                                                                                                                           | Spec               |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| Home page is server-rendered with products; product list with prices; category filter; product detail (title, price, description, `<title>`)                                                                                                                                                                                                                                                   | `browse.spec.ts`   |
+| Add to cart, header badge, totals with shipping, cart persists across reload, remove item                                                                                                                                                                                                                                                                                                      | `cart.spec.ts`     |
+| Checkout, cash on delivery: address → payment → order; confirmation shown; cart emptied; order stored with server-side total                                                                                                                                                                                                                                                                   | `checkout.spec.ts` |
+| Checkout, card: Stripe.js card element → `createToken` → the token, currency, email and address are sent to `/api/orders/stripe` (the API response is stubbed; the server side is covered by the API tests)                                                                                                                                                                                    | `checkout.spec.ts` |
+| Signup → login → logout; wrong password                                                                                                                                                                                                                                                                                                                                                        | `auth.spec.ts`     |
+| Language from the URL: server-rendered `/sk` pages in Slovak (`<html lang>`, content, UI labels); switcher changes the prefix; `/sk` lists only products with Slovak content; `/` keeps the cookie language                                                                                                                                                                                    | `language.spec.ts` |
+| Admin product table and editor: create a product (URL from the title, category chip, visible) that appears in the shop; search the table → edit a price; validation explains a missing price before anything is sent; order list → order detail                                                                                                                                                | `admin.spec.ts`    |
+| AI product draft: upload a photo (Cloudinary stub) + a few words → Fill with AI → 16 fields marked in en/sk/cs → edit clears a mark, accept a language, add a suggested category → price and visibility → "Save anyway" → stored product (all languages, the one uploaded image, no AI prices) and SEO `<title>` in the shop; what the AI stub received; AI failure → clear error, form usable | `ai-draft.spec.ts` |
 
 ### Database (PostgreSQL)
 
@@ -117,7 +129,7 @@ Line coverage is about 75% of server code. `prepareUtils.ts` and `cart.ts` are a
 ### Server errors during e2e
 
 `e2e/support/start-server.mjs` collects uncaught exceptions, unhandled rejections and Angular runtime
-errors (`NG0xxx`) from the app's output; `e2e/support/check-server-errors.mjs` (Playwright
+errors (`NG0xxx`, and exceptions Angular logs as `ERROR …Error`) from the app's output; `e2e/support/check-server-errors.mjs` (Playwright
 `globalTeardown`) fails the run if any were logged — SSR errors otherwise go unnoticed because the page
 still renders.
 
@@ -149,4 +161,5 @@ Update those tests together with the fix.
   2. Use the helpers in `e2e/tests/helpers.ts`.
   3. Use unique data, because the database is shared across specs in a run.
 - Never call real external services. Add a mock instead: `moduleNameMapper` on the server,
-  `page.route` in e2e.
+  `page.route` in e2e, or extend the local stubs (`server/test/utils/ai-stub.ts`,
+  `e2e/support/ai-stub.mjs`) for HTTP APIs the server calls.

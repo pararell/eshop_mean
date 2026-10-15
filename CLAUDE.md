@@ -2,10 +2,11 @@
 
 Guidance for AI agents and contributors working in this repository.
 Deeper references: [docs/architecture.md](docs/architecture.md) (modules, data flow, schemas),
-[docs/audit.md](docs/audit.md) (known issues, prioritized), [docs/testing.md](docs/testing.md) (how to run and write tests), [docs/postgres-migration.md](docs/postgres-migration.md) (how the database was migrated; runbook for schema changes and deploys).
+[docs/audit.md](docs/audit.md) (known issues, prioritized), [docs/testing.md](docs/testing.md) (how to run and write tests), [docs/postgres-migration.md](docs/postgres-migration.md) (how the database was migrated; runbook for schema changes and deploys), [docs/ai.md](docs/ai.md) (AI product drafts), [docs/adr/](docs/adr/) (architecture decisions).
 
 Before finishing any change: `npm run typecheck && npm run lint && npm test`, plus `npm run test:e2e` for anything
-touching the client, SSR or checkout. Tests never call real external services; keep it that way.
+touching the client, SSR or checkout. Tests never call real external services (AI providers included: unit tests mock
+`fetch`, API and e2e tests use local stubs); keep it that way.
 
 ## What this is
 
@@ -64,6 +65,7 @@ client/                         Angular app (angular.json sourceRoot: client/src
     app.routes.ts               routes generated per language prefix: /en|sk|cs/...
     components/                 standalone routed components (home, auth, eshop pages, not-found)
     modules/                    lazy feature areas (each has routes.ts): product, cart (checkout + Stripe), order, dashboard (admin)
+    modules/dashboard/product-editor/   admin product editor (+ AI assistant, image gallery); admin-products/ is the product table
     shared/components/          standalone presentational components (header, footer, product list, ...)
     shared/models.ts            client-side interfaces
     shared/constants.ts         languages, currency per language, sort options
@@ -79,14 +81,14 @@ server/                         NestJS app (server/nest-cli.json, server/tsconfi
   src/setAppDB.ts               shared Express middleware + session store
   src/app.module.ts             feature modules + DatabaseModule (global Drizzle `DRIZZLE` / `PG_POOL`)
   src/app-ssr.module.ts, app-universal.module.ts   SSR integration
-  src/<feature>/                auth, products, cart, orders, translations, admin, eshop
+  src/<feature>/                auth, products, cart, orders, translations, admin, eshop, ai (product drafts, docs/ai.md)
     <feature>.controller.ts / .service.ts / .module.ts
     models/                     API document types (aliases of the mappers in src/db/mappers.ts)
     dto/                        class-validator DTOs (validation only where a pipe is applied)
-  src/shared/                   constans.ts (languages, shipping defaults), utils (cart pricing, paginate, email)
+  src/shared/                   constans.ts (languages, shipping defaults), utils (cart pricing, email)
 shared/types/index.d.ts         API/data types shared by client and server (`import type ... from '@eshop/shared'`)
-docs/                           architecture.md, audit.md, testing.md
-e2e/                            Playwright specs + seeded test server (support/start-server.mjs)
+docs/                           architecture.md, audit.md, testing.md, ai.md, postgres-migration.md, adr/ (decision records)
+e2e/                            Playwright specs + seeded test server (support/start-server.mjs) + AI/Cloudinary stub (support/ai-stub.mjs)
 server/test/                    API specs, DB specs, Jest setup, mocks (unit specs live next to code: src/**/*.spec.ts)
 server/src/db/                  PostgreSQL: Drizzle schema (source of truth for data), DatabaseModule, mappers
                                 (row ↔ API document shape), catalog queries, migrate, seed
@@ -108,12 +110,12 @@ Verified on Node 24.15 / npm 11.12 (2026-10-14). Angular 22 requires Node `^24.1
 | Run production build                          | `npm start` (= `node dist/eshop/server/server.mjs`)                                                                                | OK. Needs `PORT` and the env vars.                                                                                                                                                                |
 | Server-only compile check                     | `npx nest build -c server/nest-cli.json`                                                                                           | OK (output in `server/dist`, not used in prod)                                                                                                                                                    |
 | Type-check                                    | `npm run typecheck` (client, server, server tests, e2e)                                                                            | OK, `strict: true` everywhere, 0 errors                                                                                                                                                           |
-| Lint                                          | `npm run lint` (whole repo; `lint:fix` to autofix; `lint:client` = `ng lint`, same config)                                         | 0 errors; 184 warnings = Angular migration suggestions (`prefer-inject`, `prefer-standalone`, OnPush), see audit TD-03                                                                            |
-| Lint SCSS                                     | `npm run lint:scss`                                                                                                                | Runs (stylelint 17, SCSS syntax); 313 errors. The unquoted glob is shell-expanded.                                                                                                                |
+| Lint                                          | `npm run lint` (whole repo; `lint:fix` to autofix; `lint:client` = `ng lint`, same config)                                         | 0 errors; 23 warnings = components still on `Eager` change detection (OnPush suggestion), see audit TD-03                                                                                         |
+| Lint SCSS                                     | `npm run lint:scss`                                                                                                                | Runs (stylelint 17, SCSS syntax); 306 errors in older files (new files are clean). The unquoted glob is shell-expanded.                                                                           |
 | Format                                        | `npm run format` / `npm run format:check` (Prettier, whole repo)                                                                   | Existing code is not yet reformatted (~140 files); new commits are formatted by the hook                                                                                                          |
 | Pre-commit hook                               | husky → `lint-staged` (`.husky/pre-commit`)                                                                                        | Runs `eslint --fix` + `prettier --write` on staged files; lint errors block the commit ; with nvm + a GUI git client (GitHub Desktop), add `~/.config/husky/init.sh` that sources `~/.nvm/nvm.sh` |
-| Server tests (unit + API, DB)                 | `npm test` / `npm run test:server` (`:watch`, `:cov`)                                                                              | 121 passing; **needs Docker** (disposable `postgres:18` via Testcontainers, one database per test file), ~6 s                                                                                     |
-| E2E tests                                     | `npm run test:e2e` (builds first; `npx playwright install chromium` once)                                                          | 18 passing against the production build                                                                                                                                                           |
+| Server tests (unit + API, DB)                 | `npm test` / `npm run test:server` (`:watch`, `:cov`)                                                                              | 207 passing; **needs Docker** (disposable `postgres:18` via Testcontainers, one database per test file), ~10 s                                                                                    |
+| E2E tests                                     | `npm run test:e2e` (builds first; `npx playwright install chromium` once)                                                          | 21 passing against the production build (AI provider and Cloudinary stubbed)                                                                                                                      |
 | PostgreSQL (dev)                              | `npm run db:up` (docker-compose `postgres:18` on `localhost:15432`), `db:migrate`, `db:seed`, `db:generate` (after schema changes) | Scripts read `DATABASE_URL` from the environment only, never from `.env`                                                                                                                          |
 | Release                                       | `npm run release`                                                                                                                  | standard-version (deprecated)                                                                                                                                                                     |
 
@@ -131,24 +133,25 @@ Copy `.env.example` → `.env` (gitignored, never commit it). It is read with
 `ConfigModule.forRoot()` / dotenv, from the working directory. All server code reads raw
 `process.env`; there is no validation.
 
-| Variable                                                                                           | Used for                                                                                               | Read in                                                               |
-| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
-| `PORT`                                                                                             | HTTP port (`.env.example`: 4000)                                                                       | `server/src/main.ts`, `main-ssr.ts`                                   |
-| `DATABASE_URL`                                                                                     | PostgreSQL connection: app data and the session store (one pool)                                       | `server/src/db/database.module.ts`, `setAppDB.ts`, `server/scripts/*` |
-| `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD`                                                          | Admin created by `npm run db:seed` if missing                                                          | `server/scripts/db-seed.ts`                                           |
-| `ORIGIN`                                                                                           | CORS origin; OAuth redirect target; SSR allowed host                                                   | `setAppDB.ts`, `auth/auth.controller.ts`, `app-universal.module.ts`   |
-| `SERVER_URL`                                                                                       | Google OAuth callback base; SSR allowed host                                                           | `auth/strategy/google.strategy.ts`, `app-universal.module.ts`         |
-| `NG_ALLOWED_HOSTS`                                                                                 | Optional comma-separated SSR host allow-list; overrides the derived list                               | Angular `CommonEngine`                                                |
-| `COOKIE_KEY`                                                                                       | express-session secret                                                                                 | `setAppDB.ts`                                                         |
-| `JWT_SECRET`, `JWT_EXPIRATION`                                                                     | JWT signing / expiry (e.g. `7d`)                                                                       | `auth/auth.module.ts`, `auth/strategy/jwt.strategy.ts`                |
-| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`                                                         | Google login                                                                                           | `auth/strategy/google.strategy.ts`                                    |
-| `STRIPE_SECRETKEY`                                                                                 | Stripe charges (read at import time)                                                                   | `orders/orders.service.ts`                                            |
-| `CLOUDINARY_NAME`, `CLOUDINARY_KEY`, `CLOUDINARY_SECRET`                                           | Image upload (import time)                                                                             | `admin/admin.service.ts`                                              |
-| `SENDGRID_KEY`, `EMAIL_FROM`                                                                       | Transactional email (import time)                                                                      | `shared/utils/email/mailer.ts`                                        |
-| `ADMIN_EMAILS`                                                                                     | Comma-separated list notified on orders/contact                                                        | `orders.service.ts`, `eshop.service.ts`, email templates              |
-| `RECAPTCHA_SERVER_KEY`                                                                             | Contact-form captcha verification                                                                      | `eshop/eshop.service.ts`                                              |
-| `GEO_LOCATION_API_KEY`                                                                             | geolocation-db lookup for the default language                                                         | `translations/translations.controller.ts`                             |
-| `FE_STRIPE_PUBLISHABLE_KEY`, `FE_TINYMCE_API_KEY`, `FE_RECAPTCHA_CLIENT_KEY`, `FE_ANALYTICS_TOKEN` | **Public.** Every env var whose name contains `FE_` is sent to the browser by `GET /api/eshop/config`. | `eshop/eshop.service.ts`                                              |
+| Variable                                                                                           | Used for                                                                                                                                                   | Read in                                                               |
+| -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `PORT`                                                                                             | HTTP port (`.env.example`: 4000)                                                                                                                           | `server/src/main.ts`, `main-ssr.ts`                                   |
+| `DATABASE_URL`                                                                                     | PostgreSQL connection: app data and the session store (one pool)                                                                                           | `server/src/db/database.module.ts`, `setAppDB.ts`, `server/scripts/*` |
+| `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD`                                                          | Admin created by `npm run db:seed` if missing                                                                                                              | `server/scripts/db-seed.ts`                                           |
+| `ORIGIN`                                                                                           | CORS origin; OAuth redirect target; SSR allowed host                                                                                                       | `setAppDB.ts`, `auth/auth.controller.ts`, `app-universal.module.ts`   |
+| `SERVER_URL`                                                                                       | Google OAuth callback base; SSR allowed host                                                                                                               | `auth/strategy/google.strategy.ts`, `app-universal.module.ts`         |
+| `NG_ALLOWED_HOSTS`                                                                                 | Optional comma-separated SSR host allow-list; overrides the derived list                                                                                   | Angular `CommonEngine`                                                |
+| `COOKIE_KEY`                                                                                       | express-session secret                                                                                                                                     | `setAppDB.ts`                                                         |
+| `JWT_SECRET`, `JWT_EXPIRATION`                                                                     | JWT signing / expiry (e.g. `7d`)                                                                                                                           | `auth/auth.module.ts`, `auth/strategy/jwt.strategy.ts`                |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`                                                         | Google login                                                                                                                                               | `auth/strategy/google.strategy.ts`                                    |
+| `STRIPE_SECRETKEY`                                                                                 | Stripe charges (read at import time)                                                                                                                       | `orders/orders.service.ts`                                            |
+| `CLOUDINARY_NAME`, `CLOUDINARY_KEY`, `CLOUDINARY_SECRET`                                           | Image upload (import time)                                                                                                                                 | `admin/admin.service.ts`                                              |
+| `SENDGRID_KEY`, `EMAIL_FROM`                                                                       | Transactional email (import time)                                                                                                                          | `shared/utils/email/mailer.ts`                                        |
+| `ADMIN_EMAILS`                                                                                     | Comma-separated list notified on orders/contact                                                                                                            | `orders.service.ts`, `eshop.service.ts`, email templates              |
+| `RECAPTCHA_SERVER_KEY`                                                                             | Contact-form captcha verification                                                                                                                          | `eshop/eshop.service.ts`                                              |
+| `GEO_LOCATION_API_KEY`                                                                             | geolocation-db lookup for the default language                                                                                                             | `translations/translations.controller.ts`                             |
+| `AI_PROVIDER`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`                                               | AI product drafts; **off without the key**. Server-side only (never `FE_`). Limits, model and prices: `AI_*`, see [docs/ai.md](docs/ai.md) § Configuration | `ai/ai.config.ts`                                                     |
+| `FE_STRIPE_PUBLISHABLE_KEY`, `FE_TINYMCE_API_KEY`, `FE_RECAPTCHA_CLIENT_KEY`, `FE_ANALYTICS_TOKEN` | **Public.** Every env var whose name contains `FE_` is sent to the browser by `GET /api/eshop/config`.                                                     | `eshop/eshop.service.ts`                                              |
 
 ## Database
 
@@ -183,7 +186,9 @@ Copy `.env.example` → `.env` (gitignored, never commit it). It is read with
   - the language comes from the `lang` **request header**;
   - DTOs use class-validator, but validation runs **only** where `ValidationPipe` is passed
     explicitly (there is no global pipe);
-  - admin routes use `@UseGuards(AuthGuard('jwt'), RolesGuard)`.
+  - admin routes use `@UseGuards(AuthGuard('jwt'), RolesGuard)`;
+  - AI output is untrusted: validate it with DTOs, sanitize HTML, never persist it without the admin
+    and never let it set prices or stock (see `server/src/ai/draft-mapper.ts`).
 - Data:
   - translatable content is stored as per-language sub-documents keyed `en` / `sk` / `cs`
     (generated from `languages` in `server/src/shared/constans.ts`, a misspelled filename
@@ -196,7 +201,8 @@ Copy `.env.example` → `.env` (gitignored, never commit it). It is read with
   - state lives in the signal store (`store/`);
   - everything is standalone (no NgModules); lazy areas export `Routes` from `routes.ts`;
   - DI uses `inject()`; components use signal `input()` / `output()` / `viewChild()`. Change
-    detection is still explicitly `Eager` in 26 components (OnPush needs a per-component review);
+    detection is still explicitly `Eager` in 23 components (OnPush needs a per-component review);
+    new components use OnPush + signals (see `modules/dashboard/product-editor/`);
   - templates use the new control flow (`@if` / `@for`);
   - the language comes from the URL prefix (`/en|/sk|/cs`, see `languageGuard` and
     `utils/language-url.ts`); only `/` falls back to the `eshop_lang` cookie. Link with the prefix;

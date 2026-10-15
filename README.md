@@ -16,8 +16,21 @@
 - Eshop with products and administration
 - Typescript stack with decorators, PostgreSQL with Drizzle ORM and SQL migrations, JWT Passport
 - Theming with css variables
+- **AI product entry**: drop a photo, write a few words, and Gemini or Claude fills the product in every
+  shop language (title, descriptions, attributes, SEO texts). The admin reviews the marked fields,
+  sets price and stock, and saves. Optional, off without an API key. See [docs/ai.md](docs/ai.md).
 
 ![eshop-mean](https://res.cloudinary.com/dnpgh1vhi/image/upload/v1629725636/eshop-mean.png)
+
+### Admin: AI product drafts
+
+![Fill with AI: photo, a few words, texts in every language](docs/images/ai-demo.gif)
+
+| Product table                                    | AI-filled fields, marked until reviewed              |
+| ------------------------------------------------ | ---------------------------------------------------- |
+| ![Product table](docs/images/admin-products.png) | ![AI-filled product form](docs/images/ai-filled.png) |
+
+<sub>Recorded with a stubbed AI provider (`npm run docs:media`).</sub>
 
 ## Blog
 
@@ -96,6 +109,12 @@ RECAPTCHA_SERVER_KEY="RECAPTCHA_SERVER_KEY"
 
 # Get location from IP - https://geolocation-db.com
 GEO_LOCATION_API_KEY="GEO_LOCATION_API_KEY"
+
+# AI product drafts (optional, off without a key; docs/ai.md). Server-side only, never FE_*
+# AI_PROVIDER: "gemini" (key from https://aistudio.google.com, free tier works) or "anthropic"
+AI_PROVIDER="gemini"
+GEMINI_API_KEY=""
+ANTHROPIC_API_KEY=""
 
 # FE ENV SEND FROM BE
 FE_STRIPE_PUBLISHABLE_KEY="FE_STRIPE_PUBLISHABLE_KEY"

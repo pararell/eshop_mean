@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## Unreleased
+
+<!-- Hand-written; when running `npm run release`, merge it into the generated section and remove it. -->
+
+### Features
+
+- **AI product drafts:** "Fill with AI" in the admin product editor turns photos and a few words into a
+  product draft in every shop language (title, short and full description, attributes, SEO title,
+  meta description) and suggests categories. Gemini Flash (default) or Claude Haiku behind one
+  provider interface with structured output; the draft is validated and sanitized, never saved
+  automatically, and never sets price or stock. Per-admin, daily and monthly limits; token usage and
+  estimated cost per request in the new `ai_usage` table. Off without an API key.
+  See [docs/ai.md](docs/ai.md) and [ADR 0001](docs/adr/0001-ai-provider-abstraction.md).
+- **Admin product editor:** a dedicated page (`/:lang/dashboard/products/new`, `…/:titleUrl`)
+  with drag-and-drop photo upload, previews, reordering and a main photo, category chips,
+  per-language tabs with status, validation messages, a sticky Save bar and an unsaved-changes
+  guard. AI-filled fields stay marked until edited or accepted.
+- **Admin product table:** search, category and status filters, sorting and paging; replaces the
+  old "All products", "Add product" and "Edit product" tabs.
+- **SEO fields:** `seo_title` and `meta_description` per product language (migration
+  `0001_ai_product_draft`); the product page uses them for `<title>` and the meta description,
+  falling back to the title and short description.
+
+### Changed
+
+- Images of an existing product are saved with the product (on Save) instead of immediately on
+  upload or removal.
+
+### Tests
+
+- Unit, API and e2e tests for AI drafts with mocked or stubbed providers and Cloudinary; no real
+  AI calls in tests. The e2e server-error check also catches Angular SSR exceptions.
+
 ### [0.9.2](https://github.com/pararell/eshop_mean/compare/v0.9.0...v0.9.2) (2025-08-10)
 
 

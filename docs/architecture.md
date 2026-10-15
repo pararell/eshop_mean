@@ -60,17 +60,18 @@ on it.
 
 ### Modules
 
-| Module                                    | Responsibility                                                                                | Tables used                              | Notes                                                 |
-| ----------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------- | ----------------------------------------------------- |
-| `AppModule`                               | Root. `ConfigModule.forRoot({isGlobal})`, global `DatabaseModule` (Drizzle on `DATABASE_URL`) | –                                        | `ServeStaticModule` is commented out                  |
-| `AuthModule`                              | Signup/signin, JWT, Google OAuth, `RolesGuard`                                                | `User`                                   | Exports `JwtStrategy` and `PassportModule`            |
-| `ProductsModule`                          | Products and categories (public + admin CRUD)                                                 | `Product`, `Category`                    |                                                       |
-| `CartModule`                              | Session cart add/remove/get                                                                   | (Product via `ProductsModule`)           |                                                       |
-| `OrdersModule`                            | Cash-on-delivery and Stripe orders, admin order management, order emails                      | `Order`, `Translation`                   |                                                       |
-| `TranslationsModule`                      | UI translation dictionaries                                                                   | `Translation`                            | Controller queries the database directly (no service) |
-| `AdminModule`                             | Image library and Cloudinary upload                                                           | (Product via `ProductsModule`)           | Class-level JWT + admin guards                        |
-| `EshopModule`                             | Shop config, themes, CMS pages, contact form                                                  | `Page`, `Theme`, `Config`, `Translation` |                                                       |
-| `AppSSRModule` / `AngularUniversalModule` | SSR rendering + static files                                                                  | –                                        | Production only                                       |
+| Module                                    | Responsibility                                                                                | Tables used                                 | Notes                                                 |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------- | ----------------------------------------------------- |
+| `AppModule`                               | Root. `ConfigModule.forRoot({isGlobal})`, global `DatabaseModule` (Drizzle on `DATABASE_URL`) | –                                           | `ServeStaticModule` is commented out                  |
+| `AuthModule`                              | Signup/signin, JWT, Google OAuth, `RolesGuard`                                                | `User`                                      | Exports `JwtStrategy` and `PassportModule`            |
+| `ProductsModule`                          | Products and categories (public + admin CRUD)                                                 | `Product`, `Category`                       |                                                       |
+| `CartModule`                              | Session cart add/remove/get                                                                   | (Product via `ProductsModule`)              |                                                       |
+| `OrdersModule`                            | Cash-on-delivery and Stripe orders, admin order management, order emails                      | `Order`, `Translation`                      |                                                       |
+| `TranslationsModule`                      | UI translation dictionaries                                                                   | `Translation`                               | Controller queries the database directly (no service) |
+| `AdminModule`                             | Image library and Cloudinary upload                                                           | (Product via `ProductsModule`)              | Class-level JWT + admin guards                        |
+| `EshopModule`                             | Shop config, themes, CMS pages, contact form                                                  | `Page`, `Theme`, `Config`, `Translation`    |                                                       |
+| `AiModule`                                | AI product drafts (Gemini / Claude behind `LlmProvider`), see [ai.md](ai.md)                  | `ai_usage`, `categories`, `products` (read) | Off without an API key (endpoint 404)                 |
+| `AppSSRModule` / `AngularUniversalModule` | SSR rendering + static files                                                                  | –                                           | Production only                                       |
 
 ### Request pipeline
 
@@ -104,53 +105,55 @@ Guard legend:
 
 "Pipe" means a `ValidationPipe` actually runs on that endpoint.
 
-| Method | Path                             | Guard  | Pipe               | Purpose                                                                                   |
-| ------ | -------------------------------- | ------ | ------------------ | ----------------------------------------------------------------------------------------- |
-| GET    | `/api/auth`                      | JWT    | –                  | Current user `{id, email, roles}`                                                         |
-| POST   | `/api/auth/signup`               | –      | yes (no whitelist) | Create user (email, password)                                                             |
-| POST   | `/api/auth/signin`               | –      | yes                | Returns `{accessToken, id, roles, email}`                                                 |
-| GET    | `/api/auth/google`               | google | –                  | Start OAuth                                                                               |
-| GET    | `/api/auth/google/callback`      | google | –                  | Redirect to `${ORIGIN}/jwtToken/<jwt>`                                                    |
-| GET    | `/api/products`                  | –      | yes                | Paginated list. Query `page, sort, category?, search?, maxPrice?`; header `lang`          |
-| GET    | `/api/products/categories`       | –      | –                  | Visible categories for `lang`                                                             |
-| GET    | `/api/products/search?query=`    | –      | –                  | Title search (regex)                                                                      |
-| GET    | `/api/products/all`              | ADMIN  | –                  | All products                                                                              |
-| GET    | `/api/products/:name`            | –      | –                  | Product by `titleUrl` (`?lang=` → localized shape)                                        |
-| DELETE | `/api/products/:name`            | ADMIN  | –                  | Delete product                                                                            |
-| POST   | `/api/products/add`              | ADMIN  | –                  | Create product (creates categories from tags)                                             |
-| PATCH  | `/api/products/edit`             | ADMIN  | –                  | Upsert product by `titleUrl`                                                              |
-| GET    | `/api/products/categories/all`   | ADMIN  | –                  | All categories                                                                            |
-| PATCH  | `/api/products/categories/edit`  | ADMIN  | –                  | Upsert category                                                                           |
-| DELETE | `/api/products/categories/:name` | ADMIN  | –                  | Delete category and pull it from product tags                                             |
-| GET    | `/api/cart`                      | –      | –                  | Localized cart with totals                                                                |
-| GET    | `/api/cart/add?id=`              | –      | yes                | Add product to session cart                                                               |
-| GET    | `/api/cart/remove?id=`           | –      | yes                | Remove one unit                                                                           |
-| GET    | `/api/orders`                    | JWT    | –                  | Current user's orders                                                                     |
-| POST   | `/api/orders/add`                | –      | –                  | Cash-on-delivery order from session cart + emails                                         |
-| POST   | `/api/orders/stripe`             | –      | –                  | Stripe charge (token) + capture + order + emails                                          |
-| GET    | `/api/orders/all`                | ADMIN  | –                  | All orders                                                                                |
-| GET    | `/api/orders/:id`                | ADMIN  | –                  | Order by `orderId`                                                                        |
-| PATCH  | `/api/orders`                    | ADMIN  | –                  | Update order (e.g. status)                                                                |
-| GET    | `/api/translations?lang=`        | –      | –                  | Translation dictionary. Without `lang`, guessed by geolocation.                           |
-| GET    | `/api/translations/all`          | ADMIN  | –                  | All dictionaries                                                                          |
-| PATCH  | `/api/translations/all`          | ADMIN  | –                  | Bulk upsert dictionaries                                                                  |
-| PATCH  | `/api/translations?lang=`        | ADMIN  | –                  | Update one dictionary                                                                     |
-| GET    | `/api/admin/images`              | ADMIN  | –                  | Session image library                                                                     |
-| POST   | `/api/admin/images/add`          | ADMIN  | –                  | Add image URL to product or library                                                       |
-| POST   | `/api/admin/images/upload`       | ADMIN  | –                  | Multipart upload → Cloudinary                                                             |
-| POST   | `/api/admin/images/remove`       | ADMIN  | –                  | Remove image from product or library                                                      |
-| GET    | `/api/eshop/config`              | –      | –                  | Base64 JSON of `FE_*` env + active theme styles. Stores the active config in the session. |
-| POST   | `/api/eshop/contact`             | –      | –                  | Contact form (reCAPTCHA) → emails                                                         |
-| GET    | `/api/eshop/page/all?titles=`    | –      | –                  | CMS pages                                                                                 |
-| POST   | `/api/eshop/page`                | ADMIN  | –                  | Upsert page                                                                               |
-| GET    | `/api/eshop/page/:titleUrl`      | –      | –                  | Page by slug (header `lang`)                                                              |
-| DELETE | `/api/eshop/page/:titleUrl`      | ADMIN  | –                  | Delete page                                                                               |
-| GET    | `/api/eshop/theme/all`           | –      | –                  | All themes                                                                                |
-| POST   | `/api/eshop/theme`               | ADMIN  | –                  | Upsert theme                                                                              |
-| DELETE | `/api/eshop/theme/:titleUrl`     | ADMIN  | –                  | Delete theme                                                                              |
-| GET    | `/api/eshop/config/all`          | –      | –                  | All shop configs                                                                          |
-| POST   | `/api/eshop/config`              | ADMIN  | –                  | Upsert config                                                                             |
-| DELETE | `/api/eshop/config/:titleUrl`    | ADMIN  | –                  | Delete config                                                                             |
+| Method | Path                             | Guard  | Pipe                 | Purpose                                                                                   |
+| ------ | -------------------------------- | ------ | -------------------- | ----------------------------------------------------------------------------------------- |
+| GET    | `/api/auth`                      | JWT    | –                    | Current user `{id, email, roles}`                                                         |
+| POST   | `/api/auth/signup`               | –      | yes (no whitelist)   | Create user (email, password)                                                             |
+| POST   | `/api/auth/signin`               | –      | yes                  | Returns `{accessToken, id, roles, email}`                                                 |
+| GET    | `/api/auth/google`               | google | –                    | Start OAuth                                                                               |
+| GET    | `/api/auth/google/callback`      | google | –                    | Redirect to `${ORIGIN}/jwtToken/<jwt>`                                                    |
+| GET    | `/api/products`                  | –      | yes                  | Paginated list. Query `page, sort, category?, search?, maxPrice?`; header `lang`          |
+| GET    | `/api/products/categories`       | –      | –                    | Visible categories for `lang`                                                             |
+| GET    | `/api/products/search?query=`    | –      | –                    | Title search (regex)                                                                      |
+| GET    | `/api/products/all`              | ADMIN  | –                    | All products                                                                              |
+| GET    | `/api/products/:name`            | –      | –                    | Product by `titleUrl` (`?lang=` → localized shape)                                        |
+| DELETE | `/api/products/:name`            | ADMIN  | –                    | Delete product                                                                            |
+| POST   | `/api/products/add`              | ADMIN  | –                    | Create product (creates categories from tags)                                             |
+| PATCH  | `/api/products/edit`             | ADMIN  | –                    | Upsert product by `titleUrl`                                                              |
+| GET    | `/api/products/categories/all`   | ADMIN  | –                    | All categories                                                                            |
+| PATCH  | `/api/products/categories/edit`  | ADMIN  | –                    | Upsert category                                                                           |
+| DELETE | `/api/products/categories/:name` | ADMIN  | –                    | Delete category and pull it from product tags                                             |
+| GET    | `/api/cart`                      | –      | –                    | Localized cart with totals                                                                |
+| GET    | `/api/cart/add?id=`              | –      | yes                  | Add product to session cart                                                               |
+| GET    | `/api/cart/remove?id=`           | –      | yes                  | Remove one unit                                                                           |
+| GET    | `/api/orders`                    | JWT    | –                    | Current user's orders                                                                     |
+| POST   | `/api/orders/add`                | –      | –                    | Cash-on-delivery order from session cart + emails                                         |
+| POST   | `/api/orders/stripe`             | –      | –                    | Stripe charge (token) + capture + order + emails                                          |
+| GET    | `/api/orders/all`                | ADMIN  | –                    | All orders                                                                                |
+| GET    | `/api/orders/:id`                | ADMIN  | –                    | Order by `orderId`                                                                        |
+| PATCH  | `/api/orders`                    | ADMIN  | –                    | Update order (e.g. status)                                                                |
+| GET    | `/api/translations?lang=`        | –      | –                    | Translation dictionary. Without `lang`, guessed by geolocation.                           |
+| GET    | `/api/translations/all`          | ADMIN  | –                    | All dictionaries                                                                          |
+| PATCH  | `/api/translations/all`          | ADMIN  | –                    | Bulk upsert dictionaries                                                                  |
+| PATCH  | `/api/translations?lang=`        | ADMIN  | –                    | Update one dictionary                                                                     |
+| GET    | `/api/admin/images`              | ADMIN  | –                    | Session image library                                                                     |
+| POST   | `/api/admin/images/add`          | ADMIN  | –                    | Add image URL to product or library                                                       |
+| POST   | `/api/admin/images/upload`       | ADMIN  | –                    | Multipart upload → Cloudinary                                                             |
+| POST   | `/api/admin/images/remove`       | ADMIN  | –                    | Remove image from product or library                                                      |
+| GET    | `/api/admin/ai/status`           | ADMIN  | –                    | `{ enabled, provider?, model? }`                                                          |
+| POST   | `/api/admin/products/ai-draft`   | ADMIN  | yes (whitelist, 422) | AI product draft from Cloudinary image URLs and text; never saved ([ai.md](ai.md))        |
+| GET    | `/api/eshop/config`              | –      | –                    | Base64 JSON of `FE_*` env + active theme styles. Stores the active config in the session. |
+| POST   | `/api/eshop/contact`             | –      | –                    | Contact form (reCAPTCHA) → emails                                                         |
+| GET    | `/api/eshop/page/all?titles=`    | –      | –                    | CMS pages                                                                                 |
+| POST   | `/api/eshop/page`                | ADMIN  | –                    | Upsert page                                                                               |
+| GET    | `/api/eshop/page/:titleUrl`      | –      | –                    | Page by slug (header `lang`)                                                              |
+| DELETE | `/api/eshop/page/:titleUrl`      | ADMIN  | –                    | Delete page                                                                               |
+| GET    | `/api/eshop/theme/all`           | –      | –                    | All themes                                                                                |
+| POST   | `/api/eshop/theme`               | ADMIN  | –                    | Upsert theme                                                                              |
+| DELETE | `/api/eshop/theme/:titleUrl`     | ADMIN  | –                    | Delete theme                                                                              |
+| GET    | `/api/eshop/config/all`          | –      | –                    | All shop configs                                                                          |
+| POST   | `/api/eshop/config`              | ADMIN  | –                    | Upsert config                                                                             |
+| DELETE | `/api/eshop/config/:titleUrl`    | ADMIN  | –                    | Delete config                                                                             |
 
 ## 3. Frontend (Angular)
 
@@ -165,21 +168,23 @@ Guard legend:
 
 **Routing** (`app.routes.ts`): routes are generated for each language prefix.
 
-| Path                                                             | Loads                                     | Guard        |
-| ---------------------------------------------------------------- | ----------------------------------------- | ------------ |
-| `/`                                                              | `HomeComponent`                           | –            |
-| `/404`                                                           | `NotFoundComponent`                       | –            |
-| `/:lang/product/{all, category/:category, :id}`                  | `modules/product/routes.ts` (lazy)        | –            |
-| `/:lang/cart` and `/:lang/cart/summary`                          | `modules/cart/routes.ts` (lazy, checkout) | –            |
-| `/:lang/orders` and `/:lang/orders/:id`                          | `modules/order/routes.ts` (lazy)          | `AuthGuard`  |
-| `/:lang/dashboard`, `…/orders`, `…/orders/:id`, `…/translations` | `modules/dashboard/routes.ts` (lazy)      | `AdminGuard` |
-| `/:lang/eshop/{contact, :titleUrl}`                              | standalone eshop components               | –            |
-| `/:lang/authorize/{signin, signup}`                              | standalone auth components                | –            |
-| `/jwtToken/:accessToken`                                         | Google OAuth landing                      | –            |
-| `**`                                                             | redirects to `/404`                       | –            |
+| Path                                                                                                       | Loads                                     | Guard                                                        |
+| ---------------------------------------------------------------------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------ |
+| `/`                                                                                                        | `HomeComponent`                           | –                                                            |
+| `/404`                                                                                                     | `NotFoundComponent`                       | –                                                            |
+| `/:lang/product/{all, category/:category, :id}`                                                            | `modules/product/routes.ts` (lazy)        | –                                                            |
+| `/:lang/cart` and `/:lang/cart/summary`                                                                    | `modules/cart/routes.ts` (lazy, checkout) | –                                                            |
+| `/:lang/orders` and `/:lang/orders/:id`                                                                    | `modules/order/routes.ts` (lazy)          | `AuthGuard`                                                  |
+| `/:lang/dashboard`, `…/products/new`, `…/products/:titleUrl`, `…/orders`, `…/orders/:id`, `…/translations` | `modules/dashboard/routes.ts` (lazy)      | `AdminGuard` (+ unsaved-changes guard on the product editor) |
+| `/:lang/eshop/{contact, :titleUrl}`                                                                        | standalone eshop components               | –                                                            |
+| `/:lang/authorize/{signin, signup}`                                                                        | standalone auth components                | –                                                            |
+| `/jwtToken/:accessToken`                                                                                   | Google OAuth landing                      | –                                                            |
+| `**`                                                                                                       | redirects to `/404`                       | –                                                            |
 
-The admin sections (products, categories, pages, theme, config) are tabs inside the
-dashboard component, not routes.
+The admin sections (products, categories, pages, theme, config, translations) are tabs inside the
+dashboard component. The Products tab is a searchable table (`admin-products/`); creating or editing a
+product opens the product editor route (`product-editor/`: photos, basics, per-language tabs, AI
+assistant), which saves nothing until the admin presses Save.
 
 **State**
 
@@ -327,6 +332,8 @@ Common traits:
 | `stock`                         | **text**, null      | Display only; never checked or decremented (D7)      |
 | `visibility`                    | boolean             | Hidden products are excluded from lists and the cart |
 | `shipping`                      | text                | `'basic'` / `'extended'`                             |
+| `seo_title`                     | text                | Product page `<title>`; empty → `title`              |
+| `meta_description`              | text                | Product page meta description; empty → `description` |
 
 Index `product_translations_listing (lang, visibility, sale_price)` serves the shop listing.
 
@@ -377,6 +384,13 @@ removed from products' `tags` (one `array_remove` update) when a category is del
 basic_limit, extended_cost, extended_limit)`; API `en/sk/cs: { shippingCost: { basic: {cost, limit},
 extended: {cost, limit} } }`. At most one is active (D8); it is copied into `session.config`.
 
+### ai_usage
+
+One row per AI provider call (successful or not): `user_id` → users (set null), `provider`,
+`model`, `image_count`, `input_tokens`, `output_tokens`, `cost_usd numeric(12,6)` (estimate),
+`duration_ms`, `status` (`ai_usage_status`: `ok`, `invalid_output`, `error`, `timeout`),
+`error_code`, `created_at`. The AI limits are counted from it; queries in [ai.md](ai.md).
+
 ### session
 
 connect-pg-simple's table: `sid` (PK), `sess` (json: `cookie`, `cart?`, `config?`, `images?`,
@@ -399,14 +413,15 @@ erDiagram
 
 ## 6. External services
 
-| Service             | Used for                                                    | Integration                                                                                                                               | Config                                            |
-| ------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| Stripe              | Card payments                                               | `stripe` SDK v9, `apiVersion: '2020-08-27'`, Charges API with a Stripe.js v3 token; manual capture right after authorization; no webhooks | `STRIPE_SECRETKEY`, `FE_STRIPE_PUBLISHABLE_KEY`   |
-| SendGrid            | Order and contact emails to the customer and `ADMIN_EMAILS` | `@sendgrid/mail`, HTML templates in `server/src/shared/utils/email/`                                                                      | `SENDGRID_KEY`, `EMAIL_FROM`                      |
-| Cloudinary          | Product and site images                                     | `cloudinary` v2 `upload_stream` from a multer memory buffer                                                                               | `CLOUDINARY_*`                                    |
-| Google OAuth 2.0    | Social login                                                | `passport-google-oauth20`, scopes `profile` and `email`                                                                                   | `GOOGLE_CLIENT_*`, `SERVER_URL`, `ORIGIN`         |
-| Google reCAPTCHA v3 | Contact-form spam protection                                | Client: vendored ng-recaptcha service. Server: `siteverify`.                                                                              | `FE_RECAPTCHA_CLIENT_KEY`, `RECAPTCHA_SERVER_KEY` |
-| geolocation-db.com  | Default language when none is chosen                        | Called from the server                                                                                                                    | `GEO_LOCATION_API_KEY`                            |
-| TinyMCE Cloud       | Rich-text editor in admin                                   | `@tinymce/tinymce-angular`                                                                                                                | `FE_TINYMCE_API_KEY`                              |
-| Google Analytics    | Analytics                                                   | `services/analytics.service.ts` (gtag)                                                                                                    | `FE_ANALYTICS_TOKEN`                              |
-| PostgreSQL 18       | Data and sessions                                           | Drizzle ORM + `pg` + connect-pg-simple                                                                                                    | `DATABASE_URL`                                    |
+| Service                          | Used for                                                    | Integration                                                                                                                               | Config                                               |
+| -------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| Stripe                           | Card payments                                               | `stripe` SDK v9, `apiVersion: '2020-08-27'`, Charges API with a Stripe.js v3 token; manual capture right after authorization; no webhooks | `STRIPE_SECRETKEY`, `FE_STRIPE_PUBLISHABLE_KEY`      |
+| SendGrid                         | Order and contact emails to the customer and `ADMIN_EMAILS` | `@sendgrid/mail`, HTML templates in `server/src/shared/utils/email/`                                                                      | `SENDGRID_KEY`, `EMAIL_FROM`                         |
+| Cloudinary                       | Product and site images                                     | `cloudinary` v2 `upload_stream` from a multer memory buffer                                                                               | `CLOUDINARY_*`                                       |
+| Google OAuth 2.0                 | Social login                                                | `passport-google-oauth20`, scopes `profile` and `email`                                                                                   | `GOOGLE_CLIENT_*`, `SERVER_URL`, `ORIGIN`            |
+| Google reCAPTCHA v3              | Contact-form spam protection                                | Client: vendored ng-recaptcha service. Server: `siteverify`.                                                                              | `FE_RECAPTCHA_CLIENT_KEY`, `RECAPTCHA_SERVER_KEY`    |
+| geolocation-db.com               | Default language when none is chosen                        | Called from the server                                                                                                                    | `GEO_LOCATION_API_KEY`                               |
+| TinyMCE Cloud                    | Rich-text editor in admin                                   | `@tinymce/tinymce-angular`                                                                                                                | `FE_TINYMCE_API_KEY`                                 |
+| Google Analytics                 | Analytics                                                   | `services/analytics.service.ts` (gtag)                                                                                                    | `FE_ANALYTICS_TOKEN`                                 |
+| PostgreSQL 18                    | Data and sessions                                           | Drizzle ORM + `pg` + connect-pg-simple                                                                                                    | `DATABASE_URL`                                       |
+| Google Gemini / Anthropic Claude | AI product drafts (optional)                                | `fetch` clients in `server/src/ai/providers/`, structured output ([ADR 0001](adr/0001-ai-provider-abstraction.md))                        | `AI_PROVIDER`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY` |
