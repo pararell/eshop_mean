@@ -14,7 +14,6 @@ const testEnv: Record<string, string> = {
   CLOUDINARY_NAME: 'test',
   CLOUDINARY_KEY: 'test',
   CLOUDINARY_SECRET: 'test',
-  STRIPE_PUBLISHABLE_KEY: 'pk_test_dummy',
   STRIPE_SECRETKEY: 'sk_test_dummy',
   GOOGLE_CLIENT_ID: 'test-google-client',
   GOOGLE_CLIENT_SECRET: 'test-google-secret',

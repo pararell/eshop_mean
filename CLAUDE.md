@@ -2,7 +2,7 @@
 
 Guidance for AI agents and contributors working in this repository.
 Deeper references: [docs/architecture.md](docs/architecture.md) (modules, data flow, schemas),
-[docs/audit.md](docs/audit.md) (known issues, prioritized), [docs/testing.md](docs/testing.md) (how to run and write tests), [docs/postgres-migration.md](docs/postgres-migration.md) (planned DB migration).
+[docs/audit.md](docs/audit.md) (known issues, prioritized), [docs/testing.md](docs/testing.md) (how to run and write tests), [docs/postgres-migration.md](docs/postgres-migration.md) (how the database was migrated; runbook for schema changes and deploys).
 
 Before finishing any change: `npm run typecheck && npm run lint && npm test`, plus `npm run test:e2e` for anything
 touching the client, SSR or checkout. Tests never call real external services; keep it that way.
@@ -149,7 +149,22 @@ Copy `.env.example` → `.env` (gitignored, never commit it). It is read with
 | `RECAPTCHA_SERVER_KEY`                                                                             | Contact-form captcha verification                                                                      | `eshop/eshop.service.ts`                                              |
 | `GEO_LOCATION_API_KEY`                                                                             | geolocation-db lookup for the default language                                                         | `translations/translations.controller.ts`                             |
 | `FE_STRIPE_PUBLISHABLE_KEY`, `FE_TINYMCE_API_KEY`, `FE_RECAPTCHA_CLIENT_KEY`, `FE_ANALYTICS_TOKEN` | **Public.** Every env var whose name contains `FE_` is sent to the browser by `GET /api/eshop/config`. | `eshop/eshop.service.ts`                                              |
-| `STRIPE_PUBLISHABLE_KEY`                                                                           | Listed in `.env.example` but unused                                                                    | none                                                                  |
+
+## Database
+
+- PostgreSQL 18 through Drizzle ORM. `server/src/db/schema.ts` is the source of truth;
+  `DatabaseModule` provides `@Inject(DRIZZLE) db: Database` (global) and `PG_POOL` (shared with the
+  session store).
+- Services query with Drizzle directly (no repository layer). Rows become API documents through
+  `server/src/db/mappers.ts`; shared catalog queries are in `server/src/db/catalog.ts`.
+- **Schema change:** edit `schema.ts` → `npm run db:generate` → review the new SQL in
+  `server/db/migrations/` (never edit an applied migration) → update mappers and tests. On deploy,
+  `npm run db:migrate` runs against the server **before** the new image starts; nothing migrates on
+  app boot. Full runbook: [docs/postgres-migration.md § Runbook](docs/postgres-migration.md#8-runbook).
+- The production database listens on the server's loopback only; reach it through an SSH tunnel.
+  Its `DATABASE_URL` lives in a local, gitignored `.env.server`: load it with
+  `set -a; . ./.env.server; set +a`, never print it, never commit it. Tests and local development
+  never touch it.
 
 ## Code conventions
 
@@ -191,10 +206,11 @@ Copy `.env.example` → `.env` (gitignored, never commit it). It is read with
 ## Do not change without explicit approval
 
 - **The database schema and migrations** (`server/src/db/schema.ts`, `server/db/migrations/`),
-  the `DatabaseModule` wiring and the `connect-pg-simple` session store. The PostgreSQL migration
-  is in progress (see [docs/postgres-migration.md](docs/postgres-migration.md)); schema changes
-  go through `npm run db:generate` and need approval. The mappers in `server/src/db/mappers.ts`
-  keep the MongoDB-era API document shapes; keep them identical.
+  the `DatabaseModule` wiring and the `connect-pg-simple` session store. Schema changes go through
+  `npm run db:generate` and need approval. The mappers in `server/src/db/mappers.ts` define the API
+  document shapes; keep them identical.
+- **The production database:** read-only checks only; migrations, seeds and any writes need
+  explicit approval each time.
 - **The public API contract**: paths, methods, request/response shapes, the `lang` header,
   the session-based cart, and the `/jwtToken/:token` OAuth redirect. The client and
   existing deployments depend on them.

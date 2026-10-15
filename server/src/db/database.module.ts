@@ -19,7 +19,13 @@ export const PG_POOL = Symbol('PG_POOL');
   providers: [
     {
       provide: PG_POOL,
-      useFactory: () => new Pool({ connectionString: process.env.DATABASE_URL, max: 10 }),
+      useFactory: () => {
+        // Fail at startup rather than on the first request (pg would silently fall back to PG* defaults)
+        if (!process.env.DATABASE_URL) {
+          throw new Error('DATABASE_URL is not set (see .env.example)');
+        }
+        return new Pool({ connectionString: process.env.DATABASE_URL, max: 10 });
+      },
     },
     {
       provide: DRIZZLE,

@@ -1,16 +1,8 @@
 # Architecture
 
-This document describes the state of the `master` branch as of 2026-10-14 (Angular 22.2,
-NestJS 12, Mongoose 8.4). Its purpose is twofold:
-
-> **Update (2026-10-15, branch `feat/postgres-services`):** the services, the session store and the
-> tests now run on **PostgreSQL 18 via Drizzle** (phase 2 of [postgres-migration.md](postgres-migration.md)).
-> The runtime, modules and session sections below are updated. §5 still describes the MongoDB
-> collections, which are now historical; the source of truth is `server/src/db/schema.ts`, and
-> `server/src/db/mappers.ts` keeps the API document shapes described there.
-
-1. Onboarding.
-2. Input for the planned MongoDB → PostgreSQL migration (see [Data model](#data-model)).
+This document describes the state of the `master` branch as of 2026-10-15 (Angular 22.2,
+NestJS 12, PostgreSQL 18 via Drizzle ORM). It is meant for onboarding. The MongoDB → PostgreSQL
+migration is recorded in [postgres-migration.md](postgres-migration.md).
 
 Known problems are listed in [audit.md](audit.md); this document describes what _is_,
 not what should be.
@@ -283,178 +275,127 @@ capture:false})` and then `charges.capture`.
 
 ## 5. Data model
 
-All schemas are plain Mongoose `new Schema({...})` definitions in
-`server/src/<feature>/schemas/`. Common traits, important for migration:
+PostgreSQL 18. The source of truth is the Drizzle schema in
+[server/src/db/schema.ts](../server/src/db/schema.ts); the SQL is generated into
+[server/db/migrations/](../server/db/migrations/) (`npm run db:generate`). The design decisions are
+recorded in [postgres-migration.md](postgres-migration.md).
 
-- **No field is `required`.** There are **no indexes** (besides `_id`), **no unique
-  constraints**, **no timestamps** (`dateAdded` is set by hand), and **no enums**.
-- **i18n by embedding:** Product, Category, Page and Config have one sub-document per
-  language under the keys `en`, `sk`, `cs`. These keys are generated from
-  `languages` in `server/src/shared/constans.ts`, so adding a language changes the
-  schema shape.
-- **Slugs as keys:**
-  - `titleUrl` is the de-facto natural key for Product, Category, Page, Theme and Config
-    (all lookups and upserts use it) but is not unique-indexed;
-  - `Order.orderId` and `Translation.lang` play the same role.
-- **ObjectId refs** use `ref: 'user'`, but the model is registered as `'User'`. No code
-  calls `populate()`.
-- Collection names follow Mongoose pluralization: `users`, `products`, `categories`,
-  `orders`, `translations`, `pages`, `themes`, `configs`. Sessions are in `session`
-  (connect-mongo).
+Common traits:
 
-### User (`server/src/auth/schemas/user.schema.ts`)
+- **Keys:** `uuid` primary keys default to `uuidv7()`. The API exposes them as `_id`.
+- **Slugs as natural keys:** `title_url` is unique on products, categories, pages, themes and configs,
+  and the API addresses them by it (`titleUrl`). Orders are addressed by `order_number` (API
+  `orderId`), translations by `lang`.
+- **i18n:** per-language rows in `*_translations` tables with key `(parent_id, lang)`; `lang` is the
+  `lang_code` enum (`en`, `sk`, `cs`, matching `languages` in `server/src/shared/constans.ts`).
+- **API shapes:** [server/src/db/mappers.ts](../server/src/db/mappers.ts) turns rows into the
+  documents the API has always returned: per-language sub-objects `en` / `sk` / `cs`, `mainImage`,
+  `dateAdded` (= `created_at`), `_user`, `outcome`. A product always has all three language objects
+  (`{ descriptionFull: [] }` when a language has no row).
+- **Money:** `numeric(12,2)` in major units, read as JS numbers.
+- **Timestamps:** `created_at` (default `now()`), `updated_at` (set by Drizzle on update).
 
-| Field      | Type                         | Notes                                                                 |
-| ---------- | ---------------------------- | --------------------------------------------------------------------- |
-| `email`    | String                       | Login identifier, looked up on every JWT request. Not unique-indexed. |
-| `password` | String                       | bcrypt hash                                                           |
-| `salt`     | String                       | bcrypt salt (redundant; bcrypt embeds it)                             |
-| `googleId` | String                       | Set for Google sign-ups                                               |
-| `name`     | String                       |                                                                       |
-| `roles`    | Array (untyped)              | `'admin'` grants admin                                                |
-| `cart`     | Mixed, default `{items: []}` | **Unused** (the cart lives in the session)                            |
-| `images`   | Array                        | **Unused** (the image library lives in the session)                   |
+### users
 
-### Product (`server/src/products/schemas/product.schema.ts`)
+| Column          | Type         | Notes                                                                     |
+| --------------- | ------------ | ------------------------------------------------------------------------- |
+| `email`         | text         | Unique on `lower(email)`; login and JWT lookups are case-insensitive (D5) |
+| `password_hash` | text, null   | bcrypt (salt embedded); null for Google-only accounts                     |
+| `name`          | text, null   |                                                                           |
+| `google_id`     | text, unique | Set for Google sign-ups                                                   |
+| `roles`         | text[]       | `'admin'` grants admin                                                    |
 
-| Field              | Type                            | Notes                                         |
-| ------------------ | ------------------------------- | --------------------------------------------- |
-| `titleUrl`         | String                          | Slug / natural key                            |
-| `mainImage`        | `{ url: String, name: String }` | Cloudinary URL                                |
-| `images`           | Array of String (URLs)          |                                               |
-| `tags`             | Array of String                 | Category `titleUrl`s (loose link to Category) |
-| `_user`            | ObjectId → User                 | Creator (admin)                               |
-| `dateAdded`        | Date                            | Sort key for "newest" / "oldest"              |
-| `en` / `sk` / `cs` | sub-document, see below         | One per language                              |
+### products + product_translations
 
-Per-language sub-document:
+| Column (`products`)                 | Type         | Notes                                             |
+| ----------------------------------- | ------------ | ------------------------------------------------- |
+| `title_url`                         | text, unique | Slug                                              |
+| `main_image_url`, `main_image_name` | text, null   | API `mainImage { url, name }` (Cloudinary)        |
+| `images`                            | text[]       | Image URLs                                        |
+| `tags`                              | text[]       | Category `title_url`s, by value (D6); GIN-indexed |
+| `created_by`                        | uuid → users | API `_user`; set null when the user is deleted    |
+| `created_at`                        | timestamptz  | API `dateAdded`; sort key for "newest" / "oldest" |
 
-| Field             | Type       | Notes                                                |
-| ----------------- | ---------- | ---------------------------------------------------- |
-| `title`           | String     |                                                      |
-| `description`     | String     |                                                      |
-| `descriptionFull` | Array      | HTML strings (TinyMCE)                               |
-| `regularPrice`    | Number     | Decimal major units; not used in pricing             |
-| `salePrice`       | Number     | Decimal major units; **the** price                   |
-| `onSale`          | Boolean    | Display only                                         |
-| `stock`           | **String** | Display only; never checked or decremented           |
-| `visibility`      | Boolean    | Hidden products are excluded from lists and the cart |
-| `shipping`        | String     | `'basic'` / `'extended'`                             |
+| Column (`product_translations`) | Type                | Notes                                                |
+| ------------------------------- | ------------------- | ---------------------------------------------------- |
+| `product_id`, `lang`            | key                 | Cascade delete with the product                      |
+| `title`, `description`          | text                |                                                      |
+| `description_full`              | text[]              | HTML fragments (TinyMCE)                             |
+| `regular_price`                 | numeric(12,2), null | Not used in pricing                                  |
+| `sale_price`                    | numeric(12,2), null | **The** price                                        |
+| `on_sale`                       | boolean             | Display only                                         |
+| `stock`                         | **text**, null      | Display only; never checked or decremented (D7)      |
+| `visibility`                    | boolean             | Hidden products are excluded from lists and the cart |
+| `shipping`                      | text                | `'basic'` / `'extended'`                             |
 
-Plugin: `paginate.pagination` (custom static `paginate()`).
+Index `product_translations_listing (lang, visibility, sale_price)` serves the shop listing.
 
-### Category (`server/src/products/schemas/category.schema.ts`)
+### categories + category_translations
 
-| Field           | Type                                           | Notes                                                   |
-| --------------- | ---------------------------------------------- | ------------------------------------------------------- |
-| `titleUrl`      | String                                         | Matches `Product.tags[]` entries                        |
-| `mainImage`     | `{ url: String, name: String, type: Boolean }` | `type: true` renders the image with `object-fit: cover` |
-| `subCategories` | Array                                          | Mixed                                                   |
-| `_user`         | ObjectId → User                                |                                                         |
-| `dateAdded`     | Date                                           |                                                         |
+| Column (`categories`)                                   | Type         | Notes                                                                              |
+| ------------------------------------------------------- | ------------ | ---------------------------------------------------------------------------------- |
+| `title_url`                                             | text, unique | Matches entries of `products.tags`                                                 |
+| `main_image_url`, `main_image_name`, `main_image_cover` |              | API `mainImage { url, name, type }`; `type: true` renders with `object-fit: cover` |
+| `sub_categories`                                        | text[]       |                                                                                    |
+| `created_by`                                            | uuid → users | API `_user`                                                                        |
 
-Per-language sub-document (`en` / `sk` / `cs`):
+`category_translations (category_id, lang)`: `title`, `description`, `position` (menu order),
+`visibility`, `menu_hidden`.
 
-| Field         | Type                |
-| ------------- | ------------------- |
-| `title`       | String              |
-| `description` | String              |
-| `position`    | Number (menu order) |
-| `visibility`  | Boolean             |
-| `menuHidden`  | Boolean             |
+Categories are created automatically from product tags when products are added or edited, and
+removed from products' `tags` (one `array_remove` update) when a category is deleted.
 
-Categories are created automatically from product tags when products are added or edited,
-and removed from products' `tags` when a category is deleted.
+### orders
 
-### Order (`server/src/orders/schemas/order.schema.ts`)
+| Column            | Type                | Notes                                                                                    |
+| ----------------- | ------------------- | ---------------------------------------------------------------------------------------- |
+| `order_number`    | text, unique        | API `orderId`: `'order' + Date.now() + 't' + random(1..1000)`                            |
+| `user_id`         | uuid → users, null  | API `_user`; taken from the request body (`userId`)                                      |
+| `customer_email`  | text                |                                                                                          |
+| `status`          | `order_status` enum | `NEW`, `PAID`, `SHIPPING`, `COMPLETED`, `CANCELED`                                       |
+| `type`            | text, null          | `PAYMENT_ON_DELIVERY` / `WITH_PAYMENT`                                                   |
+| `currency`        | char(3)             | Derived on the server from the language (`EUR` / `CZK`)                                  |
+| `amount`          | numeric(12,2)       | Total incl. shipping                                                                     |
+| `amount_refunded` | numeric(12,2), null | Never written by the code                                                                |
+| `notes`           | text, null          | Customer note                                                                            |
+| `card_id`         | text, null          | Stripe charge id (card orders)                                                           |
+| `seller_message`  | text, null          | API `outcome.seller_message`; mirrors `type`                                             |
+| `cart`            | jsonb               | **Snapshot** of the localized cart: items with product data, `totalPrice`, `totalQty`, … |
+| `addresses`       | jsonb               | Address objects from the checkout form; `[0]` is used in emails                          |
+| `created_at`      | timestamptz         | API `dateAdded`                                                                          |
 
-| Field             | Type                         | Notes                                                                                                                      |
-| ----------------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `orderId`         | String                       | `'order' + Date.now() + 't' + random(1..1000)`. Not unique.                                                                |
-| `cardId`          | String                       | Stripe charge id (card orders)                                                                                             |
-| `amount`          | Number                       | Total incl. shipping, decimal major units                                                                                  |
-| `amount_refunded` | Number                       | Never written by the code                                                                                                  |
-| `currency`        | String                       | Sent by the client (`EUR` / `CZK`)                                                                                         |
-| `status`          | String                       | TS enum `OrderStatus` (`NEW`, `PAID`, `SHIPPING`, `COMPLETED`, `CANCELED`) in `orders/models/order.model.ts`, not enforced |
-| `type`            | String                       | `PAYMENT_ON_DELIVERY` / `WITH_PAYMENT`                                                                                     |
-| `notes`           | String                       | Customer note                                                                                                              |
-| `customerEmail`   | String                       |                                                                                                                            |
-| `cart`            | Mixed                        | **Snapshot** of the localized cart: items with product data, `totalPrice`, `totalQty`, `shippingCost`, …                   |
-| `outcome`         | `{ seller_message: String }` | Mirrors `type`                                                                                                             |
-| `addresses`       | Array (Mixed)                | Address objects from the checkout form; `[0]` is used in emails                                                            |
-| `dateAdded`       | Date, default `Date.now`     |                                                                                                                            |
-| `_user`           | ObjectId → User              | Optional. Taken from the request body (`userId`).                                                                          |
+### translations, pages, themes, configs
 
-### Translation (`server/src/translations/schemas/translation.schema.ts`)
+- **`translations`** `(lang PK, keys jsonb)`: flat dictionary `{ "Key": "Text" }` per language (UI
+  strings and email texts).
+- **`pages`** `(title_url unique)` + **`page_translations`** `(page_id, lang, title, content_html)`;
+  API `en/sk/cs: { title, contentHTML }`.
+- **`themes`** `(title_url unique, active, styles jsonb)`: `styles` maps CSS variable values (colors,
+  logo, background URLs, …). At most one is active (partial unique index; saving an active one
+  deactivates the others, D8).
+- **`configs`** `(title_url unique, active)` + **`config_shipping`** `(config_id, lang, basic_cost,
+basic_limit, extended_cost, extended_limit)`; API `en/sk/cs: { shippingCost: { basic: {cost, limit},
+extended: {cost, limit} } }`. At most one is active (D8); it is copied into `session.config`.
 
-| Field  | Type                | Notes                                                            |
-| ------ | ------------------- | ---------------------------------------------------------------- |
-| `lang` | String              | `en` / `sk` / `cs`; one document per language                    |
-| `keys` | Mixed, default `{}` | Flat dictionary `{ "Key": "Text" }` (UI strings and email texts) |
+### session
 
-### Page (`server/src/eshop/schemas/page.schema.ts`)
-
-| Field              | Type                                     |
-| ------------------ | ---------------------------------------- |
-| `titleUrl`         | String                                   |
-| `dateAdded`        | Date                                     |
-| `en` / `sk` / `cs` | `{ title: String, contentHTML: String }` |
-
-### Theme (`server/src/eshop/schemas/theme.schema.ts`)
-
-| Field       | Type    | Notes                                                         |
-| ----------- | ------- | ------------------------------------------------------------- |
-| `titleUrl`  | String  |                                                               |
-| `dateAdded` | Date    |                                                               |
-| `active`    | Boolean | Exactly one is expected to be active (not enforced)           |
-| `styles`    | Mixed   | Map of CSS variable values (colors, logo, background URLs, …) |
-
-### Config (`server/src/eshop/schemas/config.schema.ts`)
-
-| Field              | Type                                                                  | Notes                                         |
-| ------------------ | --------------------------------------------------------------------- | --------------------------------------------- |
-| `titleUrl`         | String                                                                |                                               |
-| `dateAdded`        | Date                                                                  |                                               |
-| `active`           | Boolean                                                               | Active config is copied into `session.config` |
-| `en` / `sk` / `cs` | `{ shippingCost: { basic: {cost, limit}, extended: {cost, limit} } }` | Numbers, major units                          |
-
-### Session (connect-mongo, collection `session`)
-
-`{ _id: sid, expires, session: JSON{ cookie, cart?, config?, images?, passport? } }`
+connect-pg-simple's table: `sid` (PK), `sess` (json: `cookie`, `cart?`, `config?`, `images?`,
+`passport?`), `expire` (indexed; expired rows are pruned by the store).
 
 ### Relations
 
 ```mermaid
 erDiagram
-  USER ||--o{ ORDER : "_user (optional)"
-  USER ||--o{ PRODUCT : "_user (creator)"
-  USER ||--o{ CATEGORY : "_user (creator)"
-  PRODUCT }o--o{ CATEGORY : "tags[] = titleUrl (by value)"
-  ORDER ||--|| CART_SNAPSHOT : "cart (embedded copy)"
-  CART_SNAPSHOT }o--o{ PRODUCT : "copied product data"
-  TRANSLATION ||--|| LANGUAGE : "lang"
-  PRODUCT ||--|{ PRODUCT_I18N : "en/sk/cs"
-  CATEGORY ||--|{ CATEGORY_I18N : "en/sk/cs"
-  PAGE ||--|{ PAGE_I18N : "en/sk/cs"
-  CONFIG ||--|{ CONFIG_I18N : "en/sk/cs shippingCost"
+  USERS ||--o{ ORDERS : "user_id (optional)"
+  USERS ||--o{ PRODUCTS : "created_by"
+  USERS ||--o{ CATEGORIES : "created_by"
+  PRODUCTS }o--o{ CATEGORIES : "tags[] = title_url (by value)"
+  ORDERS ||--|| CART_SNAPSHOT : "cart (jsonb copy)"
+  PRODUCTS ||--|{ PRODUCT_TRANSLATIONS : "per lang"
+  CATEGORIES ||--|{ CATEGORY_TRANSLATIONS : "per lang"
+  PAGES ||--|{ PAGE_TRANSLATIONS : "per lang"
+  CONFIGS ||--|{ CONFIG_SHIPPING : "per lang"
 ```
-
-### Migration considerations (PostgreSQL)
-
-The migration is planned as a **fresh start**: the current MongoDB holds only dummy data, so nothing
-is copied (the UI translations there were incomplete as well). The full plan, with
-schema, field mapping, seed, phases and deployment, is in [postgres-migration.md](postgres-migration.md).
-In short:
-
-- **Keys and constraints:** `uuidv7` primary keys (exposed as `_id`); unique slugs, emails and order
-  numbers; `NOT NULL` and enums from the start, since there's no legacy data to accommodate.
-- **i18n:** per-language `*_translations` tables (`product_translations(product_id, lang, …)`), so
-  prices, visibility, stock and shipping stay per language as today.
-- **Product ↔ category:** `tags text[]` by value for now (decision D6).
-- **Money:** `numeric(12,2)` in major units for API parity (decision D4).
-- **Order cart snapshot, addresses, theme styles, translation keys:** `jsonb`.
-- **Sessions:** `connect-pg-simple`; they start empty at the switch.
-- **Unused fields** (`User.cart`, `User.images`, `salt`) are not created.
 
 ## 6. External services
 

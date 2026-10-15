@@ -82,7 +82,6 @@ CLOUDINARY_KEY="set key from cloudinary api  https://cloudinary.com (for images 
 CLOUDINARY_SECRET="set secret from cloudinary api https://cloudinary.com (for images upload)"
 
 # Pay
-STRIPE_PUBLISHABLE_KEY="set for paying with card for orders with stripe https://stripe.com"
 STRIPE_SECRETKEY="set for paying with card for orders with stripe https://stripe.com"
 
 # Google login

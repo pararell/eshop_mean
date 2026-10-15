@@ -22,7 +22,6 @@ export const testEnv = (baseURL) => ({
   CLOUDINARY_NAME: 'e2e',
   CLOUDINARY_KEY: 'e2e',
   CLOUDINARY_SECRET: 'e2e',
-  STRIPE_PUBLISHABLE_KEY: 'pk_test_e2e',
   STRIPE_SECRETKEY: 'sk_test_e2e',
   GOOGLE_CLIENT_ID: 'e2e-google-client',
   GOOGLE_CLIENT_SECRET: 'e2e-google-secret',

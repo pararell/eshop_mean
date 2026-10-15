@@ -51,10 +51,10 @@ Findings resolved since the audit (2026-10-14). The finding texts below are kept
 | TD-02           | Partly            | The client lint uses a flat config (`client/eslint.config.mjs`). The server lint is still broken.                                                                                                                                                                                                          |
 | TD-05           | Fixed             | The `*.yml` rule was removed from `.gitignore`.                                                                                                                                                                                                                                                            |
 | TYP-01          | Fixed             | `strict: true` for client and server (TypeScript 6), plus Angular `strictTemplates`. 0 errors.                                                                                                                                                                                                             |
-| TYP-02          | Fixed             | Explicit `any` went from about 130 to 0 in application code (only the frozen `product.schema.ts` keeps one). Lint enforces `no-explicit-any`.                                                                                                                                                              |
+| TYP-02          | Fixed             | Explicit `any` went from about 130 to 0 in application code. Lint enforces `no-explicit-any`.                                                                                                                                                                                                              |
 | TYP-03          | Fixed             | Server model interfaces are rebuilt on shared types in `shared/types/index.d.ts` (`@eshop/shared`), which client and server both use.                                                                                                                                                                      |
 | TD-02           | Fixed             | One `eslint.config.mjs` for the repo (0 errors), Prettier for the whole repo, and husky + lint-staged pre-commit. The legacy `.eslintrc.json` files are removed.                                                                                                                                           |
-| DEP-08          | Fixed             | Docker runtime holds only `dist/` + mongoose: 783 MB → 186 MB.                                                                                                                                                                                                                                             |
+| DEP-08          | Fixed             | Docker runtime holds only `dist/` + `pg`: 783 MB → 175 MB (186 MB while mongoose was still needed).                                                                                                                                                                                                        |
 | SEC-26          | Mostly fixed      | The image runs as `node`, with `tini` as PID 1 and `CMD node …` (instant `docker stop`). A `HEALTHCHECK` is still missing.                                                                                                                                                                                 |
 | TD-15           | Fixed             | The stale `server/dist` is gone; `nest build` uses `rootDir: ./src`.                                                                                                                                                                                                                                       |
 | SEC-03          | Fixed             | The server derives the currency from the language (`currencyForLang`: en/sk → EUR, cs → CZK) for the Stripe charge and the stored order; the client value is ignored. Tests in `orders.spec.ts`.                                                                                                           |
@@ -65,6 +65,15 @@ Findings resolved since the audit (2026-10-14). The finding texts below are kept
 | TD-03           | Mostly fixed      | Official migrations: standalone (no NgModules left; lazy `routes.ts`), `inject()`, signal `input()`/`output()`/`viewChild()`, unused imports, self-closing tags. 26 components still opt into `Eager` change detection (OnPush needs per-component review).                                                |
 | BUG-03          | Fixed             | The URL prefix (`/en                                                                                                                                                                                                                                                                                       | /sk | /cs`) decides the language at startup (`PlatformLocation`, also during SSR) and on navigation (`languageGuard`); the switcher changes the URL. `/` keeps the cookie language; the cookie is now site-wide (`path: '/'`). e2e: `language.spec.ts`. |
 | UI-05           | Fixed             | `<html lang>` follows the active language, including in SSR output.                                                                                                                                                                                                                                        |
+
+| SEC-10 | Fixed (PostgreSQL migration) | Search and category filter use `ILIKE` with `%`/`_` escaped (`likePattern` in `server/src/db/catalog.ts`): a literal substring match, no regex. |
+| SEC-24 | Fixed (PostgreSQL migration) | Login uses `bcrypt.compare`; the `salt` column is gone. |
+| BUG-22 | Fixed (PostgreSQL migration) | `23505` is now the right code; emails are unique on `lower(email)`, so a duplicate signup answers 409 from the database. Test in `auth.spec.ts`. |
+| TYP-04 | Mitigated | The `order_status` enum is enforced by the database; the DTO still accepts any string, so an invalid status from the admin answers 500 instead of being stored. Validating it in the DTO (422) is a small follow-up. |
+| DEP-09 | Partly | The second MongoDB connection is gone: the session store shares the app's `pg` pool. Duplicate body parsing (`body-parser` on top of Nest's) remains. |
+| PERF-01 | Partly | Category deletion is one `array_remove` update. Admin lists (`getAllOrders`, `getAllProducts`, `getAllCategories`) still have no pagination. |
+| PERF-02 | Fixed (PostgreSQL migration) | Unique indexes on slugs, `lower(email)`, `order_number`; GIN on `products.tags`; `product_translations (lang, visibility, sale_price)`; orders by user and date. |
+| PERF-03 | Partly | One listing query (`count(*) over ()`) plus one min/max query instead of four. The price range still ignores filters and visibility (kept for parity). |
 
 Still open and notable: DEP-02 (Stripe SDK / PaymentIntents) and BUG-02 (card captured without a guaranteed order).
 
@@ -700,6 +709,16 @@ Still open and notable: DEP-02 (Stripe SDK / PaymentIntents) and BUG-02 (card ca
 - Location: [client/src/index.html](../client/src/index.html), [angular.json](../angular.json) (`material-icons.css` in styles)
 - Fix: self-host one copy.
 
+**DEP-11: `url.parse()` deprecation warning at startup (added 2026-10-15)**
+
+- Priority: low
+- Location: `passport-oauth2` 1.8.0 (via `passport-google-oauth20` 2.0.0), `lib/strategy.js`
+- Problem: the Google strategy's constructor calls the legacy `url.parse()`, so Node prints
+  `DEP0169` once at startup. The parsed URLs come from configuration (`authorizationURL`,
+  `callbackURL`), not from requests, so it is noise rather than a vulnerability. Both packages are
+  at their latest versions and unmaintained.
+- Fix: none upstream. Replace them (e.g. with `openid-client`) if Google login is reworked.
+
 ## Performance
 
 **PERF-01: Unbounded queries**
@@ -981,5 +1000,5 @@ Still open and notable: DEP-02 (Stripe SDK / PaymentIntents) and BUG-02 (card ca
 | Step 5 (upgrades)                                      | SEC-08, DEP-01…DEP-10, TD-03, TD-04                                                                                                               |
 | Step 6 (strictness / lint)                             | TYP-01…TYP-03, TD-02                                                                                                                              |
 | Behavior-changing fixes (each its own approved branch) | Remaining SEC / BUG / UI / PERF items                                                                                                             |
-| With the PostgreSQL migration                          | BUG-06, BUG-07, BUG-22, TYP-04, PERF-02, DEP-09, DB parts of PERF-01 / PERF-04                                                                    |
+| With the PostgreSQL migration (done 2026-10-15)        | Fixed: BUG-22, PERF-02, SEC-10, SEC-24. Partly: TYP-04, DEP-09, PERF-01, PERF-03. Now cheap: BUG-06, BUG-07, PERF-04                              |
 | Needs a product decision                               | DEP-02 (PaymentIntents), BUG-06 (live prices in cart), BUG-07 (stock), BUG-13 (PWA yes/no), SEC-23 (cart API verbs)                               |
