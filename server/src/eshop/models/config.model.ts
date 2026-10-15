@@ -1,6 +1,3 @@
-import { Document } from 'mongoose';
-import type { ShopConfig } from '@eshop/shared';
+import type { ConfigDoc } from '../../db/mappers';
 
-export interface Config extends Document<string>, Omit<ShopConfig, '_id'> {
-  _id: string;
-}
+export type Config = ConfigDoc;

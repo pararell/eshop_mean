@@ -1,6 +1,3 @@
-import { Document } from 'mongoose';
+import type { TranslationDoc } from '../db/mappers';
 
-export interface Translation extends Document {
-  lang: string;
-  keys: Record<string, string>;
-}
+export type Translation = TranslationDoc;

@@ -1,5 +1,4 @@
 const { resolve } = require('node:path');
-const { MongoMemoryServer } = require('mongodb-memory-server-core');
 const { PostgreSqlContainer } = require('@testcontainers/postgresql');
 const { Pool } = require('pg');
 const { drizzle } = require('drizzle-orm/node-postgres');
@@ -13,14 +12,9 @@ const withDatabase = (uri, database) => {
   return url.toString();
 };
 
-// One in-memory MongoDB and one disposable PostgreSQL 18 (Docker) for the whole run.
-// PostgreSQL: migrations are applied once to a template database; each test file clones it
-// (see test/utils/test-db.ts). MongoDB: each test file uses its own database (see env.ts).
+// One disposable PostgreSQL 18 (Docker) for the whole run. Migrations are applied once to a
+// template database; each test file clones it (see test/utils/test-db.ts).
 module.exports = async () => {
-  const mongo = await MongoMemoryServer.create();
-  globalThis.__MONGO_SERVER__ = mongo;
-  process.env.TEST_MONGO_BASE_URI = mongo.getUri();
-
   const postgres = await new PostgreSqlContainer('postgres:18').start();
   globalThis.__POSTGRES_CONTAINER__ = postgres;
   const adminUrl = postgres.getConnectionUri();

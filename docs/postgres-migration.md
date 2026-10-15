@@ -1,12 +1,12 @@
 # MongoDB → PostgreSQL migration plan
 
-|          |                                                                                                                                                                                                    |
-| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Status   | **P1 Foundation done** (Drizzle schema, migrations, `DatabaseModule`, seed, test infrastructure). Services still use MongoDB until P2.                                                             |
-| Target   | PostgreSQL **18.6** on the production server (`172.105.94.117`), listening on `127.0.0.1:5432` only. Database `eshop`, user `eshop`; the password is in `/home/eshop/.env.postgres` on the server. |
-| Source   | MongoDB via Mongoose 8.24; schemas are described in [architecture.md § Data model](architecture.md#5-data-model).                                                                                  |
-| Data     | **Fresh start.** The current MongoDB holds only dummy data. **Nothing is copied from MongoDB** (the UI translations there were incomplete too).                                                    |
-| Baseline | `master` with strict TypeScript, 107 server/API tests and 18 e2e tests (see [testing.md](testing.md)).                                                                                             |
+|          |                                                                                                                                                                                                             |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Status   | **P1 Foundation and P2 Port modules done.** All services, the session store and the tests run on PostgreSQL. MongoDB code (Mongoose schemas, packages, `MONGO_URI`) is still in the repo, unused, until P3. |
+| Target   | PostgreSQL **18.6** on the production server (`172.105.94.117`), listening on `127.0.0.1:5432` only. Database `eshop`, user `eshop`; the password is in `/home/eshop/.env.postgres` on the server.          |
+| Source   | MongoDB via Mongoose 8.24; schemas are described in [architecture.md § Data model](architecture.md#5-data-model).                                                                                           |
+| Data     | **Fresh start.** The current MongoDB holds only dummy data. **Nothing is copied from MongoDB** (the UI translations there were incomplete too).                                                             |
+| Baseline | `master` with strict TypeScript, 107 server/API tests and 18 e2e tests (see [testing.md](testing.md)).                                                                                                      |
 
 This document covers:
 
@@ -296,6 +296,20 @@ once in production.
 | **P3: Remove MongoDB** | Remove Mongoose, connect-mongo, the `schemas/` folders and `MONGO_URI`. In `angular.json` `externalDependencies`, replace `mongoose` with `pg` (§6.1). In the Dockerfile `runtime-deps` stage, install `pg` instead of mongoose. Update the docs and end CLAUDE.md's frozen-schema rule.                             |
 | **P4: Deploy**         | §8.                                                                                                                                                                                                                                                                                                                  |
 
+P2 notes (what the port does to keep the API identical):
+
+- `server/src/db/mappers.ts` turns rows back into the MongoDB-era documents (`_id`, `en/sk/cs`
+  sub-objects, `orderId`, `outcome.seller_message`, `dateAdded`) and casts input the way Mongoose
+  did (numeric strings → numbers, objects rejected for string fields). A product always has all
+  three language objects (`{ descriptionFull: [] }` when empty), as Mongoose returned them.
+- Admin edits of pages, themes and configs answer the former `updateOne()` result object.
+- Known bugs are kept on purpose: BUG-08 (an upsert that inserts answers 404), BUG-02 (capture
+  before save), the not-awaited category creation after adding a product.
+- The API tests seed and read data through a small Mongoose-like shim
+  (`server/test/utils/test-models.ts`) built on the same mappers, so the specs were not rewritten.
+  The one behavior change visible to tests: e-mails are unique (D5), so a second user with the
+  same e-mail is rejected.
+
 After P3, the deferred audit items become cheap to fix:
 
 - BUG-06: cart prices from the database;
@@ -319,8 +333,8 @@ After P3, the deferred audit items become cheap to fix:
 - **Disposable PostgreSQL 18 only.** Tests and local development never use the server database.
   - Server/API tests replace mongodb-memory-server with a disposable PostgreSQL 18 (D10).
   - Migrations run once per test run, and each test file gets its own database (as today).
-- **E2E:** `e2e/support/start-server.mjs` starts the same disposable PostgreSQL 18, runs migrations,
-  `db:seed` and `db:seed:demo`.
+- **E2E:** `e2e/support/start-server.mjs` starts the same disposable PostgreSQL 18, runs the
+  migrations and inserts its own fixture data (`e2e/support/fixtures.mjs`) with plain SQL.
 - **Local development:** a `docker-compose.yml` with `postgres:18` on a non-default port (15432,
   which also leaves 5432 free for the SSH tunnel).
 

@@ -1,5 +1,5 @@
-import { Document } from 'mongoose';
-import type { Address, Order as OrderData } from '@eshop/shared';
+import type { Address } from '@eshop/shared';
+import type { OrderDoc } from '../../db/mappers';
 
 export type { Address };
 
@@ -11,7 +11,4 @@ export enum OrderStatus {
   CANCELED = 'CANCELED',
 }
 
-export interface Order extends Document<string>, Omit<OrderData, '_id' | '_user'> {
-  _id: string;
-  _user?: string | Document['_id'];
-}
+export type Order = OrderDoc;

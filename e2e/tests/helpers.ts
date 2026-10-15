@@ -1,7 +1,7 @@
 import { expect, Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import mongoose from 'mongoose';
+import pg from 'pg';
 
 export { E2E } from '../support/fixtures.mjs';
 
@@ -61,14 +61,14 @@ export async function choosePayment(page: Page, method: 'card' | 'delivery') {
   await page.getByRole('button', { name: 'Next' }).filter({ visible: true }).click();
 }
 
-/** Direct database access for assertions (URI written by support/start-server.mjs). */
-export async function withDb<T>(fn: (db: mongoose.mongo.Db) => Promise<T>): Promise<T> {
-  const { mongoUri } = JSON.parse(readFileSync(resolve(__dirname, '../../test-results/e2e-state.json'), 'utf8'));
-  const conn = await mongoose.createConnection(mongoUri).asPromise();
+/** Direct database access for assertions (URL written by support/start-server.mjs). */
+export async function withDb<T>(fn: (db: pg.Pool) => Promise<T>): Promise<T> {
+  const { databaseUrl } = JSON.parse(readFileSync(resolve(__dirname, '../../test-results/e2e-state.json'), 'utf8'));
+  const pool = new pg.Pool({ connectionString: databaseUrl, max: 1 });
   try {
-    return await fn(conn.db!);
+    return await fn(pool);
   } finally {
-    await conn.close();
+    await pool.end();
   }
 }
 

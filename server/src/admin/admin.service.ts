@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { Inject, Injectable } from '@nestjs/common';
 import * as cloudinary from 'cloudinary';
 import type { UploadApiErrorResponse, UploadApiResponse } from 'cloudinary';
 import * as streamifier from 'streamifier';
 
-import { ProductModel, Product } from '../products/models/product.model';
+import { Product } from '../products/models/product.model';
+import { Database, DRIZZLE } from '../db/database.module';
+import { updateProductImages } from '../db/catalog';
 import { Images } from './utils/images';
 import { AddProductImageDto } from './dto/add-image.dto';
 import { ImageDto } from './dto/image.dto';
@@ -20,7 +21,7 @@ type SessionImages = Pick<Images, 'all'>;
 
 @Injectable()
 export class AdminService {
-  constructor(@InjectModel('Product') private productModel: ProductModel) {}
+  constructor(@Inject(DRIZZLE) private db: Database) {}
 
   async getImages(images: SessionImages | undefined): Promise<SessionImages> {
     return (await images) || new Images({ all: [] });
@@ -30,7 +31,7 @@ export class AdminService {
     const { image } = imageDto;
     const { titleUrl } = addImageDto;
     const existImages = await new Images(images || { all: [] });
-    const product = titleUrl ? await this.productModel.findOneAndUpdate({ titleUrl }, { $push: { images: image } }, { new: true }) : null;
+    const product = titleUrl ? await updateProductImages(this.db, titleUrl, 'append', image) : null;
 
     if (!product) {
       existImages.add(image);
@@ -45,7 +46,7 @@ export class AdminService {
     const uploadedImage = await this.uploadToCloudinary(file);
     const image = uploadedImage.secure_url;
 
-    const product = titleUrl ? await this.productModel.findOneAndUpdate({ titleUrl }, { $push: { images: image } }, { new: true }) : null;
+    const product = titleUrl ? await updateProductImages(this.db, titleUrl, 'append', image) : null;
 
     if (!product) {
       existImages.add(image);
@@ -58,7 +59,7 @@ export class AdminService {
     const { image } = imageDto;
     const { titleUrl } = addImageDto;
     const existImages = await new Images(images || { all: [] });
-    const product = titleUrl ? await this.productModel.findOneAndUpdate({ titleUrl }, { $pull: { images: image } }, { new: true }) : null;
+    const product = titleUrl ? await updateProductImages(this.db, titleUrl, 'remove', image) : null;
 
     existImages.remove(image);
 

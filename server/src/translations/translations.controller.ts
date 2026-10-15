@@ -1,20 +1,24 @@
 import { firstValueFrom } from 'rxjs';
-import { Controller, Get, Query, UseGuards, Patch, Body } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards, Patch, Body, Inject } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { AuthGuard } from '@nestjs/passport';
+import { eq } from 'drizzle-orm';
+import type { Translation as TranslationData } from '@eshop/shared';
 
 import { Translation } from './translation.model';
-import type { Translation as TranslationData } from '@eshop/shared';
-import type { UpdateWriteOpResult } from 'mongoose';
 import { RolesGuard } from '../auth/roles.guard';
 import { countryLang, languages } from '../shared/constans';
+import { Database, DRIZZLE } from '../db/database.module';
+import { translations } from '../db/schema';
+import { toTranslationDoc } from '../db/mappers';
+import { isLanguage } from '../db/catalog';
+import type { UpdateResult } from '../eshop/eshop.service';
+import { findTranslation } from './translation.queries';
 
 @Controller('api/translations')
 export class TranslationsController {
   constructor(
-    @InjectModel('Translation') private translationModel: Model<Translation>,
+    @Inject(DRIZZLE) private db: Database,
     private httpService: HttpService,
   ) {}
 
@@ -27,45 +31,47 @@ export class TranslationsController {
         const country = result.data.country_code ? result.data.country_code.toLowerCase() : '';
         const langCode = countryLang[country] || country['default'];
 
-        return await this.translationModel.findOne({ lang: langCode });
+        return await findTranslation(this.db, langCode);
       } catch {
-        return await this.translationModel.findOne({ lang: languages[0] });
+        return await findTranslation(this.db, languages[0]);
       }
     }
 
-    return await this.translationModel.findOne({ lang });
+    return await findTranslation(this.db, lang);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Get('all')
   async getAllTranslations(): Promise<Translation[]> {
-    return await this.translationModel.find({});
+    const rows = await this.db.select().from(translations);
+    return rows.map(toTranslationDoc);
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Patch('all')
-  async updateTranslations(@Body() translations: TranslationData[]): Promise<UpdateWriteOpResult[]> {
-    const updateTranslations = translations.map(async (translation) => {
-      const langTranslation = await this.translationModel.findOne({
-        lang: translation.lang,
-      });
-      if (!langTranslation) {
-        const newTranslation = await new this.translationModel({
-          lang: translation.lang,
-          keys: translation.keys,
-        });
-        newTranslation.save();
-      }
-      return this.translationModel.updateOne({ lang: translation.lang }, { $set: { keys: translation.keys } });
-    });
-    return Promise.all(updateTranslations);
+  async updateTranslations(@Body() updates: TranslationData[]): Promise<UpdateResult[]> {
+    const results: UpdateResult[] = [];
+    for (const translation of updates) {
+      // Unknown languages are skipped (MongoDB stored them, but no client reads them)
+      if (!isLanguage(translation.lang)) continue;
+      await this.db
+        .insert(translations)
+        .values({ lang: translation.lang, keys: translation.keys ?? {} })
+        .onConflictDoUpdate({ target: translations.lang, set: { keys: translation.keys ?? {} } });
+      results.push({ acknowledged: true, matchedCount: 1, modifiedCount: 1, upsertedCount: 0, upsertedId: null });
+    }
+    return results;
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Patch()
   async updateTranslation(@Query('lang') lang: string, @Body() translation: Partial<TranslationData>): Promise<Translation | null> {
-    return await this.translationModel.findOneAndUpdate({ lang }, translation, {
-      new: true,
-    });
+    if (!isLanguage(lang)) return null;
+    const [row] = await this.db
+      .update(translations)
+      .set({ keys: translation.keys ?? {} })
+      .where(eq(translations.lang, lang))
+      .returning();
+    return row ? toTranslationDoc(row) : null;
   }
 }

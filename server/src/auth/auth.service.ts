@@ -1,8 +1,5 @@
-import type { Profile } from 'passport-google-oauth20';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { ConflictException, InternalServerErrorException } from '@nestjs/common';
 
@@ -10,29 +7,30 @@ import { GoogleUserDto } from './dto/google-user.dto';
 import { User } from './models/user.model';
 import { JwtPayload } from './models/jwt-payload.interface';
 import { AuthCredentialDto } from './dto/auth-credential.dto';
+import { Database, DRIZZLE } from '../db/database.module';
+import { users } from '../db/schema';
+import { findUserByEmail, pgErrorCode } from './user.queries';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel('User') private userModel: Model<User>,
+    @Inject(DRIZZLE) private db: Database,
     private jwtService: JwtService,
   ) {}
 
   async signUp(authCredentialsDto: AuthCredentialDto): Promise<void> {
     const { email, password, name } = authCredentialsDto;
-    const userExist = await this.userModel.findOne({ email });
+    const userExist = await findUserByEmail(this.db, email);
     if (userExist) {
       throw new ConflictException('Username already exist');
     }
-    // Only copy whitelisted fields; never persist client-supplied roles or other user fields
-    const user = new this.userModel({ email, name });
-    user.salt = await bcrypt.genSalt();
-    user.password = await this.hashPassword(password, user.salt);
 
     try {
-      await user.save();
+      // Only whitelisted fields; never persist client-supplied roles or other user fields
+      await this.db.insert(users).values({ email, name, passwordHash: await bcrypt.hash(password, await bcrypt.genSalt()) });
     } catch (error) {
-      if ((error as { code?: string }).code === '23505') {
+      // unique_violation, e.g. a concurrent signup with the same email
+      if (pgErrorCode(error) === '23505') {
         throw new ConflictException('Username already exist');
       } else {
         throw new InternalServerErrorException();
@@ -47,7 +45,7 @@ export class AuthService {
     roles?: string[];
   }> {
     const { email, password } = authCredentialsDto;
-    const user = await this.userModel.findOne({ email });
+    const user = await findUserByEmail(this.db, email);
     const loggedUser = user && (await this.validatePassword(password, user));
     const userEmail = loggedUser ? user!.email : null;
     if (!userEmail) {
@@ -62,14 +60,10 @@ export class AuthService {
 
   async signInGoogle(googleUserDto: GoogleUserDto) {
     const { email, profile } = googleUserDto;
-    const user = await this.userModel.findOne({ email });
+    const user = await findUserByEmail(this.db, email);
 
     if (!user) {
-      const googleUser = await new this.userModel({
-        email,
-        googleId: profile.id,
-      });
-      googleUser.save();
+      await this.db.insert(users).values({ email, googleId: profile.id });
     }
 
     const payload: JwtPayload = { email };
@@ -78,20 +72,9 @@ export class AuthService {
     return accessToken;
   }
 
-  async getGoogleUser(email: string, profile: Profile) {
-    const user = this.userModel.findOne({ email });
-    const googleUser = user || (await new this.userModel({ email, googleId: profile.id }));
-
-    return googleUser;
-  }
-
-  private async hashPassword(password: string, salt: string): Promise<string> {
-    return bcrypt.hash(password, salt);
-  }
-
   private async validatePassword(password: string, user: User): Promise<boolean> {
-    // Throws for users without a password (e.g. Google sign-ups); audit BUG-23
-    const hash = await bcrypt.hash(password, user.salt!);
-    return hash === user.password;
+    // bcrypt hashes embed their salt (decision D9). Throws for users without a password
+    // (e.g. Google sign-ups), as before; audit BUG-23
+    return bcrypt.compare(password, user.passwordHash!);
   }
 }

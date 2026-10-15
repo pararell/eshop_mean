@@ -29,9 +29,4 @@ const testEnv: Record<string, string> = {
 
 Object.assign(process.env, testEnv);
 
-// Fresh database per test file
-const base = process.env.TEST_MONGO_BASE_URI;
-if (base) {
-  const dbName = `eshop_test_${process.env.JEST_WORKER_ID}_${Date.now()}`;
-  process.env.MONGO_URI = `${base.replace(/\/?$/, '/')}${dbName}`;
-}
+// The PostgreSQL database is created per test file by createTestApp() (test/utils/test-app.ts)

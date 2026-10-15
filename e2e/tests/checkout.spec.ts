@@ -20,7 +20,12 @@ test('cash on delivery: places an order and shows the confirmation', async ({ pa
   await expect(page.locator('body')).toContainText('Name: Jane Doe');
   await expectCartCount(page, 0);
 
-  const order = await withDb((db) => db.collection('orders').findOne({ customerEmail: email }));
+  const order = await withDb(async (db) => {
+    const { rows } = await db.query('SELECT status, type, amount::float8 AS amount, currency, addresses FROM orders WHERE customer_email = $1', [
+      email,
+    ]);
+    return rows[0];
+  });
   expect(order).toMatchObject({ status: 'NEW', type: 'PAYMENT_ON_DELIVERY', amount: total, currency: 'EUR' });
   expect(order?.addresses[0]).toMatchObject({ name: 'Jane Doe', city: 'Bratislava' });
 });

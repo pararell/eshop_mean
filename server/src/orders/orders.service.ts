@@ -1,6 +1,5 @@
-import { Logger, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Inject, Logger, Injectable } from '@nestjs/common';
+import { desc, eq } from 'drizzle-orm';
 import Stripe from 'stripe';
 
 import { Order, OrderStatus } from './models/order.model';
@@ -14,6 +13,10 @@ import { Translation } from '../translations/translation.model';
 import type { Order as OrderData, OrderRequest, StripeOrderRequest } from '@eshop/shared';
 import type { OrderEmail } from '../shared/utils/email/email.types';
 import { ShopSession } from '../shared/types/session';
+import { Database, DRIZZLE } from '../db/database.module';
+import { orderValues, toOrderDoc } from '../db/mappers';
+import { orders } from '../db/schema';
+import { findTranslation } from '../translations/translation.queries';
 
 export interface OrderOutcome {
   error: string;
@@ -26,24 +29,28 @@ export const stripe = new Stripe(secret!, { apiVersion: '2020-08-27' });
 @Injectable()
 export class OrdersService {
   private logger = new Logger('OrdersService');
-  constructor(
-    @InjectModel('Order') private orderModel: Model<Order>,
-    @InjectModel('Translation') private translationModel: Model<Translation>,
-  ) {}
+  constructor(@Inject(DRIZZLE) private db: Database) {}
+
+  private async insertOrder(order: ReturnType<OrdersService['createOrder']>): Promise<Order> {
+    const [row] = await this.db
+      .insert(orders)
+      .values(orderValues(order) as typeof orders.$inferInsert)
+      .returning();
+    return toOrderDoc(row);
+  }
 
   async getOrders(user: User): Promise<Order[]> {
-    const orders = await this.orderModel.find({ _user: user._id }).sort('-dateAdded');
-    return orders;
+    const rows = await this.db.select().from(orders).where(eq(orders.userId, user._id)).orderBy(desc(orders.createdAt));
+    return rows.map(toOrderDoc);
   }
 
   async addOrder(orderDto: OrderDto, session: ShopSession, lang: string): Promise<OrderOutcome> {
     const { cart, config } = session;
     // Throws without a cart; callers turn that into 422 (current behavior)
     const cartForLang = prepareCart(cart!, lang, config);
-    const newOrder = await new this.orderModel(this.createOrder(orderDto, cartForLang, 'PAYMENT_ON_DELIVERY', currencyForLang(lang)));
-    await newOrder.save();
+    const newOrder = await this.insertOrder(this.createOrder(orderDto, cartForLang, 'PAYMENT_ON_DELIVERY', currencyForLang(lang)));
     try {
-      const translations = await this.translationModel.findOne({ lang });
+      const translations = await findTranslation(this.db, lang);
 
       this.sendmail(newOrder.customerEmail, newOrder, cartForLang, translations);
 
@@ -62,8 +69,8 @@ export class OrdersService {
   }
 
   async getAllOrders(): Promise<Order[]> {
-    const orders = await this.orderModel.find({}).sort('-dateAdded');
-    return orders;
+    const rows = await this.db.select().from(orders).orderBy(desc(orders.createdAt));
+    return rows.map(toOrderDoc);
   }
 
   async orderWithStripe(body: StripeOrderRequest, session: ShopSession, lang: string): Promise<OrderOutcome> {
@@ -82,12 +89,14 @@ export class OrdersService {
 
     if (charge) {
       try {
-        const newOrder = await new this.orderModel(this.createOrder(requestOrder, cartForLang, 'WITH_PAYMENT', currencyForLang(lang)));
+        const orderToSave = this.createOrder(requestOrder, cartForLang, 'WITH_PAYMENT', currencyForLang(lang));
+        // Known risk (audit BUG-02): the charge is captured before the order is stored
         const capturePayment = await stripe.charges.capture(charge.id);
+        let newOrder = orderToSave as unknown as Order;
         if (capturePayment) {
-          await newOrder.save();
+          newOrder = await this.insertOrder(orderToSave);
 
-          const translations = await this.translationModel.findOne({ lang });
+          const translations = await findTranslation(this.db, lang);
           this.sendmail(newOrder.customerEmail, newOrder, cartForLang, translations);
 
           if (process.env.ADMIN_EMAILS) {
@@ -108,13 +117,25 @@ export class OrdersService {
   }
 
   async getOrderById(id: string): Promise<Order | null> {
-    const order = await this.orderModel.findOne({ orderId: id });
-    return order;
+    const [row] = await this.db.select().from(orders).where(eq(orders.orderNumber, id));
+    return row ? toOrderDoc(row) : null;
   }
 
   async updateOrder(reqOrder: Partial<OrderData> & Pick<OrderData, 'orderId'>): Promise<Order | null> {
-    const order = this.orderModel.findOneAndUpdate({ orderId: reqOrder.orderId }, reqOrder, { new: true });
-    return order;
+    // Like findOneAndUpdate({ orderId }, body, { new: true }): known fields only; null if not found
+    const { orderId: _orderId, ...changes } = reqOrder;
+    const values = orderValues(changes);
+    const [row] = Object.keys(values).length
+      ? await this.db
+          .update(orders)
+          .set(values)
+          .where(eq(orders.orderNumber, String(reqOrder.orderId)))
+          .returning()
+      : await this.db
+          .select()
+          .from(orders)
+          .where(eq(orders.orderNumber, String(reqOrder.orderId)));
+    return row ? toOrderDoc(row) : null;
   }
 
   private createOrder = (orderDto: OrderRequest, cart: CartModel, type: string, currency: string) => {

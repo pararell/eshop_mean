@@ -1,95 +1,120 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Inject, Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { and, asc, desc, eq, ilike, lte, max, min, SQL, sql } from 'drizzle-orm';
 import type { CategoryInput, LanguageCode, ProductInput, ProductRaw } from '@eshop/shared';
 
 import { GetProductsDto } from './dto/get-products';
-import { LocalizedProduct, Product, ProductModel, ProductsPage } from './models/product.model';
+import { LocalizedProduct, Product, ProductsPage } from './models/product.model';
 import { GetProductDto } from './dto/get-product';
-import { Category, CategoryModel, CategoryWithProducts, LocalizedCategory } from './models/category.model';
+import { Category, CategoryWithProducts, LocalizedCategory } from './models/category.model';
 import { User } from '../auth/models/user.model';
 import { prepareProduct } from '../shared/utils/prepareUtils';
 import { languages, paginationLimit } from '../shared/constans';
+import { Database, DRIZZLE } from '../db/database.module';
+import { toProductDoc } from '../db/mappers';
+import { categories, categoryTranslations, products, productTranslations } from '../db/schema';
+import {
+  findProduct,
+  insertCategoryIfMissing,
+  insertProduct,
+  isLanguage,
+  likePattern,
+  removeTagFromProducts,
+  toCategoryDocs,
+  toProductDocs,
+  upsertCategory,
+  upsertProduct,
+} from '../db/catalog';
 
 @Injectable()
 export class ProductsService {
-  constructor(
-    @InjectModel('Product') private productModel: ProductModel,
-    @InjectModel('Category') private categoryModel: Model<CategoryModel>,
-  ) {}
+  constructor(@Inject(DRIZZLE) private db: Database) {}
 
   async getProducts(getProductsDto: GetProductsDto, lang: string): Promise<ProductsPage> {
     const { page, sort, category, search, maxPrice } = getProductsDto;
-    const searchQuery = search ? { titleUrl: new RegExp(search, 'i') } : {};
-    const categoryQuery = category ? { [`tags`]: new RegExp(category, 'i') } : {};
-    const maxPriceQuery = maxPrice ? { [`${lang}.salePrice`]: { $lte: maxPrice } } : {};
-    const query = {
-      ...searchQuery,
-      ...categoryQuery,
-      ...maxPriceQuery,
-      ...{ [`${lang}.visibility`]: true },
-    };
+    const pageNumber = parseFloat(page);
+    // Unknown language: MongoDB matched nothing, so return an empty page rather than a SQL error
+    if (!isLanguage(lang)) {
+      return { all: [], pagination: { total: 0, limit: paginationLimit, page: pageNumber, pages: 1 }, maxPrice: Infinity, minPrice: 0 };
+    }
 
-    const options = {
-      page: parseFloat(page),
-      sort: this.prepareSort(sort, lang),
-      limit: paginationLimit,
-      lang,
-      price: 'salePrice' as const,
-    };
+    const conditions: SQL[] = [eq(productTranslations.lang, lang), eq(productTranslations.visibility, true)];
+    if (search) conditions.push(ilike(products.titleUrl, likePattern(search)));
+    if (category) conditions.push(sql`exists (select 1 from unnest(${products.tags}) as tag where tag ilike ${likePattern(category)})`);
+    if (maxPrice) conditions.push(lte(productTranslations.salePrice, Number(maxPrice)));
 
-    const productsWithPagination = await this.productModel.paginate(query, options);
+    const rows = await this.db
+      .select({ product: products, translation: productTranslations, total: sql<number>`count(*) over ()`.mapWith(Number) })
+      .from(products)
+      .innerJoin(productTranslations, eq(productTranslations.productId, products.id))
+      .where(and(...conditions))
+      .orderBy(...this.prepareSort(sort), asc(products.id))
+      .limit(paginationLimit)
+      .offset((pageNumber - 1) * paginationLimit);
 
+    // Price range over all products of the language (ignores filters and visibility, as before)
+    const [range] = await this.db
+      .select({ max: max(productTranslations.salePrice), min: min(productTranslations.salePrice) })
+      .from(productTranslations)
+      .where(eq(productTranslations.lang, lang));
+
+    const total = rows[0]?.total ?? 0;
     return {
-      ...productsWithPagination,
-      all: productsWithPagination.all.map((product) => prepareProduct(product, lang, true)),
+      all: rows.map(({ product, translation }) => prepareProduct(toProductDoc(product, [translation]) as ProductRaw, lang, true)),
+      pagination: { total, limit: paginationLimit, page: pageNumber, pages: Math.ceil(total / paginationLimit) || 1 },
+      maxPrice: range?.max === null || range?.max === undefined ? Infinity : Number(range.max),
+      minPrice: range?.min === null || range?.min === undefined ? 0 : Number(range.min),
     };
   }
 
   async getCategories(lang: string): Promise<LocalizedCategory[]> {
-    const query = { [`${lang}.visibility`]: true };
-    const categories = await this.categoryModel.find(query).sort(`${lang}.position`);
+    if (!isLanguage(lang)) return [];
+    const rows = await this.db
+      .select({ category: categories })
+      .from(categories)
+      .innerJoin(categoryTranslations, eq(categoryTranslations.categoryId, categories.id))
+      .where(and(eq(categoryTranslations.lang, lang), eq(categoryTranslations.visibility, true)))
+      .orderBy(sql`${categoryTranslations.position} asc nulls first`, asc(categories.id));
 
-    return this.prepareCategories(categories, lang);
+    const docs = await toCategoryDocs(
+      this.db,
+      rows.map((r) => r.category),
+      lang,
+    );
+    return this.prepareCategories(docs, lang);
   }
 
   async getProductsTitles(search: string): Promise<string[]> {
-    const products = await this.productModel.find({
-      titleUrl: new RegExp(search, 'i'),
-    });
-
-    return products.map((product) => product.titleUrl);
+    const rows = await this.db
+      .select({ titleUrl: products.titleUrl })
+      .from(products)
+      .where(ilike(products.titleUrl, likePattern(search ?? '')));
+    return rows.map((row) => row.titleUrl);
   }
 
   async getProductByName(name: string, getProductDto: GetProductDto): Promise<LocalizedProduct | Product> {
     const { lang } = getProductDto;
-    const found = await this.productModel.findOne({ titleUrl: name });
+    const found = await findProduct(this.db, { titleUrl: name });
 
     if (!found) {
       throw new NotFoundException(`Product with title ${name} not found`);
     }
 
-    return lang ? prepareProduct(found, lang) : found;
+    return lang ? prepareProduct(found as ProductRaw, lang) : found;
   }
 
   async addProduct(productReq: ProductInput, user: User): Promise<void> {
-    const found = await this.productModel.findOne({
-      titleUrl: productReq.titleUrl,
-    });
+    const found = await findProduct(this.db, { titleUrl: productReq.titleUrl });
     if (found) {
       throw new BadRequestException();
     }
     const newProduct = Object.assign(productReq, {
-      _user: user._id,
-      dateAdded: Date.now(),
       images: productReq.images || [],
     });
 
     try {
-      const product = await new this.productModel(newProduct);
-      // Await so the API only answers once the product exists (the dashboard reloads its list right after)
-      await product.save();
-      this.addCategory(product);
+      const product = await insertProduct(this.db, newProduct as unknown as Record<string, unknown>, { createdBy: user._id });
+      // Not awaited, as before: categories appear shortly after the response
+      void this.addCategory(product);
     } catch {
       throw new BadRequestException();
     }
@@ -97,72 +122,75 @@ export class ProductsService {
 
   async editProduct(productReq: ProductInput): Promise<void> {
     const { titleUrl } = productReq;
-    const found = await this.productModel.findOneAndUpdate({ titleUrl }, productReq, { upsert: true });
+    const found = await upsertProduct(this.db, productReq as unknown as Record<string, unknown>);
 
+    // Known bug (audit BUG-08): an upsert that inserts still answers 404, as with MongoDB
     if (!found) {
       throw new NotFoundException(`Product with title ${titleUrl} not found`);
     } else {
-      this.addCategory(productReq);
+      void this.addCategory(productReq);
     }
   }
 
   async deleteProductByName(titleUrl: string): Promise<void> {
-    const found = await this.productModel.findOneAndDelete({ titleUrl });
+    const deleted = await this.db.delete(products).where(eq(products.titleUrl, titleUrl)).returning({ id: products.id });
 
-    if (!found) {
+    if (!deleted.length) {
       throw new NotFoundException(`Product with title ${titleUrl} not found`);
     }
   }
 
   async getAllProducts(lang: string): Promise<LocalizedProduct[]> {
-    const products = await this.productModel.find({});
-    return products.map((product) => prepareProduct(product, lang));
+    const rows = await this.db.select().from(products);
+    const docs = await toProductDocs(this.db, rows);
+    return docs.map((product) => prepareProduct(product as ProductRaw, lang));
   }
 
   async getAllCategories(_lang: string): Promise<CategoryWithProducts[]> {
-    const categories = await this.categoryModel.find({});
-    const products = await this.productModel.find({});
-    return this.prepareAllCategories(categories, products);
+    const categoryRows = await this.db.select().from(categories);
+    const productRows = await this.db.select({ titleUrl: products.titleUrl, tags: products.tags }).from(products);
+    return this.prepareAllCategories(await toCategoryDocs(this.db, categoryRows), productRows);
   }
 
   async editCategory(categoryReq: CategoryInput): Promise<void> {
     const { titleUrl } = categoryReq;
-    const found = await this.categoryModel.findOneAndUpdate({ titleUrl }, categoryReq, { upsert: true });
+    const found = await upsertCategory(this.db, categoryReq as unknown as Record<string, unknown>);
 
+    // Known bug (audit BUG-08): an upsert that inserts still answers 404, as with MongoDB
     if (!found) {
       throw new NotFoundException(`Category with title ${titleUrl} not found`);
     }
   }
 
   async deleteCategoryByName(titleUrl: string): Promise<void> {
-    const found = await this.categoryModel.findOneAndDelete({ titleUrl });
+    const deleted = await this.db.delete(categories).where(eq(categories.titleUrl, titleUrl)).returning({ id: categories.id });
 
-    if (!found) {
+    if (!deleted.length) {
       throw new NotFoundException(`Category with title ${titleUrl} not found`);
     } else {
-      const products = await this.productModel.find({});
-      this.removeCategoryFromProducts(titleUrl, products);
+      await removeTagFromProducts(this.db, titleUrl);
     }
   }
 
-  private prepareSort = (sortParams: string, lang: string): string => {
+  private prepareSort = (sortParams: string): SQL[] => {
     switch (sortParams) {
       case 'newest':
-        return `-dateAdded`;
+        return [desc(products.createdAt)];
       case 'oldest':
-        return `dateAdded`;
+        return [asc(products.createdAt)];
       case 'priceasc':
-        return `${lang}.salePrice`;
+        // MongoDB sorts missing values first ascending and last descending
+        return [sql`${productTranslations.salePrice} asc nulls first`];
       case 'pricedesc':
-        return `-${lang}.salePrice`;
+        return [sql`${productTranslations.salePrice} desc nulls last`];
       default:
-        return `-${lang}.dateAdded`;
+        return [desc(products.createdAt)];
     }
   };
 
-  private prepareCategories = (categories: Category[], lang: string): LocalizedCategory[] => {
-    return categories.map((category) => {
-      const langInfo = category[lang as LanguageCode];
+  private prepareCategories = (docs: Category[], lang: LanguageCode): LocalizedCategory[] => {
+    return docs.map((category) => {
+      const langInfo = category[lang];
       return {
         titleUrl: category.titleUrl,
         mainImage: category.mainImage,
@@ -176,62 +204,28 @@ export class ProductsService {
     });
   };
 
-  private addCategory = (product: Pick<ProductRaw, 'tags' | 'mainImage'>): void => {
-    product.tags
-      .filter((cat, i, arr) => arr.indexOf(cat) === i)
-      .forEach(async (category: string) => {
-        const titleUrl = category.replace(/ /g, '_').toLowerCase();
-        const addCategory = {
-          titleUrl,
-          mainImage: {
-            url: product.mainImage.url,
-            name: product.mainImage.name,
-          },
-          dateAdded: Date.now(),
-          ...languages.reduce(
-            (prev, lang) => ({
-              ...prev,
-              [lang]: {
-                title: category,
-                description: '',
-                visibility: product.tags.includes(category),
-              },
-            }),
-            {},
-          ),
-        };
-        const found = await this.categoryModel.findOne({ titleUrl });
-        if (!found) {
-          const newCategory = await new this.categoryModel(addCategory);
-          newCategory.save();
-        }
+  private addCategory = async (product: Pick<ProductRaw, 'tags' | 'mainImage'>): Promise<void> => {
+    const tags = (product.tags ?? []).filter((cat, i, arr) => arr.indexOf(cat) === i);
+    for (const category of tags) {
+      const titleUrl = category.replace(/ /g, '_').toLowerCase();
+      await insertCategoryIfMissing(this.db, {
+        titleUrl,
+        mainImage: { url: product.mainImage?.url, name: product.mainImage?.name },
+        ...languages.reduce(
+          (prev, lang) => ({
+            ...prev,
+            [lang]: { title: category, description: '', visibility: product.tags.includes(category) },
+          }),
+          {},
+        ),
       });
+    }
   };
 
-  private prepareAllCategories = (categories: Category[], products: Product[]): CategoryWithProducts[] => {
-    return categories.map((category) => {
-      const productsWithCategory = products
-        .filter((product) => {
-          return !!product.tags.includes(category.titleUrl);
-        })
-        .map((product) => product.titleUrl);
+  private prepareAllCategories = (docs: Category[], productRows: { titleUrl: string; tags: string[] }[]): CategoryWithProducts[] => {
+    return docs.map((category) => {
+      const productsWithCategory = productRows.filter((product) => product.tags.includes(category.titleUrl)).map((product) => product.titleUrl);
       return { category, productsWithCategory };
-    });
-  };
-
-  private removeCategoryFromProducts = (category: string, products: Product[]) => {
-    products.forEach(async (product) => {
-      const productHasCategory = product.tags.includes(category);
-      if (!productHasCategory) {
-        return;
-      }
-      const productReq = {
-        ...product.toObject(),
-        tags: product.tags.filter((tag) => tag !== category),
-      };
-      await this.productModel.findOneAndUpdate({ titleUrl: product.titleUrl }, productReq, {
-        upsert: true,
-      });
     });
   };
 }

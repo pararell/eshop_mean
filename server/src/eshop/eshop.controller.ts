@@ -1,7 +1,7 @@
 import { Controller, Body, Session, Post, Get, UseGuards, Param, Delete, Headers, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-import { EshopService } from './eshop.service';
+import { EshopService, UpsertResult } from './eshop.service';
 import { ContactDto } from './dto/contact.dto';
 import { PageDto } from './dto/page.dto';
 import { RolesGuard } from '../auth/roles.guard';
@@ -10,10 +10,7 @@ import { Theme } from './models/theme.model';
 import { Config } from './models/config.model';
 
 import type { PublicConfigResponse, ShopConfig, Theme as ThemeData } from '@eshop/shared';
-import type { UpdateWriteOpResult } from 'mongoose';
 import { ShopSession } from '../shared/types/session';
-
-type UpsertResult<T> = T | UpdateWriteOpResult | undefined;
 
 @Controller('api/eshop')
 export class EshopController {

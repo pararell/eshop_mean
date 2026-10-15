@@ -20,7 +20,7 @@ eshop_mean is a multi-language (en / sk / cs) e-commerce app with an admin area:
 | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Frontend | Angular 22.2 (zoneless, SSR + hydration), Angular Material (M2 theme), custom signal store                                                                                                                     |
 | Backend  | NestJS 12 on Express 5, Passport (JWT + Google OAuth 2.0)                                                                                                                                                      |
-| Database | MongoDB via Mongoose 8.24 (plain `new Schema()`), sessions in MongoDB via `connect-mongo`                                                                                                                      |
+| Database | PostgreSQL 18 via Drizzle ORM (`server/src/db/`), sessions in PostgreSQL via `connect-pg-simple`. Mongoose schemas remain as unused code until phase 3 of the migration                                        |
 | Tooling  | One root `package.json`, TypeScript 6.0 **strict** (+ Angular `strictTemplates`), Angular CLI (`@angular/build`), Nest CLI, ESLint flat config (`eslint.config.mjs`), Prettier, stylelint, husky + lint-staged |
 | Deploy   | Docker image (`Dockerfile`, ~186 MB, non-root, tini), single Node process                                                                                                                                      |
 
@@ -38,8 +38,8 @@ npm start → node dist/eshop/server/server.mjs
 ```
 
 The Nest server code is **bundled by the Angular build** (esbuild). `angular.json`
-`externalDependencies` lists what stays external. `mongoose` must stay external: when bundled,
-esbuild's ESM wrapper breaks `mongoose.createConnection()` called from the ESM-only `@nestjs/mongoose` 12.
+`externalDependencies` lists what stays external. `pg` must stay external (it has an optional
+`require('pg-native')`); `mongoose` is still listed until it is removed in migration phase 3.
 SSR only renders for allowed hosts (`CommonEngine` SSRF protection): the hostnames of `ORIGIN` and
 `SERVER_URL` plus localhost (see `server/src/app-universal.module.ts`).
 
@@ -77,22 +77,23 @@ server/                         NestJS app (server/nest-cli.json, server/tsconfi
   src/main.ts                   dev / API-only bootstrap
   src/main-ssr.ts               production bootstrap (API + SSR)
   src/setAppDB.ts               shared Express middleware + session store
-  src/app.module.ts             feature modules + MongooseModule.forRoot
+  src/app.module.ts             feature modules + DatabaseModule (global Drizzle `DRIZZLE` / `PG_POOL`)
   src/app-ssr.module.ts, app-universal.module.ts   SSR integration
   src/<feature>/                auth, products, cart, orders, translations, admin, eshop
     <feature>.controller.ts / .service.ts / .module.ts
-    schemas/                    Mongoose schemas (source of truth for data)
-    models/                     TS interfaces (often out of sync with schemas)
+    schemas/                    old Mongoose schemas, unused (removed in migration phase 3)
+    models/                     API document types (aliases of the mappers in src/db/mappers.ts)
     dto/                        class-validator DTOs (validation only where a pipe is applied)
   src/shared/                   constans.ts (languages, shipping defaults), utils (cart pricing, paginate, email)
 shared/types/index.d.ts         API/data types shared by client and server (`import type ... from '@eshop/shared'`)
 docs/                           architecture.md, audit.md, testing.md
 e2e/                            Playwright specs + seeded test server (support/start-server.mjs)
 server/test/                    API specs, DB specs, Jest setup, mocks (unit specs live next to code: src/**/*.spec.ts)
-server/src/db/                  PostgreSQL: Drizzle schema, DatabaseModule, migrate, seed
+server/src/db/                  PostgreSQL: Drizzle schema (source of truth for data), DatabaseModule, mappers
+                                (row ↔ API document shape), catalog queries, migrate, seed
 server/db/migrations/           generated SQL migrations (npm run db:generate; never edit by hand)
 server/scripts/                 db:migrate, db:seed
-Dockerfile                      build stage + runtime with only dist/ and mongoose; `node dist/eshop/server/server.mjs`
+Dockerfile                      build stage + runtime with only dist/, pg and mongoose; `node dist/eshop/server/server.mjs`
 ```
 
 ## Commands
@@ -102,7 +103,7 @@ Verified on Node 24.15 / npm 11.12 (2026-10-14). Angular 22 requires Node `^24.1
 | Task                                          | Command                                                                                                                            | Status                                                                                                                                                                                            |
 | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Install                                       | `npm ci`                                                                                                                           | OK                                                                                                                                                                                                |
-| Dev API (watch, :4000)                        | `npm run start:dev`                                                                                                                | OK. Needs `MONGO_URI` etc. in `.env`.                                                                                                                                                             |
+| Dev API (watch, :4000)                        | `npm run start:dev`                                                                                                                | OK. Needs `DATABASE_URL` etc. in `.env` (`npm run db:up` + `db:migrate` + `db:seed` for a local database).                                                                                        |
 | Dev client (:3000)                            | `npm run start:client`                                                                                                             | OK                                                                                                                                                                                                |
 | Production build (client + SSR + bundled API) | `npm run build:ssr` (`build:client` is equivalent)                                                                                 | OK, about 10 s, many "not ESM" and Sass deprecation warnings                                                                                                                                      |
 | Run production build                          | `npm start` (= `node dist/eshop/server/server.mjs`)                                                                                | OK. Needs `PORT` and the env vars.                                                                                                                                                                |
@@ -112,9 +113,9 @@ Verified on Node 24.15 / npm 11.12 (2026-10-14). Angular 22 requires Node `^24.1
 | Lint SCSS                                     | `npm run lint:scss`                                                                                                                | Runs (stylelint 17, SCSS syntax); 313 errors. The unquoted glob is shell-expanded.                                                                                                                |
 | Format                                        | `npm run format` / `npm run format:check` (Prettier, whole repo)                                                                   | Existing code is not yet reformatted (~140 files); new commits are formatted by the hook                                                                                                          |
 | Pre-commit hook                               | husky → `lint-staged` (`.husky/pre-commit`)                                                                                        | Runs `eslint --fix` + `prettier --write` on staged files; lint errors block the commit ; with nvm + a GUI git client (GitHub Desktop), add `~/.config/husky/init.sh` that sources `~/.nvm/nvm.sh` |
-| Server tests (unit + API, DB)                 | `npm test` / `npm run test:server` (`:watch`, `:cov`)                                                                              | 120 passing; **needs Docker** (disposable `postgres:18` via Testcontainers) and in-memory MongoDB, ~6 s                                                                                           |
+| Server tests (unit + API, DB)                 | `npm test` / `npm run test:server` (`:watch`, `:cov`)                                                                              | 121 passing; **needs Docker** (disposable `postgres:18` via Testcontainers, one database per test file), ~6 s                                                                                     |
 | E2E tests                                     | `npm run test:e2e` (builds first; `npx playwright install chromium` once)                                                          | 18 passing against the production build                                                                                                                                                           |
-| PostgreSQL (dev)                              | `npm run db:up` (docker-compose `postgres:18` on `localhost:15432`), `db:migrate`, `db:seed`, `db:generate` (after schema changes) | Scripts read `DATABASE_URL` / `MONGO_URI` from the environment only, never from `.env`                                                                                                            |
+| PostgreSQL (dev)                              | `npm run db:up` (docker-compose `postgres:18` on `localhost:15432`), `db:migrate`, `db:seed`, `db:generate` (after schema changes) | Scripts read `DATABASE_URL` from the environment only, never from `.env`                                                                                                                          |
 | Release                                       | `npm run release`                                                                                                                  | standard-version (deprecated)                                                                                                                                                                     |
 
 Broken or unused scripts (do not rely on them):
@@ -131,26 +132,26 @@ Copy `.env.example` → `.env` (gitignored, never commit it). It is read with
 `ConfigModule.forRoot()` / dotenv, from the working directory. All server code reads raw
 `process.env`; there is no validation.
 
-| Variable                                                                                           | Used for                                                                                               | Read in                                                             |
-| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
-| `PORT`                                                                                             | HTTP port (`.env.example`: 4000)                                                                       | `server/src/main.ts`, `main-ssr.ts`                                 |
-| `MONGO_URI`                                                                                        | MongoDB connection (opened twice: Mongoose and the session store)                                      | `app.module.ts`, `setAppDB.ts`                                      |
-| `DATABASE_URL`                                                                                     | PostgreSQL connection (pool is lazy; services are ported from MongoDB in phase 2)                      | `server/src/db/database.module.ts`, `server/scripts/*`              |
-| `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD`                                                          | Admin created by `npm run db:seed` if missing                                                          | `server/scripts/db-seed.ts`                                         |
-| `ORIGIN`                                                                                           | CORS origin; OAuth redirect target; SSR allowed host                                                   | `setAppDB.ts`, `auth/auth.controller.ts`, `app-universal.module.ts` |
-| `SERVER_URL`                                                                                       | Google OAuth callback base; SSR allowed host                                                           | `auth/strategy/google.strategy.ts`, `app-universal.module.ts`       |
-| `NG_ALLOWED_HOSTS`                                                                                 | Optional comma-separated SSR host allow-list; overrides the derived list                               | Angular `CommonEngine`                                              |
-| `COOKIE_KEY`                                                                                       | express-session secret                                                                                 | `setAppDB.ts`                                                       |
-| `JWT_SECRET`, `JWT_EXPIRATION`                                                                     | JWT signing / expiry (e.g. `7d`)                                                                       | `auth/auth.module.ts`, `auth/strategy/jwt.strategy.ts`              |
-| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`                                                         | Google login                                                                                           | `auth/strategy/google.strategy.ts`                                  |
-| `STRIPE_SECRETKEY`                                                                                 | Stripe charges (read at import time)                                                                   | `orders/orders.service.ts`                                          |
-| `CLOUDINARY_NAME`, `CLOUDINARY_KEY`, `CLOUDINARY_SECRET`                                           | Image upload (import time)                                                                             | `admin/admin.service.ts`                                            |
-| `SENDGRID_KEY`, `EMAIL_FROM`                                                                       | Transactional email (import time)                                                                      | `shared/utils/email/mailer.ts`                                      |
-| `ADMIN_EMAILS`                                                                                     | Comma-separated list notified on orders/contact                                                        | `orders.service.ts`, `eshop.service.ts`, email templates            |
-| `RECAPTCHA_SERVER_KEY`                                                                             | Contact-form captcha verification                                                                      | `eshop/eshop.service.ts`                                            |
-| `GEO_LOCATION_API_KEY`                                                                             | geolocation-db lookup for the default language                                                         | `translations/translations.controller.ts`                           |
-| `FE_STRIPE_PUBLISHABLE_KEY`, `FE_TINYMCE_API_KEY`, `FE_RECAPTCHA_CLIENT_KEY`, `FE_ANALYTICS_TOKEN` | **Public.** Every env var whose name contains `FE_` is sent to the browser by `GET /api/eshop/config`. | `eshop/eshop.service.ts`                                            |
-| `STRIPE_PUBLISHABLE_KEY`                                                                           | Listed in `.env.example` but unused                                                                    | none                                                                |
+| Variable                                                                                           | Used for                                                                                               | Read in                                                               |
+| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| `PORT`                                                                                             | HTTP port (`.env.example`: 4000)                                                                       | `server/src/main.ts`, `main-ssr.ts`                                   |
+| `MONGO_URI`                                                                                        | **Unused** since phase 2 of the PostgreSQL migration; removed from `.env.example` in phase 3           | none                                                                  |
+| `DATABASE_URL`                                                                                     | PostgreSQL connection: app data and the session store (one pool)                                       | `server/src/db/database.module.ts`, `setAppDB.ts`, `server/scripts/*` |
+| `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD`                                                          | Admin created by `npm run db:seed` if missing                                                          | `server/scripts/db-seed.ts`                                           |
+| `ORIGIN`                                                                                           | CORS origin; OAuth redirect target; SSR allowed host                                                   | `setAppDB.ts`, `auth/auth.controller.ts`, `app-universal.module.ts`   |
+| `SERVER_URL`                                                                                       | Google OAuth callback base; SSR allowed host                                                           | `auth/strategy/google.strategy.ts`, `app-universal.module.ts`         |
+| `NG_ALLOWED_HOSTS`                                                                                 | Optional comma-separated SSR host allow-list; overrides the derived list                               | Angular `CommonEngine`                                                |
+| `COOKIE_KEY`                                                                                       | express-session secret                                                                                 | `setAppDB.ts`                                                         |
+| `JWT_SECRET`, `JWT_EXPIRATION`                                                                     | JWT signing / expiry (e.g. `7d`)                                                                       | `auth/auth.module.ts`, `auth/strategy/jwt.strategy.ts`                |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`                                                         | Google login                                                                                           | `auth/strategy/google.strategy.ts`                                    |
+| `STRIPE_SECRETKEY`                                                                                 | Stripe charges (read at import time)                                                                   | `orders/orders.service.ts`                                            |
+| `CLOUDINARY_NAME`, `CLOUDINARY_KEY`, `CLOUDINARY_SECRET`                                           | Image upload (import time)                                                                             | `admin/admin.service.ts`                                              |
+| `SENDGRID_KEY`, `EMAIL_FROM`                                                                       | Transactional email (import time)                                                                      | `shared/utils/email/mailer.ts`                                        |
+| `ADMIN_EMAILS`                                                                                     | Comma-separated list notified on orders/contact                                                        | `orders.service.ts`, `eshop.service.ts`, email templates              |
+| `RECAPTCHA_SERVER_KEY`                                                                             | Contact-form captcha verification                                                                      | `eshop/eshop.service.ts`                                              |
+| `GEO_LOCATION_API_KEY`                                                                             | geolocation-db lookup for the default language                                                         | `translations/translations.controller.ts`                             |
+| `FE_STRIPE_PUBLISHABLE_KEY`, `FE_TINYMCE_API_KEY`, `FE_RECAPTCHA_CLIENT_KEY`, `FE_ANALYTICS_TOKEN` | **Public.** Every env var whose name contains `FE_` is sent to the browser by `GET /api/eshop/config`. | `eshop/eshop.service.ts`                                              |
+| `STRIPE_PUBLISHABLE_KEY`                                                                           | Listed in `.env.example` but unused                                                                    | none                                                                  |
 
 ## Code conventions
 
@@ -191,9 +192,11 @@ Copy `.env.example` → `.env` (gitignored, never commit it). It is read with
 
 ## Do not change without explicit approval
 
-- **The database layer and Mongoose schemas** (`server/src/**/schemas/*`,
-  `MongooseModule` wiring, `connect-mongo` session store). A PostgreSQL migration is
-  planned (see [docs/postgres-migration.md](docs/postgres-migration.md)). Until then, document; don't modify.
+- **The database schema and migrations** (`server/src/db/schema.ts`, `server/db/migrations/`),
+  the `DatabaseModule` wiring and the `connect-pg-simple` session store. The PostgreSQL migration
+  is in progress (see [docs/postgres-migration.md](docs/postgres-migration.md)); schema changes
+  go through `npm run db:generate` and need approval. The mappers in `server/src/db/mappers.ts`
+  keep the MongoDB-era API document shapes; keep them identical.
 - **The public API contract**: paths, methods, request/response shapes, the `lang` header,
   the session-based cart, and the `/jwtToken/:token` OAuth redirect. The client and
   existing deployments depend on them.

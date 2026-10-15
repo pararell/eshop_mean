@@ -96,6 +96,16 @@ describe('Products API', () => {
       });
     });
 
+    it('returns every language of the raw product, empty ones included (dashboard edit form)', async () => {
+      await t.model('Product').create(productFixture('car'));
+
+      const res = await t.http.get('/api/products/car').expect(200);
+
+      expect(res.body.en.title).toBe('Title car');
+      expect(res.body.sk).toEqual({ descriptionFull: [] });
+      expect(res.body.cs).toEqual({ descriptionFull: [] });
+    });
+
     it('returns 404 for an unknown product', async () => {
       await t.http.get('/api/products/nope').query({ lang: 'en' }).expect(404);
     });

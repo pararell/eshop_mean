@@ -1,13 +1,14 @@
 import { NestExpressApplication } from '@nestjs/platform-express';
 import session from 'express-session';
-import mongoose from 'mongoose';
-import MongoStore from 'connect-mongo';
-import type { MongoClient } from 'mongodb';
+import connectPgSimple from 'connect-pg-simple';
+import type { Pool } from 'pg';
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import compression from 'compression';
 import { json, urlencoded } from 'body-parser';
+
+import { PG_POOL } from './db/database.module';
 
 export const setAppDB = (app: NestExpressApplication): void => {
   app.use(compression());
@@ -22,9 +23,8 @@ export const setAppDB = (app: NestExpressApplication): void => {
     }),
   );
 
-  // mongoose and connect-mongo bundle different copies of the mongodb driver, so the client types
-  // differ although the runtime object is compatible. Type-only cast.
-  const clientP = mongoose.connect(process.env.MONGO_URI!, {}).then((m) => m.connection.getClient()) as unknown as Promise<MongoClient>;
+  // Sessions (and the cart in them) live in the `session` table, created by the migrations
+  const PgStore = connectPgSimple(session);
 
   app.use(
     session({
@@ -35,9 +35,10 @@ export const setAppDB = (app: NestExpressApplication): void => {
       secret: process.env.COOKIE_KEY!,
       resave: false,
       saveUninitialized: false,
-      store: MongoStore.create({
-        clientPromise: clientP,
-        collectionName: 'session',
+      store: new PgStore({
+        pool: app.get<Pool>(PG_POOL),
+        tableName: 'session',
+        createTableIfMissing: false,
       }),
     }),
   );

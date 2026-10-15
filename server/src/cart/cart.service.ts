@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { Inject, Injectable } from '@nestjs/common';
 import type { ProductRaw } from '@eshop/shared';
 
 import { Cart } from './utils/cart';
 import { GetCartChangeDto } from './dto/cart-change.dto';
-import { ProductModel } from '../products/models/product.model';
+import { Database, DRIZZLE } from '../db/database.module';
+import { findProduct } from '../db/catalog';
 import { CartModel } from './models/cart.model';
 import { prepareCart } from '../shared/utils/prepareUtils';
 import { ShopSession } from '../shared/types/session';
@@ -16,7 +16,7 @@ export interface CartChange {
 
 @Injectable()
 export class CartService {
-  constructor(@InjectModel('Product') private productModel: ProductModel) {}
+  constructor(@Inject(DRIZZLE) private db: Database) {}
 
   async getCart(session: ShopSession, lang: string): Promise<CartModel> {
     const { cart, config } = session;
@@ -31,7 +31,7 @@ export class CartService {
     const newCart: Cart = new Cart(cart || {});
 
     try {
-      const product = await this.productModel.findById(id);
+      const product = await findProduct(this.db, { id });
       // Known bug (audit BUG-25): a missing product is added as `null` and fails in prepareCart
       newCart.add(product as unknown as ProductRaw, id);
       return { newCart, langCart: prepareCart(newCart, lang, config) };
@@ -46,7 +46,7 @@ export class CartService {
     const newCart = new Cart(cart || { items: [] });
 
     try {
-      const product = await this.productModel.findById(id);
+      const product = await findProduct(this.db, { id });
       if (!product) {
         const itIsInCart = newCart.check(id);
         if (itIsInCart) {

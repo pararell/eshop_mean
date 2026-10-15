@@ -3,6 +3,12 @@
 This document describes the state of the `master` branch as of 2026-10-14 (Angular 22.2,
 NestJS 12, Mongoose 8.4). Its purpose is twofold:
 
+> **Update (2026-10-15, branch `feat/postgres-services`):** the services, the session store and the
+> tests now run on **PostgreSQL 18 via Drizzle** (phase 2 of [postgres-migration.md](postgres-migration.md)).
+> The runtime, modules and session sections below are updated. §5 still describes the MongoDB
+> collections, which are now historical; the source of truth is `server/src/db/schema.ts`, and
+> `server/src/db/mappers.ts` keeps the API document shapes described there.
+
 1. Onboarding.
 2. Input for the planned MongoDB → PostgreSQL migration (see [Data model](#data-model)).
 
@@ -16,13 +22,13 @@ flowchart LR
   B[Browser] -->|HTML, /api/*| N
   subgraph N[Single Node process: dist/eshop/server/server.mjs]
     direction TB
-    MW["setAppDB middleware<br/>compression → body-parser (10 MB) → cookie-parser<br/>→ CORS(ORIGIN) → express-session (connect-mongo) → passport"]
+    MW["setAppDB middleware<br/>compression → body-parser (10 MB) → cookie-parser<br/>→ CORS(ORIGIN) → express-session (connect-pg-simple) → passport"]
     API["Nest controllers /api/*<br/>auth · products · cart · orders · translations · admin · eshop"]
     SSR["AngularUniversalModule<br/>express.static(browser) + GET /(.*)/ → CommonEngine.render"]
     MW --> API
     MW --> SSR
   end
-  API --> M[(MongoDB)]
+  API --> M[(PostgreSQL 18)]
   MW -->|session collection| M
   SSR -->|HTTP to own /api via serverUrl| API
   API --> S[Stripe]
@@ -45,9 +51,9 @@ flowchart LR
 - **Development:** `server/src/main.ts` (API only, `:4000`) plus `ng serve` (`:3000`).
 - **Docker** (`Dockerfile`, image about 186 MB):
   1. **build** (`node:24.21-alpine3.24`): `npm ci`, then `npm run build:ssr`. It also writes a
-     one-dependency `package.json` with the lockfile's `mongoose` version.
-  2. **runtime-deps:** installs only that (mongoose and its dependencies). The bundle keeps
-     `mongoose` external (`angular.json` `externalDependencies`); everything else is inlined
+     a small `package.json` with the lockfile's `pg` and `mongoose` versions (mongoose goes in phase 3).
+  2. **runtime-deps:** installs only those. The bundle keeps
+     `pg` and `mongoose` external (`angular.json` `externalDependencies`); everything else is inlined
      into `dist/`.
   3. **runtime:** `dist/` plus those `node_modules`. It runs as user `node`, with `tini` as PID 1
      (so `docker stop` is immediate), and `CMD node dist/eshop/server/server.mjs`. No `.env` is
@@ -62,17 +68,17 @@ on it.
 
 ### Modules
 
-| Module                                    | Responsibility                                                                | Models registered                        | Notes                                           |
-| ----------------------------------------- | ----------------------------------------------------------------------------- | ---------------------------------------- | ----------------------------------------------- |
-| `AppModule`                               | Root. `ConfigModule.forRoot({isGlobal})`, `MongooseModule.forRoot(MONGO_URI)` | –                                        | `ServeStaticModule` is commented out            |
-| `AuthModule`                              | Signup/signin, JWT, Google OAuth, `RolesGuard`                                | `User`                                   | Exports `JwtStrategy` and `PassportModule`      |
-| `ProductsModule`                          | Products and categories (public + admin CRUD)                                 | `Product`, `Category`                    | Exports `MongooseModule`                        |
-| `CartModule`                              | Session cart add/remove/get                                                   | (Product via `ProductsModule`)           |                                                 |
-| `OrdersModule`                            | Cash-on-delivery and Stripe orders, admin order management, order emails      | `Order`, `Translation`                   |                                                 |
-| `TranslationsModule`                      | UI translation dictionaries                                                   | `Translation`                            | Controller uses the model directly (no service) |
-| `AdminModule`                             | Image library and Cloudinary upload                                           | (Product via `ProductsModule`)           | Class-level JWT + admin guards                  |
-| `EshopModule`                             | Shop config, themes, CMS pages, contact form                                  | `Page`, `Theme`, `Config`, `Translation` |                                                 |
-| `AppSSRModule` / `AngularUniversalModule` | SSR rendering + static files                                                  | –                                        | Production only                                 |
+| Module                                    | Responsibility                                                                                | Tables used                              | Notes                                                 |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------- | ----------------------------------------------------- |
+| `AppModule`                               | Root. `ConfigModule.forRoot({isGlobal})`, global `DatabaseModule` (Drizzle on `DATABASE_URL`) | –                                        | `ServeStaticModule` is commented out                  |
+| `AuthModule`                              | Signup/signin, JWT, Google OAuth, `RolesGuard`                                                | `User`                                   | Exports `JwtStrategy` and `PassportModule`            |
+| `ProductsModule`                          | Products and categories (public + admin CRUD)                                                 | `Product`, `Category`                    |                                                       |
+| `CartModule`                              | Session cart add/remove/get                                                                   | (Product via `ProductsModule`)           |                                                       |
+| `OrdersModule`                            | Cash-on-delivery and Stripe orders, admin order management, order emails                      | `Order`, `Translation`                   |                                                       |
+| `TranslationsModule`                      | UI translation dictionaries                                                                   | `Translation`                            | Controller queries the database directly (no service) |
+| `AdminModule`                             | Image library and Cloudinary upload                                                           | (Product via `ProductsModule`)           | Class-level JWT + admin guards                        |
+| `EshopModule`                             | Shop config, themes, CMS pages, contact form                                                  | `Page`, `Theme`, `Config`, `Translation` |                                                       |
+| `AppSSRModule` / `AngularUniversalModule` | SSR rendering + static files                                                                  | –                                        | Production only                                       |
 
 ### Request pipeline
 
@@ -90,7 +96,7 @@ and no rate limiting.
 - Most endpoints read the `lang` request header (`en` | `sk` | `cs`).
 - Products and pages project or sort on `<lang>.*` fields.
 
-**Session** (express-session + connect-mongo, collection `session`, 30-day cookie) holds:
+**Session** (express-session + connect-pg-simple, table `session`, 30-day cookie) holds:
 
 - `session.cart = { items: [{ id, qty, item: <full Product document snapshot> }] }`;
 - `session.config`: a copy of the active `Config` document, set by `GET /api/eshop/config`;
@@ -462,4 +468,4 @@ In short:
 | geolocation-db.com  | Default language when none is chosen                        | Called from the server                                                                                                                    | `GEO_LOCATION_API_KEY`                            |
 | TinyMCE Cloud       | Rich-text editor in admin                                   | `@tinymce/tinymce-angular`                                                                                                                | `FE_TINYMCE_API_KEY`                              |
 | Google Analytics    | Analytics                                                   | `services/analytics.service.ts` (gtag)                                                                                                    | `FE_ANALYTICS_TOKEN`                              |
-| MongoDB             | Data and sessions                                           | Mongoose 8.4 + connect-mongo                                                                                                              | `MONGO_URI`                                       |
+| PostgreSQL 18       | Data and sessions                                           | Drizzle ORM + `pg` + connect-pg-simple                                                                                                    | `DATABASE_URL`                                    |
