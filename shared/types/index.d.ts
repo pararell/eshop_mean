@@ -44,6 +44,10 @@ export interface ProductLangInfo {
   stock: string;
   visibility: boolean;
   shipping: ShippingType | string;
+  /** Page <title>; empty falls back to `title` */
+  seoTitle?: string;
+  /** <meta name="description">; empty falls back to `description` */
+  metaDescription?: string;
 }
 
 /** Language-independent product fields. */
@@ -64,6 +68,46 @@ export type ProductRaw = ProductBase & ByLanguage<ProductLangInfo>;
 
 /** Body of admin `POST /api/products/add` and `PATCH /api/products/edit`. */
 export type ProductInput = Omit<ProductRaw, '_id'> & { _id?: string };
+
+// AI product drafts (POST /api/admin/products/ai-draft, docs/ai.md) -----------------------------
+
+export interface AiStatus {
+  enabled: boolean;
+  provider?: string;
+  model?: string;
+}
+
+export interface AiDraftRequest {
+  /** Cloudinary URLs of uploaded product images; at most 3 are sent to the model */
+  imageUrls?: string[];
+  text?: string;
+  supplierText?: string;
+}
+
+/** AI-written texts for one language. Prices, stock, visibility and shipping are never set. */
+export interface AiLanguageDraft {
+  title: string;
+  description: string;
+  descriptionFull: string[];
+  seoTitle: string;
+  metaDescription: string;
+}
+
+export type AiProductDraft = {
+  titleUrl: string;
+  /** Existing category titleUrls only */
+  tags: string[];
+  images: string[];
+  mainImage: Image;
+} & ByLanguage<AiLanguageDraft>;
+
+export interface AiDraftResponse {
+  draft: AiProductDraft;
+  /** New category names the admin may add; never applied automatically */
+  suggestedCategories: string[];
+  warnings: string[];
+  usage: { provider: string; model: string; inputTokens: number; outputTokens: number; costUsd: number; durationMs: number };
+}
 
 /** Product flattened for one language (`GET /api/products`, `/:name?lang=`). */
 export type LocalizedProduct = ProductBase & ProductLangInfo;

@@ -24,6 +24,13 @@ const testEnv: Record<string, string> = {
   FE_RECAPTCHA_CLIENT_KEY: 'test-recaptcha-client',
   FE_ANALYTICS_TOKEN: '',
   NODE_TLS_REJECT_UNAUTHORIZED: '1',
+  // AI drafts are off unless a test enables them with a stub provider (never a real API)
+  AI_PROVIDER: 'gemini',
+  AI_MODEL: '',
+  GEMINI_API_KEY: '',
+  ANTHROPIC_API_KEY: '',
+  AI_BASE_URL: '',
+  AI_IMAGE_ORIGIN: '',
 };
 
 Object.assign(process.env, testEnv);

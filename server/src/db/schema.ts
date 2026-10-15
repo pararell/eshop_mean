@@ -130,6 +130,10 @@ export const productTranslations = pgTable(
     stock: text('stock'),
     visibility: boolean('visibility').notNull().default(false),
     shipping: text('shipping').notNull().default('basic'),
+    /** <title> of the product page; empty falls back to `title` */
+    seoTitle: text('seo_title').notNull().default(''),
+    /** <meta name="description">; empty falls back to `description` */
+    metaDescription: text('meta_description').notNull().default(''),
   },
   (t) => [
     primaryKey({ columns: [t.productId, t.lang] }),
@@ -267,4 +271,29 @@ export const session = pgTable(
     expire: timestamp('expire', { precision: 6 }).notNull(),
   },
   (t) => [index('session_expire').on(t.expire)],
+);
+
+// AI product drafts (docs/ai.md) -------------------------------------------------------------
+
+export const aiUsageStatus = pgEnum('ai_usage_status', ['ok', 'invalid_output', 'error', 'timeout']);
+
+/** One row per AI request (successful or not): token usage and estimated cost, also used for limits */
+export const aiUsage = pgTable(
+  'ai_usage',
+  {
+    id: id(),
+    userId: uuid('user_id').references(() => users.id, { onDelete: 'set null' }),
+    provider: text('provider').notNull(),
+    model: text('model').notNull(),
+    imageCount: integer('image_count').notNull().default(0),
+    inputTokens: integer('input_tokens').notNull().default(0),
+    outputTokens: integer('output_tokens').notNull().default(0),
+    /** Estimated from list prices (docs/ai.md); free-tier requests are not actually billed */
+    costUsd: numeric('cost_usd', { precision: 12, scale: 6, mode: 'number' }).notNull().default(0),
+    durationMs: integer('duration_ms').notNull().default(0),
+    status: aiUsageStatus('status').notNull(),
+    errorCode: text('error_code'),
+    createdAt: createdAt(),
+  },
+  (t) => [index('ai_usage_user_created').on(t.userId, t.createdAt.desc()), index('ai_usage_created').on(t.createdAt.desc())],
 );

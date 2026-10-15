@@ -8,7 +8,7 @@ import request from 'supertest';
 
 import { AppModule } from '../../src/app.module';
 import { setAppDB } from '../../src/setAppDB';
-import { createTestDatabase } from './test-db';
+import { createTestDatabase, TestDatabase } from './test-db';
 import { createModels, TestModel } from './test-models';
 
 /** Mocked outbound HTTP (reCAPTCHA siteverify, geolocation). Override `post` per test. */
@@ -22,6 +22,8 @@ export interface TestApp {
   http: ReturnType<typeof request>;
   /** Mongoose-like access to the test database (see test-models.ts) */
   model: (name: string) => TestModel;
+  /** Direct access to this file's test database */
+  db: TestDatabase['db'];
   close: () => Promise<void>;
 }
 
@@ -46,6 +48,7 @@ export async function createTestApp(): Promise<TestApp> {
   return {
     app,
     http: request(app.getHttpServer()),
+    db: database.db,
     model: (name: string) => {
       const model = models[name];
       if (!model) throw new Error(`No test model ${name}`);

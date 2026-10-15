@@ -153,6 +153,16 @@ describe('Products API', () => {
       expect(category.en.title).toBe('Sports Cars');
     });
 
+    it('stores the SEO title and meta description per language', async () => {
+      const token = await adminToken(t);
+      const en = { ...productFixture('seo-car').en, seoTitle: 'SEO car | Shop', metaDescription: 'Fast red car.' };
+
+      await t.http.post('/api/products/add').set('Authorization', `Bearer ${token}`).send(productFixture('seo-car', { en })).expect(201);
+
+      const res = await t.http.get('/api/products/seo-car').query({ lang: 'en' }).expect(200);
+      expect(res.body).toMatchObject({ seoTitle: 'SEO car | Shop', metaDescription: 'Fast red car.' });
+    });
+
     it('rejects a duplicate titleUrl', async () => {
       const token = await adminToken(t);
       await t.model('Product').create(productFixture('car'));

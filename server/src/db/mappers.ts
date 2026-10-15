@@ -101,6 +101,8 @@ export function toProductDoc(row: ProductRow, langRows: ProductTranslationRow[])
       stock: t.stock as string,
       visibility: t.visibility,
       shipping: t.shipping,
+      seoTitle: t.seoTitle,
+      metaDescription: t.metaDescription,
     };
   }
   // Mongoose always returned every language (array paths default to []), and the dashboard relies on it
@@ -137,6 +139,8 @@ export function productTranslationValues(productId: string, input: Record<string
     stock: t.stock === undefined || t.stock === null ? null : String(t.stock),
     visibility: toBool(t.visibility),
     shipping: t.shipping ? String(t.shipping) : 'basic',
+    seoTitle: t.seoTitle ? String(t.seoTitle) : '',
+    metaDescription: t.metaDescription ? String(t.metaDescription) : '',
   }));
 }
 
