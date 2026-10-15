@@ -40,8 +40,7 @@
     "db:up": "docker compose up -d postgres",
     "db:generate": "drizzle-kit generate --config server/drizzle.config.ts",
     "db:migrate": "tsx server/scripts/db-migrate.ts",
-    "db:seed": "tsx server/scripts/db-seed.ts",
-    "db:export-translations": "tsx server/scripts/export-translations.ts"
+    "db:seed": "tsx server/scripts/db-seed.ts"
   },
   "dependencies": {
     "@angular/animations": "22.2.2",

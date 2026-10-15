@@ -2,10 +2,10 @@
 
 |          |                                                                                                                                                                                                    |
 | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Status   | **P1 Foundation done** (Drizzle schema, migrations, `DatabaseModule`, seed, translations export, test infrastructure). Services still use MongoDB until P2.                                        |
+| Status   | **P1 Foundation done** (Drizzle schema, migrations, `DatabaseModule`, seed, test infrastructure). Services still use MongoDB until P2.                                                             |
 | Target   | PostgreSQL **18.6** on the production server (`172.105.94.117`), listening on `127.0.0.1:5432` only. Database `eshop`, user `eshop`; the password is in `/home/eshop/.env.postgres` on the server. |
 | Source   | MongoDB via Mongoose 8.24; schemas are described in [architecture.md § Data model](architecture.md#5-data-model).                                                                                  |
-| Data     | **Fresh start.** The current MongoDB holds only dummy data. Products, categories, orders, users and sessions are **not** copied. Only the UI translations are exported once as a seed file (§5).   |
+| Data     | **Fresh start.** The current MongoDB holds only dummy data. **Nothing is copied from MongoDB** (the UI translations there were incomplete too).                                                    |
 | Baseline | `master` with strict TypeScript, 107 server/API tests and 18 e2e tests (see [testing.md](testing.md)).                                                                                             |
 
 This document covers:
@@ -270,18 +270,15 @@ document. The block above is the review copy.
 It creates:
 
 - **an admin user** from `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`, with roles `['admin']`;
-- **the UI translations** (`en`, `sk`, `cs`) from `server/seed/translations.json`;
+- **the UI languages** (`en`, `sk`, `cs`), empty unless `server/seed/translations.json` exists;
 - **a default shop config**, active, using the built-in shipping costs from
   `server/src/shared/constans.ts` (`shippingCost`);
 - **a default theme**, active, with neutral styles. You adjust it in the dashboard.
 
-**Translations export:**
-
-- a one-off, read-only script `npm run db:export-translations -- --mongo $MONGO_URI` writes the
-  current MongoDB `translations` collection to `server/seed/translations.json`, sorted by key so
-  diffs stay readable;
-- the file is committed and from then on is the source of the seed;
-- nothing else is taken from MongoDB.
+**Translations:** nothing is exported from MongoDB (it held only a few keys). Languages start empty and
+are filled in the dashboard's translations editor. If a versioned set of texts is wanted later,
+put it in `server/seed/translations.json` (`{ "en": { "Key": "Text" }, "sk": {…}, "cs": {…} }`) and
+`db:seed` loads it into languages that don't exist yet.
 
 **Demo data (development and e2e only):** `npm run db:seed:demo` adds a few products and
 categories from the fixtures in `e2e/support/fixtures.mjs`. It never runs in production.

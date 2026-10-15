@@ -13,7 +13,7 @@ async function main() {
   try {
     const translations = existsSync(TRANSLATIONS_SEED_FILE) ? JSON.parse(readFileSync(TRANSLATIONS_SEED_FILE, 'utf8')) : undefined;
     if (!translations) {
-      console.warn(`No ${TRANSLATIONS_SEED_FILE}; languages are seeded with empty translations.`);
+      console.log(`No ${TRANSLATIONS_SEED_FILE}; languages start empty (fill them in the dashboard translations editor).`);
     }
 
     const result = await seed(drizzle(pool, { schema }), {

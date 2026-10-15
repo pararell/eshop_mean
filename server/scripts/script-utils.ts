@@ -1,6 +1,6 @@
 import { resolve } from 'node:path';
 
-/** Versioned seed file for the UI translations (repository root relative). */
+/** Optional seed file for the UI translations ({ en: {...}, sk: {...}, cs: {...} }), repository root relative. */
 export const TRANSLATIONS_SEED_FILE = resolve(process.cwd(), 'server/seed/translations.json');
 
 /** Scripts read configuration only from the environment, never from .env, so a production URL is always explicit. */

@@ -436,7 +436,7 @@ erDiagram
 ### Migration considerations (PostgreSQL)
 
 The migration is planned as a **fresh start**: the current MongoDB holds only dummy data, so nothing
-is copied except the UI translations, which are exported once as a seed file. The full plan, with
+is copied (the UI translations there were incomplete as well). The full plan, with
 schema, field mapping, seed, phases and deployment, is in [postgres-migration.md](postgres-migration.md).
 In short:
 
