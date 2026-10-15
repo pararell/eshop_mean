@@ -6,6 +6,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { combineLatest, Observable, of } from 'rxjs';
 import type {
+  AiDraftRequest,
+  AiDraftResponse,
+  AiStatus,
   CategoryInput,
   ContactRequest,
   CurrentUser,
@@ -310,6 +313,16 @@ export class ApiService {
       );
     }
     return undefined;
+  }
+
+  /** Whether AI product drafts are enabled on the server (admin only) */
+  getAiStatus() {
+    return this.handle(this.http.get<AiStatus>(this.apiUrl + '/api/admin/ai/status', this.requestOptions));
+  }
+
+  /** AI product draft; unsubscribing cancels the request. Errors come back as `{ error }` (HttpErrorResponse). */
+  createAiDraft(req: AiDraftRequest) {
+    return this.handle(this.http.post<AiDraftResponse>(this.apiUrl + '/api/admin/products/ai-draft', req, this.requestOptions));
   }
 
   sendContact(req: ContactRequest) {

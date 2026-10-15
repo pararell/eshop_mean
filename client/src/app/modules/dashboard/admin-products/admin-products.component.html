@@ -1,0 +1,146 @@
+<div class="products">
+  <div class="products-toolbar">
+    <a mat-flat-button color="primary" [routerLink]="['/' + lang() + '/dashboard/products/new']">
+      <mat-icon aria-hidden="true">add</mat-icon> New product
+    </a>
+    <button mat-button type="button" (click)="refresh()"><mat-icon aria-hidden="true">refresh</mat-icon> Refresh</button>
+    <span class="products-count" role="status" aria-live="polite">{{ filtered().length }} of {{ products().length }} products</span>
+  </div>
+
+  <div class="products-filters">
+    <mat-form-field class="products-search">
+      <mat-label>Search title or URL</mat-label>
+      <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+      <input matInput type="search" [ngModel]="search()" (ngModelChange)="search.set($event); resetPage()" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Category</mat-label>
+      <mat-select [value]="category()" (valueChange)="category.set($event); resetPage()">
+        <mat-option value="">All categories</mat-option>
+        @for (c of categories(); track c) {
+          <mat-option [value]="c">{{ c }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Status ({{ lang() | uppercase }})</mat-label>
+      <mat-select [value]="visibility()" (valueChange)="visibility.set($event); resetPage()">
+        <mat-option value="all">All</mat-option>
+        <mat-option value="visible">Visible</mat-option>
+        <mat-option value="hidden">Hidden</mat-option>
+        <mat-option value="incomplete">Missing title or price</mat-option>
+      </mat-select>
+    </mat-form-field>
+    @if (search() || category() || visibility() !== 'all') {
+      <button mat-button type="button" (click)="clearFilters()">Clear filters</button>
+    }
+  </div>
+
+  <div class="products-table-wrap">
+    <table
+      mat-table
+      [dataSource]="page()"
+      matSort
+      [matSortActive]="sort().active"
+      [matSortDirection]="sort().direction"
+      (matSortChange)="onSort($event)"
+      class="products-table"
+    >
+      <caption class="visually-hidden">
+        Products, texts and prices in
+        {{
+          lang() | uppercase
+        }}
+      </caption>
+
+      <ng-container matColumnDef="image">
+        <th mat-header-cell *matHeaderCellDef><span class="visually-hidden">Photo</span></th>
+        <td mat-cell *matCellDef="let p">
+          @if (p.mainImage?.url || p.images?.[0]) {
+            <img class="products-thumb" [src]="p.mainImage?.url || p.images[0]" alt="" loading="lazy" />
+          } @else {
+            <span class="products-thumb products-thumb-empty" aria-hidden="true"><mat-icon>image</mat-icon></span>
+          }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Product</th>
+        <td mat-cell *matCellDef="let p">
+          <a class="products-title" [routerLink]="editLink(p)" (click)="$event.stopPropagation()">{{ p.title || p.titleUrl }}</a>
+          <div class="products-slug">{{ p.titleUrl }}</div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="categories">
+        <th mat-header-cell *matHeaderCellDef>Categories</th>
+        <td mat-cell *matCellDef="let p">{{ (p.tags ?? []).join(', ') }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Price</th>
+        <td mat-cell *matCellDef="let p">
+          @if (p.salePrice) {
+            {{ p.salePrice }} {{ currency() }}
+          } @else {
+            <span class="products-missing">no price</span>
+          }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="stock">
+        <th mat-header-cell *matHeaderCellDef>Stock</th>
+        <td mat-cell *matCellDef="let p">
+          @switch (p.stock) {
+            @case ('onStock') {
+              In stock
+            }
+            @case ('onWaitings') {
+              In a few weeks
+            }
+            @case ('unavailable') {
+              Unavailable
+            }
+            @default {
+              —
+            }
+          }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="visibility">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let p">
+          @if (!p.title) {
+            <span class="status status-missing">No {{ lang() | uppercase }} text</span>
+          } @else if (p.visibility) {
+            <span class="status status-visible">Visible</span>
+          } @else {
+            <span class="status">Hidden</span>
+          }
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let p; columns: columns" class="products-row" (click)="open(p)"></tr>
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell products-empty" [attr.colspan]="columns.length">
+          @if (products().length) {
+            No product matches the filters.
+          } @else {
+            No products yet. Create the first one with “New product”.
+          }
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <mat-paginator
+    [length]="filtered().length"
+    [pageIndex]="pageIndex()"
+    [pageSize]="pageSize()"
+    [pageSizeOptions]="[10, 25, 50, 100]"
+    (page)="onPage($event)"
+    aria-label="Product pages"
+  />
+</div>

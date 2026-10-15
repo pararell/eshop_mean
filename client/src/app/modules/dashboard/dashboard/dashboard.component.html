@@ -13,30 +13,10 @@
       </button>
     </div>
     <mat-tab-group #MatTabGroup backgroundColor="primary" animationDuration="0ms">
-      <mat-tab label="All products">
+      <mat-tab label="Products">
         <div class="dashboard-tab-content">
-          <app-all-products
-            [allProducts]="allProducts$()"
-            [lang]="(lang$ | async)!"
-            [currency]="currency$()"
-            (getAllProducts)="getProducts()"
-            (editProduct)="setToEditProduct($event)"
-          />
+          <app-admin-products />
         </div>
-      </mat-tab>
-      <mat-tab label="Add product">
-        <ng-template matTabContent>
-          <div class="dashboard-tab-content">
-            <app-products-edit [action]="'add'" (changeTab)="changeTab($event)" />
-          </div>
-        </ng-template>
-      </mat-tab>
-      <mat-tab label="Edit product">
-        <ng-template matTabContent>
-          <div class="dashboard-tab-content">
-            <app-products-edit [titles]="(allProductsTitles$ | async)!" [productToEditTitleUrl]="productToEditTitleUrl" [action]="'edit'" />
-          </div>
-        </ng-template>
       </mat-tab>
       <mat-tab label="Categories">
         <ng-template matTabContent>

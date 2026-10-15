@@ -37,7 +37,8 @@ const server = spawn(process.execPath, ['dist/eshop/server/server.mjs'], {
 // e2e/support/check-server-errors.mjs fails the run if any were logged.
 const errorLog = resolve(root, 'test-results/e2e-server-errors.log');
 writeFileSync(errorLog, '');
-const SERVER_ERROR = /uncaughtException|unhandledRejection|Unhandled promise rejection|\bNG0\d{3}\b/;
+// Angular logs SSR exceptions as "ERROR TypeError: ..."; Nest's own logs ("[Nest] ... ERROR [Context]") do not match
+const SERVER_ERROR = /uncaughtException|unhandledRejection|Unhandled promise rejection|\bNG0\d{3}\b|(^|\s)ERROR \w*Error\b/;
 for (const stream of [server.stdout, server.stderr]) {
   stream.on('data', (chunk) => {
     process.stderr.write(chunk);

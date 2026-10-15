@@ -7,34 +7,36 @@ test.beforeEach(async ({ page }) => {
   await expect(page.getByText('SIGNIN_SUCCESS')).toBeVisible();
 });
 
-const productForm = (page: Page) => page.locator('app-products-edit').filter({ visible: true });
+const editor = (page: Page) => page.locator('app-product-editor');
 
 test('admin creates a product that appears in the shop', async ({ page, request }) => {
   const titleUrl = `e2e-scooter-${Date.now()}`;
   await page.goto('/en/dashboard');
-  await page.getByRole('tab', { name: 'Add product' }).click();
+  await page.getByRole('link', { name: 'New product' }).click();
+  await expect(page).toHaveURL('/en/dashboard/products/new');
 
-  const form = productForm(page);
-  const field = (name: string) => form.locator(`[formcontrolname="${name}"]`);
-  await field('titleUrl').fill(titleUrl);
-  await field('title').fill('E2E Scooter');
-  await field('salePrice').fill('40');
-  await field('regularPrice').fill('45');
-  await field('description').fill('Fast scooter');
-  await form.locator('#visible input').check();
-  await form.locator('#onStock input').check();
-  await form.locator('#normal input').check();
-  await form.locator('#basic input').check();
-  await form.locator('input[name=tag]').fill('Scooters');
-  await form.getByRole('button', { name: 'Add Tag' }).click();
+  const form = editor(page);
+  await form.getByLabel('Title', { exact: true }).fill('E2E Scooter');
+  // the URL follows the English title until it is edited
+  await expect(form.getByLabel('Product URL')).toHaveValue('e2e-scooter');
+  await form.getByLabel('Product URL').fill(titleUrl);
+  await form.getByLabel('Short description').fill('Fast scooter');
+  await form.getByLabel('Sale price').fill('40');
+  await form.getByLabel('Regular price').fill('45');
+  await form.getByRole('switch', { name: 'Visible in the shop (EN)' }).click();
+  await form.getByPlaceholder('Add category…').fill('Scooters');
+  await form.getByPlaceholder('Add category…').press('Enter');
+  await expect(form.getByRole('row', { name: /scooters/ })).toBeVisible();
 
   const added = page.waitForResponse((r) => r.url().includes('/api/products/add'));
-  await form.getByRole('button', { name: 'Save' }).click();
+  await form.getByRole('button', { name: 'Save', exact: true }).click();
   expect((await added).status()).toBe(201);
+  await expect(page.getByText('Product saved')).toBeVisible();
+  await expect(page).toHaveURL(`/en/dashboard/products/${titleUrl}`);
 
-  // The dashboard list is reloaded after saving (BUG-28 regression; it used to be emptied)
-  await page.getByRole('tab', { name: 'All products' }).click();
-  await expect(page.locator('app-all-products .product_card', { hasText: 'E2E Scooter' })).toBeVisible();
+  // The product list shows it
+  await page.goto('/en/dashboard');
+  await expect(page.locator('app-admin-products').getByRole('link', { name: 'E2E Scooter' })).toBeVisible();
 
   await expect.poll(async () => (await request.get(`/api/products/${titleUrl}?lang=en`)).status()).toBe(200);
   await page.goto(`/en/product/${titleUrl}`);
@@ -42,20 +44,40 @@ test('admin creates a product that appears in the shop', async ({ page, request 
   await expect(page.locator('mat-card.product')).toContainText('40 EUR');
 });
 
-test('admin edits a product price', async ({ page, request }) => {
+test('admin edits a product price from the product list', async ({ page, request }) => {
   await page.goto('/en/dashboard');
-  await page.locator('.product_card', { hasText: E2E.bike.title }).getByText('Edit').click();
+  const list = page.locator('app-admin-products');
+  await list.getByLabel('Search title or URL').fill('bike');
+  await list.getByRole('link', { name: E2E.bike.title }).click();
+  await expect(page).toHaveURL(`/en/dashboard/products/${E2E.bike.titleUrl}`);
 
-  const form = productForm(page);
-  await expect(form.locator('[formcontrolname=title]')).toHaveValue(E2E.bike.title);
-  await form.locator('[formcontrolname=salePrice]').fill('55');
+  const form = editor(page);
+  await expect(form.getByLabel('Title', { exact: true })).toHaveValue(E2E.bike.title);
+  await expect(form.getByLabel('Product URL')).toBeDisabled();
+  await form.getByLabel('Sale price').fill('55');
 
   const edited = page.waitForResponse((r) => r.url().includes('/api/products/edit'));
-  await form.getByRole('button', { name: 'Save' }).click();
+  await form.getByRole('button', { name: 'Save', exact: true }).click();
   expect((await edited).status()).toBe(200);
 
   const product = await (await request.get(`/api/products/${E2E.bike.titleUrl}?lang=en`)).json();
   expect(product.salePrice).toBe(55);
+});
+
+test('the editor explains what is missing before saving', async ({ page }) => {
+  await page.goto('/en/dashboard/products/new');
+  const form = editor(page);
+  await form.getByLabel('Title', { exact: true }).fill('Incomplete product');
+  await form.getByRole('switch', { name: 'Visible in the shop (EN)' }).click();
+
+  const requests: string[] = [];
+  page.on('request', (r) => requests.push(r.url()));
+  await form.getByRole('button', { name: 'Save', exact: true }).click();
+
+  await expect(form.getByRole('alert').filter({ hasText: 'Some fields need attention' })).toBeVisible();
+  await expect(form.getByText('A visible product needs a price')).toBeVisible();
+  await expect(form.getByLabel('Sale price')).toBeFocused();
+  expect(requests.some((url) => url.includes('/api/products/add'))).toBe(false);
 });
 
 test('admin opens the order list and an order detail', async ({ page }) => {

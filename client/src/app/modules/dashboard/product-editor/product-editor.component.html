@@ -1,0 +1,324 @@
+<div class="editor">
+  <header class="editor-header">
+    <a mat-button [routerLink]="listLink()"><mat-icon aria-hidden="true">arrow_back</mat-icon> Products</a>
+    <h1 class="editor-title">{{ isNew() ? 'New product' : 'Edit product' }}</h1>
+    @if (!isNew()) {
+      <code class="editor-slug">{{ titleUrl() }}</code>
+    }
+  </header>
+
+  @if (loading()) {
+    <div class="editor-loading" role="status"><mat-progress-spinner mode="indeterminate" diameter="40" aria-label="Loading product" /></div>
+  } @else if (notFound()) {
+    <p class="editor-not-found" role="alert">Product "{{ titleUrl() }}" was not found. <a [routerLink]="listLink()">Back to products</a></p>
+  } @else {
+    @if (aiStatus().enabled) {
+      <app-ai-assistant
+        [imageCount]="aiImages().length"
+        [busy]="aiBusy()"
+        [uploading]="uploading()"
+        [error]="aiError()"
+        [warnings]="aiWarnings()"
+        [suggestedCategories]="aiSuggestions()"
+        [pendingCount]="aiPendingCount()"
+        [existingProduct]="!isNew()"
+        [expanded]="isNew()"
+        (fill)="fillWithAi($event)"
+        (cancelFill)="cancelAi()"
+        (addCategory)="addCategory($event)"
+        (acceptAll)="acceptAi()"
+        (dismissWarnings)="aiWarnings.set([])"
+      />
+    }
+
+    <form #formEl class="editor-form" [formGroup]="form" (ngSubmit)="save()" novalidate>
+      <!-- Photos -->
+      <section class="editor-section" aria-labelledby="photos-heading">
+        <h2 id="photos-heading">Photos</h2>
+        <app-image-gallery
+          [images]="formValue().images"
+          [mainImage]="formValue().mainImage"
+          [aiImageCount]="aiStatus().enabled ? aiImages().length : 0"
+          [disabled]="aiBusy()"
+          (imagesChange)="setImages($event)"
+          (mainImageChange)="setMainImage($event)"
+          (uploadingChange)="uploading.set($event)"
+        />
+      </section>
+
+      <!-- Basics -->
+      <section class="editor-section" aria-labelledby="basics-heading">
+        <h2 id="basics-heading">Basics</h2>
+        <div class="editor-row">
+          <mat-form-field class="editor-field" [class.ai-filled]="isAiPath('titleUrl')">
+            <mat-label>Product URL</mat-label>
+            <span matTextPrefix class="editor-prefix">/product/</span>
+            <input matInput formControlName="titleUrl" name="titleUrl" (input)="onSlugInput()" (blur)="formatSlug()" autocomplete="off" />
+            @if (isAiPath('titleUrl')) {
+              <span matSuffix class="ai-badge" aria-label="Suggested by AI">AI</span>
+            }
+            @if (isNew()) {
+              <mat-hint>Generated from the English title; lowercase letters, digits and hyphens</mat-hint>
+            } @else {
+              <mat-hint>The URL of an existing product can't be changed</mat-hint>
+            }
+            @if (form.controls.titleUrl.hasError('required')) {
+              <mat-error>Enter the product URL</mat-error>
+            } @else if (form.controls.titleUrl.hasError('pattern')) {
+              <mat-error>Use lowercase letters, digits and hyphens only</mat-error>
+            } @else if (form.controls.titleUrl.hasError('taken')) {
+              <mat-error>Another product already uses this URL</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <mat-form-field class="editor-field editor-field-wide">
+          <mat-label>Categories</mat-label>
+          <mat-chip-grid #chipGrid aria-label="Product categories">
+            @for (tag of formValue().tags; track tag) {
+              <mat-chip-row (removed)="removeCategory(tag)">
+                {{ tag }}
+                <button matChipRemove type="button" [attr.aria-label]="'Remove category ' + tag"><mat-icon>cancel</mat-icon></button>
+              </mat-chip-row>
+            }
+            <input
+              #categoryInput
+              placeholder="Add category…"
+              [matChipInputFor]="chipGrid"
+              [matAutocomplete]="categoryAuto"
+              [disabled]="aiBusy()"
+              (input)="categoryQuery.set(categoryInput.value)"
+              (matChipInputTokenEnd)="onCategoryInput($event)"
+            />
+          </mat-chip-grid>
+          <mat-autocomplete #categoryAuto="matAutocomplete" (optionSelected)="onCategorySelected($event, categoryInput)">
+            @for (category of filteredCategories(); track category) {
+              <mat-option [value]="category">{{ category }}</mat-option>
+            }
+          </mat-autocomplete>
+          <mat-hint>Pick existing categories or type a new one and press Enter; new categories are created on save</mat-hint>
+        </mat-form-field>
+      </section>
+
+      <!-- Texts, price and availability per language -->
+      <section class="editor-section" aria-labelledby="languages-heading">
+        <h2 id="languages-heading">Texts, price and availability</h2>
+        <mat-tab-group [selectedIndex]="selectedTab()" (selectedIndexChange)="selectedTab.set($event)" animationDuration="0ms" formGroupName="langs">
+          @for (lang of languages; track lang) {
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <span class="tab-label">
+                  {{ lang | uppercase }}
+                  @if (langStatus()[lang].ai) {
+                    <span class="ai-badge" [attr.aria-label]="langStatus()[lang].ai + ' AI suggestions to review'"
+                      >AI {{ langStatus()[lang].ai }}</span
+                    >
+                  }
+                  @if (langStatus()[lang].invalid && form.touched) {
+                    <mat-icon class="tab-label-error" aria-label="has errors">error</mat-icon>
+                  } @else if (langStatus()[lang].visible) {
+                    <mat-icon class="tab-label-ok" aria-label="visible in the shop">visibility</mat-icon>
+                  } @else if (langStatus()[lang].empty) {
+                    <span class="tab-label-muted">empty</span>
+                  }
+                </span>
+              </ng-template>
+
+              <div class="lang" [formGroupName]="lang">
+                @if (langStatus()[lang].ai) {
+                  <div class="lang-ai-bar">
+                    <span>{{ langStatus()[lang].ai }} AI suggestion{{ langStatus()[lang].ai > 1 ? 's' : '' }} in {{ languageLabels[lang] }}</span>
+                    <button mat-stroked-button type="button" (click)="acceptAiLanguage(lang)">Accept {{ languageLabels[lang] }} texts</button>
+                  </div>
+                }
+
+                <h3 class="lang-heading">Content</h3>
+                <mat-form-field class="editor-field editor-field-wide" [class.ai-filled]="isAi(lang, 'title')">
+                  <mat-label>Title</mat-label>
+                  <input matInput formControlName="title" name="title" />
+                  @if (isAi(lang, 'title')) {
+                    <button
+                      matSuffix
+                      mat-icon-button
+                      type="button"
+                      class="ai-accept"
+                      aria-label="Accept AI title"
+                      (click)="acceptAi(['langs.' + lang + '.title'])"
+                    >
+                      <span class="ai-badge" aria-hidden="true">AI</span>
+                    </button>
+                  }
+                  @if (form.controls.langs.controls[lang].controls.title.hasError('requiredWhenVisible')) {
+                    <mat-error>A visible product needs a title</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field class="editor-field editor-field-wide" [class.ai-filled]="isAi(lang, 'description')">
+                  <mat-label>Short description</mat-label>
+                  <textarea matInput formControlName="description" name="description" rows="2"></textarea>
+                  @if (isAi(lang, 'description')) {
+                    <button
+                      matSuffix
+                      mat-icon-button
+                      type="button"
+                      class="ai-accept"
+                      aria-label="Accept AI short description"
+                      (click)="acceptAi(['langs.' + lang + '.description'])"
+                    >
+                      <span class="ai-badge" aria-hidden="true">AI</span>
+                    </button>
+                  }
+                  <mat-hint>Shown in product lists</mat-hint>
+                </mat-form-field>
+
+                <div class="description" [class.ai-filled]="isAi(lang, 'descriptionFull')">
+                  <div class="description-header">
+                    <span class="description-label" [id]="'desc-label-' + lang">Full description</span>
+                    @if (isAi(lang, 'descriptionFull')) {
+                      <button mat-stroked-button type="button" class="ai-accept-text" (click)="acceptAi(['langs.' + lang + '.descriptionFull'])">
+                        <span class="ai-badge" aria-hidden="true">AI</span> Accept description
+                      </button>
+                    }
+                    <mat-button-toggle-group
+                      hideSingleSelectionIndicator
+                      [value]="htmlMode()[lang] ? 'html' : 'visual'"
+                      (change)="toggleHtml(lang, $event.value === 'html')"
+                      [attr.aria-labelledby]="'desc-label-' + lang"
+                    >
+                      <mat-button-toggle value="visual">Visual</mat-button-toggle>
+                      <mat-button-toggle value="html">HTML</mat-button-toggle>
+                    </mat-button-toggle-group>
+                  </div>
+                  @if (htmlMode()[lang]) {
+                    <mat-form-field class="editor-field editor-field-wide">
+                      <mat-label>Full description (HTML)</mat-label>
+                      <textarea matInput formControlName="descriptionFull" name="descriptionFull" rows="8"></textarea>
+                    </mat-form-field>
+                  } @else {
+                    <app-tiny-editor [description]="formValue().langs[lang].descriptionFull" (editorContentChange)="onEditorChange(lang, $event)" />
+                  }
+                </div>
+
+                <h3 class="lang-heading">Search engines</h3>
+                <div class="editor-row">
+                  <mat-form-field class="editor-field" [class.ai-filled]="isAi(lang, 'seoTitle')">
+                    <mat-label>SEO title</mat-label>
+                    <input matInput formControlName="seoTitle" name="seoTitle" [attr.maxlength]="seoTitleMax + 20" />
+                    @if (isAi(lang, 'seoTitle')) {
+                      <button
+                        matSuffix
+                        mat-icon-button
+                        type="button"
+                        class="ai-accept"
+                        aria-label="Accept AI SEO title"
+                        (click)="acceptAi(['langs.' + lang + '.seoTitle'])"
+                      >
+                        <span class="ai-badge" aria-hidden="true">AI</span>
+                      </button>
+                    }
+                    <mat-hint>Empty uses the title</mat-hint>
+                    <mat-hint align="end">{{ formValue().langs[lang].seoTitle.length }} / {{ seoTitleMax }}</mat-hint>
+                    <mat-error>At most {{ seoTitleMax }} characters</mat-error>
+                  </mat-form-field>
+                  <mat-form-field class="editor-field" [class.ai-filled]="isAi(lang, 'metaDescription')">
+                    <mat-label>Meta description</mat-label>
+                    <textarea
+                      matInput
+                      formControlName="metaDescription"
+                      name="metaDescription"
+                      rows="2"
+                      [attr.maxlength]="metaDescriptionMax + 40"
+                    ></textarea>
+                    @if (isAi(lang, 'metaDescription')) {
+                      <button
+                        matSuffix
+                        mat-icon-button
+                        type="button"
+                        class="ai-accept"
+                        aria-label="Accept AI meta description"
+                        (click)="acceptAi(['langs.' + lang + '.metaDescription'])"
+                      >
+                        <span class="ai-badge" aria-hidden="true">AI</span>
+                      </button>
+                    }
+                    <mat-hint>Empty uses the short description</mat-hint>
+                    <mat-hint align="end">{{ formValue().langs[lang].metaDescription.length }} / {{ metaDescriptionMax }}</mat-hint>
+                    <mat-error>At most {{ metaDescriptionMax }} characters</mat-error>
+                  </mat-form-field>
+                </div>
+
+                <h3 class="lang-heading">Price and availability</h3>
+                <div class="editor-row">
+                  <mat-form-field class="editor-field editor-field-narrow">
+                    <mat-label>Sale price</mat-label>
+                    <input matInput formControlName="salePrice" name="salePrice" inputmode="decimal" autocomplete="off" />
+                    <mat-hint>What customers pay</mat-hint>
+                    @if (form.controls.langs.controls[lang].controls.salePrice.hasError('requiredWhenVisible')) {
+                      <mat-error>A visible product needs a price</mat-error>
+                    } @else {
+                      <mat-error>Use a number like 19.90</mat-error>
+                    }
+                  </mat-form-field>
+                  <mat-form-field class="editor-field editor-field-narrow">
+                    <mat-label>Regular price</mat-label>
+                    <input matInput formControlName="regularPrice" name="regularPrice" inputmode="decimal" autocomplete="off" />
+                    <mat-hint>Shown crossed out when on sale</mat-hint>
+                    <mat-error>Use a number like 19.90</mat-error>
+                  </mat-form-field>
+                  <mat-form-field class="editor-field editor-field-narrow">
+                    <mat-label>Stock</mat-label>
+                    <mat-select formControlName="stock" name="stock">
+                      <mat-option value="onStock">In stock</mat-option>
+                      <mat-option value="onWaitings">Available in a few weeks</mat-option>
+                      <mat-option value="unavailable">Unavailable</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <mat-form-field class="editor-field editor-field-narrow">
+                    <mat-label>Shipping</mat-label>
+                    <mat-select formControlName="shipping" name="shipping">
+                      <mat-option value="basic">Basic</mat-option>
+                      <mat-option value="extended">Extended</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="editor-row editor-row-toggles">
+                  <mat-checkbox formControlName="onSale" name="onSale">On sale</mat-checkbox>
+                  <mat-slide-toggle formControlName="visibility" name="visibility">Visible in the shop ({{ lang | uppercase }})</mat-slide-toggle>
+                </div>
+              </div>
+            </mat-tab>
+          }
+        </mat-tab-group>
+      </section>
+
+      <!-- Sticky actions -->
+      <div class="editor-footer">
+        @if (saveError()) {
+          <p class="editor-error" role="alert">{{ saveError() }}</p>
+        }
+        @if (confirmUnreviewed()) {
+          <div class="editor-confirm" role="alert">
+            <span>{{ aiPendingCount() }} AI suggestion{{ aiPendingCount() > 1 ? 's are' : ' is' }} not reviewed yet. Save anyway?</span>
+            <button mat-flat-button color="primary" type="submit">Save anyway</button>
+            <button mat-button type="button" (click)="confirmUnreviewed.set(false)">Review first</button>
+          </div>
+        } @else {
+          <div class="editor-actions">
+            <button mat-flat-button color="primary" type="submit" [disabled]="saving() || aiBusy() || uploading()">
+              @if (saving()) {
+                <mat-progress-spinner mode="indeterminate" diameter="18" aria-hidden="true" />
+              }
+              Save
+            </button>
+            <a mat-button [routerLink]="listLink()">Cancel</a>
+            @if (!isNew()) {
+              <button mat-button type="button" color="warn" class="editor-delete" [disabled]="saving() || aiBusy()" (click)="remove()">
+                <mat-icon aria-hidden="true">delete</mat-icon> Delete
+              </button>
+            }
+          </div>
+        }
+      </div>
+    </form>
+  }
+</div>

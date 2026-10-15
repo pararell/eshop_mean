@@ -1,0 +1,107 @@
+:host {
+  display: block;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.products-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-bottom: 16px;
+}
+
+.products-count {
+  margin-left: auto;
+  opacity: 0.75;
+}
+
+.products-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 16px;
+}
+
+.products-search {
+  flex: 1 1 280px;
+}
+
+.products-table-wrap {
+  overflow-x: auto;
+}
+
+.products-table {
+  width: 100%;
+  min-width: 640px;
+}
+
+.products-row {
+  cursor: pointer;
+
+  &:hover {
+    background: rgb(0 0 0 / 3%);
+  }
+}
+
+.products-thumb {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin: 4px 0;
+  border-radius: 4px;
+  object-fit: cover;
+
+  &-empty {
+    background: rgb(0 0 0 / 6%);
+    opacity: 0.6;
+  }
+}
+
+.products-title {
+  font-weight: 500;
+  color: inherit;
+}
+
+.products-slug {
+  font-size: 0.8em;
+  opacity: 0.6;
+}
+
+.products-missing {
+  color: #b00020;
+  font-size: 0.9em;
+}
+
+.products-empty {
+  padding: 24px;
+  text-align: center;
+}
+
+.status {
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgb(0 0 0 / 8%);
+  font-size: 0.85em;
+  white-space: nowrap;
+
+  &-visible {
+    background: #e8f5e9;
+    color: #1b5e20;
+  }
+
+  &-missing {
+    background: #fdecea;
+    color: #8a1c13;
+  }
+}

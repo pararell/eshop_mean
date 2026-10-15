@@ -1,0 +1,108 @@
+<input
+  #fileInput
+  class="visually-hidden"
+  type="file"
+  accept="image/jpeg,image/png,image/webp,image/gif"
+  multiple
+  tabindex="-1"
+  aria-hidden="true"
+  data-testid="image-file-input"
+  (change)="onFilesPicked($event)"
+/>
+
+<button
+  type="button"
+  class="dropzone"
+  [class.dropzone-over]="dragOver()"
+  [disabled]="disabled()"
+  (click)="openPicker()"
+  (dragover)="onDragOver($event)"
+  (dragleave)="dragOver.set(false)"
+  (drop)="onDrop($event)"
+>
+  <mat-icon aria-hidden="true">add_photo_alternate</mat-icon>
+  <span class="dropzone-title">Drop photos here or choose files</span>
+  <span class="dropzone-hint">JPEG, PNG, WebP or GIF, up to 10 MB each</span>
+</button>
+
+@if (errors().length) {
+  <ul class="gallery-errors" role="alert">
+    @for (error of errors(); track error) {
+      <li>{{ error }}</li>
+    }
+  </ul>
+}
+
+@if (images().length || uploads().length) {
+  <ul class="gallery" cdkDropList cdkDropListOrientation="mixed" (cdkDropListDropped)="dropped($event)" aria-label="Product photos">
+    @for (image of images(); track image; let i = $index; let first = $first; let last = $last) {
+      <li class="gallery-item" cdkDrag [cdkDragDisabled]="disabled()" [class.gallery-item-main]="image === mainImage()">
+        <img [src]="image" [alt]="'Product photo ' + (i + 1)" loading="lazy" />
+        <div class="gallery-badges">
+          @if (image === mainImage()) {
+            <span class="badge">Main</span>
+          }
+          @if (aiImageCount() && i < aiImageCount()) {
+            <span class="badge badge-ai" title="The AI looks at this photo">AI</span>
+          }
+        </div>
+        <div class="gallery-actions">
+          <button
+            mat-icon-button
+            type="button"
+            [attr.aria-pressed]="image === mainImage()"
+            [attr.aria-label]="'Use photo ' + (i + 1) + ' as main photo'"
+            [disabled]="disabled()"
+            (click)="setMain(image)"
+          >
+            <mat-icon>{{ image === mainImage() ? 'star' : 'star_border' }}</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            type="button"
+            [attr.aria-label]="'Move photo ' + (i + 1) + ' left'"
+            [disabled]="disabled() || first"
+            (click)="move(i, -1)"
+          >
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            type="button"
+            [attr.aria-label]="'Move photo ' + (i + 1) + ' right'"
+            [disabled]="disabled() || last"
+            (click)="move(i, 1)"
+          >
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+          <button mat-icon-button type="button" [attr.aria-label]="'Remove photo ' + (i + 1)" [disabled]="disabled()" (click)="remove(image)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </li>
+    }
+    @for (upload of uploads(); track upload.id) {
+      <li class="gallery-item gallery-item-uploading" aria-busy="true">
+        <img [src]="upload.preview" [alt]="'Uploading ' + upload.name" />
+        <mat-progress-spinner mode="indeterminate" diameter="32" aria-label="Uploading" />
+      </li>
+    }
+  </ul>
+  @if (aiImageCount()) {
+    <p class="gallery-note">
+      The AI looks at the photos marked AI (the first {{ aiImageCount() === 1 ? 'one' : aiImageCount() }}). Drag or use the arrows to change the
+      order.
+    </p>
+  }
+}
+
+<div class="gallery-url">
+  <mat-form-field class="gallery-url-field">
+    <mat-label>Add photo by URL</mat-label>
+    <input matInput type="url" [(ngModel)]="imageUrl" [disabled]="disabled()" (keydown.enter)="$event.preventDefault(); addUrl()" />
+    <mat-hint>Photos added by URL are not sent to the AI</mat-hint>
+  </mat-form-field>
+  <button mat-stroked-button type="button" [disabled]="disabled() || !imageUrl" (click)="addUrl()">Add</button>
+</div>
+
+<p class="visually-hidden" aria-live="polite">{{ status() }}</p>

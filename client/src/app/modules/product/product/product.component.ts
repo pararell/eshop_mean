@@ -142,8 +142,9 @@ export class ProductComponent implements OnDestroy {
         take(1),
       )
       .subscribe(([product, currency]) => {
-        this.title.setTitle(product.title);
-        this.meta.updateTag({ name: 'description', content: product.description });
+        // SEO fields from the admin editor; empty ones fall back to the title / short description
+        this.title.setTitle(product.seoTitle || product.title);
+        this.meta.updateTag({ name: 'description', content: product.metaDescription || product.description });
         const productSchema = {
           '@context': 'https://schema.org/',
           '@type': 'Product',

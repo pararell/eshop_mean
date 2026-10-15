@@ -1,0 +1,104 @@
+<mat-expansion-panel class="ai-panel" [expanded]="expanded()">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      <mat-icon aria-hidden="true">flash_on</mat-icon>
+      {{ existingProduct() ? 'Rewrite texts with AI' : 'Fill with AI' }}
+    </mat-panel-title>
+    <mat-panel-description>Photos and a few words → texts in every language</mat-panel-description>
+  </mat-expansion-panel-header>
+
+  <form class="ai-panel-form" (ngSubmit)="submit()">
+    <p class="ai-panel-photos">
+      @if (imageCount() > 1) {
+        The AI looks at the first {{ imageCount() }} uploaded photos.
+      } @else if (imageCount() === 1) {
+        The AI looks at the uploaded photo.
+      } @else {
+        Upload photos in the Photos section, describe the product below, or both.
+      }
+    </p>
+
+    <mat-form-field class="ai-panel-field">
+      <mat-label>Describe the product</mat-label>
+      <input matInput name="aiText" maxlength="500" [(ngModel)]="text" [disabled]="busy()" placeholder="men's winter jacket, black, down, L–XXL" />
+      <mat-hint align="end">{{ text.length }} / 500</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field class="ai-panel-field">
+      <mat-label>Supplier text (optional)</mat-label>
+      <textarea matInput name="aiSupplierText" rows="3" maxlength="4000" [(ngModel)]="supplierText" [disabled]="busy()"></textarea>
+      <mat-hint>Paste a description or specification from the supplier</mat-hint>
+      <mat-hint align="end">{{ supplierText.length }} / 4000</mat-hint>
+    </mat-form-field>
+
+    @if (existingProduct()) {
+      <mat-checkbox name="aiOverwrite" [(ngModel)]="overwrite" [disabled]="busy()">Replace texts that are already filled</mat-checkbox>
+    }
+
+    <div class="ai-panel-actions">
+      @if (busy()) {
+        <button mat-flat-button type="button" disabled>
+          <mat-progress-spinner mode="indeterminate" diameter="18" aria-hidden="true" />
+          Working…
+        </button>
+        <button mat-stroked-button type="button" (click)="cancelFill.emit()">Cancel</button>
+      } @else {
+        <button mat-flat-button color="primary" type="submit" [disabled]="!canFill() || !hasInput()">
+          <mat-icon aria-hidden="true">flash_on</mat-icon>
+          Fill with AI
+        </button>
+        @if (uploading()) {
+          <span class="ai-panel-note">Waiting for the photos to upload…</span>
+        }
+      }
+    </div>
+    <p class="ai-panel-status" role="status" aria-live="polite">{{ busy() ? busyMessage() : '' }}</p>
+  </form>
+
+  @if (error()) {
+    <div class="ai-panel-error" role="alert">
+      <mat-icon aria-hidden="true">error_outline</mat-icon>
+      <span>{{ error() }}</span>
+    </div>
+  }
+
+  @if (pendingCount() || warnings().length || suggestedCategories().length) {
+    <div #summary class="ai-panel-result" tabindex="-1" aria-label="AI result">
+      @if (pendingCount()) {
+        <p>
+          <strong>{{ pendingCount() }} field{{ pendingCount() > 1 ? 's were' : ' was' }} filled by AI</strong>
+          (marked <span class="ai-mark-sample">AI</span>). Check each language tab, edit what you need, then accept. Prices and stock are up to you.
+        </p>
+        <button mat-stroked-button type="button" (click)="acceptAll.emit()">Accept all AI texts</button>
+      }
+
+      @if (warnings().length) {
+        <div class="ai-panel-warnings">
+          <h4>Notes from the AI</h4>
+          <ul>
+            @for (warning of warnings(); track warning) {
+              <li>{{ warning }}</li>
+            }
+          </ul>
+          <button mat-icon-button type="button" aria-label="Dismiss notes" (click)="dismissWarnings.emit()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      }
+
+      @if (suggestedCategories().length) {
+        <div class="ai-panel-categories">
+          <h4 id="ai-suggested-categories">Suggested new categories</h4>
+          <mat-chip-listbox aria-labelledby="ai-suggested-categories" [selectable]="false">
+            @for (category of suggestedCategories(); track category) {
+              <mat-chip-option (click)="addCategory.emit(category)" (keydown.enter)="addCategory.emit(category)">
+                <mat-icon matChipAvatar aria-hidden="true">add</mat-icon>{{ category }}
+              </mat-chip-option>
+            }
+          </mat-chip-listbox>
+          <p class="ai-panel-note">Click to add. New categories are created when the product is saved.</p>
+        </div>
+      }
+    </div>
+  }
+</mat-expansion-panel>

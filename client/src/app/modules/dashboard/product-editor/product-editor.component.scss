@@ -1,0 +1,211 @@
+:host {
+  display: block;
+}
+
+.editor {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 16px 16px 0;
+}
+
+.editor-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-bottom: 16px;
+}
+
+.editor-title {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.editor-slug {
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgb(0 0 0 / 6%);
+}
+
+.editor-loading {
+  display: flex;
+  justify-content: center;
+  padding: 48px;
+}
+
+.editor-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.editor-section {
+  padding: 16px;
+  border: 1px solid rgb(0 0 0 / 12%);
+  border-radius: 8px;
+  background: #fff;
+
+  h2 {
+    margin: 0 0 16px;
+    font-size: 1.2rem;
+  }
+}
+
+.editor-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 16px;
+
+  &-toggles {
+    align-items: center;
+    gap: 24px;
+    margin: 8px 0 16px;
+  }
+}
+
+.editor-field {
+  flex: 1 1 280px;
+  min-width: 0;
+
+  &-wide {
+    width: 100%;
+  }
+
+  &-narrow {
+    flex: 1 1 180px;
+  }
+}
+
+.editor-prefix {
+  opacity: 0.6;
+}
+
+.lang {
+  padding-top: 16px;
+}
+
+.lang-heading {
+  margin: 16px 0 8px;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.lang-ai-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: #f3e5f5;
+}
+
+.tab-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tab-label-error {
+  color: #b00020;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.tab-label-ok {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  opacity: 0.7;
+}
+
+.tab-label-muted {
+  font-size: 0.8em;
+  opacity: 0.6;
+}
+
+.description {
+  margin-bottom: 16px;
+  padding-left: 8px;
+  border-left: 4px solid transparent;
+}
+
+.description-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-bottom: 8px;
+}
+
+.description-label {
+  flex: 1 1 auto;
+  font-weight: 500;
+}
+
+// AI-filled fields: purple left border and badge until edited or accepted
+.ai-filled {
+  border-left: 4px solid #6a1b9a;
+  padding-left: 8px;
+}
+
+.ai-badge {
+  display: inline-block;
+  padding: 0 5px;
+  border-radius: 3px;
+  background: #6a1b9a;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.ai-accept {
+  margin-right: 4px;
+}
+
+.editor-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  margin: 0 -16px;
+  padding: 12px 16px;
+  border-top: 1px solid rgb(0 0 0 / 12%);
+  background: #fafafa;
+}
+
+.editor-actions,
+.editor-confirm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+
+  mat-progress-spinner {
+    display: inline-block;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+}
+
+.editor-delete {
+  margin-left: auto;
+}
+
+.editor-error {
+  margin: 0 0 8px;
+  color: #b00020;
+}
+
+@media (width <= 600px) {
+  .editor {
+    padding: 8px 8px 0;
+  }
+
+  .editor-section {
+    padding: 12px;
+  }
+}
