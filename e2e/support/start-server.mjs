@@ -12,6 +12,7 @@ import pg from 'pg';
 import bcrypt from 'bcryptjs';
 
 import { E2E, testEnv } from './fixtures.mjs';
+import { startAiStub } from './ai-stub.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const port = process.env.E2E_PORT ?? '4600';
@@ -21,15 +22,25 @@ const postgres = await new PostgreSqlContainer('postgres:18').start();
 const databaseUrl = postgres.getConnectionUri();
 await seed(databaseUrl);
 
+// AI drafts run against a local stub of Gemini and Cloudinary (never the real services)
+const aiStub = await startAiStub({ cloudName: testEnv(baseURL).CLOUDINARY_NAME });
+const aiEnv = {
+  GEMINI_API_KEY: 'e2e-gemini-key',
+  AI_BASE_URL: aiStub.url,
+  AI_IMAGE_ORIGIN: aiStub.url,
+  // The Cloudinary SDK sends uploads to upload_prefix (read from CLOUDINARY_URL at startup)
+  CLOUDINARY_URL: `cloudinary://e2e:e2e@${testEnv(baseURL).CLOUDINARY_NAME}?upload_prefix=${encodeURIComponent(aiStub.url)}`,
+};
+
 // Lets specs inspect the database (e.g. to assert that an order was stored)
 const stateFile = resolve(root, 'test-results/e2e-state.json');
 mkdirSync(dirname(stateFile), { recursive: true });
-writeFileSync(stateFile, JSON.stringify({ databaseUrl, baseURL }));
+writeFileSync(stateFile, JSON.stringify({ databaseUrl, baseURL, aiStubUrl: aiStub.url }));
 
 const server = spawn(process.execPath, ['dist/eshop/server/server.mjs'], {
   cwd: root,
   // Explicit values override anything a local .env would provide
-  env: { ...process.env, ...testEnv(baseURL), DATABASE_URL: databaseUrl, PORT: port },
+  env: { ...process.env, ...testEnv(baseURL), ...aiEnv, DATABASE_URL: databaseUrl, PORT: port },
   stdio: ['ignore', 'pipe', 'pipe'],
 });
 
@@ -50,6 +61,7 @@ for (const stream of [server.stdout, server.stderr]) {
 
 const shutdown = async (code = 0) => {
   server.kill();
+  await aiStub.stop();
   await postgres.stop();
   process.exit(code);
 };

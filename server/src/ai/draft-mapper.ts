@@ -51,10 +51,17 @@ export const truncate = (text: string, max: number): string => {
   if (clean.length <= max) return clean;
   const cut = clean.slice(0, max - 1);
   const space = cut.lastIndexOf(' ');
-  return (space > max * 0.6 ? cut.slice(0, space) : cut).replace(/[\s,;:.-]+$/, '') + '…';
+  return (space >= max * 0.5 ? cut.slice(0, space) : cut).replace(/[\s,;:.-]+$/, '') + '…';
 };
 
-const plain = (text: string, max: number) => truncate(sanitizeHtml(text, { allowedTags: [], allowedAttributes: {} }), max);
+/** Undoes the entity escaping sanitize-html applies to text, so plain fields hold real characters */
+const decodeEntities = (text: string) =>
+  text.replace(/&(amp|lt|gt|quot|#39|#x27|#(\d+));/g, (_match, name: string, code?: string) =>
+    code ? String.fromCodePoint(Number(code)) : ({ amp: '&', lt: '<', gt: '>', quot: '"', '#39': "'", '#x27': "'" } as Record<string, string>)[name],
+  );
+
+/** Plain text (tags removed, entities decoded), cut to `max`; Angular escapes it when rendering */
+const plain = (text: string, max: number) => truncate(decodeEntities(sanitizeHtml(text, { allowedTags: [], allowedAttributes: {} })), max);
 
 const escapeHtml = (text: string) => text.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 

@@ -25,6 +25,11 @@ export const geminiReply = (json: unknown, usage = { promptTokenCount: 1200, can
   },
 });
 
+/** An Anthropic Messages reply whose forced tool call carries `input` */
+export const anthropicReply = (input: unknown, usage = { input_tokens: 2000, output_tokens: 900 }): StubReply => ({
+  body: { content: [{ type: 'tool_use', id: 'toolu_1', name: 'save_product_draft', input }], stop_reason: 'tool_use', usage },
+});
+
 export class AiStub {
   readonly requests: StubRequest[] = [];
   /** Replies to provider calls, in order; the last one repeats */

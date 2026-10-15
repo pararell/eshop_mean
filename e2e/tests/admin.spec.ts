@@ -10,16 +10,17 @@ test.beforeEach(async ({ page }) => {
 const editor = (page: Page) => page.locator('app-product-editor');
 
 test('admin creates a product that appears in the shop', async ({ page, request }) => {
-  const titleUrl = `e2e-scooter-${Date.now()}`;
+  const suffix = Date.now();
+  const titleUrl = `e2e-scooter-${suffix}`;
+  const title = `E2E Scooter ${suffix}`;
   await page.goto('/en/dashboard');
   await page.getByRole('link', { name: 'New product' }).click();
   await expect(page).toHaveURL('/en/dashboard/products/new');
 
   const form = editor(page);
-  await form.getByLabel('Title', { exact: true }).fill('E2E Scooter');
+  await form.getByLabel('Title', { exact: true }).fill(title);
   // the URL follows the English title until it is edited
-  await expect(form.getByLabel('Product URL')).toHaveValue('e2e-scooter');
-  await form.getByLabel('Product URL').fill(titleUrl);
+  await expect(form.getByLabel('Product URL')).toHaveValue(titleUrl);
   await form.getByLabel('Short description').fill('Fast scooter');
   await form.getByLabel('Sale price').fill('40');
   await form.getByLabel('Regular price').fill('45');
@@ -36,11 +37,11 @@ test('admin creates a product that appears in the shop', async ({ page, request 
 
   // The product list shows it
   await page.goto('/en/dashboard');
-  await expect(page.locator('app-admin-products').getByRole('link', { name: 'E2E Scooter' })).toBeVisible();
+  await expect(page.locator('app-admin-products').getByRole('link', { name: title })).toBeVisible();
 
   await expect.poll(async () => (await request.get(`/api/products/${titleUrl}?lang=en`)).status()).toBe(200);
   await page.goto(`/en/product/${titleUrl}`);
-  await expect(page.locator('mat-card.product')).toContainText('E2E Scooter');
+  await expect(page.locator('mat-card.product')).toContainText(title);
   await expect(page.locator('mat-card.product')).toContainText('40 EUR');
 });
 

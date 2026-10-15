@@ -6,6 +6,15 @@ export const E2E = {
   shipping: 5,
   translations: { sk: { Back: 'Späť' } },
   order: { orderId: 'order-e2e-seed', amount: 30, customer: 'Seed Customer' },
+  // What the stubbed AI answers (support/ai-stub.mjs)
+  ai: {
+    titleUrl: 'e2e-ai-jacket',
+    titles: { en: 'E2E Down Jacket', sk: 'E2E Páperová bunda', cs: 'E2E Péřová bunda' },
+    category: 'bikes',
+    suggestedCategory: 'Winter wear',
+    warning: 'Fill weight is not given.',
+    failWord: 'E2E_FAIL',
+  },
 };
 
 /** Every variable the server reads; external services get harmless test values. */

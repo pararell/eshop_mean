@@ -1,4 +1,7 @@
 // Runs before every test file, before any app module is imported.
+// Nest loads the decorator metadata polyfill itself; unit specs that skip Nest (DTOs with @Type) need it too.
+import 'reflect-metadata';
+
 // Every variable the server reads is set explicitly so values from a local .env
 // (loaded by ConfigModule, which never overrides existing variables) cannot leak into tests.
 const testEnv: Record<string, string> = {

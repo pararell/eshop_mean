@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 
 import { aiUsage, users } from '../../src/db/schema';
-import { AiStub, draftAnswer, geminiReply } from '../utils/ai-stub';
+import { AiStub, anthropicReply, draftAnswer, geminiReply } from '../utils/ai-stub';
 import { adminToken, createTestApp, createUser, loginToken, productFixture, TestApp } from '../utils/test-app';
 
 const IMAGE = (stub: AiStub) => `${stub.url}/test/image/upload/v1/products/jacket.jpg`;
@@ -21,6 +21,27 @@ describe('AI product drafts API', () => {
       expect((await t.http.get('/api/admin/ai/status').set(auth).expect(200)).body).toEqual({ enabled: false });
       await t.http.post('/api/admin/products/ai-draft').set(auth).send({ text: 'jacket' }).expect(404);
     });
+
+    it('keeps the status admin only', async () => {
+      await t.http.get('/api/admin/ai/status').expect(401);
+    });
+  });
+
+  describe('with an unknown AI_PROVIDER', () => {
+    let t: TestApp;
+    beforeAll(async () => {
+      Object.assign(process.env, { AI_PROVIDER: 'openai', GEMINI_API_KEY: 'k' });
+      t = await createTestApp();
+    });
+    afterAll(async () => {
+      Object.assign(process.env, { AI_PROVIDER: 'gemini', GEMINI_API_KEY: '' });
+      await t.close();
+    });
+
+    it('stays off rather than guessing a provider', async () => {
+      const auth = { Authorization: `Bearer ${await adminToken(t)}` };
+      expect((await t.http.get('/api/admin/ai/status').set(auth).expect(200)).body).toEqual({ enabled: false });
+    });
   });
 
   describe('with a provider (stubbed Gemini)', () => {
@@ -35,6 +56,7 @@ describe('AI product drafts API', () => {
         AI_BASE_URL: stub.url,
         AI_IMAGE_ORIGIN: stub.url,
         AI_RATE_LIMIT_PER_HOUR: '5',
+        AI_TIMEOUT_MS: '1000',
       });
       // AI config is read when the app is created, so later files are unaffected once these are reset
       t = await createTestApp();
@@ -46,6 +68,7 @@ describe('AI product drafts API', () => {
       await stub.stop();
       Object.assign(process.env, { GEMINI_API_KEY: '', AI_BASE_URL: '', AI_IMAGE_ORIGIN: '' });
       delete process.env.AI_RATE_LIMIT_PER_HOUR;
+      delete process.env.AI_TIMEOUT_MS;
     });
     beforeEach(async () => {
       stub.reset();
@@ -139,6 +162,20 @@ describe('AI product drafts API', () => {
       expect(JSON.stringify(res.body)).not.toContain('test-gemini-key');
     });
 
+    it('answers 504 when the provider is too slow', async () => {
+      stub.replies = [{ ...geminiReply(draftAnswer()), delayMs: 2500 }];
+      const res = await draft({ text: 'jacket' }).expect(504);
+      expect(res.body.message).toMatch(/too long/);
+      expect((await t.db.select().from(aiUsage)).map((r) => r.status)).toEqual(['timeout']);
+    });
+
+    it('answers 422 when the provider blocks the input', async () => {
+      stub.replies = [{ body: { promptFeedback: { blockReason: 'SAFETY' }, usageMetadata: { promptTokenCount: 50 } } }];
+      const res = await draft({ text: 'jacket' }).expect(422);
+      expect(res.body.message).toMatch(/declined/);
+      expect(stub.providerCalls()).toHaveLength(1);
+    });
+
     it('validates the input (422)', async () => {
       await draft({}).expect(422);
       await draft({ text: 'x'.repeat(501) }).expect(422);
@@ -175,6 +212,52 @@ describe('AI product drafts API', () => {
       await t.http.post('/api/admin/products/ai-draft').set('Authorization', `Bearer ${shopper}`).send({ text: 'jacket' }).expect(401);
       expect(stub.providerCalls()).toHaveLength(0);
       expect(await t.db.select().from(aiUsage).where(eq(aiUsage.status, 'ok'))).toHaveLength(0);
+    });
+  });
+
+  describe('with Anthropic (stubbed Claude)', () => {
+    let t: TestApp;
+    let stub: AiStub;
+
+    beforeAll(async () => {
+      stub = await new AiStub().start();
+      Object.assign(process.env, {
+        AI_PROVIDER: 'anthropic',
+        ANTHROPIC_API_KEY: 'test-anthropic-key',
+        AI_BASE_URL: stub.url,
+        AI_IMAGE_ORIGIN: stub.url,
+      });
+      t = await createTestApp();
+    });
+    afterAll(async () => {
+      await t.close();
+      await stub.stop();
+      Object.assign(process.env, { AI_PROVIDER: 'gemini', ANTHROPIC_API_KEY: '', AI_BASE_URL: '', AI_IMAGE_ORIGIN: '' });
+    });
+
+    it('creates the same draft through a forced tool call', async () => {
+      const auth = { Authorization: `Bearer ${await adminToken(t)}` };
+      expect((await t.http.get('/api/admin/ai/status').set(auth).expect(200)).body).toEqual({
+        enabled: true,
+        provider: 'anthropic',
+        model: 'claude-haiku-5-5',
+      });
+      stub.replies = [anthropicReply(draftAnswer({ categories: [] }))];
+
+      const res = await t.http
+        .post('/api/admin/products/ai-draft')
+        .set(auth)
+        .send({ imageUrls: [IMAGE(stub)], text: 'jacket' })
+        .expect(200);
+
+      expect(res.body.draft.sk.title).toBe('SK winter jacket');
+      expect(res.body.usage).toMatchObject({ provider: 'anthropic', inputTokens: 2000, outputTokens: 900 });
+      expect(res.body.usage.costUsd).toBeCloseTo((2000 * 0.1 + 900 * 0.5) / 1e6, 6);
+      const [call] = stub.providerCalls();
+      expect(call.url).toBe('/v1/messages');
+      expect(call.headers['x-api-key']).toBe('test-anthropic-key');
+      expect(call.body.tool_choice).toEqual({ type: 'tool', name: 'save_product_draft' });
+      expect(call.body.messages[0].content[0]).toMatchObject({ type: 'image', source: { type: 'base64', media_type: 'image/png' } });
     });
   });
 });
