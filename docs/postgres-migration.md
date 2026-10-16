@@ -160,9 +160,24 @@ set -a; . ./.env.server; set +a
 2. `npm run db:generate` → review the new SQL file in `server/db/migrations/` (never edit applied
    migrations; generate a new one instead).
 3. Update the mappers / queries and tests; `npm test` applies all migrations to a fresh database.
-4. Deploy: run `npm run db:migrate` against the server **before** starting the new image. Migrations
-   never run automatically on app boot. Prefer additive changes so the previous image still works
-   during rollout and rollback.
+4. Deploy: the new image applies pending migrations **itself at startup** (since 2026-10-16,
+   because Watchtower deploys automatically): `server/src/db/startup.ts` runs them before the app
+   is created, under a Postgres advisory lock, and the process exits if they fail. The log shows
+   `Applied N migration(s) …` or `Database schema is up to date`.
+
+**Migrations must be expand/contract (backward compatible).** Watchtower stops the old container
+before it starts the new one, and a rollback means running the previous image against the migrated
+schema. So a migration may only:
+
+- add tables, add columns that are nullable or have a default, add indexes, add enum values;
+- never drop, rename or change the type of something the previous image uses, never make a column
+  `NOT NULL` without a default, never rewrite data the old code reads.
+
+Removals happen in two releases: first stop using the column (release N), then drop it in a later
+migration (release N+1). A failing migration means downtime until a fixed image is deployed, since
+the old container is already stopped: keep migrations small, and `npm test` runs them all on a fresh
+database. `DB_MIGRATE_ON_START=false` turns this off (pending migrations are then only logged) for
+running them manually with `npm run db:migrate`.
 
 **New database** (e.g. a new server): create the database and user, then `npm run db:migrate` and
 `npm run db:seed` (with `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`), then deploy the image with
@@ -170,8 +185,9 @@ set -a; . ./.env.server; set +a
 
 **Backups:** a nightly `pg_dump` of `eshop` to off-server storage is needed now that the data is real.
 
-**Rollback of a deploy:** redeploy the previous image tag. Images from before 2026-10-15 still expect
-MongoDB and can't be used any more.
+**Rollback of a deploy:** redeploy the previous image tag; thanks to expand/contract it works with
+the newer schema. Migrations are not rolled back. Images from before 2026-10-15 still expect MongoDB
+and can't be used any more.
 
 ## 9. Decisions
 

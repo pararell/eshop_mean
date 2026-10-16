@@ -75,8 +75,12 @@ on it.
 
 ### Request pipeline
 
-Middleware: `setAppDB.ts`. There is no global prefix, no global `ValidationPipe`, no helmet
-and no rate limiting.
+Startup: `db/startup.ts` applies pending migrations (advisory lock) before the app is created.
+
+Middleware: `setAppDB.ts`: trust proxy (`TRUST_PROXY`), helmet security headers (CSP report-only),
+compression, body parsing, cookies, CORS, session (`httpOnly`, `SameSite=Lax`, `Secure` over HTTPS),
+passport. There is no global prefix and no global `ValidationPipe`. Sign-in, sign-up, contact and
+order endpoints are rate limited per IP (`@RateLimited()`, `@nestjs/throttler`, in memory).
 
 **Auth**
 

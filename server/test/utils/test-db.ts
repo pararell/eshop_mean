@@ -21,9 +21,10 @@ const withDatabase = (uri: string, database: string) => {
 
 /**
  * A fresh, fully migrated PostgreSQL database for one test file, cloned from the template that
- * global-setup.cjs prepares (cloning is fast and needs no migrations).
+ * global-setup.cjs prepares (cloning is fast and needs no migrations). `empty: true` creates a
+ * database without any schema instead (for migration tests).
  */
-export async function createTestDatabase(): Promise<TestDatabase> {
+export async function createTestDatabase({ empty = false } = {}): Promise<TestDatabase> {
   const adminUrl = process.env.TEST_PG_ADMIN_URL;
   const template = process.env.TEST_PG_TEMPLATE_DB;
   if (!adminUrl || !template) {
@@ -32,7 +33,7 @@ export async function createTestDatabase(): Promise<TestDatabase> {
 
   const name = `eshop_test_${process.env.JEST_WORKER_ID}_${randomBytes(4).toString('hex')}`;
   const admin = new Pool({ connectionString: adminUrl, max: 1 });
-  await admin.query(`CREATE DATABASE ${name} TEMPLATE ${template}`);
+  await admin.query(empty ? `CREATE DATABASE ${name}` : `CREATE DATABASE ${name} TEMPLATE ${template}`);
   await admin.end();
 
   const url = withDatabase(adminUrl, name);

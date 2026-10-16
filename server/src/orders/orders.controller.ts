@@ -12,6 +12,7 @@ import { prepareCart } from '../shared/utils/prepareUtils';
 import type { Order as OrderData, StripeOrderRequest } from '@eshop/shared';
 import { CartModel } from '../cart/models/cart.model';
 import { ShopSession } from '../shared/types/session';
+import { RateLimited } from '../shared/rate-limit/rate-limit';
 
 type OrderResponse = { error: string; result: Order | null; cart: CartModel | Cart };
 
@@ -25,6 +26,7 @@ export class OrdersController {
     return this.ordersService.getOrders(user);
   }
 
+  @RateLimited()
   @Post('/add')
   async addOrder(@Body() orderDto: OrderDto, @Session() session: ShopSession, @Headers('lang') lang: string): Promise<OrderResponse> {
     try {
@@ -44,6 +46,7 @@ export class OrdersController {
     }
   }
 
+  @RateLimited()
   @Post('/stripe')
   async orderWithStripe(@Body() body: StripeOrderRequest, @Session() session: ShopSession, @Headers('lang') lang: string): Promise<OrderResponse> {
     try {

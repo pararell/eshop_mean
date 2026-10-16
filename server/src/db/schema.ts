@@ -34,7 +34,8 @@ const updatedAt = () =>
   timestamp('updated_at', { withTimezone: true })
     .notNull()
     .defaultNow()
-    .$onUpdate(() => new Date());
+    // The database clock, like the insert default (the app and database clocks can differ)
+    .$onUpdate(() => sql`now()`);
 
 /** Money in major units (e.g. 19.99), returned to the app as a number (decision D4) */
 const money = (name: string) => numeric(name, { precision: 12, scale: 2, mode: 'number' });

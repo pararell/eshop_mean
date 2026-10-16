@@ -41,6 +41,8 @@ export const testEnv = (baseURL) => ({
   FE_RECAPTCHA_CLIENT_KEY: 'e2e',
   FE_ANALYTICS_TOKEN: '',
   NG_ALLOWED_HOSTS: 'localhost',
+  // Specs sign in and order many times from one IP
+  RATE_LIMIT_PER_MINUTE: '10000',
   // Hermetic run: outbound HTTPS from the server (SendGrid, Stripe, reCAPTCHA) goes to a dead
   // local proxy and fails fast instead of reaching real services. Localhost is not proxied.
   HTTPS_PROXY: 'http://127.0.0.1:9',

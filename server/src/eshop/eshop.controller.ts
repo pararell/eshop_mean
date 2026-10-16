@@ -11,6 +11,7 @@ import { Config } from './models/config.model';
 
 import type { PublicConfigResponse, ShopConfig, Theme as ThemeData } from '@eshop/shared';
 import { ShopSession } from '../shared/types/session';
+import { RateLimited } from '../shared/rate-limit/rate-limit';
 
 @Controller('api/eshop')
 export class EshopController {
@@ -21,6 +22,7 @@ export class EshopController {
     return this.eshopService.getConfig(session);
   }
 
+  @RateLimited()
   @Post('/contact')
   sendContact(@Body() contactDto: ContactDto, @Session() session: ShopSession, @Headers('lang') lang: string): Promise<void> {
     return this.eshopService.sendContact(contactDto, session.cart, lang);

@@ -8,6 +8,7 @@ import { AuthService } from './auth.service';
 import { User } from './models/user.model';
 import { GetUser } from './utils/get-user.decorator';
 import { GoogleUserDto } from './dto/google-user.dto';
+import { RateLimited } from '../shared/rate-limit/rate-limit';
 
 @Controller('api/auth')
 export class AuthController {
@@ -19,11 +20,13 @@ export class AuthController {
     return { id: user._id, email: user.email, roles: user.roles };
   }
 
+  @RateLimited()
   @Post('/signup')
   signUp(@Body(ValidationPipe) authCredentialsDto: AuthCredentialDto): Promise<void> {
     return this.authService.signUp(authCredentialsDto);
   }
 
+  @RateLimited()
   @Post('/signin')
   signIn(@Body(ValidationPipe) authCredentialsDto: AuthCredentialDto): Promise<{
     accessToken: string;

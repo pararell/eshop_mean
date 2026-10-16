@@ -114,7 +114,7 @@ Verified on Node 24.15 / npm 11.12 (2026-10-14). Angular 22 requires Node `^24.1
 | Lint SCSS                                     | `npm run lint:scss`                                                                                                                | Runs (stylelint 17, SCSS syntax); 306 errors in older files (new files are clean). The unquoted glob is shell-expanded.                                                                           |
 | Format                                        | `npm run format` / `npm run format:check` (Prettier, whole repo)                                                                   | Existing code is not yet reformatted (~140 files); new commits are formatted by the hook                                                                                                          |
 | Pre-commit hook                               | husky → `lint-staged` (`.husky/pre-commit`)                                                                                        | Runs `eslint --fix` + `prettier --write` on staged files; lint errors block the commit ; with nvm + a GUI git client (GitHub Desktop), add `~/.config/husky/init.sh` that sources `~/.nvm/nvm.sh` |
-| Server tests (unit + API, DB)                 | `npm test` / `npm run test:server` (`:watch`, `:cov`)                                                                              | 207 passing; **needs Docker** (disposable `postgres:18` via Testcontainers, one database per test file), ~10 s                                                                                    |
+| Server tests (unit + API, DB)                 | `npm test` / `npm run test:server` (`:watch`, `:cov`)                                                                              | 219 passing; **needs Docker** (disposable `postgres:18` via Testcontainers, one database per test file), ~10 s                                                                                    |
 | E2E tests                                     | `npm run test:e2e` (builds first; `npx playwright install chromium` once)                                                          | 21 passing against the production build (AI provider and Cloudinary stubbed)                                                                                                                      |
 | PostgreSQL (dev)                              | `npm run db:up` (docker-compose `postgres:18` on `localhost:15432`), `db:migrate`, `db:seed`, `db:generate` (after schema changes) | Scripts read `DATABASE_URL` from the environment only, never from `.env`                                                                                                                          |
 | Release                                       | `npm run release`                                                                                                                  | standard-version (deprecated)                                                                                                                                                                     |
@@ -150,6 +150,9 @@ Copy `.env.example` → `.env` (gitignored, never commit it). It is read with
 | `ADMIN_EMAILS`                                                                                     | Comma-separated list notified on orders/contact                                                                                                            | `orders.service.ts`, `eshop.service.ts`, email templates              |
 | `RECAPTCHA_SERVER_KEY`                                                                             | Contact-form captcha verification                                                                                                                          | `eshop/eshop.service.ts`                                              |
 | `GEO_LOCATION_API_KEY`                                                                             | geolocation-db lookup for the default language                                                                                                             | `translations/translations.controller.ts`                             |
+| `DB_MIGRATE_ON_START`                                                                              | `false` turns off migrations at startup (pending ones are then only logged)                                                                                | `db/startup.ts`                                                       |
+| `TRUST_PROXY`                                                                                      | Express "trust proxy" for a reverse proxy in front of the app (e.g. `1`): real client IP for rate limits, HTTPS detection for the `Secure` session cookie  | `setAppDB.ts`                                                         |
+| `RATE_LIMIT_PER_MINUTE`                                                                            | Per-IP limit on sign-in, sign-up, contact and order endpoints (default 10 per endpoint)                                                                    | `shared/rate-limit/rate-limit.ts`                                     |
 | `AI_PROVIDER`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`                                               | AI product drafts; **off without the key**. Server-side only (never `FE_`). Limits, model and prices: `AI_*`, see [docs/ai.md](docs/ai.md) § Configuration | `ai/ai.config.ts`                                                     |
 | `FE_STRIPE_PUBLISHABLE_KEY`, `FE_TINYMCE_API_KEY`, `FE_RECAPTCHA_CLIENT_KEY`, `FE_ANALYTICS_TOKEN` | **Public.** Every env var whose name contains `FE_` is sent to the browser by `GET /api/eshop/config`.                                                     | `eshop/eshop.service.ts`                                              |
 
@@ -161,9 +164,11 @@ Copy `.env.example` → `.env` (gitignored, never commit it). It is read with
 - Services query with Drizzle directly (no repository layer). Rows become API documents through
   `server/src/db/mappers.ts`; shared catalog queries are in `server/src/db/catalog.ts`.
 - **Schema change:** edit `schema.ts` → `npm run db:generate` → review the new SQL in
-  `server/db/migrations/` (never edit an applied migration) → update mappers and tests. On deploy,
-  `npm run db:migrate` runs against the server **before** the new image starts; nothing migrates on
-  app boot. Full runbook: [docs/postgres-migration.md § Runbook](docs/postgres-migration.md#8-runbook).
+  `server/db/migrations/` (never edit an applied migration) → update mappers and tests.
+- **Migrations run at container startup** (`server/src/db/startup.ts`, advisory lock; Watchtower deploys
+  automatically). Therefore every migration must be **expand/contract**: only add tables, nullable or
+  defaulted columns, indexes, enum values; never drop, rename or retype what the previous image uses.
+  Removals take two releases. Full runbook: [docs/postgres-migration.md § Runbook](docs/postgres-migration.md#8-runbook).
 - The production database listens on the server's loopback only; reach it through an SSH tunnel.
   Its `DATABASE_URL` lives in a local, gitignored `.env.server`: load it with
   `set -a; . ./.env.server; set +a`, never print it, never commit it. Tests and local development
@@ -187,6 +192,9 @@ Copy `.env.example` → `.env` (gitignored, never commit it). It is read with
   - DTOs use class-validator, but validation runs **only** where `ValidationPipe` is passed
     explicitly (there is no global pipe);
   - admin routes use `@UseGuards(AuthGuard('jwt'), RolesGuard)`;
+  - endpoints that send email, charge cards or check passwords get `@RateLimited()`;
+  - security headers come from helmet in `setAppDB.ts`; the CSP is report-only until verified, so a new
+    third-party script, frame or API needs adding there;
   - AI output is untrusted: validate it with DTOs, sanitize HTML, never persist it without the admin
     and never let it set prices or stock (see `server/src/ai/draft-mapper.ts`).
 - Data:

@@ -27,6 +27,9 @@ const testEnv: Record<string, string> = {
   FE_RECAPTCHA_CLIENT_KEY: 'test-recaptcha-client',
   FE_ANALYTICS_TOKEN: '',
   NODE_TLS_REJECT_UNAUTHORIZED: '1',
+  // Specs sign in many times; security.spec.ts tests the limit with its own app
+  RATE_LIMIT_PER_MINUTE: '10000',
+  TRUST_PROXY: '',
   // AI drafts are off unless a test enables them with a stub provider (never a real API)
   AI_PROVIDER: 'gemini',
   AI_MODEL: '',

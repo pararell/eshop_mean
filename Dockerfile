@@ -25,6 +25,8 @@ RUN apk add --no-cache tini
 WORKDIR /usr/src/app
 COPY --from=runtime-deps /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/dist ./dist
+# Applied by the app at startup (server/src/db/startup.ts)
+COPY --from=build /usr/src/app/server/db/migrations ./server/db/migrations
 USER node
 EXPOSE 4000
 # Run node directly (not via npm) so signals reach the app.

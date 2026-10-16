@@ -6,6 +6,17 @@ All notable changes to this project will be documented in this file. See [standa
 
 <!-- Hand-written; when running `npm run release`, merge it into the generated section and remove it. -->
 
+### Deploys and security (M0)
+
+- **Migrations run at container startup** (advisory lock, process exits if they fail), so automatic
+  deploys (Watchtower) can't start an image against an old schema again. Migrations must be
+  expand/contract; see the runbook in `docs/postgres-migration.md`. `DB_MIGRATE_ON_START=false`
+  turns it off. The Docker image now contains `server/db/migrations`.
+- Rate limiting on sign-in, sign-up, contact and order endpoints (`RATE_LIMIT_PER_MINUTE`).
+- Security headers (helmet); Content-Security-Policy in report-only mode for now.
+- Session cookie `httpOnly`, `SameSite=Lax`, `Secure` over HTTPS; `TRUST_PROXY` for a reverse proxy.
+- `updated_at` is set by the database clock on updates too (was the app clock).
+
 ### Features
 
 - **AI product drafts:** "Fill with AI" in the admin product editor turns photos and a few words into a

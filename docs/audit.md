@@ -75,6 +75,10 @@ Findings resolved since the audit (2026-10-14). The finding texts below are kept
 | PERF-02 | Fixed (PostgreSQL migration) | Unique indexes on slugs, `lower(email)`, `order_number`; GIN on `products.tags`; `product_translations (lang, visibility, sale_price)`; orders by user and date. |
 | PERF-03 | Partly | One listing query (`count(*) over ()`) plus one min/max query instead of four. The price range still ignores filters and visibility (kept for parity). |
 
+| SEC-06 | Fixed (M0) | Per-IP rate limit (`@nestjs/throttler`, default 10/min per endpoint) on sign-in, sign-up, contact, order and Stripe endpoints; the AI endpoint has its own limits. Behind a proxy, `TRUST_PROXY` gives the real client IP. Tests in `security.spec.ts`. |
+| SEC-09 | Partly (M0) | helmet: `nosniff`, `X-Frame-Options`, HSTS (this host only), `Referrer-Policy`, no `X-Powered-By`. The CSP is **report-only** until it is verified against Stripe, TinyMCE, reCAPTCHA and analytics (M2). |
+| SEC-11 | Fixed (M0) | Session cookie `httpOnly`, `SameSite=Lax`, `Secure` on HTTPS (`secure: 'auto'`, needs `TRUST_PROXY` behind a TLS-terminating proxy). |
+
 Still open and notable: DEP-02 (Stripe SDK / PaymentIntents) and BUG-02 (card captured without a guaranteed order).
 
 ---
