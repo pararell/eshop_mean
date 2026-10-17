@@ -60,18 +60,19 @@ on it.
 
 ### Modules
 
-| Module                                    | Responsibility                                                                                | Tables used                                 | Notes                                                 |
-| ----------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------- | ----------------------------------------------------- |
-| `AppModule`                               | Root. `ConfigModule.forRoot({isGlobal})`, global `DatabaseModule` (Drizzle on `DATABASE_URL`) | –                                           | `ServeStaticModule` is commented out                  |
-| `AuthModule`                              | Signup/signin, JWT, Google OAuth, `RolesGuard`                                                | `User`                                      | Exports `JwtStrategy` and `PassportModule`            |
-| `ProductsModule`                          | Products and categories (public + admin CRUD)                                                 | `Product`, `Category`                       |                                                       |
-| `CartModule`                              | Session cart add/remove/get                                                                   | (Product via `ProductsModule`)              |                                                       |
-| `OrdersModule`                            | Cash-on-delivery and Stripe orders, admin order management, order emails                      | `Order`, `Translation`                      |                                                       |
-| `TranslationsModule`                      | UI translation dictionaries                                                                   | `Translation`                               | Controller queries the database directly (no service) |
-| `AdminModule`                             | Image library and Cloudinary upload                                                           | (Product via `ProductsModule`)              | Class-level JWT + admin guards                        |
-| `EshopModule`                             | Shop config, themes, CMS pages, contact form                                                  | `Page`, `Theme`, `Config`, `Translation`    |                                                       |
-| `AiModule`                                | AI product drafts (Gemini / Claude behind `LlmProvider`), see [ai.md](ai.md)                  | `ai_usage`, `categories`, `products` (read) | Off without an API key (endpoint 404)                 |
-| `AppSSRModule` / `AngularUniversalModule` | SSR rendering + static files                                                                  | –                                           | Production only                                       |
+| Module                                    | Responsibility                                                                                | Tables used                                 | Notes                                                   |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------- | ------------------------------------------------------- |
+| `AppModule`                               | Root. `ConfigModule.forRoot({isGlobal})`, global `DatabaseModule` (Drizzle on `DATABASE_URL`) | –                                           | `ServeStaticModule` is commented out                    |
+| `AuthModule`                              | Signup/signin, JWT, Google OAuth, `RolesGuard`                                                | `User`                                      | Exports `JwtStrategy` and `PassportModule`              |
+| `ProductsModule`                          | Products and categories (public + admin CRUD)                                                 | `Product`, `Category`                       |                                                         |
+| `CartModule`                              | Session cart add/remove/get                                                                   | (Product via `ProductsModule`)              |                                                         |
+| `OrdersModule`                            | Cash-on-delivery orders, admin order management, order emails                                 | `Order`, `Translation`                      |                                                         |
+| `TranslationsModule`                      | UI translation dictionaries                                                                   | `Translation`                               | Controller queries the database directly (no service)   |
+| `AdminModule`                             | Image library and Cloudinary upload                                                           | (Product via `ProductsModule`)              | Class-level JWT + admin guards                          |
+| `EshopModule`                             | Shop config, themes, CMS pages, contact form                                                  | `Page`, `Theme`, `Config`, `Translation`    |                                                         |
+| `PaymentsModule`                          | Stripe card payments: intents, completion, webhooks, refunds                                  | `orders`, `stripe_events`                   | Stripe client injected as `STRIPE` (null without a key) |
+| `AiModule`                                | AI product drafts (Gemini / Claude behind `LlmProvider`), see [ai.md](ai.md)                  | `ai_usage`, `categories`, `products` (read) | Off without an API key (endpoint 404)                   |
+| `AppSSRModule` / `AngularUniversalModule` | SSR rendering + static files                                                                  | –                                           | Production only                                         |
 
 ### Request pipeline
 
@@ -109,55 +110,59 @@ Guard legend:
 
 "Pipe" means a `ValidationPipe` actually runs on that endpoint.
 
-| Method | Path                             | Guard  | Pipe                 | Purpose                                                                                   |
-| ------ | -------------------------------- | ------ | -------------------- | ----------------------------------------------------------------------------------------- |
-| GET    | `/api/auth`                      | JWT    | –                    | Current user `{id, email, roles}`                                                         |
-| POST   | `/api/auth/signup`               | –      | yes (no whitelist)   | Create user (email, password)                                                             |
-| POST   | `/api/auth/signin`               | –      | yes                  | Returns `{accessToken, id, roles, email}`                                                 |
-| GET    | `/api/auth/google`               | google | –                    | Start OAuth                                                                               |
-| GET    | `/api/auth/google/callback`      | google | –                    | Redirect to `${ORIGIN}/jwtToken/<jwt>`                                                    |
-| GET    | `/api/products`                  | –      | yes                  | Paginated list. Query `page, sort, category?, search?, maxPrice?`; header `lang`          |
-| GET    | `/api/products/categories`       | –      | –                    | Visible categories for `lang`                                                             |
-| GET    | `/api/products/search?query=`    | –      | –                    | Title search (regex)                                                                      |
-| GET    | `/api/products/all`              | ADMIN  | –                    | All products                                                                              |
-| GET    | `/api/products/:name`            | –      | –                    | Product by `titleUrl` (`?lang=` → localized shape)                                        |
-| DELETE | `/api/products/:name`            | ADMIN  | –                    | Delete product                                                                            |
-| POST   | `/api/products/add`              | ADMIN  | –                    | Create product (creates categories from tags)                                             |
-| PATCH  | `/api/products/edit`             | ADMIN  | –                    | Upsert product by `titleUrl`                                                              |
-| GET    | `/api/products/categories/all`   | ADMIN  | –                    | All categories                                                                            |
-| PATCH  | `/api/products/categories/edit`  | ADMIN  | –                    | Upsert category                                                                           |
-| DELETE | `/api/products/categories/:name` | ADMIN  | –                    | Delete category and pull it from product tags                                             |
-| GET    | `/api/cart`                      | –      | –                    | Localized cart with totals                                                                |
-| GET    | `/api/cart/add?id=`              | –      | yes                  | Add product to session cart                                                               |
-| GET    | `/api/cart/remove?id=`           | –      | yes                  | Remove one unit                                                                           |
-| GET    | `/api/orders`                    | JWT    | –                    | Current user's orders                                                                     |
-| POST   | `/api/orders/add`                | –      | –                    | Cash-on-delivery order from session cart + emails                                         |
-| POST   | `/api/orders/stripe`             | –      | –                    | Stripe charge (token) + capture + order + emails                                          |
-| GET    | `/api/orders/all`                | ADMIN  | –                    | All orders                                                                                |
-| GET    | `/api/orders/:id`                | ADMIN  | –                    | Order by `orderId`                                                                        |
-| PATCH  | `/api/orders`                    | ADMIN  | –                    | Update order (e.g. status)                                                                |
-| GET    | `/api/translations?lang=`        | –      | –                    | Translation dictionary. Without `lang`, guessed by geolocation.                           |
-| GET    | `/api/translations/all`          | ADMIN  | –                    | All dictionaries                                                                          |
-| PATCH  | `/api/translations/all`          | ADMIN  | –                    | Bulk upsert dictionaries                                                                  |
-| PATCH  | `/api/translations?lang=`        | ADMIN  | –                    | Update one dictionary                                                                     |
-| GET    | `/api/admin/images`              | ADMIN  | –                    | Session image library                                                                     |
-| POST   | `/api/admin/images/add`          | ADMIN  | –                    | Add image URL to product or library                                                       |
-| POST   | `/api/admin/images/upload`       | ADMIN  | –                    | Multipart upload → Cloudinary                                                             |
-| POST   | `/api/admin/images/remove`       | ADMIN  | –                    | Remove image from product or library                                                      |
-| GET    | `/api/admin/ai/status`           | ADMIN  | –                    | `{ enabled, provider?, model? }`                                                          |
-| POST   | `/api/admin/products/ai-draft`   | ADMIN  | yes (whitelist, 422) | AI product draft from Cloudinary image URLs and text; never saved ([ai.md](ai.md))        |
-| GET    | `/api/eshop/config`              | –      | –                    | Base64 JSON of `FE_*` env + active theme styles. Stores the active config in the session. |
-| POST   | `/api/eshop/contact`             | –      | –                    | Contact form (reCAPTCHA) → emails                                                         |
-| GET    | `/api/eshop/page/all?titles=`    | –      | –                    | CMS pages                                                                                 |
-| POST   | `/api/eshop/page`                | ADMIN  | –                    | Upsert page                                                                               |
-| GET    | `/api/eshop/page/:titleUrl`      | –      | –                    | Page by slug (header `lang`)                                                              |
-| DELETE | `/api/eshop/page/:titleUrl`      | ADMIN  | –                    | Delete page                                                                               |
-| GET    | `/api/eshop/theme/all`           | –      | –                    | All themes                                                                                |
-| POST   | `/api/eshop/theme`               | ADMIN  | –                    | Upsert theme                                                                              |
-| DELETE | `/api/eshop/theme/:titleUrl`     | ADMIN  | –                    | Delete theme                                                                              |
-| GET    | `/api/eshop/config/all`          | –      | –                    | All shop configs                                                                          |
-| POST   | `/api/eshop/config`              | ADMIN  | –                    | Upsert config                                                                             |
-| DELETE | `/api/eshop/config/:titleUrl`    | ADMIN  | –                    | Delete config                                                                             |
+| Method | Path                                | Guard            | Pipe                 | Purpose                                                                                                                 |
+| ------ | ----------------------------------- | ---------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/api/auth`                         | JWT              | –                    | Current user `{id, email, roles}`                                                                                       |
+| POST   | `/api/auth/signup`                  | –                | yes (no whitelist)   | Create user (email, password)                                                                                           |
+| POST   | `/api/auth/signin`                  | –                | yes                  | Returns `{accessToken, id, roles, email}`                                                                               |
+| GET    | `/api/auth/google`                  | google           | –                    | Start OAuth                                                                                                             |
+| GET    | `/api/auth/google/callback`         | google           | –                    | Redirect to `${ORIGIN}/jwtToken/<jwt>`                                                                                  |
+| GET    | `/api/products`                     | –                | yes                  | Paginated list. Query `page, sort, category?, search?, maxPrice?`; header `lang`                                        |
+| GET    | `/api/products/categories`          | –                | –                    | Visible categories for `lang`                                                                                           |
+| GET    | `/api/products/search?query=`       | –                | –                    | Title search (regex)                                                                                                    |
+| GET    | `/api/products/all`                 | ADMIN            | –                    | All products                                                                                                            |
+| GET    | `/api/products/:name`               | –                | –                    | Product by `titleUrl` (`?lang=` → localized shape)                                                                      |
+| DELETE | `/api/products/:name`               | ADMIN            | –                    | Delete product                                                                                                          |
+| POST   | `/api/products/add`                 | ADMIN            | –                    | Create product (creates categories from tags)                                                                           |
+| PATCH  | `/api/products/edit`                | ADMIN            | –                    | Upsert product by `titleUrl`                                                                                            |
+| GET    | `/api/products/categories/all`      | ADMIN            | –                    | All categories                                                                                                          |
+| PATCH  | `/api/products/categories/edit`     | ADMIN            | –                    | Upsert category                                                                                                         |
+| DELETE | `/api/products/categories/:name`    | ADMIN            | –                    | Delete category and pull it from product tags                                                                           |
+| GET    | `/api/cart`                         | –                | –                    | Localized cart with totals                                                                                              |
+| GET    | `/api/cart/add?id=`                 | –                | yes                  | Add product to session cart                                                                                             |
+| GET    | `/api/cart/remove?id=`              | –                | yes                  | Remove one unit                                                                                                         |
+| GET    | `/api/orders`                       | JWT              | –                    | Current user's orders                                                                                                   |
+| POST   | `/api/orders/add`                   | –                | –                    | Cash-on-delivery order from session cart + emails                                                                       |
+| POST   | `/api/orders/stripe`                | –                | –                    | **Removed** (410 Gone); card payments use `/api/payments`                                                               |
+| POST   | `/api/payments/intent`              | (JWT optional)   | yes (whitelist, 422) | Create/update the card order (PENDING_PAYMENT) and its PaymentIntent from the session cart ([payments.md](payments.md)) |
+| POST   | `/api/payments/complete`            | session          | yes                  | Order payment state after Stripe.js confirmed; marks PAID once, empties the cart                                        |
+| POST   | `/api/payments/webhook`             | Stripe signature | –                    | Stripe webhooks (raw body)                                                                                              |
+| POST   | `/api/admin/orders/:orderId/refund` | ADMIN            | yes                  | Full or partial refund                                                                                                  |
+| GET    | `/api/orders/all`                   | ADMIN            | –                    | All orders                                                                                                              |
+| GET    | `/api/orders/:id`                   | ADMIN            | –                    | Order by `orderId`                                                                                                      |
+| PATCH  | `/api/orders`                       | ADMIN            | –                    | Update order (e.g. status)                                                                                              |
+| GET    | `/api/translations?lang=`           | –                | –                    | Translation dictionary. Without `lang`, guessed by geolocation.                                                         |
+| GET    | `/api/translations/all`             | ADMIN            | –                    | All dictionaries                                                                                                        |
+| PATCH  | `/api/translations/all`             | ADMIN            | –                    | Bulk upsert dictionaries                                                                                                |
+| PATCH  | `/api/translations?lang=`           | ADMIN            | –                    | Update one dictionary                                                                                                   |
+| GET    | `/api/admin/images`                 | ADMIN            | –                    | Session image library                                                                                                   |
+| POST   | `/api/admin/images/add`             | ADMIN            | –                    | Add image URL to product or library                                                                                     |
+| POST   | `/api/admin/images/upload`          | ADMIN            | –                    | Multipart upload → Cloudinary                                                                                           |
+| POST   | `/api/admin/images/remove`          | ADMIN            | –                    | Remove image from product or library                                                                                    |
+| GET    | `/api/admin/ai/status`              | ADMIN            | –                    | `{ enabled, provider?, model? }`                                                                                        |
+| POST   | `/api/admin/products/ai-draft`      | ADMIN            | yes (whitelist, 422) | AI product draft from Cloudinary image URLs and text; never saved ([ai.md](ai.md))                                      |
+| GET    | `/api/eshop/config`                 | –                | –                    | Base64 JSON of `FE_*` env + active theme styles. Stores the active config in the session.                               |
+| POST   | `/api/eshop/contact`                | –                | –                    | Contact form (reCAPTCHA) → emails                                                                                       |
+| GET    | `/api/eshop/page/all?titles=`       | –                | –                    | CMS pages                                                                                                               |
+| POST   | `/api/eshop/page`                   | ADMIN            | –                    | Upsert page                                                                                                             |
+| GET    | `/api/eshop/page/:titleUrl`         | –                | –                    | Page by slug (header `lang`)                                                                                            |
+| DELETE | `/api/eshop/page/:titleUrl`         | ADMIN            | –                    | Delete page                                                                                                             |
+| GET    | `/api/eshop/theme/all`              | –                | –                    | All themes                                                                                                              |
+| POST   | `/api/eshop/theme`                  | ADMIN            | –                    | Upsert theme                                                                                                            |
+| DELETE | `/api/eshop/theme/:titleUrl`        | ADMIN            | –                    | Delete theme                                                                                                            |
+| GET    | `/api/eshop/config/all`             | –                | –                    | All shop configs                                                                                                        |
+| POST   | `/api/eshop/config`                 | ADMIN            | –                    | Upsert config                                                                                                           |
+| DELETE | `/api/eshop/config/:titleUrl`       | ADMIN            | –                    | Delete config                                                                                                           |
 
 ## 3. Frontend (Angular)
 
@@ -253,13 +258,14 @@ assistant), which saves nothing until the admin presses Save.
 - **Cash on delivery:** `POST /api/orders/add`
   1. builds an `Order` from the session cart (`status: NEW`, `type: PAYMENT_ON_DELIVERY`);
   2. emails the customer and every `ADMIN_EMAILS` address via SendGrid.
-- **Card:**
-  1. Stripe.js v3 Elements `createToken(card)` runs in the browser.
-  2. `POST /api/orders/stripe {token, currency, email, addresses, notes, userId?}` follows.
-  3. The server calls `stripe.charges.create({amount: total*100, currency, source: token.id,
-capture:false})` and then `charges.capture`.
-  4. It saves the order (`status: PAID`, `cardId`) and sends the emails.
-  5. This uses the legacy Charges API: no PaymentIntents, no webhooks.
+- **Card** (Stripe Payment Element, deferred intent; details in [payments.md](payments.md)):
+  1. The Payment Element shows the cart amount; on Pay, `elements.submit()` validates it.
+  2. `POST /api/payments/intent` creates a `PENDING_PAYMENT` order and a PaymentIntent from the
+     session cart (or reuses the session's pending ones on a retry).
+  3. `stripe.confirmPayment` confirms in the browser (3-D Secure; redirects only when needed).
+  4. The `payment_intent.succeeded` webhook or `POST /api/payments/complete` marks the order `PAID`
+     exactly once and sends the emails; `complete` empties the session cart.
+  5. Admins refund from the order detail (`POST /api/admin/orders/:orderId/refund`).
 
 **Auth**
 
@@ -417,15 +423,15 @@ erDiagram
 
 ## 6. External services
 
-| Service                          | Used for                                                    | Integration                                                                                                                               | Config                                               |
-| -------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| Stripe                           | Card payments                                               | `stripe` SDK v9, `apiVersion: '2020-08-27'`, Charges API with a Stripe.js v3 token; manual capture right after authorization; no webhooks | `STRIPE_SECRETKEY`, `FE_STRIPE_PUBLISHABLE_KEY`      |
-| SendGrid                         | Order and contact emails to the customer and `ADMIN_EMAILS` | `@sendgrid/mail`, HTML templates in `server/src/shared/utils/email/`                                                                      | `SENDGRID_KEY`, `EMAIL_FROM`                         |
-| Cloudinary                       | Product and site images                                     | `cloudinary` v2 `upload_stream` from a multer memory buffer                                                                               | `CLOUDINARY_*`                                       |
-| Google OAuth 2.0                 | Social login                                                | `passport-google-oauth20`, scopes `profile` and `email`                                                                                   | `GOOGLE_CLIENT_*`, `SERVER_URL`, `ORIGIN`            |
-| Google reCAPTCHA v3              | Contact-form spam protection                                | Client: vendored ng-recaptcha service. Server: `siteverify`.                                                                              | `FE_RECAPTCHA_CLIENT_KEY`, `RECAPTCHA_SERVER_KEY`    |
-| geolocation-db.com               | Default language when none is chosen                        | Called from the server                                                                                                                    | `GEO_LOCATION_API_KEY`                               |
-| TinyMCE Cloud                    | Rich-text editor in admin                                   | `@tinymce/tinymce-angular`                                                                                                                | `FE_TINYMCE_API_KEY`                                 |
-| Google Analytics                 | Analytics                                                   | `services/analytics.service.ts` (gtag)                                                                                                    | `FE_ANALYTICS_TOKEN`                                 |
-| PostgreSQL 18                    | Data and sessions                                           | Drizzle ORM + `pg` + connect-pg-simple                                                                                                    | `DATABASE_URL`                                       |
-| Google Gemini / Anthropic Claude | AI product drafts (optional)                                | `fetch` clients in `server/src/ai/providers/`, structured output ([ADR 0001](adr/0001-ai-provider-abstraction.md))                        | `AI_PROVIDER`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY` |
+| Service                          | Used for                                                    | Integration                                                                                                                       | Config                                                                   |
+| -------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Stripe                           | Card payments                                               | `stripe` SDK 23, API `2026-09-30.endive`, PaymentIntents + Payment Element, signed webhooks, refunds ([payments.md](payments.md)) | `STRIPE_SECRETKEY`, `STRIPE_WEBHOOK_SECRET`, `FE_STRIPE_PUBLISHABLE_KEY` |
+| SendGrid                         | Order and contact emails to the customer and `ADMIN_EMAILS` | `@sendgrid/mail`, HTML templates in `server/src/shared/utils/email/`                                                              | `SENDGRID_KEY`, `EMAIL_FROM`                                             |
+| Cloudinary                       | Product and site images                                     | `cloudinary` v2 `upload_stream` from a multer memory buffer                                                                       | `CLOUDINARY_*`                                                           |
+| Google OAuth 2.0                 | Social login                                                | `passport-google-oauth20`, scopes `profile` and `email`                                                                           | `GOOGLE_CLIENT_*`, `SERVER_URL`, `ORIGIN`                                |
+| Google reCAPTCHA v3              | Contact-form spam protection                                | Client: vendored ng-recaptcha service. Server: `siteverify`.                                                                      | `FE_RECAPTCHA_CLIENT_KEY`, `RECAPTCHA_SERVER_KEY`                        |
+| geolocation-db.com               | Default language when none is chosen                        | Called from the server                                                                                                            | `GEO_LOCATION_API_KEY`                                                   |
+| TinyMCE Cloud                    | Rich-text editor in admin                                   | `@tinymce/tinymce-angular`                                                                                                        | `FE_TINYMCE_API_KEY`                                                     |
+| Google Analytics                 | Analytics                                                   | `services/analytics.service.ts` (gtag)                                                                                            | `FE_ANALYTICS_TOKEN`                                                     |
+| PostgreSQL 18                    | Data and sessions                                           | Drizzle ORM + `pg` + connect-pg-simple                                                                                            | `DATABASE_URL`                                                           |
+| Google Gemini / Anthropic Claude | AI product drafts (optional)                                | `fetch` clients in `server/src/ai/providers/`, structured output ([ADR 0001](adr/0001-ai-provider-abstraction.md))                | `AI_PROVIDER`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`                     |

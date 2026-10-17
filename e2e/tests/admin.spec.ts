@@ -1,5 +1,5 @@
 import { expect, Page, test } from '@playwright/test';
-import { E2E, isolateExternalServices, signIn } from './helpers';
+import { E2E, isolateExternalServices, payByCard, signIn, withDb } from './helpers';
 
 test.beforeEach(async ({ page }) => {
   await isolateExternalServices(page);
@@ -95,4 +95,23 @@ test('admin opens the order list and an order detail', async ({ page }) => {
   await expect(detail).toContainText('Status: NEW');
   await expect(detail).toContainText(`${E2E.order.amount} EUR`);
   await expect(detail).toContainText(E2E.order.customer);
+});
+
+test('admin refunds part of a card order', async ({ page }) => {
+  const orderId = await payByCard(page, E2E.car.titleUrl, `refund-${Date.now()}@e2e.test`);
+
+  await page.goto(`/en/dashboard/orders/${orderId}`);
+  const refund = page.getByRole('region', { name: 'Card payment' });
+  await expect(refund).toContainText('pi_stub_');
+  await refund.getByLabel(/Refund amount/).fill('5');
+  page.once('dialog', (dialog) => dialog.accept());
+  const refunded = page.waitForResponse((r) => r.url().includes(`/api/admin/orders/${orderId}/refund`));
+  await refund.getByRole('button', { name: 'Refund' }).click();
+  expect((await refunded).status()).toBe(200);
+
+  await expect(refund).toContainText('refunded 5 EUR');
+  const [row] = await withDb(
+    async (db) => (await db.query('SELECT status, amount_refunded::float8 AS refunded FROM orders WHERE order_number = $1', [orderId])).rows,
+  );
+  expect(row).toEqual({ status: 'PAID', refunded: 5 });
 });

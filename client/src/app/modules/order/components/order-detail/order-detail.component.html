@@ -37,6 +37,38 @@
                 </form>
               </div>
             }
+            @if (type() === 'EDIT' && order$()?.paymentIntentId) {
+              <section class="order-refund" aria-labelledby="refund-heading">
+                <h5 id="refund-heading">Card payment</h5>
+                <p>
+                  Stripe: <code>{{ order$()?.paymentIntentId }}</code>
+                  @if (order$()?.amount_refunded) {
+                    · refunded {{ order$()?.amount_refunded }} {{ order$()?.currency }}
+                  }
+                </p>
+                @if (refundable()) {
+                  <form class="order-refund-form" (ngSubmit)="refund()">
+                    <label for="refund-amount">Refund amount ({{ order$()?.currency }}, empty = {{ refundable() }})</label>
+                    <input
+                      id="refund-amount"
+                      name="refundAmount"
+                      type="number"
+                      min="0.01"
+                      step="0.01"
+                      [max]="refundable()"
+                      [(ngModel)]="refundAmount"
+                      [disabled]="refunding()"
+                    />
+                    <button mat-stroked-button color="warn" type="submit" [disabled]="refunding()">
+                      {{ refunding() ? 'Refunding…' : 'Refund' }}
+                    </button>
+                  </form>
+                }
+                @if (refundError()) {
+                  <p class="order-refund-error" role="alert">{{ refundError() }}</p>
+                }
+              </section>
+            }
             <mat-chip-listbox class="order-tags">
               <mat-chip-option>{{ 'Customer' | translate | async }}: {{ order$()?.customerEmail }}</mat-chip-option>
             </mat-chip-listbox>

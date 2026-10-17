@@ -17,14 +17,17 @@ import type {
   OrderResult,
   Page,
   Pagination,
+  PaymentCompleteResponse,
+  PaymentIntentRequest,
+  PaymentIntentResponse,
   ProductInput,
   ProductRaw,
   PublicConfigResponse,
   ShopConfig,
   SignInRequest,
   SignInResponse,
+  RefundRequest,
   SignUpRequest,
-  StripeOrderRequest,
   Theme,
   Translation,
 } from '@eshop/shared';
@@ -198,9 +201,19 @@ export class ApiService {
     return this.handle(this.http.delete<unknown>(removeCategory, this.requestOptions));
   }
 
-  handleToken(token: StripeOrderRequest) {
-    const tokenUrl = this.apiUrl + '/api/orders/stripe';
-    return this.handle(this.http.post<OrderResult>(tokenUrl, token, this.requestOptions));
+  /** Card payment, step 1: the server creates (or updates) the order and its PaymentIntent */
+  createPaymentIntent(req: PaymentIntentRequest) {
+    return this.handle(this.http.post<PaymentIntentResponse>(this.apiUrl + '/api/payments/intent', req, this.requestOptions));
+  }
+
+  /** Card payment, after Stripe.js confirmed (or Stripe redirected back): the order's payment state */
+  completePayment(orderId: string) {
+    return this.handle(this.http.post<PaymentCompleteResponse>(this.apiUrl + '/api/payments/complete', { orderId }, this.requestOptions));
+  }
+
+  /** Admin: refund a paid card order (no amount = what is left) */
+  refundOrder(orderId: string, req: RefundRequest) {
+    return this.handle(this.http.post<Order>(`${this.apiUrl}/api/admin/orders/${encodeURIComponent(orderId)}/refund`, req, this.requestOptions));
   }
 
   makeOrder(req: OrderRequest) {
@@ -226,12 +239,6 @@ export class ApiService {
   updateOrder(req: Partial<Order> & Pick<Order, 'orderId'>) {
     const orderUpdateUrl = this.apiUrl + '/api/orders';
     return this.handle(this.http.patch<Order>(orderUpdateUrl, req, this.requestOptions));
-  }
-
-  /** Unused: the server has no such endpoint and the store never subscribes (audit TD-07). */
-  getStripeSession(req: unknown) {
-    const stripeSessionUrl = this.apiUrl + '/api/orders/stripe/session';
-    return this.handle(this.http.post<unknown>(stripeSessionUrl, req, this.requestOptions));
   }
 
   getCart(lang?: string) {

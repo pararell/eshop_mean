@@ -1,7 +1,7 @@
 import { filter, map } from 'rxjs/operators';
-import { FormGroup, Validators, FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, Validators, FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Component, Signal, ChangeDetectionStrategy, inject, input } from '@angular/core';
+import { Component, Signal, ChangeDetectionStrategy, inject, input, signal, computed } from '@angular/core';
 import { Location, AsyncPipe, DatePipe, KeyValuePipe } from '@angular/common';
 import { Observable, combineLatest } from 'rxjs';
 
@@ -28,6 +28,7 @@ import { TranslatePipe } from '../../../../pipes/translate.pipe';
     MatCard,
     MatCardContent,
     ReactiveFormsModule,
+    FormsModule,
     MatSelect,
     MatOption,
     MatChipListbox,
@@ -72,6 +73,31 @@ export class OrderDetailComponent {
     });
 
     this.order$ = this.selectors.order;
+  }
+
+  /** Refunds (admin, paid card orders only) */
+  refundAmount: number | null = null;
+  readonly refunding = signal(false);
+  readonly refundError = signal('');
+  readonly refundable = computed(() => {
+    const order = this.order$();
+    if (!order?.paymentIntentId || !['PAID', 'SHIPPING', 'COMPLETED', 'REFUNDED'].includes(order.status)) return 0;
+    return Math.round((order.amount - (order.amount_refunded ?? 0)) * 100) / 100;
+  });
+
+  refund(): void {
+    const remaining = this.refundable();
+    const amount = this.refundAmount ?? undefined;
+    if (!remaining || this.refunding()) return;
+    const label = `${amount ?? remaining} ${this.order$()!.currency}`;
+    if (!confirm(`Refund ${label} to the customer's card? This cannot be undone.`)) return;
+    this.refunding.set(true);
+    this.refundError.set('');
+    this.store.refundOrder({ orderId: this.orderId, amount }, (error) => {
+      this.refunding.set(false);
+      if (error) this.refundError.set(error);
+      else this.refundAmount = null;
+    });
   }
 
   toggleForm(): void {

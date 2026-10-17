@@ -204,7 +204,7 @@ export interface LocalizedCart {
 // Orders
 // ---------------------------------------------------------------------------------------------
 
-export type OrderStatus = 'NEW' | 'PAID' | 'SHIPPING' | 'COMPLETED' | 'CANCELED';
+export type OrderStatus = 'NEW' | 'PAID' | 'SHIPPING' | 'COMPLETED' | 'CANCELED' | 'PENDING_PAYMENT' | 'PAYMENT_FAILED' | 'REFUNDED';
 
 export type OrderType = 'PAYMENT_ON_DELIVERY' | 'WITH_PAYMENT';
 
@@ -234,6 +234,8 @@ export interface Order {
   description?: string;
   outcome?: { seller_message: string };
   cardId?: string;
+  /** Stripe PaymentIntent of a card order */
+  paymentIntentId?: string;
   _user?: string;
   dateAdded: DateValue;
 }
@@ -249,9 +251,41 @@ export interface OrderRequest {
   cardId?: string;
 }
 
-/** Body of `POST /api/orders/stripe`. */
+/** Body of `POST /api/orders/stripe` (removed: answers 410; card payments use /api/payments). */
 export interface StripeOrderRequest extends OrderRequest {
   token: { id: string };
+}
+
+// Card payments with the Stripe Payment Element (docs/payments.md) ----------------------------
+
+/** Body of `POST /api/payments/intent`. Amount and currency always come from the server. */
+export interface PaymentIntentRequest {
+  email: string;
+  addresses: Address[];
+  notes?: string;
+}
+
+/** Response of `POST /api/payments/intent`: confirm `clientSecret` with Stripe.js. */
+export interface PaymentIntentResponse {
+  orderId: string;
+  clientSecret: string;
+  /** Major units, as shown in the cart */
+  amount: number;
+  currency: string;
+}
+
+/** Response of `POST /api/payments/complete` (body `{ orderId }`). */
+export interface PaymentCompleteResponse {
+  order: Order;
+  /** `succeeded` once paid; `processing` for delayed methods; otherwise the customer can retry */
+  paymentStatus: 'succeeded' | 'processing' | 'requires_payment_method' | 'requires_action' | 'canceled' | string;
+  cart: LocalizedCart | SessionCart;
+}
+
+/** Body of `POST /api/admin/orders/:orderId/refund`; no amount = refund what is left. */
+export interface RefundRequest {
+  /** Major units */
+  amount?: number;
 }
 
 /** Response of `POST /api/orders/add` and `/stripe`. */

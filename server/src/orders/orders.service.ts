@@ -1,6 +1,5 @@
 import { Inject, Logger, Injectable } from '@nestjs/common';
 import { desc, eq } from 'drizzle-orm';
-import Stripe from 'stripe';
 
 import { Order, OrderStatus } from './models/order.model';
 import { User } from '../auth/models/user.model';
@@ -10,7 +9,7 @@ import { prepareCart } from '../shared/utils/prepareUtils';
 import { currencyForLang } from '../shared/constans';
 import { CartModel } from '../cart/models/cart.model';
 import { Translation } from '../translations/translation.model';
-import type { Order as OrderData, OrderRequest, StripeOrderRequest } from '@eshop/shared';
+import type { Order as OrderData, OrderRequest } from '@eshop/shared';
 import type { OrderEmail } from '../shared/utils/email/email.types';
 import { ShopSession } from '../shared/types/session';
 import { Database, DRIZZLE } from '../db/database.module';
@@ -23,8 +22,8 @@ export interface OrderOutcome {
   result: Order | null;
 }
 
-const secret = process.env.STRIPE_SECRETKEY;
-export const stripe = new Stripe(secret!, { apiVersion: '2020-08-27' });
+/** Order number shown to customers and used in URLs ('order<ms>t<rand>') */
+export const newOrderId = () => 'order' + new Date().getTime() + 't' + Math.floor(Math.random() * 1000 + 1);
 
 @Injectable()
 export class OrdersService {
@@ -49,71 +48,33 @@ export class OrdersService {
     // Throws without a cart; callers turn that into 422 (current behavior)
     const cartForLang = prepareCart(cart!, lang, config);
     const newOrder = await this.insertOrder(this.createOrder(orderDto, cartForLang, 'PAYMENT_ON_DELIVERY', currencyForLang(lang)));
+    await this.notifyOrder(newOrder, cartForLang, lang);
+
+    return { error: '', result: newOrder };
+  }
+
+  /** Order emails to the customer and ADMIN_EMAILS; failures are logged, never thrown */
+  async notifyOrder(order: Order, cartForLang: CartModel, lang: string): Promise<void> {
     try {
       const translations = await findTranslation(this.db, lang);
 
-      this.sendmail(newOrder.customerEmail, newOrder, cartForLang, translations);
+      this.sendmail(order.customerEmail, order, cartForLang, translations);
 
       if (process.env.ADMIN_EMAILS) {
         process.env.ADMIN_EMAILS.split(',')
           .filter(Boolean)
           .forEach((email) => {
-            this.sendmail(email, newOrder, cartForLang, translations);
+            this.sendmail(email, order, cartForLang, translations);
           });
       }
     } catch (error) {
       this.logger.error((error as Error).stack + ' Failed to send email');
     }
-
-    return { error: '', result: newOrder };
   }
 
   async getAllOrders(): Promise<Order[]> {
     const rows = await this.db.select().from(orders).orderBy(desc(orders.createdAt));
     return rows.map(toOrderDoc);
-  }
-
-  async orderWithStripe(body: StripeOrderRequest, session: ShopSession, lang: string): Promise<OrderOutcome> {
-    const { cart, config } = session;
-    // Throws without a cart; callers turn that into 422 (current behavior)
-    const cartForLang = prepareCart(cart!, lang, config);
-    const charge = await stripe.charges.create({
-      // Stripe expects an integer amount in minor units; totals are float major units (audit BUG-01)
-      amount: Math.round(cartForLang.totalPrice * 100),
-      currency: currencyForLang(lang),
-      description: 'Credit Card Payment',
-      source: body.token.id,
-      capture: false,
-    });
-    const requestOrder = { ...body, cardId: charge.id };
-
-    if (charge) {
-      try {
-        const orderToSave = this.createOrder(requestOrder, cartForLang, 'WITH_PAYMENT', currencyForLang(lang));
-        // Known risk (audit BUG-02): the charge is captured before the order is stored
-        const capturePayment = await stripe.charges.capture(charge.id);
-        let newOrder = orderToSave as unknown as Order;
-        if (capturePayment) {
-          newOrder = await this.insertOrder(orderToSave);
-
-          const translations = await findTranslation(this.db, lang);
-          this.sendmail(newOrder.customerEmail, newOrder, cartForLang, translations);
-
-          if (process.env.ADMIN_EMAILS) {
-            process.env.ADMIN_EMAILS.split(',')
-              .filter(Boolean)
-              .forEach((email) => {
-                this.sendmail(email, newOrder, cartForLang, translations);
-              });
-          }
-        }
-        return { error: '', result: newOrder };
-      } catch {
-        return { error: 'ORDER_CREATION_FAIL', result: null };
-      }
-    } else {
-      return { error: 'ORDER_CREATION_FAIL', result: null };
-    }
   }
 
   async getOrderById(id: string): Promise<Order | null> {
@@ -140,7 +101,7 @@ export class OrdersService {
 
   private createOrder = (orderDto: OrderRequest, cart: CartModel, type: string, currency: string) => {
     const { addresses, email, userId, cardId, notes } = orderDto;
-    const orderId = 'order' + new Date().getTime() + 't' + Math.floor(Math.random() * 1000 + 1);
+    const orderId = newOrderId();
     const date = Date.now();
     const addUser = userId ? { _user: userId } : {};
     const addCard = cardId ? { cardId } : {};

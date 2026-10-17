@@ -15,6 +15,13 @@
       "when": 1792086321240,
       "tag": "0001_ai_product_draft",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792254065748,
+      "tag": "0002_stripe_payment_intents",
+      "breakpoints": true
     }
   ]
 }

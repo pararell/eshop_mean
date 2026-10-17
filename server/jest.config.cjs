@@ -26,7 +26,6 @@ module.exports = {
   // External services are always mocked: tests must never send email or charge cards
   moduleNameMapper: {
     '^@sendgrid/mail$': '<rootDir>/test/mocks/sendgrid.ts',
-    '^stripe$': '<rootDir>/test/mocks/stripe.ts',
   },
   setupFiles: ['<rootDir>/test/setup/env.ts'],
   globalSetup: '<rootDir>/test/setup/global-setup.cjs',

@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 
 import { TranslateService } from '../../../services/translate.service';
 import { Cart, User, Order } from '../../../shared/models';
+import type { PaymentIntentRequest } from '@eshop/shared';
 import { SignalStore } from '../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 import { MatProgressBar } from '@angular/material/progress-bar';
@@ -111,22 +112,25 @@ export class CartComponent {
     });
   }
 
-  payWithCard(payment: { token: { id: string }; amount: string | number; currency: string }): void {
-    this.user$.pipe(take(1)).subscribe((user) => {
-      const userToOrder = user ? { userId: user.id } : {};
-      const addresses = [
-        {
-          name: this.orderForm.value.name,
-          city: this.orderForm.value.city,
-          country: this.orderForm.value.country,
-          line1: this.orderForm.value.address,
-          line2: '',
-          zip: this.orderForm.value.zip,
-        },
-      ];
-      const paymentRequest = { ...payment, ...this.orderForm.value, ...userToOrder, addresses };
-      this.store.makeOrderWithPayment(paymentRequest);
-    });
+  /** Read by the card component when the customer presses Pay (amount and user come from the server) */
+  readonly buildPaymentRequest = (): PaymentIntentRequest => ({
+    email: this.orderForm.value.email,
+    notes: this.orderForm.value.notes || undefined,
+    addresses: [
+      {
+        name: this.orderForm.value.name,
+        line1: this.orderForm.value.address,
+        city: this.orderForm.value.city,
+        zip: this.orderForm.value.zip,
+        country: this.orderForm.value.country,
+      },
+    ],
+  });
+
+  /** Stripe.js confirmed the payment: load the paid order (navigates to the summary) */
+  onPaid(orderId: string): void {
+    this.store.completePayment(orderId);
+    this.scrollToTop();
   }
 
   scrollToTop(): void {

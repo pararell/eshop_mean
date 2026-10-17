@@ -6,6 +6,20 @@ All notable changes to this project will be documented in this file. See [standa
 
 <!-- Hand-written; when running `npm run release`, merge it into the generated section and remove it. -->
 
+### Card payments (M1)
+
+- **Stripe Payment Element** with PaymentIntents (deferred intent): 3-D Secure/SCA, Google Pay and the
+  payment methods enabled in Stripe; Apple Pay off. The order (`PENDING_PAYMENT`) and the
+  PaymentIntent are created on the server from the session cart when the customer pays; amounts,
+  currency and the user never come from the client; retries reuse the same order.
+- **Webhooks** (`POST /api/payments/webhook`, signature-verified, duplicates skipped): payment
+  succeeded/failed/canceled and refunds drive the order state; the order becomes `PAID` and the emails
+  go out exactly once. New statuses `PENDING_PAYMENT`, `PAYMENT_FAILED`, `REFUNDED` (migration
+  `0002_stripe_payment_intents`, additive).
+- **Refunds from the admin order detail** (full or partial).
+- `stripe` SDK 9 → 23, API version `2026-09-30.endive`; the token/Charges flow is removed and
+  `POST /api/orders/stripe` answers 410. New env `STRIPE_WEBHOOK_SECRET`. See `docs/payments.md`.
+
 ### Deploys and security (M0)
 
 - **Migrations run at container startup** (advisory lock, process exits if they fail), so automatic

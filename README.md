@@ -96,6 +96,8 @@ CLOUDINARY_SECRET="set secret from cloudinary api https://cloudinary.com (for im
 
 # Pay
 STRIPE_SECRETKEY="set for paying with card for orders with stripe https://stripe.com"
+# Webhook signing secret (whsec_...) of https://<domain>/api/payments/webhook; see docs/payments.md
+STRIPE_WEBHOOK_SECRET=""
 
 # Google login
 GOOGLE_CLIENT_ID="set for google login activation"

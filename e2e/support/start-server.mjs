@@ -13,6 +13,8 @@ import bcrypt from 'bcryptjs';
 
 import { E2E, testEnv } from './fixtures.mjs';
 import { startAiStub } from './ai-stub.mjs';
+// Shared with the API tests; Node runs the TypeScript file directly (type stripping)
+import { StripeStub } from '../../server/test/utils/stripe-stub.ts';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const port = process.env.E2E_PORT ?? '4600';
@@ -24,6 +26,12 @@ await seed(databaseUrl);
 
 // AI drafts run against a local stub of Gemini and Cloudinary (never the real services)
 const aiStub = await startAiStub({ cloudName: testEnv(baseURL).CLOUDINARY_NAME });
+// Card payments run against a local Stripe API stub, which also sends signed webhooks to the app
+const STRIPE_WEBHOOK_SECRET = 'whsec_e2e';
+const stripeStub = await new StripeStub().start();
+stripeStub.webhook = { url: `${baseURL}/api/payments/webhook`, secret: STRIPE_WEBHOOK_SECRET };
+const stripeEnv = { STRIPE_API_BASE: stripeStub.url, STRIPE_WEBHOOK_SECRET };
+
 const aiEnv = {
   GEMINI_API_KEY: 'e2e-gemini-key',
   AI_BASE_URL: aiStub.url,
@@ -35,12 +43,12 @@ const aiEnv = {
 // Lets specs inspect the database (e.g. to assert that an order was stored)
 const stateFile = resolve(root, 'test-results/e2e-state.json');
 mkdirSync(dirname(stateFile), { recursive: true });
-writeFileSync(stateFile, JSON.stringify({ databaseUrl, baseURL, aiStubUrl: aiStub.url }));
+writeFileSync(stateFile, JSON.stringify({ databaseUrl, baseURL, aiStubUrl: aiStub.url, stripeStubUrl: stripeStub.url }));
 
 const server = spawn(process.execPath, ['dist/eshop/server/server.mjs'], {
   cwd: root,
   // Explicit values override anything a local .env would provide
-  env: { ...process.env, ...testEnv(baseURL), ...aiEnv, DATABASE_URL: databaseUrl, PORT: port },
+  env: { ...process.env, ...testEnv(baseURL), ...aiEnv, ...stripeEnv, DATABASE_URL: databaseUrl, PORT: port },
   stdio: ['ignore', 'pipe', 'pipe'],
 });
 
@@ -62,6 +70,7 @@ for (const stream of [server.stdout, server.stderr]) {
 const shutdown = async (code = 0) => {
   server.kill();
   await aiStub.stop();
+  await stripeStub.stop();
   await postgres.stop();
   process.exit(code);
 };

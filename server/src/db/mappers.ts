@@ -215,6 +215,7 @@ export interface OrderDoc {
   _id: string;
   orderId: string;
   cardId?: string;
+  paymentIntentId?: string;
   amount: number;
   amount_refunded?: number;
   currency: string;
@@ -235,6 +236,7 @@ export function toOrderDoc(row: OrderRow): OrderDoc {
     _id: row.id,
     orderId: row.orderNumber,
     cardId: row.cardId ?? undefined,
+    paymentIntentId: row.paymentIntentId ?? undefined,
     amount: row.amount,
     amount_refunded: row.amountRefunded ?? undefined,
     currency: row.currency,
@@ -256,6 +258,7 @@ export function orderValues(input: Partial<Record<keyof OrderDoc, unknown>>) {
   const values: Partial<typeof orders.$inferInsert> = {};
   if (input.orderId !== undefined) values.orderNumber = String(toStringOrNull(input.orderId));
   if (input.cardId !== undefined) values.cardId = toStringOrNull(input.cardId);
+  if (input.paymentIntentId !== undefined) values.paymentIntentId = toStringOrNull(input.paymentIntentId);
   if (input.amount !== undefined) values.amount = toNumberOrNull(input.amount) ?? 0;
   if (input.amount_refunded !== undefined) values.amountRefunded = toNumberOrNull(input.amount_refunded);
   if (input.currency !== undefined) values.currency = String(toStringOrNull(input.currency));

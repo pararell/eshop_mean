@@ -167,11 +167,12 @@
 
                   @if (toggleCard) {
                     <app-card
-                      [price]="$safeNavigationMigration(cart?.totalPrice) | priceFormat"
+                      [price]="cart.totalPrice"
                       [currency]="(currency$ | async)!"
-                      [loading]="(loading$ | async)!"
-                      (scrollToTop)="scrollToTop()"
-                      (payWithCardEmit)="payWithCard($event)"
+                      [lang]="(lang$ | async)!"
+                      [buildRequest]="buildPaymentRequest"
+                      [disabled]="orderForm.invalid"
+                      (paid)="onPaid($event)"
                     />
                   }
                   @if (!toggleCard && (currency$ | async); as currency) {

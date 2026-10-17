@@ -36,6 +36,7 @@ const securityHeaders = () =>
         scriptSrc: [
           "'self'",
           'https://js.stripe.com',
+          'https://*.js.stripe.com',
           'https://cdn.tiny.cloud',
           'https://www.google.com',
           'https://www.gstatic.com',
@@ -48,11 +49,13 @@ const securityHeaders = () =>
         connectSrc: [
           "'self'",
           'https://api.stripe.com',
+          'https://*.stripe.com',
+          'https://*.stripe.network',
           'https://*.tiny.cloud',
           'https://www.google-analytics.com',
           'https://*.google-analytics.com',
         ],
-        frameSrc: ['https://js.stripe.com', 'https://hooks.stripe.com', 'https://www.google.com'],
+        frameSrc: ['https://js.stripe.com', 'https://*.js.stripe.com', 'https://hooks.stripe.com', 'https://www.google.com'],
         objectSrc: ["'none'"],
         baseUri: ["'self'"],
         formAction: ["'self'"],
@@ -72,7 +75,15 @@ export const setAppDB = (app: NestExpressApplication): void => {
 
   app.use(securityHeaders());
   app.use(compression());
-  app.use(json({ limit: '10mb' }));
+  app.use(
+    json({
+      limit: '10mb',
+      // Stripe signs the exact bytes it sent: keep them for webhook verification (payments.controller.ts)
+      verify: (req, _res, buf) => {
+        if (req.url?.startsWith('/api/payments/webhook')) (req as typeof req & { rawBody?: Buffer }).rawBody = buf;
+      },
+    }),
+  );
   app.use(urlencoded({ limit: '10mb' }));
   app.use(cookieParser());
 

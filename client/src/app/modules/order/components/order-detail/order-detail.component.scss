@@ -75,3 +75,30 @@
     cursor: pointer;
   }
 }
+
+.order-refund {
+  margin: 12px 0;
+  padding: 8px 12px;
+  border: 1px solid rgb(0 0 0 / 12%);
+  border-radius: 4px;
+
+  h5 {
+    margin: 0 0 4px;
+  }
+}
+
+.order-refund-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+
+  input {
+    width: 120px;
+    padding: 6px 8px;
+  }
+}
+
+.order-refund-error {
+  color: #c62828;
+}

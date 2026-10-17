@@ -79,7 +79,11 @@ Findings resolved since the audit (2026-10-14). The finding texts below are kept
 | SEC-09 | Partly (M0) | helmet: `nosniff`, `X-Frame-Options`, HSTS (this host only), `Referrer-Policy`, no `X-Powered-By`. The CSP is **report-only** until it is verified against Stripe, TinyMCE, reCAPTCHA and analytics (M2). |
 | SEC-11 | Fixed (M0) | Session cookie `httpOnly`, `SameSite=Lax`, `Secure` on HTTPS (`secure: 'auto'`, needs `TRUST_PROXY` behind a TLS-terminating proxy). |
 
-Still open and notable: DEP-02 (Stripe SDK / PaymentIntents) and BUG-02 (card captured without a guaranteed order).
+| DEP-02 | Fixed (M1) | `stripe@23`, API `2026-09-30.endive`: PaymentIntents with the Payment Element (SCA/3-D Secure), signed webhooks, idempotency keys, admin refunds. The Charges/token flow is removed (`POST /api/orders/stripe` → 410). See [payments.md](payments.md). |
+| BUG-02 | Fixed (M1) | The order exists (PENDING_PAYMENT) before the customer pays; it becomes PAID exactly once, from the webhook or the customer's return, with the emails. Nothing is captured without an order. |
+| SEC-04 | Partly (M1) | Card orders validate the body (`PaymentIntentDto`, 422) and take the user from the JWT only. Cash-on-delivery orders (`POST /api/orders/add`) still accept `userId` from the body. |
+
+Still open and notable: SEC-04 for cash-on-delivery orders, BUG-06 (stale cart prices), BUG-07 (stock).
 
 ---
 

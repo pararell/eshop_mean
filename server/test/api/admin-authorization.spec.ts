@@ -27,6 +27,7 @@ const adminEndpoints: [method: 'get' | 'post' | 'patch' | 'delete', path: string
   ['delete', '/api/eshop/config/some-config'],
   ['get', '/api/admin/ai/status'],
   ['post', '/api/admin/products/ai-draft'],
+  ['post', '/api/admin/orders/some-order/refund'],
 ];
 
 describe('Admin authorization', () => {

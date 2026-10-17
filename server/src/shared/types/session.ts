@@ -9,6 +9,8 @@ declare module 'express-session' {
     config: ShopConfig;
     /** Admin image library (see admin/utils/images.ts) */
     images: { all: string[] };
+    /** The card order this session is paying (payments/payments.service.ts) */
+    payment: { orderId: string };
   }
 }
 

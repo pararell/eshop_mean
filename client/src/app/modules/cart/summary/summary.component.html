@@ -5,9 +5,17 @@
       {{ 'Back' | translate | async }}
     </button>
 
-    <h2>
-      {{ 'SuccessOrder' | translate | async }}
-    </h2>
-    <app-order-info [order]="order$()!" [lang]="(lang$ | async)!" />
+    @if (order$(); as order) {
+      <h2 role="status">
+        @if (pending()) {
+          {{ 'Payment_processing' | translate | async }}
+        } @else {
+          {{ 'SuccessOrder' | translate | async }}
+        }
+      </h2>
+      <app-order-info [order]="order" [lang]="(lang$ | async)!" />
+    } @else {
+      <h2 role="status">{{ 'Payment_checking' | translate | async }}</h2>
+    }
   </div>
 </div>

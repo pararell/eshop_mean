@@ -18,6 +18,10 @@ const testEnv: Record<string, string> = {
   CLOUDINARY_KEY: 'test',
   CLOUDINARY_SECRET: 'test',
   STRIPE_SECRETKEY: 'sk_test_dummy',
+  // The real SDK runs in tests, but only against test/utils/stripe-stub.ts; the default points at a
+  // closed local port so a test that forgets the stub fails instead of reaching Stripe
+  STRIPE_API_BASE: 'http://127.0.0.1:9',
+  STRIPE_WEBHOOK_SECRET: '',
   GOOGLE_CLIENT_ID: 'test-google-client',
   GOOGLE_CLIENT_SECRET: 'test-google-secret',
   RECAPTCHA_SERVER_KEY: 'test-recaptcha',

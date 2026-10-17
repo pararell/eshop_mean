@@ -1,15 +1,6 @@
 import { SignalStoreSelectors } from './signal.store.selectors';
 import { Injectable, inject } from '@angular/core';
-import type {
-  CategoryInput,
-  ContactRequest,
-  OrderRequest,
-  ProductInput,
-  ShopConfig,
-  SignInRequest,
-  SignUpRequest,
-  StripeOrderRequest,
-} from '@eshop/shared';
+import type { CategoryInput, ContactRequest, OrderRequest, ProductInput, ShopConfig, SignInRequest, SignUpRequest } from '@eshop/shared';
 import { ApiService, PagesQuery, ProductsQuery } from '../services/api.service';
 import { Cart, Order, Page, Product, Theme, Translations, User } from '../shared/models';
 
@@ -230,30 +221,39 @@ export class SignalStore {
     });
   };
 
-  makeOrderWithPayment = (payload: StripeOrderRequest) => {
+  /**
+   * Card payment: after Stripe.js confirmed (or when Stripe redirected back to the summary page),
+   * ask the server for the order's state. A paid order empties the cart and shows the summary.
+   */
+  completePayment = (orderId: string) => {
     this.selectors.productState.update((state) => ({ ...state, loading: true }));
-    this.apiService.handleToken(payload).subscribe((response) => {
+    this.apiService.completePayment(orderId).subscribe((response) => {
       if (response.error || !response) {
-        this.selectors.productState.update((state) => ({
-          ...state,
-          order: null,
-          error: 'ORDER_SUBMIT_ERROR',
-          loading: false,
-        }));
+        this.selectors.productState.update((state) => ({ ...state, order: null, error: 'ORDER_SUBMIT_ERROR', loading: false }));
         return; // keep the error visible (audit BUG-04)
       }
       this.selectors.productState.update((state) => ({
         ...state,
-        order: response.result,
+        order: response.order,
         cart: keepAsIs<Cart>(response.cart),
-        error: response.error,
+        error: '',
         loading: false,
       }));
     });
   };
 
-  getStripeSession = (payload: unknown) => {
-    this.apiService.getStripeSession(payload);
+  /** Admin: refund a card order; the order detail shows the updated order */
+  refundOrder = (payload: { orderId: string; amount?: number }, done?: (error?: string) => void) => {
+    this.apiService.refundOrder(payload.orderId, payload.amount ? { amount: payload.amount } : {}).subscribe((response) => {
+      if (response.error) {
+        const message = (response.error as { error?: { message?: string } }).error?.message;
+        done?.(message || 'Refund failed');
+        return;
+      }
+      this.selectors.dashboardState.update((state) => ({ ...state, order: response }));
+      this.selectors.productState.update((state) => ({ ...state, order: response }));
+      done?.();
+    });
   };
 
   getUserOrders = () => {

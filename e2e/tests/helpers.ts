@@ -6,24 +6,77 @@ import pg from 'pg';
 export { E2E } from '../support/fixtures.mjs';
 
 /**
- * Minimal stand-in for Stripe.js v3: the card element reports "complete" right away and
- * createToken resolves a test token. No request ever reaches Stripe.
+ * Stand-in for Stripe.js (Payment Element, deferred-intent flow). It renders a fake card field,
+ * records what the shop asked for in `window.__stripeCalls`, and "confirms" through the local
+ * Stripe stub (support/start-server.mjs), which then sends the signed webhook to the app.
+ * `window.__e2eCardOutcome = 'declined'` makes the next payment fail like a declined card; `'redirect'`
+ * pays and then redirects to return_url (3-D Secure on its own page).
  */
 const fakeStripeJs = `
-window.Stripe = function () {
-  return {
-    elements: () => ({
-      create: () => ({
-        mount() {},
-        addEventListener(event, callback) { setTimeout(() => callback({ complete: true }), 50); },
-      }),
-    }),
-    createToken: () => Promise.resolve({ token: { id: 'tok_e2e' } }),
-  };
-};`;
+(function () {
+  const calls = (window.__stripeCalls = []);
+  function Stripe(key) {
+    calls.push({ method: 'Stripe', key });
+    return {
+      _registerWrapper() {},
+      elements(options) {
+        calls.push({ method: 'elements', options });
+        const handlers = {};
+        let element;
+        const elements = {
+          create(type, createOptions) {
+            calls.push({ method: 'create', type, options: createOptions });
+            element = {
+              mount(container) {
+                container.innerHTML = '<label>Card number <input data-testid="fake-card-number" autocomplete="off"></label>';
+                container.querySelector('input').addEventListener('input', (e) => (handlers.change || (() => {}))({ complete: e.target.value.length >= 16 }));
+                setTimeout(() => (handlers.ready || (() => {}))({}), 20);
+              },
+              on(event, handler) { handlers[event] = handler; },
+              destroy() {},
+            };
+            return element;
+          },
+          update(options) { calls.push({ method: 'update', options }); },
+          getElement() { return element; },
+          async submit() {
+            const value = document.querySelector('[data-testid=fake-card-number]')?.value || '';
+            return value.length >= 16 ? {} : { error: { type: 'validation_error', message: 'Your card number is incomplete.' } };
+          },
+        };
+        return elements;
+      },
+      async confirmPayment({ clientSecret, confirmParams, redirect }) {
+        calls.push({ method: 'confirmPayment', clientSecret, confirmParams, redirect });
+        const outcome = window.__e2eCardOutcome || 'succeeded';
+        window.__e2eCardOutcome = undefined;
+        const id = clientSecret.split('_secret_')[0];
+        const response = await fetch(window.__stripeStubUrl + '/__test/confirm/' + id, {
+          method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ outcome }),
+        });
+        const intent = await response.json();
+        if (outcome === 'redirect') {
+          // Like 3-D Secure on a separate page: Stripe sends the customer to return_url
+          window.location.assign(confirmParams.return_url + '&payment_intent=' + id + '&redirect_status=succeeded');
+          return new Promise(() => {});
+        }
+        return outcome === 'declined'
+          ? { error: { type: 'card_error', code: 'card_declined', message: 'Your card was declined.' } }
+          : { paymentIntent: { id: intent.id, status: intent.status } };
+      },
+    };
+  }
+  Stripe.version = 'endive';
+  window.Stripe = Stripe;
+})();`;
+
+/** URLs the e2e server wrote (support/start-server.mjs) */
+export const e2eState = (): { databaseUrl: string; baseURL: string; aiStubUrl: string; stripeStubUrl: string } =>
+  JSON.parse(readFileSync(resolve(__dirname, '../../test-results/e2e-state.json'), 'utf8'));
 
 /** Keeps tests hermetic: fake Stripe.js, no TinyMCE cloud, reCAPTCHA or analytics. */
 export async function isolateExternalServices(page: Page) {
+  await page.addInitScript((url) => ((window as unknown as { __stripeStubUrl: string }).__stripeStubUrl = url), e2eState().stripeStubUrl);
   await page.route('https://js.stripe.com/**', (route) => route.fulfill({ contentType: 'application/javascript', body: fakeStripeJs }));
   await page.route(/tiny\.cloud|tinymce|recaptcha|googletagmanager|google-analytics/, (route) => route.abort());
 }
@@ -61,9 +114,23 @@ export async function choosePayment(page: Page, method: 'card' | 'delivery') {
   await page.getByRole('button', { name: 'Next' }).filter({ visible: true }).click();
 }
 
+/** Buys `qty` of a product with the (fake) card through the real checkout; returns the order number */
+export async function payByCard(page: Page, titleUrl: string, email: string, qty = 1): Promise<string> {
+  await addToCart(page, titleUrl, qty);
+  await page.goto('/en/cart');
+  await fillAddressStep(page, email);
+  await choosePayment(page, 'card');
+  await page.getByTestId('fake-card-number').fill('4242424242424242');
+  const intent = page.waitForResponse((r) => r.url().includes('/api/payments/intent'));
+  await page.locator('#submit-button').click();
+  const { orderId } = await (await intent).json();
+  await expect(page).toHaveURL('/en/cart/summary');
+  return orderId;
+}
+
 /** Direct database access for assertions (URL written by support/start-server.mjs). */
 export async function withDb<T>(fn: (db: pg.Pool) => Promise<T>): Promise<T> {
-  const { databaseUrl } = JSON.parse(readFileSync(resolve(__dirname, '../../test-results/e2e-state.json'), 'utf8'));
+  const { databaseUrl } = e2eState();
   const pool = new pg.Pool({ connectionString: databaseUrl, max: 1 });
   try {
     return await fn(pool);

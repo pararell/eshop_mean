@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards, Session, Param, Patch, UnprocessableEntityException, Headers } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Session, Param, Patch, UnprocessableEntityException, Headers, GoneException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import { OrdersService } from './orders.service';
@@ -9,7 +9,7 @@ import { Order } from './models/order.model';
 import { RolesGuard } from '../auth/roles.guard';
 import { Cart } from '../cart/utils/cart';
 import { prepareCart } from '../shared/utils/prepareUtils';
-import type { Order as OrderData, StripeOrderRequest } from '@eshop/shared';
+import type { Order as OrderData } from '@eshop/shared';
 import { CartModel } from '../cart/models/cart.model';
 import { ShopSession } from '../shared/types/session';
 import { RateLimited } from '../shared/rate-limit/rate-limit';
@@ -46,25 +46,10 @@ export class OrdersController {
     }
   }
 
-  @RateLimited()
+  /** Removed: card payments use /api/payments (Payment Element). Old cached clients get a clear 410. */
   @Post('/stripe')
-  async orderWithStripe(@Body() body: StripeOrderRequest, @Session() session: ShopSession, @Headers('lang') lang: string): Promise<OrderResponse> {
-    try {
-      const successResult = await this.ordersService.orderWithStripe(body, session, lang);
-
-      if (successResult && !successResult.error) {
-        const emptyCart = new Cart({ items: [] });
-        session.cart = emptyCart;
-        return { ...successResult, cart: emptyCart };
-      } else {
-        return {
-          ...successResult,
-          cart: prepareCart(session.cart!, lang, session.config),
-        };
-      }
-    } catch (e) {
-      throw new UnprocessableEntityException();
-    }
+  orderWithStripe(): never {
+    throw new GoneException('Card payment has changed. Reload the page and try again.');
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
