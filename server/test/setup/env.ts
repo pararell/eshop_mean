@@ -12,7 +12,10 @@ const testEnv: Record<string, string> = {
   JWT_EXPIRATION: '1h',
   COOKIE_KEY: 'test-cookie-key',
   ADMIN_EMAILS: 'admin1@test.dev,admin2@test.dev',
-  SENDGRID_KEY: 'SG.test',
+  // Emails: specs replace the Resend transport (test/utils/email.ts); without a key nothing is sent,
+  // and the base URL is a closed port, so nothing can ever reach Resend
+  RESEND_API_KEY: '',
+  RESEND_API_BASE: 'http://127.0.0.1:9',
   EMAIL_FROM: 'shop@test.dev',
   CLOUDINARY_NAME: 'test',
   CLOUDINARY_KEY: 'test',

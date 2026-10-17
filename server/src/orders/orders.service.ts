@@ -4,11 +4,10 @@ import { desc, eq } from 'drizzle-orm';
 import { Order, OrderStatus } from './models/order.model';
 import { User } from '../auth/models/user.model';
 import { OrderDto } from './dto/order.dto';
-import { sendMsg } from '../shared/utils/email/mailer';
+import { adminEmails, sendMail } from '../shared/utils/email/mailer';
 import { prepareCart } from '../shared/utils/prepareUtils';
 import { currencyForLang } from '../shared/constans';
 import { CartModel } from '../cart/models/cart.model';
-import { Translation } from '../translations/translation.model';
 import type { Order as OrderData, OrderRequest } from '@eshop/shared';
 import type { OrderEmail } from '../shared/utils/email/email.types';
 import { ShopSession } from '../shared/types/session';
@@ -54,19 +53,21 @@ export class OrdersService {
   }
 
   /** Order emails to the customer and ADMIN_EMAILS; failures are logged, never thrown */
+  /** Order email to the customer and every ADMIN_EMAILS address (one Resend request); never throws */
   async notifyOrder(order: Order, cartForLang: CartModel, lang: string): Promise<void> {
     try {
       const translations = await findTranslation(this.db, lang);
-
-      this.sendmail(order.customerEmail, order, cartForLang, translations);
-
-      if (process.env.ADMIN_EMAILS) {
-        process.env.ADMIN_EMAILS.split(',')
-          .filter(Boolean)
-          .forEach((email) => {
-            this.sendmail(email, order, cartForLang, translations);
-          });
-      }
+      const emailType: OrderEmail = {
+        subject: 'Order',
+        cart: cartForLang,
+        currency: order.currency,
+        orderId: order.orderId,
+        address: order.addresses?.[0],
+        notes: order.notes,
+        date: new Date(),
+      };
+      // Resend ignores a repeat with the same key for 24 h: an order is never announced twice
+      await sendMail([order.customerEmail, ...adminEmails()], emailType, translations, `order-${order.orderId}`);
     } catch (error) {
       this.logger.error((error as Error).stack + ' Failed to send email');
     }
@@ -123,20 +124,5 @@ export class OrdersService {
       ...addUser,
       ...addCard,
     };
-  };
-
-  private sendmail = async (email: string, order: Order, cart: CartModel, translations: Translation | null) => {
-    const emailType: OrderEmail = {
-      subject: 'Order',
-      cart,
-      currency: order.currency,
-      orderId: order.orderId,
-      address: order.addresses?.[0],
-      notes: order.notes,
-      date: new Date(),
-    };
-
-    const mailSended = await sendMsg(email, emailType, translations);
-    return mailSended;
   };
 }

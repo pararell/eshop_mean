@@ -48,7 +48,7 @@ On failure, Playwright keeps a trace, a screenshot and the error context in
 - **Environment:** `env.ts` sets every variable the server reads. A local `.env` can never leak
   into tests, because `ConfigModule` doesn't override variables that are already set.
 - **External services are always mocked:**
-  - `@sendgrid/mail` → [test/mocks/sendgrid.ts](../server/test/mocks/sendgrid.ts);
+  - email: specs replace the Resend transport with a spy ([test/utils/email.ts](../server/test/utils/email.ts), `sentEmails()`); the test env has no Resend key and a closed base URL, and the real transport is unit-tested against a local stub (`resend-transport.spec.ts`);
   - Stripe: the real SDK talks to [test/utils/stripe-stub.ts](../server/test/utils/stripe-stub.ts), a
     local stub of the Stripe API (PaymentIntents, refunds, idempotency, signed webhooks), via
     `STRIPE_API_BASE`; by default that points at a closed port, so a test without the stub fails
@@ -82,7 +82,7 @@ On failure, Playwright keeps a trace, a screenshot and the error context in
 - **Hermetic:**
   - in the browser, Stripe.js is replaced by a small fake, and TinyMCE, reCAPTCHA and analytics
     are blocked ([helpers.ts](../e2e/tests/helpers.ts));
-  - on the server, outbound HTTPS goes to a dead local proxy, so SendGrid and reCAPTCHA are never
+  - on the server, there is no Resend key (emails are skipped), outbound HTTPS goes to a dead local proxy, so reCAPTCHA is never
     reached; AI and Cloudinary go to the local AI stub, the Stripe API to the shared Stripe stub,
     which also sends signed webhooks to the app. Stripe.js in the browser is a fake that renders a
     stand-in card field and confirms through that stub (`window.__e2eCardOutcome` = `declined` /

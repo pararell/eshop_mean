@@ -6,6 +6,13 @@ All notable changes to this project will be documented in this file. See [standa
 
 <!-- Hand-written; when running `npm run release`, merge it into the generated section and remove it. -->
 
+### Email
+
+- **Resend replaces SendGrid** for order and contact emails (`RESEND_API_KEY`, `EMAIL_FROM` on a domain
+  verified in Resend; `SENDGRID_KEY` is no longer read). One batch request per order or contact
+  message (customer and admins as separate messages), an idempotency key per order, one retry when
+  rate limited; failures are logged and never fail the order. `@sendgrid/mail` removed.
+
 ### Card payments (M1)
 
 - **Stripe Payment Element** with PaymentIntents (deferred intent): 3-D Secure/SCA, Google Pay and the

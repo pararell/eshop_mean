@@ -86,8 +86,9 @@ COOKIE_KEY="youhavetochoseone"
 # PostgreSQL (data and sessions); create the tables with `npm run db:migrate`
 DATABASE_URL="postgres://{user}:{password}@{host}:{port}/{databaseName}"
 
-# Emails
-SENDGRID_KEY="set if you want have notification for order or contact from https://sendgrid.com (ADMIN_EMAILS and user will get notification)"
+# Emails (order confirmations, contact form) via Resend: https://resend.com
+# EMAIL_FROM must use a domain verified in Resend, e.g. "Shop <shop@your-domain.com>"
+RESEND_API_KEY=""
 
 # Images
 CLOUDINARY_NAME="set name from cloudinary api https://cloudinary.com (for images upload)"
@@ -103,7 +104,7 @@ STRIPE_WEBHOOK_SECRET=""
 GOOGLE_CLIENT_ID="set for google login activation"
 GOOGLE_CLIENT_SECRET="set for google login activation"
 
-# Admin emails get notification from sendgrid when order or contact are submitted
+# Admin emails get a copy of every order and contact message
 ADMIN_EMAILS="your@email.com, another@mail.com"
 
 # Recaptcha server key from google

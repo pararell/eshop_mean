@@ -1,5 +1,5 @@
 import request from 'supertest';
-import sgMail from '@sendgrid/mail';
+import { sentEmails } from '../utils/email';
 import { eq } from 'drizzle-orm';
 
 import { orders, stripeEvents } from '../../src/db/schema';
@@ -49,7 +49,7 @@ describe('Payments API (Stripe Payment Element)', () => {
   const orderRow = async (orderId: string) => (await t.db.select().from(orders).where(eq(orders.orderNumber, orderId)))[0];
   const webhook = (payload: string, signature = signWebhook(payload, WEBHOOK_SECRET)) =>
     t.http.post('/api/payments/webhook').set('content-type', 'application/json').set('stripe-signature', signature).send(payload);
-  const emailCount = () => (sgMail.send as jest.Mock).mock.calls.length;
+  const emailCount = () => sentEmails().length;
 
   describe('POST /api/payments/intent', () => {
     it('creates a pending order and a PaymentIntent from the server-side cart total', async () => {

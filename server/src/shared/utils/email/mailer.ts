@@ -1,25 +1,24 @@
-import sgMail from '@sendgrid/mail';
-
 import { getContent } from './email-utils';
 import type { EmailTranslations, EmailType } from './email.types';
+import { mailTransport } from './resend-transport';
 
-sgMail.setApiKey(process.env.SENDGRID_KEY!);
+/** `ADMIN_EMAILS`, comma-separated */
+export const adminEmails = (): string[] =>
+  (process.env.ADMIN_EMAILS ?? '')
+    .split(',')
+    .map((email) => email.trim())
+    .filter(Boolean);
 
-export const sendMsg = async (email: string, emailType: EmailType, translations: EmailTranslations) => {
-  try {
-    const msg = {
-      to: email,
-      from: process.env.EMAIL_FROM!,
-      subject: emailType.subject,
-      html: getContent(emailType, translations)!,
-    };
-    return await sgMail.send(msg);
-  } catch (error) {
-    console.error(error);
-
-    const { response } = error as { response?: { body?: unknown } };
-    if (response) {
-      console.error(response.body);
-    }
-  }
+/**
+ * Sends the same email to each recipient (one message per recipient, so nobody sees the others'
+ * addresses) in one Resend request. `idempotencyKey` makes a repeated call within 24 hours a no-op
+ * at Resend. Never throws.
+ */
+export const sendMail = async (recipients: string[], emailType: EmailType, translations: EmailTranslations, idempotencyKey?: string) => {
+  const to = [...new Set(recipients.map((email) => email.trim()).filter(Boolean))];
+  const html = getContent(emailType, translations) ?? '';
+  return mailTransport.send(
+    to.map((email) => ({ from: process.env.EMAIL_FROM ?? '', to: email, subject: emailType.subject, html })),
+    idempotencyKey,
+  );
 };

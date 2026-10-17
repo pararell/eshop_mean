@@ -1,5 +1,5 @@
 import { of, throwError } from 'rxjs';
-import sgMail from '@sendgrid/mail';
+import { emailSpy, sentEmails } from '../utils/email';
 
 import { adminToken, createTestApp, eventually, httpMock, TestApp } from '../utils/test-app';
 
@@ -62,11 +62,14 @@ describe('Eshop API (config, pages, contact)', () => {
       await t.http.post('/api/eshop/contact').set('lang', 'en').send(message).expect(201);
 
       const recipients = await eventually(async () => {
-        const to = (sgMail.send as jest.Mock).mock.calls.map(([msg]) => msg.to);
+        const to = sentEmails().map((msg) => msg.to);
         if (to.length < 3) throw new Error('emails not sent yet');
         return to;
       });
       expect(recipients.sort()).toEqual(['admin1@test.dev', 'admin2@test.dev', 'visitor@test.dev']);
+      // one Resend request for all three, each recipient a separate message
+      expect(emailSpy).toHaveBeenCalledTimes(1);
+      expect(sentEmails()[0]).toMatchObject({ from: 'shop@test.dev', subject: 'Contact' });
     });
 
     it('rejects an invalid captcha with 400 and keeps running (SEC-02 regression)', async () => {
@@ -74,7 +77,7 @@ describe('Eshop API (config, pages, contact)', () => {
 
       await t.http.post('/api/eshop/contact').set('lang', 'en').send(message).expect(400);
 
-      expect(sgMail.send).not.toHaveBeenCalled();
+      expect(emailSpy).not.toHaveBeenCalled();
       await t.http.get('/api/eshop/config').expect(200); // process still alive
     });
 

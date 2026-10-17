@@ -4,14 +4,13 @@ import { and, eq, inArray, ne } from 'drizzle-orm';
 import { firstValueFrom } from 'rxjs';
 import type { PublicConfigResponse, SessionCart, ShopConfig, Theme as ThemeData } from '@eshop/shared';
 
-import { sendMsg } from '../shared/utils/email/mailer';
+import { adminEmails, sendMail } from '../shared/utils/email/mailer';
 import { ContactDto } from './dto/contact.dto';
 import { PageDto } from './dto/page.dto';
 import { Cart } from '../cart/utils/cart';
 import { Page } from './models/page.model';
 import { Theme } from './models/theme.model';
 import { Config } from './models/config.model';
-import { Translation } from '../translations/translation.model';
 import type { ContactEmail } from '../shared/utils/email/email.types';
 import { ShopSession } from '../shared/types/session';
 import { Database, DRIZZLE } from '../db/database.module';
@@ -70,15 +69,8 @@ export class EshopService {
     if (result.data.success) {
       try {
         const translations = await findTranslation(this.db, lang);
-        this.sendmail(contactDto.email, contactDto, cart, translations);
-
-        if (process.env.ADMIN_EMAILS) {
-          process.env.ADMIN_EMAILS.split(',')
-            .filter(Boolean)
-            .forEach((email) => {
-              this.sendmail(email, contactDto, cart, translations);
-            });
-        }
+        const emailType: ContactEmail = { subject: 'Contact', cart, contact: contactDto, date: new Date() };
+        await sendMail([contactDto.email, ...adminEmails()], emailType, translations);
       } catch {
         throw new BadRequestException();
       }
@@ -292,16 +284,4 @@ export class EshopService {
   private async findConfig(where: { active: boolean }): Promise<Config | null> {
     return (await this.loadConfigs(where))[0] ?? null;
   }
-
-  private sendmail = async (email: string, contactDto: ContactDto, cart: Cart | SessionCart | undefined, translations: Translation | null) => {
-    const emailType: ContactEmail = {
-      subject: 'Contact',
-      cart,
-      contact: contactDto,
-      date: new Date(),
-    };
-
-    const mailSended = await sendMsg(email, emailType, translations);
-    return mailSended;
-  };
 }

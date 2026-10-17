@@ -24,7 +24,7 @@ flowchart LR
   MW -->|session collection| M
   SSR -->|HTTP to own /api via serverUrl| API
   API --> S[Stripe]
-  API --> SG[SendGrid]
+  API --> SG[Resend]
   API --> C[Cloudinary]
   API --> G[Google OAuth]
   API --> R[reCAPTCHA]
@@ -257,7 +257,7 @@ assistant), which saves nothing until the admin presses Save.
   on delivery), then summary.
 - **Cash on delivery:** `POST /api/orders/add`
   1. builds an `Order` from the session cart (`status: NEW`, `type: PAYMENT_ON_DELIVERY`);
-  2. emails the customer and every `ADMIN_EMAILS` address via SendGrid.
+  2. emails the customer and every `ADMIN_EMAILS` address via Resend (one batch request).
 - **Card** (Stripe Payment Element, deferred intent; details in [payments.md](payments.md)):
   1. The Payment Element shows the cart amount; on Pay, `elements.submit()` validates it.
   2. `POST /api/payments/intent` creates a `PENDING_PAYMENT` order and a PaymentIntent from the
@@ -423,15 +423,15 @@ erDiagram
 
 ## 6. External services
 
-| Service                          | Used for                                                    | Integration                                                                                                                       | Config                                                                   |
-| -------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| Stripe                           | Card payments                                               | `stripe` SDK 23, API `2026-09-30.endive`, PaymentIntents + Payment Element, signed webhooks, refunds ([payments.md](payments.md)) | `STRIPE_SECRETKEY`, `STRIPE_WEBHOOK_SECRET`, `FE_STRIPE_PUBLISHABLE_KEY` |
-| SendGrid                         | Order and contact emails to the customer and `ADMIN_EMAILS` | `@sendgrid/mail`, HTML templates in `server/src/shared/utils/email/`                                                              | `SENDGRID_KEY`, `EMAIL_FROM`                                             |
-| Cloudinary                       | Product and site images                                     | `cloudinary` v2 `upload_stream` from a multer memory buffer                                                                       | `CLOUDINARY_*`                                                           |
-| Google OAuth 2.0                 | Social login                                                | `passport-google-oauth20`, scopes `profile` and `email`                                                                           | `GOOGLE_CLIENT_*`, `SERVER_URL`, `ORIGIN`                                |
-| Google reCAPTCHA v3              | Contact-form spam protection                                | Client: vendored ng-recaptcha service. Server: `siteverify`.                                                                      | `FE_RECAPTCHA_CLIENT_KEY`, `RECAPTCHA_SERVER_KEY`                        |
-| geolocation-db.com               | Default language when none is chosen                        | Called from the server                                                                                                            | `GEO_LOCATION_API_KEY`                                                   |
-| TinyMCE Cloud                    | Rich-text editor in admin                                   | `@tinymce/tinymce-angular`                                                                                                        | `FE_TINYMCE_API_KEY`                                                     |
-| Google Analytics                 | Analytics                                                   | `services/analytics.service.ts` (gtag)                                                                                            | `FE_ANALYTICS_TOKEN`                                                     |
-| PostgreSQL 18                    | Data and sessions                                           | Drizzle ORM + `pg` + connect-pg-simple                                                                                            | `DATABASE_URL`                                                           |
-| Google Gemini / Anthropic Claude | AI product drafts (optional)                                | `fetch` clients in `server/src/ai/providers/`, structured output ([ADR 0001](adr/0001-ai-provider-abstraction.md))                | `AI_PROVIDER`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`                     |
+| Service                          | Used for                                                    | Integration                                                                                                                                                                                        | Config                                                                   |
+| -------------------------------- | ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Stripe                           | Card payments                                               | `stripe` SDK 23, API `2026-09-30.endive`, PaymentIntents + Payment Element, signed webhooks, refunds ([payments.md](payments.md))                                                                  | `STRIPE_SECRETKEY`, `STRIPE_WEBHOOK_SECRET`, `FE_STRIPE_PUBLISHABLE_KEY` |
+| Resend                           | Order and contact emails to the customer and `ADMIN_EMAILS` | `fetch` to the Resend API (`shared/utils/email/resend-transport.ts`): one batch request per event, idempotency key per order, one retry on 429; HTML templates in `server/src/shared/utils/email/` | `RESEND_API_KEY`, `EMAIL_FROM`                                           |
+| Cloudinary                       | Product and site images                                     | `cloudinary` v2 `upload_stream` from a multer memory buffer                                                                                                                                        | `CLOUDINARY_*`                                                           |
+| Google OAuth 2.0                 | Social login                                                | `passport-google-oauth20`, scopes `profile` and `email`                                                                                                                                            | `GOOGLE_CLIENT_*`, `SERVER_URL`, `ORIGIN`                                |
+| Google reCAPTCHA v3              | Contact-form spam protection                                | Client: vendored ng-recaptcha service. Server: `siteverify`.                                                                                                                                       | `FE_RECAPTCHA_CLIENT_KEY`, `RECAPTCHA_SERVER_KEY`                        |
+| geolocation-db.com               | Default language when none is chosen                        | Called from the server                                                                                                                                                                             | `GEO_LOCATION_API_KEY`                                                   |
+| TinyMCE Cloud                    | Rich-text editor in admin                                   | `@tinymce/tinymce-angular`                                                                                                                                                                         | `FE_TINYMCE_API_KEY`                                                     |
+| Google Analytics                 | Analytics                                                   | `services/analytics.service.ts` (gtag)                                                                                                                                                             | `FE_ANALYTICS_TOKEN`                                                     |
+| PostgreSQL 18                    | Data and sessions                                           | Drizzle ORM + `pg` + connect-pg-simple                                                                                                                                                             | `DATABASE_URL`                                                           |
+| Google Gemini / Anthropic Claude | AI product drafts (optional)                                | `fetch` clients in `server/src/ai/providers/`, structured output ([ADR 0001](adr/0001-ai-provider-abstraction.md))                                                                                 | `AI_PROVIDER`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`                     |

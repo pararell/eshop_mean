@@ -1,5 +1,5 @@
 import request from 'supertest';
-import sgMail from '@sendgrid/mail';
+import { emailSpy, sentEmails } from '../utils/email';
 
 import { adminToken, createTestApp, createUser, eventually, loginToken, productFixture, TestApp } from '../utils/test-app';
 
@@ -88,11 +88,14 @@ describe('Orders API', () => {
         .expect(201);
 
       const recipients = await eventually(async () => {
-        const to = (sgMail.send as jest.Mock).mock.calls.map(([msg]) => msg.to);
+        const to = sentEmails().map((msg) => msg.to);
         if (to.length < 3) throw new Error('emails not sent yet');
         return to;
       });
       expect(recipients.sort()).toEqual(['admin1@test.dev', 'admin2@test.dev', 'buyer@test.dev']);
+      // one Resend request per order, keyed so a repeat within 24 h is ignored by Resend
+      expect(emailSpy).toHaveBeenCalledTimes(1);
+      expect(emailSpy.mock.calls[0][1]).toMatch(/^order-order\d+t\d+$/);
     });
 
     it('returns 422 instead of crashing on an invalid body (SEC-02 regression)', async () => {

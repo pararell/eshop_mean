@@ -26,7 +26,9 @@ export const testEnv = (baseURL) => ({
   JWT_EXPIRATION: '1h',
   COOKIE_KEY: 'e2e-cookie-key',
   ADMIN_EMAILS: '',
-  SENDGRID_KEY: 'SG.e2e',
+  // No email provider in e2e: without a key the server logs and skips sending
+  RESEND_API_KEY: '',
+  RESEND_API_BASE: 'http://127.0.0.1:9',
   EMAIL_FROM: 'shop@e2e.test',
   CLOUDINARY_NAME: 'e2e',
   CLOUDINARY_KEY: 'e2e',
