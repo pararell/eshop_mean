@@ -1,19 +1,24 @@
-@for (imageSrc of data.images; track imageSrc; let i = $index; let f = $first; let l = $last) {
-  @if (openImages[i]) {
-    <div class="product-modal">
-      @if (!f && openImages[i]) {
-        <button class="prev-btn" mat-raised-button color="primary" (click)="prevImg($event, i)">
-          <i class="material-icons left">arrow_back</i>
-          {{ 'Prev' | translate | async }}
-        </button>
-      }
-      @if (!l && openImages[i]) {
-        <button class="next-btn" mat-raised-button color="primary" (click)="nextImg($event, i)">
-          <i class="material-icons right">arrow_forward</i>
-          {{ 'Next' | translate | async }}
-        </button>
-      }
-      <img (click)="onCloseImage()" [src]="imageSrc" />
-    </div>
+<div class="lightbox" [class.is-zoomed]="zoomed()">
+  <div class="lightbox-bar">
+    <span class="lightbox-counter">{{ index() + 1 }} / {{ count }}</span>
+    <button type="button" class="lightbox-button" (click)="zoomed.set(!zoomed())" [attr.aria-pressed]="zoomed()" aria-label="Zoom">
+      <app-icon name="zoom" />
+    </button>
+    <button type="button" class="lightbox-button" (click)="close()" aria-label="Close">
+      <app-icon name="close" />
+    </button>
+  </div>
+
+  <div class="lightbox-stage">
+    <img [src]="current()" [alt]="data.alt || ''" (click)="zoomed.set(!zoomed())" />
+  </div>
+
+  @if (count > 1) {
+    <button type="button" class="lightbox-button lightbox-arrow lightbox-arrow-prev" (click)="prev()" aria-label="Previous image">
+      <app-icon name="chevronLeft" [size]="24" />
+    </button>
+    <button type="button" class="lightbox-button lightbox-arrow lightbox-arrow-next" (click)="next()" aria-label="Next image">
+      <app-icon name="chevronRight" [size]="24" />
+    </button>
   }
-}
+</div>

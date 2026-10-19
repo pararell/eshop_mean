@@ -41,8 +41,8 @@ test('admin creates a product that appears in the shop', async ({ page, request 
 
   await expect.poll(async () => (await request.get(`/api/products/${titleUrl}?lang=en`)).status()).toBe(200);
   await page.goto(`/en/product/${titleUrl}`);
-  await expect(page.locator('mat-card.product')).toContainText(title);
-  await expect(page.locator('mat-card.product')).toContainText('40 EUR');
+  await expect(page.locator('.product')).toContainText(title);
+  await expect(page.locator('.product')).toContainText('40 EUR');
 });
 
 test('admin edits a product price from the product list', async ({ page, request }) => {

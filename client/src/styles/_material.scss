@@ -1,0 +1,131 @@
+// Angular Material (M3) driven by the design tokens: the generated theme provides structure,
+// typography and density; every color role is mapped to a token, so light/dark and the shop's
+// brand color apply to Material components too.
+@use '@angular/material' as mat;
+
+html {
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$red-palette,
+        tertiary: mat.$blue-palette,
+        theme-type: color-scheme,
+      ),
+      typography: (
+        plain-family: var(--font-sans),
+        brand-family: var(--font-display),
+        bold-weight: 700,
+        medium-weight: 600,
+        regular-weight: 400,
+      ),
+      density: 0,
+    )
+  );
+
+  @include mat.theme-overrides(
+    (
+      primary: var(--color-primary),
+      on-primary: var(--color-on-primary),
+      primary-container: var(--color-primary-soft),
+      on-primary-container: var(--color-text),
+      secondary: var(--color-primary),
+      on-secondary: var(--color-on-primary),
+      secondary-container: var(--color-primary-soft),
+      on-secondary-container: var(--color-text),
+      tertiary: var(--color-accent),
+      on-tertiary: var(--color-on-accent),
+      tertiary-container: var(--color-accent-soft),
+      on-tertiary-container: var(--color-text),
+      error: var(--color-danger),
+      on-error: var(--color-surface),
+      error-container: var(--color-danger-soft),
+      on-error-container: var(--color-text),
+      background: var(--color-bg),
+      on-background: var(--color-text),
+      surface: var(--color-surface),
+      on-surface: var(--color-text),
+      surface-variant: var(--color-surface-2),
+      on-surface-variant: var(--color-text-muted),
+      surface-container-lowest: var(--color-surface),
+      surface-container-low: var(--color-surface),
+      surface-container: var(--color-surface),
+      surface-container-high: var(--color-surface-2),
+      surface-container-highest: var(--color-surface-3),
+      surface-bright: var(--color-surface),
+      surface-dim: var(--color-surface-2),
+      inverse-surface: var(--color-text),
+      inverse-on-surface: var(--color-surface),
+      inverse-primary: var(--color-primary-soft),
+      outline: var(--color-border-strong),
+      outline-variant: var(--color-border),
+      corner-extra-small: var(--radius-sm),
+      corner-small: var(--radius-sm),
+      corner-medium: var(--radius-md),
+      corner-large: var(--radius-lg),
+      corner-extra-large: var(--radius-xl),
+    )
+  );
+}
+
+// Buttons: brand look, larger touch targets
+.mat-mdc-button-base {
+  --mat-button-filled-container-shape: var(--radius-control);
+  --mat-button-outlined-container-shape: var(--radius-control);
+  --mat-button-text-container-shape: var(--radius-control);
+  --mat-button-protected-container-shape: var(--radius-control);
+  --mat-button-filled-label-text-font: var(--font-display);
+  --mat-button-outlined-label-text-font: var(--font-display);
+  --mat-button-text-label-text-font: var(--font-display);
+  --mat-button-protected-label-text-font: var(--font-display);
+  --mat-button-filled-label-text-size: var(--text-lg);
+  --mat-button-outlined-label-text-size: var(--text-lg);
+  --mat-button-text-label-text-size: var(--text-lg);
+  --mat-button-protected-label-text-size: var(--text-lg);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
+
+// `color="warn"` (M2 API) still marks destructive buttons
+.mat-mdc-button-base[color='warn'] {
+  --mat-button-filled-container-color: var(--color-danger);
+  --mat-button-filled-label-text-color: var(--color-surface);
+  --mat-button-outlined-label-text-color: var(--color-danger);
+  --mat-button-text-label-text-color: var(--color-danger);
+}
+
+.mat-mdc-card {
+  --mat-card-elevated-container-color: var(--color-surface);
+  --mat-card-outlined-container-color: var(--color-surface);
+  --mat-card-outlined-outline-color: var(--color-border);
+  --mat-card-elevated-container-shape: var(--radius-lg);
+  --mat-card-outlined-container-shape: var(--radius-lg);
+}
+
+.mat-mdc-snack-bar-container {
+  --mat-snack-bar-container-shape: var(--radius-md);
+}
+
+// Menus (rendered in the overlay): icon + label rows
+.mat-mdc-menu-item {
+  gap: var(--space-3);
+
+  app-icon {
+    color: var(--color-text-muted);
+  }
+}
+
+.mat-mdc-menu-panel {
+  --mat-menu-container-shape: var(--radius-md);
+  min-width: 200px !important;
+}
+
+// Full-screen image lightbox (shared/components/images-dialog)
+.lightbox-panel {
+  --mat-dialog-container-color: transparent;
+  --mat-dialog-container-shape: 0;
+  --mat-dialog-container-elevation-shadow: none;
+}
+
+.lightbox-backdrop {
+  background: rgb(6 8 7 / 94%);
+}

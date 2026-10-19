@@ -19,12 +19,12 @@ test('server renders the language of the URL', async ({ request }) => {
 
 test('the language switcher changes the URL prefix', async ({ page }) => {
   await page.goto(`/en/product/${E2E.car.titleUrl}`);
-  await expect(page.locator('mat-card.product')).toContainText(E2E.car.title);
+  await expect(page.locator('.product')).toContainText(E2E.car.title);
 
   await page.getByRole('combobox', { name: 'Language' }).selectOption('sk');
 
   await expect(page).toHaveURL(`/sk/product/${E2E.car.titleUrl}`);
-  await expect(page.locator('mat-card.product')).toContainText(E2E.car.titleSk);
+  await expect(page.locator('.product')).toContainText(E2E.car.titleSk);
   await expect(page.locator('html')).toHaveAttribute('lang', 'sk');
 });
 

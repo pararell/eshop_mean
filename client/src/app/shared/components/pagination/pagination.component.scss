@@ -1,4 +1,9 @@
 :host {
   display: block;
-  position: relative;
+}
+
+.pagination {
+  --mat-paginator-container-background-color: transparent;
+  display: flex;
+  justify-content: center;
 }

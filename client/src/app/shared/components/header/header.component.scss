@@ -1,170 +1,275 @@
-::ng-deep .mat-mdc-option .nav-autocomplete-link {
-  color: rgba(0, 0, 0, 0.87) !important;
-}
-
-::ng-deep .mat-mdc-menu-item .nav-link {
-  color: rgba(0, 0, 0, 0.87) !important;
-}
-
 :host {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
   display: block;
+}
 
-  ::ng-deep .mat-mdc-input-element {
-    padding: 2px 5px !important;
-    font-size: 16px !important;
-    color: var(--primary-color);
+.header {
+  border-bottom: 2px solid var(--color-text);
+  background: color-mix(in srgb, var(--color-bg) 92%, transparent);
+  backdrop-filter: saturate(140%) blur(12px);
+}
+
+.header-inner {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-4);
+  max-width: var(--container-max);
+  min-height: var(--header-height);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: var(--weight-black);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  text-transform: uppercase;
+
+  &:hover {
+    color: var(--color-text);
+    text-decoration: none;
   }
+}
 
-  ::ng-deep .mat-mdc-form-field-infix {
-    padding-top: 24px !important;
-    padding-bottom: 8px !important;
-  }
+.brand-mark {
+  width: 30px;
+  height: 30px;
+  border-width: 2px;
+  border-color: var(--color-text);
+}
 
-  .nav {
-    padding: 0 15px;
-    height: 50px;
-    width: 100%;
-    line-height: 50px;
-    background: rgba(255, 255, 255, 0.8);
-    justify-content: space-between;
-    z-index: 5;
-    position: relative;
-    box-shadow: 0px 2px 40px 0px rgba(0, 0, 0, 0.091);
+.brand-logo {
+  width: auto;
+  height: 36px;
+}
 
-    a {
-      color: var(--primary-color);
+.header-nav {
+  display: flex;
+  gap: var(--space-1);
+
+  a {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 3px solid transparent;
+    color: var(--color-text);
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+
+    &:hover {
+      border-bottom-color: var(--color-border-strong);
+      color: var(--color-text);
+      text-decoration: none;
     }
 
-    &-fixed {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-    }
-
-    &-brand-logo {
-      // text-overflow: ellipsis;
-      // overflow: hidden;
-      // white-space: nowrap;
-      position: relative;
-      background: var(--logo, url('https://res.cloudinary.com/dnpgh1vhi/image/upload/v1615640124/logo1_gvrmpd.svg'));
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: 85px;
-      min-height: 100%;
-
-      a {
-        position: relative;
-        display: flex;
-        min-width: 85px;
-        min-height: 50px;
-      }
-
-      img {
-        min-width: 130px;
-        display: block;
-        position: relative;
-
-        @media screen and (max-width: 600px) {
-          min-width: 70px;
-        }
-      }
-    }
-
-    &-part-right {
-      display: flex;
-      align-items: center;
-    }
-
-    &-search-form {
-      margin-right: 25px;
-      max-height: 50px;
-      align-items: center;
-      display: flex;
-      flex: 1;
-      color: var(--primary-color);
-
-      &-content {
-        width: 100%;
-      }
-
-      @media screen and (max-width: 600px) {
-        max-width: 100px;
-      }
-    }
-
-    &-active-link {
-      background: rgba(0, 0, 0, 0.1);
-    }
-
-    &-basic {
-      display: flex;
-      align-items: center;
-    }
-
-    &-cart-wrap {
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      margin-right: 5px;
-      padding: 0 5px;
-    }
-
-    &-cart-icon {
-      margin: 0 5px;
-    }
-
-    &-desktop {
-      display: flex;
-      flex: 1;
-
-      ::ng-deep button.mat-mdc-menu-item {
-        width: initial !important;
-
-        a {
-          color: var(--primary-color) !important;
-          white-space: nowrap;
-          font-size: 14px;
-        }
-
-        .mat-icon {
-          color: var(--primary-color) !important;
-          margin-right: 5px !important;
-        }
-      }
-    }
-
-    &-mobile {
-      display: none;
-    }
-
-    @media screen and (max-width: 1200px) {
-      padding: 0 10px;
-
-      .nav-desktop {
-        display: none;
-      }
-
-      .nav-mobile {
-        display: block;
-        flex: 1;
-        color: var(--primary-color);
-      }
-    }
-
-    &.transparent {
-      background: transparent;
-      box-shadow: none;
-
-      ::ng-deep .mdc-line-ripple {
-        display: none !important;
-      }
+    &.is-active {
+      border-bottom-color: var(--color-primary);
     }
   }
+}
 
-  select.nav-lang-select {
-    background: var(--primary-color);
-    border: none;
-    color: #ffffff;
+.header-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  width: 100%;
+  max-width: 420px;
+}
+
+.header-search-icon {
+  position: absolute;
+  left: var(--space-3);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.header-search-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 var(--space-4) 0 calc(var(--space-3) + 26px);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--text-sm);
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+
+  &::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  &:focus {
+    border-color: var(--color-primary);
+    background: var(--color-surface);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-primary-soft);
+  }
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.icon-button {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  &:hover {
+    background: var(--color-surface-2);
+    color: var(--color-text);
+    text-decoration: none;
+  }
+}
+
+.header-menu-button {
+  display: none;
+}
+
+.header-lang {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  height: 40px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-control);
+  color: var(--color-text-muted);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-surface-2);
+  }
+
+  select {
+    border: 0;
+    background: transparent;
+    color: var(--color-text);
+    font: inherit;
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  &:focus-within {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+}
+
+.header-login {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 40px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-control);
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+
+  &:hover {
+    background: var(--color-surface-2);
+    color: var(--color-text);
+    text-decoration: none;
+  }
+}
+
+.cart-badge {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--radius-control);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: var(--weight-bold);
+  line-height: 18px;
+  text-align: center;
+}
+
+// Tablet: no main nav links (they move to the menu)
+@media (width <= 1024px) {
+  .header-inner {
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+  }
+
+  .header-nav {
+    display: none;
+  }
+
+  .header-menu-button {
+    display: inline-grid;
+  }
+}
+
+// Phone: search gets its own row
+@media (width <= 680px) {
+  .header-inner {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: var(--space-2) var(--space-2);
+    padding-block: var(--space-2);
+  }
+
+  .header-search {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    max-width: none;
+  }
+
+  .brand-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .header-login span,
+  .header-lang app-icon {
+    display: none;
+  }
+
+  .header-actions {
+    gap: 0;
+  }
+
+  .header-login {
+    padding: 0;
+    width: 40px;
+    justify-content: center;
   }
 }

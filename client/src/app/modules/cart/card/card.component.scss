@@ -5,15 +5,16 @@
 
 .payment-element {
   min-height: 48px;
-  margin-bottom: 12px;
+  margin-bottom: var(--space-4);
 }
 
 .card-button {
   width: 100%;
-  margin: 10px 0;
+  min-height: 56px;
+  margin: var(--space-2) 0;
 }
 
 .card-errors {
   min-height: 1.4em;
-  color: #c62828;
+  color: var(--color-danger);
 }

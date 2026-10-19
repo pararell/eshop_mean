@@ -3,7 +3,7 @@ import { map, distinctUntilChanged, filter, take, skip } from 'rxjs/operators';
 import { Component, ChangeDetectionStrategy, OnDestroy, Signal, computed, inject } from '@angular/core';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { combineLatest, Subscription } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 
 import { TranslateService } from '../../../services/translate.service';
@@ -17,7 +17,8 @@ import { MatProgressBar } from '@angular/material/progress-bar';
 import { CategoriesListComponent } from '../../../shared/components/categories-list/categories-list.component';
 import { ProductsListComponent } from '../../../shared/components/products-list/products-list.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, NgTemplateOutlet } from '@angular/common';
+import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 @Component({
@@ -35,6 +36,9 @@ import { TranslatePipe } from '../../../pipes/translate.pipe';
     ProductsListComponent,
     PaginationComponent,
     AsyncPipe,
+    NgTemplateOutlet,
+    RouterLink,
+    IconComponent,
     TranslatePipe,
   ],
 })

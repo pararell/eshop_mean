@@ -83,9 +83,14 @@ export async function isolateExternalServices(page: Page) {
 
 export async function signIn(page: Page, email: string, password: string) {
   await page.goto('/en/authorize/signin');
-  await page.locator('[formcontrolname=email]').fill(email);
-  await page.locator('[formcontrolname=password]').fill(password);
-  await page.locator('button[type=submit]').click();
+  const submit = page.locator('button[type=submit]');
+  // Typing can race the hydration of the server-rendered form; retype until the form accepted it
+  await expect(async () => {
+    await page.locator('[formcontrolname=email]').fill(email);
+    await page.locator('[formcontrolname=password]').fill(password);
+    await expect(submit).toBeEnabled({ timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
+  await submit.click();
 }
 
 /** Adds a product to the cart from its detail page, `times` times. */
@@ -98,6 +103,7 @@ export async function addToCart(page: Page, titleUrl: string, times = 1) {
   }
 }
 
+/** Fills the address section of the one-page checkout */
 export async function fillAddressStep(page: Page, email = 'jane@e2e.test') {
   const field = (name: string) => page.locator(`[formcontrolname="${name}"]`);
   await field('name').fill('Jane Doe');
@@ -106,12 +112,10 @@ export async function fillAddressStep(page: Page, email = 'jane@e2e.test') {
   await field('city').fill('Bratislava');
   await field('zip').fill('81101');
   await field('country').fill('SK');
-  await page.getByRole('button', { name: 'Next' }).first().click();
 }
 
 export async function choosePayment(page: Page, method: 'card' | 'delivery') {
   await page.getByRole('radio', { name: method === 'card' ? /with card/ : /on delivery/ }).check();
-  await page.getByRole('button', { name: 'Next' }).filter({ visible: true }).click();
 }
 
 /** Buys `qty` of a product with the (fake) card through the real checkout; returns the order number */

@@ -1,128 +1,123 @@
-<mat-drawer-container class="home-sidebar-container" autosize hasBackdrop>
-  <mat-drawer #sideBar [(opened)]="sidebarOpened" class="home-sidebar" mode="over">
-    <app-sidebar
-      [class.disabled]="loadingProducts()"
-      [categories]="categories()"
-      [price]="filterPrice()"
-      [maxPrice]="maxPrice()!"
-      [minPrice]="minPrice()!"
-      [activeCategory]="category()"
-      [sortOptions]="sortOptions"
-      [currency]="currency()"
-      [lang]="lang()!"
-      [choosenSort]="sortBy()"
-      (changePrice)="priceRange($event)"
-      (changeSort)="changeSort($event)"
-      (changeCategory)="changeCategory()"
-    />
-  </mat-drawer>
-  <mat-drawer-content>
-    <div class="main">
-      @if (cart(); as cart) {
-        <div class="home-promo">
-          <span class="home-promo-basic">
-            {{ 'Home_promo' | translate | async }}
+<div class="main">
+  <section class="hero contour-bg" [class.hero-has-video]="!!video() || !!heroImage()" aria-labelledby="hero-title">
+    @if (video()) {
+      <video
+        #videoRef
+        class="hero-video"
+        muted
+        playsinline
+        loop
+        preload="metadata"
+        aria-hidden="true"
+        [attr.poster]="heroImage() || null"
+        (play)="videoPlaying.set(true)"
+        (pause)="videoPlaying.set(false)"
+      >
+        <source [src]="video()" type="video/mp4" />
+      </video>
+      <div class="hero-scrim"></div>
+    } @else if (heroImage()) {
+      <img class="hero-video" [src]="heroImage()" [style.object-position]="heroImagePosition()" alt="" fetchpriority="high" />
+      <div class="hero-scrim"></div>
+    }
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <span class="blaze hero-blaze" aria-hidden="true"></span>
+        <p class="eyebrow hero-eyebrow">{{ 'ESHOP_DESCRIPTION' | translate | async }}</p>
+        <h1 class="hero-title" id="hero-title">{{ 'Hero_title' | translate | async }}</h1>
+        <p class="hero-text">{{ 'Hero_text' | translate | async }}</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary hero-cta" [routerLink]="['/' + lang() + '/product/all']">
+            {{ 'Shop_now' | translate | async }}
+            <app-icon name="arrowRight" [size]="18" />
+          </a>
+          @if ('Home_promo_text_link' | translate | async; as promoText) {
+            <a class="btn btn-outline hero-secondary" [href]="'Home_promo_link' | translate | async">{{ promoText }}</a>
+          }
+        </div>
+      </div>
+
+      @if (!video() && !heroImage() && featured(); as featured) {
+        <a class="hero-feature" [routerLink]="['/' + lang() + '/product/' + featured.titleUrl]">
+          <span class="hero-feature-media">
+            <img [src]="featured.mainImage.url" alt="" fetchpriority="high" />
           </span>
-          <span class="home-promo-shipping"> {{ 'Free_shipping_limit' | translate | async }} {{ cart.shippingLimit }} {{ currency() }} </span>
-        </div>
-      }
-      @if (products(); as products) {
-        <div class="home-product">
-          <app-carousel [intervalForSlider]="30000" [absoluteArrows]="true">
-            <div class="home-promo-slide">
-              <div class="home-promo-slide-background"></div>
-              @if (video) {
-                <video #videoRef autoplay muted playsinline loop class="home-promo-slide-video">
-                  <source [src]="video" type="video/mp4" />
-                </video>
-              }
-              <div class="home-promo-slide-cta">
-                <div class="home-promo-slide-logo"></div>
-                <h2 class="home-promo-slide-subtitle">
-                  {{ 'Eshop_subtitle' | translate | async }}
-                </h2>
-                @if ('Home_promo_text_link' | translate | async; as promoText) {
-                  <span class="home-promo-slide-text">
-                    <a [href]="'Home_promo_link' | translate | async"> {{ promoText }}</a>
-                  </span>
-                }
-              </div>
-            </div>
-            @for (product of products | slice: 0 : 3; track product?._id) {
-              <div class="home-product-top">
-                <div class="home-product-top-content">
-                  <app-product-content
-                    [product]="product"
-                    [categoriesInput]="categories()"
-                    [cartIds]="cartIds()"
-                    [currency]="currency()"
-                    [lang]="lang()!"
-                    [withLink]="true"
-                    (addProduct)="addToCart($event)"
-                    (removeProduct)="removeFromCart($event)"
-                  />
-                </div>
-              </div>
-            }
-          </app-carousel>
-        </div>
-      }
-      @if (categories()?.length) {
-        <div class="home-primary-header">
-          <div class="home-primary-container">
-            <span class="home-mobile-filter" (click)="toggleSidebar()">
-              <i class="material-icons md-16">filter_list</i>
+          <span class="hero-feature-coords" aria-hidden="true">N 49°10′ · E 20°08′ · 2655 m</span>
+          <span class="signpost hero-feature-card">
+            <span class="blaze" aria-hidden="true"></span>
+            <span class="hero-feature-text">
+              <span class="hero-feature-title">{{ featured.title }}</span>
+              <span class="price-current">{{ featured.salePrice | priceFormat }} {{ currency() }}</span>
             </span>
-            <div class="home-categories-links-wrap">
-              <div class="home-categories-links">
-                @for (cat of categories(); track cat) {
-                  <a class="home-title-category" [routerLink]="['/' + lang() + '/product/category/' + cat.titleUrl]">
-                    {{ cat.title }}
-                  </a>
-                }
-              </div>
-            </div>
-          </div>
-        </div>
+          </span>
+        </a>
       }
-      <div class="container">
-        @if (loadingProducts()) {
-          <mat-progress-bar mode="indeterminate" />
-        }
-        @if (categories(); as categories) {
-          <div>
-            <app-categories-list [categories]="categories" [lang]="lang()!" />
-          </div>
-        }
-      </div>
-      @if (products()) {
-        <div class="home-primary-header">
-          <div class="home-primary-container">
-            <h1 class="home-title">{{ 'Products' | translate | async }}</h1>
-          </div>
-        </div>
-      }
-      <div class="container">
-        @if (loadingProducts()) {
-          <mat-spinner class="home-spinner" />
-        }
-        @if (products(); as products) {
-          <div>
-            <app-products-list
-              [class.disabled]="loadingProducts()"
-              [products]="products"
-              [cartIds]="cartIds()"
-              [currency]="currency()"
-              [lang]="lang()!"
-              (addProduct)="addToCart($event)"
-              (removeProduct)="removeFromCart($event)"
-            />
-            @if (pagination(); as pagination) {
-              <app-pagination [class.disabled]="loadingProducts()" [pagination]="pagination" (changePage)="changePage($event)" />
-            }
-          </div>
-        }
-      </div>
     </div>
-  </mat-drawer-content>
-</mat-drawer-container>
+
+    @if (video()) {
+      <button
+        type="button"
+        class="hero-video-toggle"
+        (click)="toggleVideo()"
+        [attr.aria-label]="(videoPlaying() ? 'Pause_video' : 'Play_video') | translate | async"
+      >
+        <app-icon [name]="videoPlaying() ? 'pause' : 'play'" [size]="18" />
+      </button>
+    }
+  </section>
+
+  <section class="perks" aria-label="Shop benefits">
+    <ul class="perks-list" role="list">
+      @if (cart(); as cart) {
+        <li>
+          <span class="blaze trail-green" aria-hidden="true"></span>
+          <span>{{ 'Free_shipping_limit' | translate | async }} {{ cart.shippingLimit }} {{ currency() }}</span>
+        </li>
+      }
+      <li>
+        <span class="blaze trail-yellow" aria-hidden="true"></span>
+        <span>{{ 'Home_promo' | translate | async }}</span>
+      </li>
+      <li>
+        <span class="blaze trail-blue" aria-hidden="true"></span>
+        <span>{{ 'Secure_payment' | translate | async }}</span>
+      </li>
+    </ul>
+  </section>
+
+  @if (categories().length) {
+    <section class="container section" aria-labelledby="categories-title">
+      <div class="section-header">
+        <h2 id="categories-title"><span class="blaze trail-blue" aria-hidden="true"></span>{{ 'Shop_by_category' | translate | async }}</h2>
+      </div>
+      <app-categories-list [categories]="categories()" [lang]="lang()!" />
+    </section>
+  }
+
+  <section class="container section home-products" aria-labelledby="products-title">
+    <div class="section-header">
+      <h2 id="products-title"><span class="blaze" aria-hidden="true"></span>{{ 'Products' | translate | async }}</h2>
+      <a class="text-link" [routerLink]="['/' + lang() + '/product/all']">
+        {{ 'View_all' | translate | async }}
+        <app-icon name="arrowRight" [size]="16" />
+      </a>
+    </div>
+    @if (loadingProducts() && !products()) {
+      <mat-progress-bar mode="indeterminate" />
+    }
+    @if (products(); as products) {
+      <app-products-list
+        [class.disabled]="loadingProducts()"
+        [products]="products"
+        [cartIds]="cartIds()"
+        [currency]="currency()"
+        [lang]="lang()!"
+        (addProduct)="addToCart($event)"
+        (removeProduct)="removeFromCart($event)"
+      />
+      @if (pagination(); as pagination) {
+        <app-pagination [class.disabled]="loadingProducts()" [pagination]="pagination" (changePage)="changePage($event)" />
+      }
+    }
+  </section>
+</div>

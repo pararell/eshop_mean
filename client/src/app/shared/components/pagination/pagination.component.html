@@ -1,8 +1,11 @@
-@if (pagination?.total && pagination?.limit) {
+@if (pagination().total && pagination().limit && pagination().pages > 1) {
   <mat-paginator
-    [length]="pagination.total"
-    [pageIndex]="pagination.page - 1"
-    [pageSize]="pagination.limit"
+    class="pagination"
+    [length]="pagination().total"
+    [pageIndex]="pagination().page - 1"
+    [pageSize]="pagination().limit"
+    [hidePageSize]="true"
+    [showFirstLastButtons]="pagination().pages > 3"
     (page)="changePage.emit($event.pageIndex + 1)"
   />
 }

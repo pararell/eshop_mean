@@ -60,6 +60,8 @@ const securityHeaders = () =>
         baseUri: ["'self'"],
         formAction: ["'self'"],
         frameAncestors: ["'self'"],
+        // Ignored (with a console warning) in a report-only policy
+        upgradeInsecureRequests: null,
       },
     },
     // Images and media come from Cloudinary and other origins

@@ -46,10 +46,12 @@ export class EnvConfigurationService {
 
           if (style === 'promoSlideBackground') {
             this.themeService.setCSSVariable(`url(${styleValue})`, `${varName}`);
+            this.themeService.heroImage.set(styleValue);
             return;
           }
           if (style === 'promoSlideBackgroundPosition') {
             this.themeService.setCSSVariable(`${styleValue}`, `${varName}`);
+            this.themeService.heroImagePosition.set(styleValue);
             return;
           }
           if (style.includes('Background')) {
@@ -58,22 +60,24 @@ export class EnvConfigurationService {
           }
           if (style === 'logo') {
             this.themeService.setCSSVariable(`url(${styleValue})`, 'logo');
+            this.themeService.logo.set(styleValue);
             return;
           }
           if (style === 'promoSlideVideo') {
             this.themeService.setVideo(styleValue);
           }
 
-          this.themeService.setCSSVariable(styleValue, varName);
-          if (style.includes('Color')) {
-            if (style.includes('primary')) {
-              this.themeService.setThemeColor(styleValue, 'theme-primary');
-            }
-
-            if (style.includes('secondary')) {
-              this.themeService.setThemeColor(styleValue, 'theme-secondary');
-            }
+          if (style === 'primaryColor') {
+            // Contrast-checked light/dark brand variants (design tokens), not the raw color
+            this.themeService.setBrandColor(styleValue);
+            return;
           }
+          if (style === 'secondaryColor' || style === 'backgroundColor') {
+            // Replaced by the design tokens (light/dark surfaces); typed theme tokens come with M4
+            return;
+          }
+
+          this.themeService.setCSSVariable(styleValue, varName);
         }
       });
     }

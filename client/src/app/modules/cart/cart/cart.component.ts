@@ -12,13 +12,11 @@ import type { PaymentIntentRequest } from '@eshop/shared';
 import { SignalStore } from '../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { MatStepper, MatStep, MatStepLabel, MatStepperNext, MatStepperPrevious } from '@angular/material/stepper';
 import { MatFormField, MatLabel } from '@angular/material/select';
 import { MatInput } from '@angular/material/input';
-import { MatButton } from '@angular/material/button';
 import { MatRadioGroup, MatRadioButton } from '@angular/material/radio';
-import { MatIcon } from '@angular/material/icon';
 import { CardComponent } from '../card/card.component';
+import { CartShowComponent } from '../../../shared/components/cart-show/cart-show.component';
 import { TranslatePipe } from '../../../pipes/translate.pipe';
 import { PriceFormatPipe } from '../../../pipes/price.pipe';
 
@@ -30,21 +28,15 @@ import { PriceFormatPipe } from '../../../pipes/price.pipe';
   imports: [
     MatProgressBar,
     RouterLink,
-    MatStepper,
-    MatStep,
     ReactiveFormsModule,
-    MatStepLabel,
     MatFormField,
     MatLabel,
     MatInput,
-    MatButton,
-    MatStepperNext,
     MatRadioGroup,
     FormsModule,
     MatRadioButton,
-    MatIcon,
-    MatStepperPrevious,
     CardComponent,
+    CartShowComponent,
     AsyncPipe,
     TranslatePipe,
     PriceFormatPipe,
@@ -104,6 +96,23 @@ export class CartComponent {
 
   goBack(): void {
     this.location.back();
+  }
+
+  addToCart(id: string): void {
+    this.lang$.pipe(take(1)).subscribe((lang) => {
+      this.store.addToCart('?id=' + id + '&lang=' + lang);
+    });
+  }
+
+  /** Amount still missing for free shipping (the items subtotal must reach the limit); 0 = none */
+  freeShippingLeft(cart: Cart): number {
+    if (!cart.shippingCost || !cart.shippingLimit) return 0;
+    return Math.max(0, cart.shippingLimit - (cart.totalPrice - cart.shippingCost));
+  }
+
+  freeShippingProgress(cart: Cart): number {
+    if (!cart.shippingLimit) return 100;
+    return Math.min(100, ((cart.totalPrice - cart.shippingCost) / cart.shippingLimit) * 100);
   }
 
   removeFromCart(id: string): void {

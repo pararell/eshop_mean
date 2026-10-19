@@ -4,7 +4,7 @@ import { APP_INITIALIZER, ApplicationConfig, provideZonelessChangeDetection } fr
 import { provideRouter } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { routes } from './app.routes';
-import { provideClientHydration, withHttpTransferCacheOptions, withNoIncrementalHydration } from '@angular/platform-browser';
+import { provideClientHydration, withEventReplay, withHttpTransferCacheOptions, withNoIncrementalHydration } from '@angular/platform-browser';
 import { HTTP_INTERCEPTORS, provideHttpClient, withFetch } from '@angular/common/http';
 import { TranslateService } from './services/translate.service';
 import { WindowService } from './services/window.service';
@@ -27,6 +27,8 @@ export const appConfig: ApplicationConfig = {
         includeRequestsWithAuthHeaders: true,
       }),
       withNoIncrementalHydration(),
+      // Clicks and typing before hydration finishes are replayed instead of lost
+      withEventReplay(),
     ),
     provideAnimations(),
     CookieService,

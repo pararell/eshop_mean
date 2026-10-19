@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { E2E, isolateExternalServices } from './helpers';
+import { E2E, isolateExternalServices, withDb } from './helpers';
 
 test.beforeEach(({ page }) => isolateExternalServices(page));
 
@@ -27,11 +27,29 @@ test('product list shows prices and filters by category', async ({ page }) => {
 
 test('product detail shows title, price and full description', async ({ page }) => {
   await page.goto('/en/product/all');
-  await page.locator('.product_card', { hasText: E2E.car.title }).getByRole('link', { name: 'Detail' }).click();
+  await page.locator('.product_card', { hasText: E2E.car.title }).getByRole('link', { name: E2E.car.title }).click();
 
   await expect(page).toHaveURL(`/en/product/${E2E.car.titleUrl}`);
   await expect(page).toHaveTitle(new RegExp(E2E.car.title));
-  const product = page.locator('mat-card.product');
+  const product = page.locator('.product');
   await expect(product).toContainText(`${E2E.car.price} EUR`);
   await expect(product).toContainText(`${E2E.car.title} full description`);
+});
+
+test('home banner shows the image of the active theme', async ({ page }) => {
+  const image = 'https://banner.e2e.test/hero.svg';
+  await page.route('https://banner.e2e.test/**', (route) =>
+    route.fulfill({ contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"/>' }),
+  );
+  await withDb((db) =>
+    db.query(`INSERT INTO themes (title_url, active, styles) VALUES ('e2e-banner', true, $1)`, [JSON.stringify({ promoSlideBackground: image })]),
+  );
+  try {
+    await page.goto('/');
+    // The theme loads in the browser; the banner switches from the newest product to the theme image
+    await expect(page.locator('.hero img.hero-video')).toHaveAttribute('src', image);
+    await expect(page.locator('.hero-feature')).toHaveCount(0);
+  } finally {
+    await withDb((db) => db.query(`DELETE FROM themes WHERE title_url = 'e2e-banner'`));
+  }
 });

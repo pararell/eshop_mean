@@ -16,12 +16,15 @@ test('signs up a new customer who can then log in and out', async ({ page }) => 
 
   await signIn(page, email, 'Shop123');
   await expect(page.getByText('SIGNIN_SUCCESS')).toBeVisible();
-  const logout = page.getByRole('menuitem', { name: /Logout/ }).or(page.getByText('Logout'));
-  await expect(logout.first()).toBeVisible();
-  await expect(page.getByText('Dashboard')).toHaveCount(0); // not an admin
+  // Account actions live in the header's account menu
+  await page.getByRole('button', { name: 'Account' }).click();
+  const logout = page.getByRole('menuitem', { name: /Logout/ });
+  await expect(logout).toBeVisible();
+  await expect(page.getByRole('menuitem', { name: /Dashboard/ })).toHaveCount(0); // not an admin
 
-  await logout.first().click();
-  await expect(page.getByText('Logout')).toHaveCount(0);
+  await logout.click();
+  await expect(page.getByRole('button', { name: 'Account' })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: /Login/ }).first()).toBeVisible();
 });
 
 test('rejects a wrong password (BUG-05 regression)', async ({ page }) => {

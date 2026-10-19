@@ -1,43 +1,50 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { TranslatePipe } from '../../../pipes/translate.pipe';
 
+import { IconComponent } from '../icon/icon.component';
+
+export interface ImagesDialogData {
+  index: number;
+  images: string[];
+  alt?: string;
+}
+
+/** Full-screen image viewer; closes with the current index so the gallery can follow */
 @Component({
   selector: 'app-images-dialog',
   templateUrl: './images-dialog.component.html',
   styleUrls: ['./images-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [CommonModule, TranslatePipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [IconComponent],
+  host: {
+    '(keydown.arrowleft)': 'prev()',
+    '(keydown.arrowright)': 'next()',
+  },
 })
-export class ImagesDialogComponent implements OnInit {
-  dialogRef = inject<MatDialogRef<ImagesDialogComponent>>(MatDialogRef);
-  data = inject<{
-    index: number;
-    images: string[];
-  }>(MAT_DIALOG_DATA);
+export class ImagesDialogComponent {
+  private dialogRef = inject<MatDialogRef<ImagesDialogComponent, number>>(MatDialogRef);
+  readonly data = inject<ImagesDialogData>(MAT_DIALOG_DATA);
 
-  openImages: Record<number, boolean> = {};
+  readonly index = signal(this.data.index);
+  readonly current = computed(() => this.data.images[this.index()]);
+  readonly count = this.data.images.length;
+  /** Zoomed: the image at its natural size, scrollable */
+  readonly zoomed = signal(false);
 
-  ngOnInit(): void {
-    this.openImages[this.data.index] = true;
+  prev(): void {
+    this.go(this.index() - 1);
   }
 
-  prevImg(event: Event, i: number): void {
-    event.stopPropagation();
-    event.preventDefault();
-    this.openImages[i] = false;
-    this.openImages[i - 1] = true;
+  next(): void {
+    this.go(this.index() + 1);
   }
 
-  nextImg(event: Event, i: number): void {
-    event.stopPropagation();
-    event.preventDefault();
-    this.openImages[i] = false;
-    this.openImages[i + 1] = true;
+  close(): void {
+    this.dialogRef.close(this.index());
   }
 
-  onCloseImage(): void {
-    this.dialogRef.close();
+  private go(index: number): void {
+    this.zoomed.set(false);
+    this.index.set((index + this.count) % this.count);
   }
 }

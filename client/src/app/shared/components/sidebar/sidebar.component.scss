@@ -1,57 +1,70 @@
+:host {
+  display: block;
+}
+
 .sidebar {
-  padding: 10px;
-  background: #fff;
   display: flex;
-  flex-flow: column;
-  box-shadow:
-    0 2px 2px 0 rgba(0, 0, 0, 0.14),
-    0 3px 1px -2px rgba(0, 0, 0, 0.12),
-    0 1px 5px 0 rgba(0, 0, 0, 0.2);
-  justify-content: center;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.sidebar-title {
+  margin: 0 0 var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 2px solid var(--color-text);
+  color: var(--color-text);
+  font-size: var(--text-xl);
+  text-transform: uppercase;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-item {
+  display: flex;
   align-items: center;
-  margin: 10px 0;
-  border-radius: 2px;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-left: 3px solid transparent;
+  color: var(--color-text);
+  font-size: var(--text-md);
 
-  &-header {
-    width: 100%;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    padding: 10px 0;
-
-    &-top {
-      border: none;
-    }
+  &:hover {
+    background: var(--color-surface-2);
+    color: var(--color-text);
+    text-decoration: none;
   }
 
-  &-title {
-    font-size: 20px;
-    font-weight: 500;
-    text-align: center;
-    margin-bottom: 5px;
+  &.active {
+    border-left-color: var(--color-primary);
+    background: var(--color-surface);
+    font-weight: var(--weight-semibold);
   }
+}
 
-  &-select {
-    width: 100%;
+.sidebar-select {
+  width: 100%;
+}
+
+.sidebar-range {
+  width: calc(100% - 16px);
+  margin: 0 8px;
+}
+
+.sidebar-range-value {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+
+  strong {
+    color: var(--color-text);
   }
+}
 
-  &-item {
-    color: var(--primary-color);
-    width: 100%;
-    padding: 5px 10px;
-    text-transform: capitalize;
-
-    &.active {
-      background-color: var(--primary-color);
-      color: #fff;
-    }
-  }
-
-  &-range {
-    width: 100%;
-  }
-
-  &-sort-wrap {
-    height: 120px;
-    width: 100%;
-    margin-top: 10px;
-  }
+// "All products": a neutral blaze
+.sidebar-blaze-all {
+  --blaze: var(--color-text);
 }
