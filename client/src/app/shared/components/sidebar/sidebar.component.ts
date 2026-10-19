@@ -1,4 +1,4 @@
-import { Component, Input, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, OnChanges, input, output } from '@angular/core';
 import { of } from 'rxjs';
 import { take, delay } from 'rxjs/operators';
 import { MatSliderModule } from '@angular/material/slider';
@@ -18,7 +18,7 @@ import { PriceFormatPipe } from '../../../pipes/price.pipe';
   imports: [AsyncPipe, RouterLink, TranslatePipe, PriceFormatPipe, MatSliderModule, MatSelectModule, FormsModule, ReactiveFormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnChanges {
   readonly categories = input.required<Category[]>();
   readonly activeCategory = input<string>();
   readonly minPrice = input<number>(0);
@@ -44,7 +44,13 @@ export class SidebarComponent {
   categoryUrl!: string;
   priceValue = 0;
 
-  constructor() {}
+  /** No price filter yet (0): the slider and its label start at the highest price, not at 0 */
+  ngOnChanges(): void {
+    const max = this.maxPrice();
+    if (!this.price && max && Number.isFinite(max)) {
+      this.price = max;
+    }
+  }
 
   onInputChange($event: string): void {
     this.changeSort.emit($event);

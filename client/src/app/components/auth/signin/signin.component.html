@@ -1,32 +1,52 @@
 <div class="main">
-  <div class="container">
-    <div class="sign-form-wrap">
+  <div class="auth-layout">
+    <section class="auth-aside contour-bg">
+      <span class="blaze auth-blaze" aria-hidden="true"></span>
       <h1>{{ 'SignIn' | translate | async }}</h1>
-      <form class="sign-form" [formGroup]="signInForm">
-        <mat-form-field class="sign-field">
-          <mat-label>Email</mat-label>
-          <input matInput formControlName="email" type="email" name="email" />
-        </mat-form-field>
-        <mat-form-field class="sign-field">
-          <mat-label>Password</mat-label>
-          <input matInput formControlName="password" type="password" name="password" />
-        </mat-form-field>
-        <button type="submit" class="submit-sign-button" mat-raised-button color="primary" [disabled]="signInForm.invalid" (click)="submit()">
-          {{ 'SignIn' | translate | async }}
-        </button>
-      </form>
-      <a class="signup-link" [routerLink]="['/' + (lang$ | async) + '/authorize/signup']">
-        {{ 'SignUp' | translate | async }}
-      </a>
-      @if (sendRequest$()) {
-        <div>
-          @if (user$()) {
-            <span class="sign-success">
-              {{ 'SIGNIN_SUCCESS' | translate | async }}
-            </span>
-          }
+      <p>{{ 'Signin_text' | translate | async }}</p>
+    </section>
+
+    <section class="auth-main">
+      @if (sendRequest$() && user$(); as user) {
+        <div class="auth-form" role="status">
+          <div class="notice notice-success">
+            <span class="blaze trail-green" aria-hidden="true"></span>
+            <span>{{ 'SIGNIN_SUCCESS' | translate | async }}</span>
+          </div>
+          <div class="auth-next">
+            <a class="btn btn-primary" [routerLink]="['/' + (lang$ | async) + '/product/all']">{{ 'Shop_now' | translate | async }}</a>
+            @if (user.roles?.includes('admin')) {
+              <a class="btn btn-outline" [routerLink]="['/' + (lang$ | async) + '/dashboard']">{{ 'Dashboard' | translate | async }}</a>
+            }
+          </div>
         </div>
+      } @else {
+        <form class="auth-form" [formGroup]="signInForm" (ngSubmit)="submit()">
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" type="email" name="email" autocomplete="email" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'Password' | translate | async }}</mat-label>
+            <input matInput formControlName="password" type="password" name="password" autocomplete="current-password" />
+          </mat-form-field>
+          @if (sendRequest$() && failed() && !loading()) {
+            <p class="notice notice-error auth-error" role="alert">{{ 'Signin_error' | translate | async }}</p>
+          }
+          <button type="submit" class="btn btn-primary submit-sign-button" [disabled]="signInForm.invalid">
+            {{ 'SignIn' | translate | async }}
+          </button>
+          <span class="auth-divider">{{ 'or' | translate | async }}</span>
+          <a class="btn btn-outline" [href]="googleAuthUrl">
+            <app-icon name="google" [size]="18" />
+            {{ 'Login' | translate | async }} {{ 'with' | translate | async }} Google
+          </a>
+          <p class="auth-switch">
+            {{ 'No_account' | translate | async }}
+            <a class="signup-link" [routerLink]="['/' + (lang$ | async) + '/authorize/signup']">{{ 'SignUp' | translate | async }}</a>
+          </p>
+        </form>
       }
-    </div>
+    </section>
   </div>
 </div>

@@ -1,16 +1,24 @@
 <div class="main">
-  <div class="container-mid">
-    <button (click)="goBack()" mat-raised-button color="primary">
-      <i class="material-icons left">arrow_back</i>
-      {{ 'Back' | translate | async }}
-    </button>
-    @if (lang$ | async; as lang) {
-      <div class="page">
-        @if (page$()) {
-          <h1>{{ page$()![lang]?.title }}</h1>
-          <div [innerHTML]="$safeNavigationMigration(page$()![lang]?.contentHTML)"></div>
-        }
-      </div>
+  @if (lang$ | async; as lang) {
+    @if (page$(); as page) {
+      <header class="page-header contour-bg">
+        <div class="page-header-inner">
+          <nav aria-label="Breadcrumb">
+            <ol class="waypoints">
+              <li>
+                <a routerLink="/">{{ 'ESHOP_TITLE' | translate | async }}</a>
+              </li>
+              <li aria-current="page">{{ page[lang]?.title || page.titleUrl }}</li>
+            </ol>
+          </nav>
+          <h1>{{ page[lang]?.title || page.titleUrl }}</h1>
+        </div>
+      </header>
+      <article class="container-narrow cms-page">
+        <div class="prose" [innerHTML]="page[lang]?.contentHTML"></div>
+      </article>
+    } @else {
+      <mat-progress-bar mode="indeterminate" />
     }
-  </div>
+  }
 </div>

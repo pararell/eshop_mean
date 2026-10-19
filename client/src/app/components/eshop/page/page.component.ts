@@ -1,27 +1,25 @@
 import type { LanguageCode } from '@eshop/shared';
-import { CommonModule, Location } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Signal, inject } from '@angular/core';
 import { Observable, combineLatest, Subscription } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { TranslateService } from '../../../services/translate.service';
 import { Page } from '../../../shared/models';
 import { SignalStore } from '../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 import { TranslatePipe } from '../../../pipes/translate.pipe';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBar } from '@angular/material/progress-bar';
 
 @Component({
   selector: 'app-page',
   templateUrl: './page.component.html',
   styleUrls: ['./page.component.scss'],
-  imports: [CommonModule, TranslatePipe, MatButtonModule, MatIconModule],
+  imports: [CommonModule, TranslatePipe, RouterLink, MatProgressBar],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageComponent {
-  private location = inject(Location);
   private route = inject(ActivatedRoute);
   private store = inject(SignalStore);
   private selectors = inject(SignalStoreSelectors);
@@ -40,9 +38,5 @@ export class PageComponent {
     this.pageSub = combineLatest([this.titleUrl$, this.lang$]).subscribe(([titleUrl, lang]: [string, string]) => {
       this.store.getPage({ titleUrl, lang });
     });
-  }
-
-  goBack(): void {
-    this.location.back();
   }
 }

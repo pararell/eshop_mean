@@ -1,12 +1,3 @@
-:host {
-  display: block;
-
-  .container-mid {
-    background: #fff;
-    position: relative;
-  }
-
-  .page {
-    margin: 10px;
-  }
+.cms-page {
+  padding-block: var(--space-10) var(--space-16);
 }

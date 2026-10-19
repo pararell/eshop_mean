@@ -14,7 +14,6 @@ import { SignalStore } from '../../../store/signal.store';
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.scss'],
   imports: [CommonModule, TranslatePipe, RouterLink, MatInputModule, FormsModule, ReactiveFormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -33,11 +32,13 @@ export class SignUpComponent {
     this.signUpForm = this._fb.group({
       email: ['', Validators.required],
       name: [''],
-      password: ['', Validators.required],
+      // Same rule as the server (PASSWORD_RULE in server/src/auth/dto/auth-credential.dto.ts)
+      password: ['', [Validators.required, Validators.pattern(/^(?=.*\d).{5,20}$/)]],
     });
   }
 
   submit() {
+    if (this.signUpForm.invalid) return;
     this.lang$.pipe(take(1)).subscribe((lang) => {
       this.store.signUp(this.signUpForm.value);
       this.signUpForm.reset();

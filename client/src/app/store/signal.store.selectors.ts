@@ -109,6 +109,8 @@ export class SignalStoreSelectors {
   public readonly appLang = computed(() => this.userState().lang);
   public readonly currency = computed(() => this.userState().currency);
   public readonly authLoading = computed(() => this.userState().loading);
+  /** The last sign-in failed (wrong email or password) */
+  public readonly authError = computed(() => this.userState().error);
 
   public readonly eshopLoading = computed(() => this.eshopState().loading);
   public readonly eshopError = computed(() => this.eshopState().error);

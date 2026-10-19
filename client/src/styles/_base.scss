@@ -574,3 +574,386 @@ code {
     clip-path: polygon(0 0, calc(100% - var(--signpost-tip) + 1px) 0, 100% 50%, calc(100% - var(--signpost-tip) + 1px) 100%, 0 100%);
   }
 }
+
+// Page header used by the simple pages (title on contour lines, waypoints above) ---------------------
+.page-header {
+  border-bottom: 2px solid var(--color-text);
+  background: var(--color-bg);
+
+  .page-header-inner {
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding: var(--space-8) var(--gutter) var(--space-10);
+  }
+
+  nav {
+    margin-bottom: var(--space-5);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: var(--text-4xl);
+    font-weight: var(--weight-black);
+    line-height: 0.92;
+  }
+
+  p {
+    max-width: 60ch;
+    margin: var(--space-4) 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+}
+
+// Rich text from the admin editor (product descriptions, CMS pages)
+.prose {
+  color: var(--color-text);
+  font-size: var(--text-md);
+  line-height: 1.7;
+
+  h2,
+  h3 {
+    margin-top: var(--space-8);
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  ul,
+  ol {
+    padding-left: 1.25em;
+  }
+
+  li + li {
+    margin-top: var(--space-1);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  td,
+  th {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+  }
+
+  blockquote {
+    margin: var(--space-6) 0;
+    padding-left: var(--space-4);
+    border-left: 4px solid var(--color-primary);
+    color: var(--color-text-muted);
+  }
+}
+
+// A bordered panel (forms, order sheets)
+.panel {
+  padding: var(--space-6);
+  border: 2px solid var(--color-text);
+  background: var(--color-surface);
+
+  @media (width <= 520px) {
+    padding: var(--space-4);
+  }
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-xl);
+  text-transform: uppercase;
+}
+
+// "Label: value" rows (order data); the colon keeps the plain text readable
+.sheet-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-1) var(--space-4);
+    padding-block: var(--space-2);
+    border-bottom: 1px dotted var(--color-border-strong);
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  .sheet-label {
+    color: var(--color-text-muted);
+  }
+
+  .sheet-value {
+    font-weight: var(--weight-medium);
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  letter-spacing: 0.02em;
+}
+
+// Sign in / sign up: a contour-map panel next to the form
+.auth-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-height: calc(100vh - var(--header-height) - 200px);
+  border-bottom: 2px solid var(--color-text);
+
+  @media (width <= 860px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.auth-aside {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-4);
+  padding: var(--space-12) var(--gutter);
+  border-right: 2px solid var(--color-text);
+
+  h1 {
+    margin: 0;
+    font-size: var(--text-4xl);
+    font-weight: var(--weight-black);
+    line-height: 0.92;
+  }
+
+  p {
+    max-width: 40ch;
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+
+  @media (width <= 860px) {
+    padding-block: var(--space-10) var(--space-8);
+    border-right: 0;
+    border-bottom: 2px solid var(--color-text);
+  }
+}
+
+.auth-blaze {
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--color-text);
+}
+
+.auth-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-10) var(--gutter);
+  background: var(--color-surface);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 400px);
+
+  .btn {
+    width: 100%;
+  }
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-5) 0;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-top: 2px dotted var(--color-border-strong);
+  }
+}
+
+.auth-switch {
+  margin: var(--space-6) 0 0;
+  color: var(--color-text-muted);
+  text-align: center;
+
+  a {
+    color: var(--color-text);
+    font-weight: var(--weight-semibold);
+    text-decoration: underline;
+  }
+}
+
+.form-hint {
+  margin: calc(-1 * var(--space-2)) 0 var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 2px solid var(--color-text);
+  background: var(--color-surface);
+
+  .blaze {
+    margin-top: 0.2em;
+  }
+}
+
+.notice-success {
+  box-shadow: inset 6px 0 0 var(--trail-green);
+}
+
+.notice-error {
+  box-shadow: inset 6px 0 0 var(--color-danger);
+  color: var(--color-danger);
+}
+
+// Order sheet (shared/components/order-info) and order list -------------------------------------------
+.order-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.order-sheet-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 2px solid var(--color-text);
+
+  .eyebrow {
+    margin-bottom: var(--space-1);
+  }
+}
+
+.order-sheet-id {
+  margin: 0;
+  font-size: var(--text-xl);
+  overflow-wrap: anywhere;
+}
+
+.order-sheet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: var(--space-5);
+}
+
+// Order states as trail colors: new = blue, paid/completed = green, waiting = yellow, problems = red
+.order-status {
+  --trail: var(--color-border-strong);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 2px var(--space-3);
+  border: 2px solid var(--color-text);
+  background: var(--color-surface);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+
+  &::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: linear-gradient(var(--color-blaze) 33%, var(--trail) 33% 67%, var(--color-blaze) 67%);
+    outline: 1px solid var(--color-border-strong);
+  }
+
+  &[data-status='NEW'] {
+    --trail: var(--trail-blue);
+  }
+
+  &[data-status='PAID'],
+  &[data-status='COMPLETED'],
+  &[data-status='SHIPPING'] {
+    --trail: var(--trail-green);
+  }
+
+  &[data-status='PENDING_PAYMENT'] {
+    --trail: var(--trail-yellow);
+  }
+
+  &[data-status='PAYMENT_FAILED'],
+  &[data-status='CANCELED'],
+  &[data-status='REFUNDED'] {
+    --trail: var(--trail-red);
+  }
+}
+
+.order-items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.order-item {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding-block: var(--space-3);
+  border-bottom: 1px dotted var(--color-border-strong);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.order-item-image {
+  display: block;
+  aspect-ratio: 1;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface-2);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.order-item-title {
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+
+  &:hover {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+}
+
+.order-item-qty {
+  color: var(--color-text-muted);
+}
+
+.order-item-price {
+  font-weight: var(--weight-semibold);
+  white-space: nowrap;
+}

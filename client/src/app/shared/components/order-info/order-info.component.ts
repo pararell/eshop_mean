@@ -1,25 +1,20 @@
-import { CommonModule } from '@angular/common';
-import { Order } from './../../models';
-
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { Component, Input, ChangeDetectionStrategy, input } from '@angular/core';
-import { TranslatePipe } from '../../../pipes/translate.pipe';
-import { MatProgressBar } from '@angular/material/progress-bar';
-import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
 import { RouterLink } from '@angular/router';
+import { MatProgressBar } from '@angular/material/progress-bar';
 
+import { Order } from './../../models';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
+
+/** An order as a sheet: status, totals, address and items (customer summary, order detail, admin) */
 @Component({
   selector: 'app-order-info',
   templateUrl: './order-info.component.html',
   styleUrls: ['./order-info.component.scss'],
-  imports: [CommonModule, TranslatePipe, RouterLink, MatProgressBar, MatCardModule, MatChipsModule],
+  imports: [AsyncPipe, DatePipe, TranslatePipe, RouterLink, MatProgressBar],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrderInfoComponent {
   @Input() order!: Order;
   readonly lang = input.required<string>();
-
-  trackById(_index: number, item: { _id?: string }) {
-    return item._id;
-  }
 }
