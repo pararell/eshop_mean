@@ -258,9 +258,18 @@
     white-space: nowrap;
   }
 
-  .header-login span,
   .header-lang app-icon {
     display: none;
+  }
+
+  // Icon only on phones; the text stays for screen readers (the link's name)
+  .header-login span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   .header-actions {

@@ -1,12 +1,12 @@
 import { expect, test } from '@playwright/test';
-import { E2E, isolateExternalServices, signIn } from './helpers';
+import { E2E, gotoReady, isolateExternalServices, signIn } from './helpers';
 
 test.beforeEach(({ page }) => isolateExternalServices(page));
 
 test('signs up a new customer who can then log in and out', async ({ page }) => {
   const email = `shopper-${Date.now()}@e2e.test`;
 
-  await page.goto('/en/authorize/signup');
+  await gotoReady(page, '/en/authorize/signup');
   await page.locator('[formcontrolname=name]').fill('Shopper');
   await page.locator('[formcontrolname=email]').fill(email);
   await page.locator('[formcontrolname=password]').fill('Shop123');

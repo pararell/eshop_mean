@@ -11,7 +11,7 @@ describe('Security middleware', () => {
     });
     afterAll(() => t.close());
 
-    it('sends security headers, with the CSP in report-only mode (SEC-09)', async () => {
+    it('sends security headers and an enforced CSP with a per-request nonce (SEC-09)', async () => {
       const res = await t.http.get('/api/products/categories').set('lang', 'en').expect(200);
 
       expect(res.headers['x-content-type-options']).toBe('nosniff');
@@ -19,11 +19,18 @@ describe('Security middleware', () => {
       expect(res.headers['referrer-policy']).toBe('strict-origin-when-cross-origin');
       expect(res.headers['strict-transport-security']).toBe('max-age=15552000');
       expect(res.headers['x-powered-by']).toBeUndefined();
-      expect(res.headers['content-security-policy']).toBeUndefined();
-      const csp = res.headers['content-security-policy-report-only'];
+      expect(res.headers['content-security-policy-report-only']).toBeUndefined();
+      const csp = res.headers['content-security-policy'];
       expect(csp).toContain("default-src 'self'");
       expect(csp).toContain('https://js.stripe.com');
       expect(csp).toContain("object-src 'none'");
+      expect(csp).not.toContain("script-src 'self' 'unsafe-inline'");
+
+      // A new nonce for every response
+      const nonce = (header: string) => /'nonce-([A-Za-z0-9+/=]+)'/.exec(header)?.[1];
+      const again = await t.http.get('/api/products/categories').set('lang', 'en').expect(200);
+      expect(nonce(csp)).toMatch(/^[A-Za-z0-9+/=]{24}$/);
+      expect(nonce(again.headers['content-security-policy'])).not.toBe(nonce(csp));
     });
 
     it('sets an httpOnly, SameSite=Lax session cookie, not Secure over plain HTTP (SEC-11)', async () => {
@@ -39,6 +46,25 @@ describe('Security middleware', () => {
     it('does not trust X-Forwarded-* without TRUST_PROXY', async () => {
       const res = await t.http.get('/api/cart/add').query({ id: productId }).set('lang', 'en').set('X-Forwarded-Proto', 'https').expect(200);
       expect(String(res.headers['set-cookie'])).not.toMatch(/Secure/);
+    });
+  });
+
+  describe('with CSP_REPORT_ONLY=true (escape hatch)', () => {
+    let t: TestApp;
+
+    beforeAll(async () => {
+      process.env.CSP_REPORT_ONLY = 'true';
+      t = await createTestApp();
+    });
+    afterAll(async () => {
+      delete process.env.CSP_REPORT_ONLY;
+      await t.close();
+    });
+
+    it('only reports CSP violations', async () => {
+      const res = await t.http.get('/api/products/categories').set('lang', 'en').expect(200);
+      expect(res.headers['content-security-policy']).toBeUndefined();
+      expect(res.headers['content-security-policy-report-only']).toContain("default-src 'self'");
     });
   });
 

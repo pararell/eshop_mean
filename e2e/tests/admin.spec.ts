@@ -1,5 +1,5 @@
 import { expect, Page, test } from '@playwright/test';
-import { E2E, isolateExternalServices, payByCard, signIn, withDb } from './helpers';
+import { E2E, gotoReady, isolateExternalServices, payByCard, signIn, withDb } from './helpers';
 
 test.beforeEach(async ({ page }) => {
   await isolateExternalServices(page);
@@ -66,9 +66,13 @@ test('admin edits a product price from the product list', async ({ page, request
 });
 
 test('the editor explains what is missing before saving', async ({ page }) => {
-  await page.goto('/en/dashboard/products/new');
+  await gotoReady(page, '/en/dashboard/products/new');
   const form = editor(page);
-  await form.getByLabel('Title', { exact: true }).fill('Incomplete product');
+  // The editor fills the product URL from the title once it is live; retype until it did
+  await expect(async () => {
+    await form.getByLabel('Title', { exact: true }).fill('Incomplete product');
+    await expect(form.getByLabel('Product URL')).not.toHaveValue('', { timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
   await form.getByRole('switch', { name: 'Visible in the shop (EN)' }).click();
 
   const requests: string[] = [];

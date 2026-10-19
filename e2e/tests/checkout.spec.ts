@@ -170,3 +170,17 @@ test('keeps the cart and checkout when the order fails (BUG-04 regression)', asy
   await expect(page.locator('.submit-order-button')).toBeVisible();
   await expectCartCount(page, 1);
 });
+
+test('a click anywhere on a payment card selects it (audit UI-09)', async ({ page }) => {
+  await addToCart(page, E2E.car.titleUrl);
+  await page.goto('/en/cart');
+
+  const card = page.locator('.payment-choice').first();
+  await card.scrollIntoViewIfNeeded();
+  const box = (await card.boundingBox())!;
+  // The far right of the card: padding, not the radio circle or its text
+  await page.mouse.click(box.x + box.width - 8, box.y + box.height / 2);
+
+  await expect(page.getByRole('radio', { name: /with card/ })).toBeChecked();
+  await expect(page.locator('app-card')).toBeVisible();
+});

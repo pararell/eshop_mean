@@ -88,9 +88,10 @@
   gap: var(--space-3);
 }
 
+// The whole card selects the option (audit UI-09): the label fills the card, so the padding is clickable too
 .payment-choice {
   display: block;
-  padding: var(--space-3) var(--space-4);
+  padding: 0 0 0 var(--space-2);
   border: 2px solid var(--color-border-strong);
   background: var(--color-surface);
   transition: border-color var(--duration-fast) var(--ease-out);
@@ -103,6 +104,21 @@
 .payment-choice--active {
   border-color: var(--color-text);
   box-shadow: inset 6px 0 0 var(--color-primary);
+}
+
+.payment-choice ::ng-deep .mdc-form-field {
+  display: flex;
+  width: 100%;
+
+  > label {
+    flex: 1;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    min-height: 52px;
+    padding: var(--space-3) var(--space-4) var(--space-3) 0;
+    cursor: pointer;
+  }
 }
 
 .payment-choice-label {

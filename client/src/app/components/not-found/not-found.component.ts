@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { TranslateService } from '../../services/translate.service';
+import { SSR_RESPONSE } from '../../services/ssr-response';
 
 /** "The trail ends here": unknown URLs */
 @Component({
@@ -15,4 +16,9 @@ import { TranslateService } from '../../services/translate.service';
 })
 export class NotFoundComponent {
   readonly lang$ = inject(TranslateService).getLang$();
+
+  constructor() {
+    // Server-side render: answer 404, so crawlers don't index unknown URLs as pages
+    inject(SSR_RESPONSE, { optional: true })?.status(404);
+  }
 }

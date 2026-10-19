@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 import { Category } from '../../models';
@@ -10,7 +11,7 @@ const TRAILS = ['trail-red', 'trail-blue', 'trail-green', 'trail-yellow'];
   templateUrl: './categories-list.component.html',
   styleUrls: ['./categories-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink],
+  imports: [RouterLink, NgOptimizedImage],
 })
 export class CategoriesListComponent {
   readonly categories = input.required<Category[]>();

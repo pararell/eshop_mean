@@ -53,3 +53,13 @@ test('home banner shows the image of the active theme', async ({ page }) => {
     await withDb((db) => db.query(`DELETE FROM themes WHERE title_url = 'e2e-banner'`));
   }
 });
+
+test('unknown URLs answer 404 with the not-found page', async ({ request, page }) => {
+  const response = await request.get('/en/no-such-trail');
+  expect(response.status()).toBe(404);
+  expect(await response.text()).toContain('Not_found_title');
+
+  await page.goto('/en/no-such-trail');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Not_found_title/i);
+  await expect(page.getByRole('link', { name: 'Products' }).last()).toBeVisible();
+});

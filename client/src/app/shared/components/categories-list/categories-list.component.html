@@ -4,7 +4,7 @@
       <a class="category_card-link" [routerLink]="['/' + lang() + '/product/category/' + category.titleUrl]">
         <span class="category_card-media">
           @if (category.mainImage?.url) {
-            <img [src]="category.mainImage!.url" alt="" loading="lazy" decoding="async" />
+            <img [ngSrc]="category.mainImage!.url" alt="" fill sizes="(max-width: 680px) 72vw, 300px" />
           }
         </span>
         <span class="signpost category_card-sign">

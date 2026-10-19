@@ -3,7 +3,7 @@ import { Component, Input, ChangeDetectionStrategy, input, output } from '@angul
 import { Product } from '../../models';
 import { TranslatePipe } from '../../../pipes/translate.pipe';
 import { RouterLink } from '@angular/router';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, NgOptimizedImage } from '@angular/common';
 import { CartShowComponent } from '../cart-show/cart-show.component';
 import { PriceFormatPipe } from '../../../pipes/price.pipe';
 
@@ -11,7 +11,7 @@ import { PriceFormatPipe } from '../../../pipes/price.pipe';
   selector: 'app-products-list',
   templateUrl: './products-list.component.html',
   styleUrls: ['./products-list.component.scss'],
-  imports: [AsyncPipe, TranslatePipe, PriceFormatPipe, RouterLink, CartShowComponent],
+  imports: [AsyncPipe, NgOptimizedImage, TranslatePipe, PriceFormatPipe, RouterLink, CartShowComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductsListComponent {

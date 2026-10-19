@@ -17,7 +17,7 @@
       </video>
       <div class="hero-scrim"></div>
     } @else if (heroImage()) {
-      <img class="hero-video" [src]="heroImage()" [style.object-position]="heroImagePosition()" alt="" fetchpriority="high" />
+      <img class="hero-video" [ngSrc]="heroImage()" [style.object-position]="heroImagePosition()" alt="" fill priority sizes="100vw" />
       <div class="hero-scrim"></div>
     }
     <div class="hero-inner">
@@ -40,7 +40,7 @@
       @if (!video() && !heroImage() && featured(); as featured) {
         <a class="hero-feature" [routerLink]="['/' + lang() + '/product/' + featured.titleUrl]">
           <span class="hero-feature-media">
-            <img [src]="featured.mainImage.url" alt="" fetchpriority="high" />
+            <img [ngSrc]="featured.mainImage.url" alt="" fill priority sizes="(max-width: 900px) 90vw, 460px" />
           </span>
           <span class="hero-feature-coords" aria-hidden="true">N 49°10′ · E 20°08′ · 2655 m</span>
           <span class="signpost hero-feature-card">

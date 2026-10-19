@@ -10,7 +10,9 @@ import { TranslateService } from './services/translate.service';
 import { WindowService } from './services/window.service';
 import { EnvConfigurationService } from './services/env-configuration.service';
 import { BrowserHttpInterceptor } from './services/browser-http-interceptor';
-import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { IMAGE_LOADER } from '@angular/common';
+import { shopImageLoader } from './services/image-loader';
 
 export function WindowFactory() {
   return typeof window !== 'undefined' ? window : {};
@@ -20,6 +22,8 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideZonelessChangeDetection(),
+    // NgOptimizedImage: resized Cloudinary images with srcset (services/image-loader.ts)
+    { provide: IMAGE_LOADER, useValue: shopImageLoader },
     provideHttpClient(withFetch()),
     provideClientHydration(
       withHttpTransferCacheOptions({
@@ -30,7 +34,8 @@ export const appConfig: ApplicationConfig = {
       // Clicks and typing before hydration finishes are replayed instead of lost
       withEventReplay(),
     ),
-    provideAnimations(),
+    // Loaded on the first animation, not with the initial bundle
+    provideAnimationsAsync(),
     CookieService,
     {
       provide: HTTP_INTERCEPTORS,

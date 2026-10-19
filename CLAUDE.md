@@ -19,7 +19,7 @@ eshop_mean is a multi-language (en / sk / cs) e-commerce app with an admin area:
 
 | Layer    | Tech                                                                                                                                                                                                           |
 | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Frontend | Angular 22.2 (zoneless, SSR + hydration), Angular Material (M2 theme), custom signal store                                                                                                                     |
+| Frontend | Angular 22.2 (zoneless, SSR + hydration), Angular Material (M3, mapped to design tokens), custom signal store                                                                                                  |
 | Backend  | NestJS 12 on Express 5, Passport (JWT + Google OAuth 2.0)                                                                                                                                                      |
 | Database | PostgreSQL 18 via Drizzle ORM (`server/src/db/`), sessions in PostgreSQL via `connect-pg-simple`                                                                                                               |
 | Tooling  | One root `package.json`, TypeScript 6.0 **strict** (+ Angular `strictTemplates`), Angular CLI (`@angular/build`), Nest CLI, ESLint flat config (`eslint.config.mjs`), Prettier, stylelint, husky + lint-staged |
@@ -110,7 +110,7 @@ Verified on Node 24.15 / npm 11.12 (2026-10-14). Angular 22 requires Node `^24.1
 | Run production build                          | `npm start` (= `node dist/eshop/server/server.mjs`)                                                                                | OK. Needs `PORT` and the env vars.                                                                                                                                                                |
 | Server-only compile check                     | `npx nest build -c server/nest-cli.json`                                                                                           | OK (output in `server/dist`, not used in prod)                                                                                                                                                    |
 | Type-check                                    | `npm run typecheck` (client, server, server tests, e2e)                                                                            | OK, `strict: true` everywhere, 0 errors                                                                                                                                                           |
-| Lint                                          | `npm run lint` (whole repo; `lint:fix` to autofix; `lint:client` = `ng lint`, same config)                                         | 0 errors; 21 warnings = components still on `Eager` change detection (OnPush suggestion), see audit TD-03                                                                                         |
+| Lint                                          | `npm run lint` (whole repo; `lint:fix` to autofix; `lint:client` = `ng lint`, same config)                                         | 0 errors; 15 warnings = components still on `Eager` change detection (OnPush suggestion), see audit TD-03                                                                                         |
 | Lint SCSS                                     | `npm run lint:scss`                                                                                                                | Runs (stylelint 17, SCSS syntax); 306 errors in older files (new files are clean). The unquoted glob is shell-expanded.                                                                           |
 | Format                                        | `npm run format` / `npm run format:check` (Prettier, whole repo)                                                                   | Existing code is not yet reformatted (~140 files); new commits are formatted by the hook                                                                                                          |
 | Pre-commit hook                               | husky → `lint-staged` (`.husky/pre-commit`)                                                                                        | Runs `eslint --fix` + `prettier --write` on staged files; lint errors block the commit ; with nvm + a GUI git client (GitHub Desktop), add `~/.config/husky/init.sh` that sources `~/.nvm/nvm.sh` |
@@ -151,6 +151,7 @@ Copy `.env.example` → `.env` (gitignored, never commit it). It is read with
 | `RECAPTCHA_SERVER_KEY`                                                                             | Contact-form captcha verification                                                                                                                                                             | `eshop/eshop.service.ts`                                              |
 | `GEO_LOCATION_API_KEY`                                                                             | geolocation-db lookup for the default language                                                                                                                                                | `translations/translations.controller.ts`                             |
 | `DB_MIGRATE_ON_START`                                                                              | `false` turns off migrations at startup (pending ones are then only logged)                                                                                                                   | `db/startup.ts`                                                       |
+| `CSP_REPORT_ONLY`                                                                                  | `true` switches the enforced Content-Security-Policy to report-only (escape hatch if a third-party script breaks)                                                                             | `setAppDB.ts`                                                         |
 | `TRUST_PROXY`                                                                                      | Express "trust proxy" for a reverse proxy in front of the app (e.g. `1`): real client IP for rate limits, HTTPS detection for the `Secure` session cookie                                     | `setAppDB.ts`                                                         |
 | `RATE_LIMIT_PER_MINUTE`                                                                            | Per-IP limit on sign-in, sign-up, contact and order endpoints (default 10 per endpoint)                                                                                                       | `shared/rate-limit/rate-limit.ts`                                     |
 | `AI_PROVIDER`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`                                               | AI product drafts; **off without the key**. Server-side only (never `FE_`). Limits, model and prices: `AI_*`, see [docs/ai.md](docs/ai.md) § Configuration                                    | `ai/ai.config.ts`                                                     |
@@ -193,8 +194,9 @@ Copy `.env.example` → `.env` (gitignored, never commit it). It is read with
     explicitly (there is no global pipe);
   - admin routes use `@UseGuards(AuthGuard('jwt'), RolesGuard)`;
   - endpoints that send email, charge cards or check passwords get `@RateLimited()`;
-  - security headers come from helmet in `setAppDB.ts`; the CSP is report-only until verified, so a new
-    third-party script, frame or API needs adding there;
+  - security headers come from helmet in `setAppDB.ts`; the CSP is **enforced**: inline scripts need the
+    per-request nonce (SSR adds it, `server/src/shared/csp.ts`), and a new third-party script, frame or
+    API must be added to the policy;
   - money: the server computes every amount from the session cart; Stripe gets integer minor units
     (`toMinor`), every Stripe write has an idempotency key, and order states change through
     conditional updates so webhooks and retries are safe (see `server/src/payments/`);
@@ -212,13 +214,15 @@ Copy `.env.example` → `.env` (gitignored, never commit it). It is read with
   - state lives in the signal store (`store/`);
   - everything is standalone (no NgModules); lazy areas export `Routes` from `routes.ts`;
   - DI uses `inject()`; components use signal `input()` / `output()` / `viewChild()`. Change
-    detection is still explicitly `Eager` in 21 components (OnPush needs a per-component review);
+    detection is still explicitly `Eager` in 15 components (OnPush needs a per-component review);
     new components use OnPush + signals (see `modules/dashboard/product-editor/`);
   - templates use the new control flow (`@if` / `@for`);
   - the language comes from the URL prefix (`/en|/sk|/cs`, see `languageGuard` and
     `utils/language-url.ts`); only `/` falls back to the `eshop_lang` cookie. Link with the prefix;
   - translations use `{{ 'Key' | translate | async }}`;
-  - guard browser-only APIs with `isPlatformBrowser` (SSR).
+  - guard browser-only APIs with `isPlatformBrowser` (SSR);
+  - styles use the design tokens in `client/src/styles/_tokens.scss` (trail-marking look, light/dark),
+    never raw colors; product images use `ngSrc` (Cloudinary loader in `services/image-loader.ts`).
 
 ## Do not change without explicit approval
 

@@ -1,4 +1,4 @@
-import { AsyncPipe, isPlatformBrowser } from '@angular/common';
+import { AsyncPipe, NgOptimizedImage, isPlatformBrowser } from '@angular/common';
 import { map, distinctUntilChanged, filter, take, skip } from 'rxjs/operators';
 import {
   ChangeDetectionStrategy,
@@ -39,6 +39,7 @@ import { ThemeService } from '../../services/theme.service';
   styleUrls: ['./home.component.scss'],
   imports: [
     AsyncPipe,
+    NgOptimizedImage,
     CategoriesListComponent,
     ProductsListComponent,
     PaginationComponent,

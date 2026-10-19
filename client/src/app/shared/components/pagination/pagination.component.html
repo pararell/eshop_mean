@@ -1,11 +1,29 @@
 @if (pagination().total && pagination().limit && pagination().pages > 1) {
-  <mat-paginator
-    class="pagination"
-    [length]="pagination().total"
-    [pageIndex]="pagination().page - 1"
-    [pageSize]="pagination().limit"
-    [hidePageSize]="true"
-    [showFirstLastButtons]="pagination().pages > 3"
-    (page)="changePage.emit($event.pageIndex + 1)"
-  />
+  <nav class="pagination" [attr.aria-label]="'Pages' | translate | async">
+    <button type="button" class="page-step" [disabled]="pagination().page <= 1" (click)="go(pagination().page - 1)" aria-label="Previous page">
+      <app-icon name="chevronLeft" [size]="18" />
+    </button>
+    <ol class="page-list">
+      @for (item of pages(); track $index) {
+        <li>
+          @if (item === null) {
+            <span class="page-gap" aria-hidden="true">…</span>
+          } @else if (item === pagination().page) {
+            <span class="page-current" aria-current="page">{{ item }}</span>
+          } @else {
+            <button type="button" class="page-link" (click)="go(item)" [attr.aria-label]="'Page ' + item">{{ item }}</button>
+          }
+        </li>
+      }
+    </ol>
+    <button
+      type="button"
+      class="page-step"
+      [disabled]="pagination().page >= pagination().pages"
+      (click)="go(pagination().page + 1)"
+      aria-label="Next page"
+    >
+      <app-icon name="chevronRight" [size]="18" />
+    </button>
+  </nav>
 }

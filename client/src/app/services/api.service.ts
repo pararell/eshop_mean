@@ -112,6 +112,11 @@ export class ApiService {
     return this.handle(this.http.get<PublicConfigResponse>(configUrl, this.requestOptions));
   }
 
+  /** A sign-in token is stored (browser only); without one `GET /api/auth` can only answer 401 */
+  hasAccessToken(): boolean {
+    return isPlatformBrowser(this.platformId) && !!localStorage.getItem(accessTokenKey);
+  }
+
   getUser() {
     const userUrl = this.apiUrl + '/api/auth';
     return this.handle(this.http.get<CurrentUser>(userUrl, this.requestOptions));

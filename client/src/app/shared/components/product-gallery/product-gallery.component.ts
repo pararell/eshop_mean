@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 
 import { IconComponent } from '../icon/icon.component';
@@ -10,7 +11,7 @@ import { ImagesDialogComponent } from '../images-dialog/images-dialog.component'
   templateUrl: './product-gallery.component.html',
   styleUrls: ['./product-gallery.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IconComponent],
+  imports: [IconComponent, NgOptimizedImage],
 })
 export class ProductGalleryComponent {
   private dialog = inject(MatDialog);
