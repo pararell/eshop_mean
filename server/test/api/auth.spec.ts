@@ -57,6 +57,24 @@ describe('Auth API', () => {
     it('rejects an unknown user', async () => {
       await t.http.post('/api/auth/signin').send({ email: 'nobody@test.dev', password: 'secret1' }).expect(401);
     });
+
+    it('accepts a password outside the sign-up rule (e.g. the seeded admin)', async () => {
+      // 24 characters, no digit: sign-up would reject it, but sign-in only compares the hash
+      const password = 'a-long-seeded-passphrase';
+      await createUser(t, { email: 'seeded@test.dev', password });
+
+      await t.http.post('/api/auth/signin').send({ email: 'seeded@test.dev', password }).expect(201);
+      await t.http.post('/api/auth/signin').send({ email: 'seeded@test.dev', password: 'a-long-seeded-passphrasX' }).expect(401);
+    });
+
+    it('rejects an empty or oversized password', async () => {
+      await createUser(t, { email: 'user@test.dev' });
+      await t.http.post('/api/auth/signin').send({ email: 'user@test.dev', password: '' }).expect(400);
+      await t.http
+        .post('/api/auth/signin')
+        .send({ email: 'user@test.dev', password: 'x'.repeat(73) })
+        .expect(400);
+    });
   });
 
   describe('GET /api/auth', () => {

@@ -68,6 +68,19 @@ describe('db:seed', () => {
     expect(sk.keys).toEqual({ Back: 'Naspäť' });
   });
 
+  it('refuses to create an admin whose password sign-up would reject', async () => {
+    await expect(seed(t.db, { ...options, adminPassword: 'no-digits-and-far-too-long' })).rejects.toThrow('SEED_ADMIN_PASSWORD');
+    // Nothing was written (one transaction)
+    expect(await t.db.select().from(users)).toHaveLength(0);
+    expect(await t.db.select().from(translations)).toHaveLength(0);
+  });
+
+  it('leaves an existing admin alone whatever the password', async () => {
+    await seed(t.db, options);
+    const result = await seed(t.db, { ...options, adminPassword: 'no-digits-and-far-too-long' });
+    expect(result.admin).toBe('exists');
+  });
+
   it('skips the admin when no credentials are given', async () => {
     const result = await seed(t.db, {});
     expect(result.admin).toBe('skipped');

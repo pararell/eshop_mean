@@ -1,9 +1,11 @@
 import * as bcrypt from 'bcryptjs';
+import { eq } from 'drizzle-orm';
 import type { LanguageCode } from '@eshop/shared';
 
 import type { Database } from './database.module';
 import { configs, configShipping, themes, translations, users } from './schema';
 import { languages, shippingCost } from '../shared/constans';
+import { PASSWORD_RULE } from '../auth/dto/auth-credential.dto';
 
 export interface SeedOptions {
   /** Creates this admin unless a user with the same email exists */
@@ -29,6 +31,11 @@ export async function seed(db: Database, options: SeedOptions = {}): Promise<See
     const result: SeedResult = { admin: 'skipped', translations: [], config: 'exists', theme: 'exists' };
 
     if (options.adminEmail && options.adminPassword) {
+      const [existing] = await tx.select({ id: users.id }).from(users).where(eq(users.email, options.adminEmail));
+      // A new admin gets a password that sign-up would accept too; an existing one is left alone
+      if (!existing && !PASSWORD_RULE.test(options.adminPassword)) {
+        throw new Error('SEED_ADMIN_PASSWORD must be 5-20 characters and contain a digit (the sign-up password rule)');
+      }
       const created = await tx
         .insert(users)
         .values({

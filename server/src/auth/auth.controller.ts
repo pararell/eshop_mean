@@ -3,7 +3,7 @@ import type { CurrentUser } from '@eshop/shared';
 import { Controller, Post, Body, ValidationPipe, UseGuards, Get, Req, Res } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-import { AuthCredentialDto } from './dto/auth-credential.dto';
+import { AuthCredentialDto, SignInDto } from './dto/auth-credential.dto';
 import { AuthService } from './auth.service';
 import { User } from './models/user.model';
 import { GetUser } from './utils/get-user.decorator';
@@ -28,13 +28,13 @@ export class AuthController {
 
   @RateLimited()
   @Post('/signin')
-  signIn(@Body(ValidationPipe) authCredentialsDto: AuthCredentialDto): Promise<{
+  signIn(@Body(ValidationPipe) signInDto: SignInDto): Promise<{
     accessToken: string;
     id: string;
     email: string;
     roles?: string[];
   }> {
-    return this.authService.signIn(authCredentialsDto);
+    return this.authService.signIn(signInDto);
   }
 
   @Get('/google')

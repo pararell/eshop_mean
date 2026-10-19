@@ -6,7 +6,7 @@ import { ConflictException, InternalServerErrorException } from '@nestjs/common'
 import { GoogleUserDto } from './dto/google-user.dto';
 import { User } from './models/user.model';
 import { JwtPayload } from './models/jwt-payload.interface';
-import { AuthCredentialDto } from './dto/auth-credential.dto';
+import { AuthCredentialDto, SignInDto } from './dto/auth-credential.dto';
 import { Database, DRIZZLE } from '../db/database.module';
 import { users } from '../db/schema';
 import { findUserByEmail, pgErrorCode } from './user.queries';
@@ -38,13 +38,13 @@ export class AuthService {
     }
   }
 
-  async signIn(authCredentialsDto: AuthCredentialDto): Promise<{
+  async signIn(signInDto: SignInDto): Promise<{
     accessToken: string;
     id: string;
     email: string;
     roles?: string[];
   }> {
-    const { email, password } = authCredentialsDto;
+    const { email, password } = signInDto;
     const user = await findUserByEmail(this.db, email);
     const loggedUser = user && (await this.validatePassword(password, user));
     const userEmail = loggedUser ? user!.email : null;
