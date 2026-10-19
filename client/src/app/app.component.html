@@ -1,5 +1,7 @@
 <div class="main-scroll-wrap" id="main-content" (scroll)="onScrolling($event)">
   <app-header />
-  <router-outlet (activate)="onActivate($event)" (deactivate)="onDeactivate($event)" />
+  <main id="content" class="app-content" tabindex="-1">
+    <router-outlet (activate)="onActivate($event)" (deactivate)="onDeactivate($event)" />
+  </main>
   <app-footer />
 </div>

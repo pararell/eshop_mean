@@ -1,1 +1,16 @@
-Not found
+<div class="main">
+  <section class="not-found contour-bg" aria-labelledby="not-found-title">
+    <div class="not-found-inner">
+      <span class="signpost not-found-sign">
+        <span class="blaze" aria-hidden="true"></span>
+        <span class="not-found-code mono">404</span>
+      </span>
+      <h1 id="not-found-title">{{ 'Not_found_title' | translate | async }}</h1>
+      <p>{{ 'Not_found_text' | translate | async }}</p>
+      <div class="not-found-actions">
+        <a class="btn btn-primary" [routerLink]="['/' + (lang$ | async) + '/product/all']">{{ 'Products' | translate | async }}</a>
+        <a class="btn btn-outline" routerLink="/">{{ 'ESHOP_TITLE' | translate | async }}</a>
+      </div>
+    </div>
+  </section>
+</div>

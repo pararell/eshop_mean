@@ -1,41 +1,59 @@
 <div class="sidebar">
-  <div class="sidebar-header sidebar-header-top">
-    <h3 class="sidebar-title">{{ 'Categories' | translate | async }}</h3>
-  </div>
-  <a class="sidebar-item" [routerLink]="['/' + lang() + '/product/all']" [class.active]="!activeCategory()">
-    {{ 'All' | translate | async }} {{ 'products' | translate | async }}
-  </a>
-  @for (category of categories(); track trackById($index, category)) {
-    @if (!category.menuHidden) {
+  <section class="sidebar-section">
+    <h2 class="sidebar-title">{{ 'Categories' | translate | async }}</h2>
+    <nav class="sidebar-nav" [attr.aria-label]="'Categories' | translate | async">
       <a
         class="sidebar-item"
-        (click)="changeCategory.emit(category.titleUrl)"
-        [routerLink]="['/' + lang() + '/product/category/' + category.titleUrl]"
-        [class.active]="activeCategory() == category.titleUrl"
+        [routerLink]="['/' + lang() + '/product/all']"
+        [class.active]="!activeCategory()"
+        [attr.aria-current]="!activeCategory() ? 'page' : null"
       >
-        {{ category.title }}
+        <span class="blaze sidebar-blaze-all" aria-hidden="true"></span>
+        {{ 'All' | translate | async }} {{ 'products' | translate | async }}
       </a>
-    }
-  }
-  <div class="sidebar-sort-wrap">
-    <div class="sidebar-header">
-      <h3 class="sidebar-title">{{ 'Sorting' | translate | async }}</h3>
-    </div>
-    <mat-form-field class="sidebar-select">
-      <mat-select aria-label="Sort" [ngModel]="choosenSort() || 'newest'" (ngModelChange)="onInputChange($event)">
-        @for (option of sortOptions(); track option) {
+      @for (category of categories(); track category.titleUrl; let i = $index) {
+        @if (!category.menuHidden) {
+          <a
+            class="sidebar-item"
+            [class]="trails[i % trails.length]"
+            (click)="changeCategory.emit(category.titleUrl)"
+            [routerLink]="['/' + lang() + '/product/category/' + category.titleUrl]"
+            [class.active]="activeCategory() == category.titleUrl"
+            [attr.aria-current]="activeCategory() == category.titleUrl ? 'page' : null"
+          >
+            <span class="blaze" aria-hidden="true"></span>
+            {{ category.title }}
+          </a>
+        }
+      }
+    </nav>
+  </section>
+
+  <section class="sidebar-section">
+    <h2 class="sidebar-title" id="sidebar-sort-title">{{ 'Sorting' | translate | async }}</h2>
+    <mat-form-field class="sidebar-select" appearance="outline" subscriptSizing="dynamic">
+      <mat-select aria-labelledby="sidebar-sort-title" [ngModel]="choosenSort() || 'newest'" (ngModelChange)="onInputChange($event)">
+        @for (option of sortOptions(); track option.id) {
           <mat-option [value]="option.id">
             {{ option.name | translate | async }}
           </mat-option>
         }
       </mat-select>
     </mat-form-field>
-  </div>
-  <div class="sidebar-header">
-    <h3 class="sidebar-title">{{ 'PriceRange' | translate | async }}</h3>
-  </div>
-  <mat-slider aria-label="Range" class="sidebar-range" [max]="maxPrice()" [min]="minPrice()">
-    <input matSliderThumb [(ngModel)]="price" (change)="onChangePrice(maxPrice() < price ? maxPrice() : price)" />
-  </mat-slider>
-  {{ 'Price' | translate | async }} {{ 'to' | translate | async }}: {{ price | priceFormat }} {{ currency() }}
+  </section>
+
+  <section class="sidebar-section">
+    <h2 class="sidebar-title">{{ 'PriceRange' | translate | async }}</h2>
+    <mat-slider class="sidebar-range" [max]="maxPrice()" [min]="minPrice()">
+      <input
+        matSliderThumb
+        [attr.aria-label]="'PriceRange' | translate | async"
+        [(ngModel)]="price"
+        (change)="onChangePrice(maxPrice() < price ? maxPrice() : price)"
+      />
+    </mat-slider>
+    <p class="sidebar-range-value">
+      {{ 'Price' | translate | async }} {{ 'to' | translate | async }}: <strong>{{ price | priceFormat }} {{ currency() }}</strong>
+    </p>
+  </section>
 </div>

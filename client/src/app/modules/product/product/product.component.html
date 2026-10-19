@@ -1,45 +1,53 @@
 <div class="main">
-  <div class="container">
-    <button (click)="goBack()" mat-raised-button color="primary">
-      <i class="material-icons left">arrow_back</i>
-      {{ 'Back' | translate | async }}
-    </button>
+  <div class="container product-page">
+    <nav class="product-nav" aria-label="Breadcrumb">
+      <button type="button" class="product-back" (click)="goBack()">
+        <app-icon name="arrowLeft" [size]="16" />
+        {{ 'Back' | translate | async }}
+      </button>
+      @if (product$(); as product) {
+        <ol class="waypoints product-crumbs">
+          <li>
+            <a [routerLink]="['/' + (lang$ | async) + '/product/all']">{{ 'Products' | translate | async }}</a>
+          </li>
+          <li aria-current="page">{{ product.title }}</li>
+        </ol>
+      }
+    </nav>
+
     @if (!product$() || productLoading$()) {
       <mat-progress-bar mode="indeterminate" />
     }
-    @if (product$()) {
-      @if (!productLoading$()) {
-        <mat-card appearance="outlined" class="product">
-          @if (product$()!.visibility && product$()!.salePrice) {
-            <app-product-content
-              [product]="product$()!"
-              [categoriesInput]="(categories$ | async) ?? undefined"
-              [cartIds]="(cartIds$ | async)!"
-              [currency]="(currency$ | async)!"
-              [lang]="(lang$ | async)!"
-              (addProduct)="cartEvent($event, 'add')"
-              (removeProduct)="cartEvent($event, 'remove')"
-            />
-            <mat-tab-group>
-              <mat-tab label="{{ 'Description' | translate | async }}">
-                <mat-card-content class="product-tab-content">
-                  <div [innerHTML]="$safeNavigationMigration(product$()?.descriptionFull)"></div>
-                </mat-card-content>
-              </mat-tab>
-              <mat-tab label="{{ 'Images' | translate | async }}">
-                <mat-card-content class="product-tab-content">
-                  <div class="product-images">
-                    @for (imageSrc of product$()?.images; track imageSrc; let i = $index; let f = $first; let l = $last) {
-                      <div class="product-images-content" (click)="openDialog(i, $safeNavigationMigration(product$()?.images)!)">
-                        <img class="product-images-image" [src]="imageSrc" />
-                      </div>
-                    }
-                  </div>
-                </mat-card-content>
-              </mat-tab>
-            </mat-tab-group>
+    @if (product$(); as product) {
+      @if (!productLoading$() && product.visibility && product.salePrice) {
+        <article class="product">
+          <div class="product-layout">
+            <app-product-gallery [images]="galleryImages()" [alt]="product.title" />
+            <div class="product-buy">
+              <app-product-content
+                [product]="product"
+                [categoriesInput]="(categories$ | async) ?? undefined"
+                [cartIds]="(cartIds$ | async)!"
+                [currency]="(currency$ | async)!"
+                [lang]="(lang$ | async)!"
+                [shippingLimit]="shippingLimit()"
+                (addProduct)="cartEvent($event, 'add')"
+                (removeProduct)="cartEvent($event, 'remove')"
+              />
+            </div>
+          </div>
+
+          @if (product.descriptionFull.length) {
+            <section class="product-details" aria-labelledby="product-description-title">
+              <h2 id="product-description-title">{{ 'Description' | translate | async }}</h2>
+              <div class="prose">
+                @for (html of product.descriptionFull; track $index) {
+                  <div [innerHTML]="html"></div>
+                }
+              </div>
+            </section>
           }
-        </mat-card>
+        </article>
       }
     }
   </div>

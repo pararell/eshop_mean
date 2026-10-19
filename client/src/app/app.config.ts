@@ -4,13 +4,15 @@ import { APP_INITIALIZER, ApplicationConfig, provideZonelessChangeDetection } fr
 import { provideRouter } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { routes } from './app.routes';
-import { provideClientHydration, withHttpTransferCacheOptions, withNoIncrementalHydration } from '@angular/platform-browser';
+import { provideClientHydration, withEventReplay, withHttpTransferCacheOptions, withNoIncrementalHydration } from '@angular/platform-browser';
 import { HTTP_INTERCEPTORS, provideHttpClient, withFetch } from '@angular/common/http';
 import { TranslateService } from './services/translate.service';
 import { WindowService } from './services/window.service';
 import { EnvConfigurationService } from './services/env-configuration.service';
 import { BrowserHttpInterceptor } from './services/browser-http-interceptor';
-import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { IMAGE_LOADER } from '@angular/common';
+import { shopImageLoader } from './services/image-loader';
 
 export function WindowFactory() {
   return typeof window !== 'undefined' ? window : {};
@@ -20,6 +22,8 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideZonelessChangeDetection(),
+    // NgOptimizedImage: resized Cloudinary images with srcset (services/image-loader.ts)
+    { provide: IMAGE_LOADER, useValue: shopImageLoader },
     provideHttpClient(withFetch()),
     provideClientHydration(
       withHttpTransferCacheOptions({
@@ -27,8 +31,11 @@ export const appConfig: ApplicationConfig = {
         includeRequestsWithAuthHeaders: true,
       }),
       withNoIncrementalHydration(),
+      // Clicks and typing before hydration finishes are replayed instead of lost
+      withEventReplay(),
     ),
-    provideAnimations(),
+    // Loaded on the first animation, not with the initial bundle
+    provideAnimationsAsync(),
     CookieService,
     {
       provide: HTTP_INTERCEPTORS,

@@ -1,38 +1,34 @@
-import { SidebarComponent } from './../../shared/components/sidebar/sidebar.component';
-import { CommonModule } from '@angular/common';
-import { map, distinctUntilChanged, filter, take, skip, delay } from 'rxjs/operators';
+import { AsyncPipe, NgOptimizedImage, isPlatformBrowser } from '@angular/common';
+import { map, distinctUntilChanged, filter, take, skip } from 'rxjs/operators';
 import {
-  Component,
   ChangeDetectionStrategy,
+  Component,
+  ElementRef,
   OnDestroy,
+  PLATFORM_ID,
   Signal,
   computed,
-  AfterViewInit,
-  ElementRef,
-  DOCUMENT,
+  effect,
   inject,
+  signal,
   viewChild,
 } from '@angular/core';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
-import { combineLatest, Subscription, of } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { TranslateService } from '../../services/translate.service';
-import { sortOptions } from '../../shared/constants';
-
 import { Product, Category, Cart } from '../../shared/models';
-import { CarouselComponent } from '../../shared/components/carousel/carousel.component';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { PriceFormatPipe } from '../../pipes/price.pipe';
 import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
 import { CategoriesListComponent } from '../../shared/components/categories-list/categories-list.component';
-import { ProductContentComponent } from '../../shared/components/product-content/product-content.component';
 import { ProductsListComponent } from '../../shared/components/products-list/products-list.component';
+import { IconComponent } from '../../shared/components/icon/icon.component';
 import { SignalStore } from '../../store/signal.store';
 import { PaginationState, SignalStoreSelectors } from '../../store/signal.store.selectors';
 import { ThemeService } from '../../services/theme.service';
@@ -42,22 +38,20 @@ import { ThemeService } from '../../services/theme.service';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
   imports: [
-    CommonModule,
-    MatSidenavModule,
+    AsyncPipe,
+    NgOptimizedImage,
     CategoriesListComponent,
-    CarouselComponent,
-    ProductContentComponent,
     ProductsListComponent,
-    SidebarComponent,
     PaginationComponent,
+    IconComponent,
     RouterLink,
     MatProgressBarModule,
-    MatProgressSpinnerModule,
     TranslatePipe,
+    PriceFormatPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomeComponent implements AfterViewInit, OnDestroy {
+export class HomeComponent implements OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private meta = inject(Meta);
@@ -67,7 +61,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   private store = inject(SignalStore);
   private selectors = inject(SignalStoreSelectors);
   private themeService = inject(ThemeService);
-  private _document = inject<Document>(DOCUMENT);
+  private platformId = inject(PLATFORM_ID);
 
   products: Signal<Product[] | null>;
   cartIds: Signal<{ [productID: string]: number }>;
@@ -85,14 +79,18 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   lang: Signal<string | undefined>;
   categoriesSub!: Subscription;
   productsSub!: Subscription;
-  sortOptions = sortOptions;
-  sidebarOpened = false;
-  video: string | null = null;
+  /** Banner media from the active theme (loaded in the browser, possibly after this page) */
+  readonly video = this.themeService.video;
+  readonly heroImage = this.themeService.heroImage;
+  readonly heroImagePosition = this.themeService.heroImagePosition;
+  /** The hero image (no theme video): the newest product */
+  readonly featured = computed(() => this.products()?.find((product) => product.mainImage?.url) ?? null);
+  readonly videoPlaying = signal(false);
 
   readonly component = 'homeComponent';
 
   // Optional: the video only renders when the theme has a promo video
-  private readonly videoRef = viewChild<ElementRef>('videoRef');
+  private readonly videoRef = viewChild<ElementRef<HTMLVideoElement>>('videoRef');
 
   constructor() {
     this.category = toSignal(this.route.params.pipe(map((params) => params['category'])));
@@ -123,10 +121,18 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     this.categories = this.selectors.categories;
     this.pagination = this.selectors.pagination;
     this.currency = this.selectors.currency;
-    this.video = this.themeService.video;
 
     this._loadCategories();
     this._loadProducts();
+
+    // Autoplay once the video element exists, unless the visitor prefers reduced motion;
+    // the pause/play button always works
+    effect(() => {
+      const video = this.videoRef()?.nativeElement;
+      if (!video || !isPlatformBrowser(this.platformId) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      video.muted = true; // required for autoplay in most browsers
+      video.play().catch(() => this.videoPlaying.set(false));
+    });
   }
 
   addToCart(id: string): void {
@@ -157,16 +163,6 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     this.store.removeFromCart('?id=' + id);
   }
 
-  priceRange(price: number): void {
-    if (this.filterPrice() !== price) {
-      this.store.filterPrice(price);
-    }
-  }
-
-  changeCategory(): void {
-    this.store.updatePosition({ productsComponent: 0 });
-  }
-
   changePage(page: number): void {
     if (this.category()) {
       this.router.navigate(['/' + this.lang() + '/product/category/' + this.category()], {
@@ -180,40 +176,16 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     this.store.updatePosition({ productsComponent: 0 });
   }
 
-  changeSort(sort: string): void {
-    if (this.category()) {
-      this.router.navigate(['/' + this.lang() + '/product/category/' + this.category()], {
-        queryParams: { sort, page: this.page() || 1 },
-      });
-    } else {
-      this.router.navigate(['/' + this.lang() + '/product/all'], { queryParams: { sort, page: this.page() || 1 } });
-    }
-    this.store.updatePosition({ productsComponent: 0 });
-  }
-
-  toggleSidebar() {
-    this.sidebarOpened = !this.sidebarOpened;
-  }
-
-  ngAfterViewInit() {
-    of('delay')
-      .pipe(delay(100), take(1))
-      .subscribe(() => {
-        const vid = this.videoRef()?.nativeElement as HTMLVideoElement;
-        if (vid) {
-          vid.muted = true; // required in most browsers
-          vid.play().catch((err) => console.log('Autoplay blocked', err));
-        }
-        this._document.getElementById('navbar')?.classList?.add('transparent');
-        this._document.getElementById('main-content')?.classList?.add('transparent');
-      });
+  toggleVideo(): void {
+    const video = this.videoRef()?.nativeElement;
+    if (!video) return;
+    if (video.paused) void video.play().catch(() => this.videoPlaying.set(false));
+    else video.pause();
   }
 
   ngOnDestroy(): void {
     this.categoriesSub.unsubscribe();
     this.productsSub.unsubscribe();
-    this._document.getElementById('navbar')?.classList?.remove('transparent');
-    this._document.getElementById('main-content')?.classList?.remove('transparent');
   }
 
   private _loadCategories(): void {

@@ -1,41 +1,42 @@
 <div class="main">
-  <div class="container">
-    <div class="contact-form-wrap">
+  <div class="auth-layout">
+    <section class="auth-aside contour-bg">
+      <span class="blaze auth-blaze trail-yellow" aria-hidden="true"></span>
       <h1 class="contact-title">{{ 'Contact' | translate | async }}</h1>
-      <form class="contact-form" [formGroup]="contactForm">
-        <mat-form-field class="contact-field">
-          <mat-label> {{ 'Firstname' | translate | async }} {{ 'and' | translate | async }} {{ 'Surname' | translate | async }} </mat-label>
-          <input matInput formControlName="name" type="text" name="contantName" />
+      <p>{{ 'Contact_text' | translate | async }}</p>
+    </section>
+
+    <section class="auth-main">
+      <form class="auth-form contact-form" [formGroup]="contactForm" (ngSubmit)="submit()">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'Firstname' | translate | async }} {{ 'and' | translate | async }} {{ 'Surname' | translate | async }}</mat-label>
+          <input matInput formControlName="name" type="text" name="contactName" autocomplete="name" />
         </mat-form-field>
-        <mat-form-field class="contact-field">
+        <mat-form-field appearance="outline">
           <mat-label>Email</mat-label>
-          <input matInput formControlName="email" type="email" name="email" />
+          <input matInput formControlName="email" type="email" name="email" autocomplete="email" />
         </mat-form-field>
-        <mat-form-field class="contact-field">
-          <mat-label>{{ 'Notes' | translate | async }}</mat-label>
-          <textarea matInput formControlName="notes" name="notes"> </textarea>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'Message' | translate | async }}</mat-label>
+          <textarea matInput formControlName="notes" name="notes" rows="6"></textarea>
         </mat-form-field>
-        <button type="submit" class="submit-contact-button" mat-raised-button color="primary" [disabled]="contactForm.invalid" (click)="submit()">
+        <button type="submit" class="btn btn-primary submit-contact-button" [disabled]="contactForm.invalid || (loading$ | async)">
           {{ 'SendContact' | translate | async }}
         </button>
         @if (loading$ | async) {
           <mat-progress-bar mode="indeterminate" />
         }
-      </form>
-      @if (sendRequestSub$ | async) {
-        <div>
+        @if (sendRequestSub$ | async) {
           @if (error$()) {
-            <span class="contact-error">
-              {{ error$() | translate | async }}
-            </span>
-          }
-          @if (!error$()) {
-            <span class="contact-success">
+            <p class="notice notice-error contact-result" role="alert">{{ error$() | translate | async }}</p>
+          } @else {
+            <p class="notice notice-success contact-result" role="status">
+              <span class="blaze trail-green" aria-hidden="true"></span>
               {{ 'CONTACT_SEND_SUCCESS' | translate | async }}
-            </span>
+            </p>
           }
-        </div>
-      }
-    </div>
+        }
+      </form>
+    </section>
   </div>
 </div>

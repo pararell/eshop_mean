@@ -1,11 +1,11 @@
-import { Component, Input, ChangeDetectionStrategy, input, output } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, OnChanges, input, output } from '@angular/core';
 import { of } from 'rxjs';
 import { take, delay } from 'rxjs/operators';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatSelectModule } from '@angular/material/select';
 
 import { Category } from '../../models';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '../../../pipes/translate.pipe';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -15,10 +15,10 @@ import { PriceFormatPipe } from '../../../pipes/price.pipe';
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss'],
-  imports: [CommonModule, RouterLink, TranslatePipe, PriceFormatPipe, MatSliderModule, MatSelectModule, FormsModule, ReactiveFormsModule],
+  imports: [AsyncPipe, RouterLink, TranslatePipe, PriceFormatPipe, MatSliderModule, MatSelectModule, FormsModule, ReactiveFormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnChanges {
   readonly categories = input.required<Category[]>();
   readonly activeCategory = input<string>();
   readonly minPrice = input<number>(0);
@@ -38,11 +38,19 @@ export class SidebarComponent {
   readonly changeSort = output<string>();
   readonly changeCategory = output<string>();
 
+  /** Category markers follow the trail colors in order (as on the category cards) */
+  readonly trails = ['trail-red', 'trail-blue', 'trail-green', 'trail-yellow'];
   productsUrl!: string;
   categoryUrl!: string;
   priceValue = 0;
 
-  constructor() {}
+  /** No price filter yet (0): the slider and its label start at the highest price, not at 0 */
+  ngOnChanges(): void {
+    const max = this.maxPrice();
+    if (!this.price && max && Number.isFinite(max)) {
+      this.price = max;
+    }
+  }
 
   onInputChange($event: string): void {
     this.changeSort.emit($event);
@@ -54,9 +62,5 @@ export class SidebarComponent {
       .subscribe(() => {
         this.changePrice.emit(value);
       });
-  }
-
-  trackById(_index: number, item: { titleUrl: string }) {
-    return item.titleUrl;
   }
 }

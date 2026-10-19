@@ -1,20 +1,19 @@
 import { Component, Input, ChangeDetectionStrategy, input, computed, output } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 import { Product, Category } from '../../models';
-import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '../../../pipes/translate.pipe';
-import { RouterLink } from '@angular/router';
 import { PriceFormatPipe } from '../../../pipes/price.pipe';
-
-import { MatChipsModule } from '@angular/material/chips';
 import { CartShowComponent } from '../cart-show/cart-show.component';
-import { MatButtonModule } from '@angular/material/button';
+import { IconComponent } from '../icon/icon.component';
 
+/** Product detail buy box: categories, title, price, stock, add to cart, shop benefits */
 @Component({
   selector: 'app-product-content',
   templateUrl: './product-content.component.html',
   styleUrls: ['./product-content.component.scss'],
-  imports: [CommonModule, TranslatePipe, RouterLink, PriceFormatPipe, MatChipsModule, CartShowComponent, MatButtonModule],
+  imports: [AsyncPipe, TranslatePipe, RouterLink, PriceFormatPipe, CartShowComponent, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductContentComponent {
@@ -26,12 +25,11 @@ export class ProductContentComponent {
   @Input() cartIds!: { [productId: string]: number };
   readonly currency = input.required<string>();
   readonly lang = input.required<string>();
-  readonly withLink = input(false);
+  /** Free-shipping threshold from the cart; hidden when unknown */
+  readonly shippingLimit = input<number | undefined>();
 
   readonly addProduct = output<string>();
   readonly removeProduct = output<string>();
-
-  constructor() {}
 
   onAddProduct(id: string): void {
     this.addProduct.emit(id);
@@ -39,9 +37,5 @@ export class ProductContentComponent {
 
   onRemoveProduct(id: string): void {
     this.removeProduct.emit(id);
-  }
-
-  trackById(_index: number, item: Product) {
-    return item._id;
   }
 }

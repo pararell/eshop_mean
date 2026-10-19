@@ -1,77 +1,120 @@
-<mat-toolbar class="nav nav-fixed" id="navbar" color="primary">
-  <div class="nav-brand-logo">
-    <a (click)="scrollToTop()" [routerLink]="['/']"> </a>
-  </div>
-  <div class="nav-part-right">
-    <div class="nav-search-form">
-      <mat-form-field class="nav-search-form-content" [ngClass]="{ 'focus-active': (showAutocomplete$ | async) }">
-        <i class="material-icons md-18">search</i>
-        <input type="text" aria-label="Search" matInput [formControl]="query" (focus)="onFocus()" (blur)="onBlur()" [matAutocomplete]="auto" />
-        <mat-autocomplete #auto="matAutocomplete">
-          @for (title of productTitles$(); track title) {
-            <mat-option [value]="title" [routerLink]="['/' + (lang$ | async) + '/product/' + title]" (click)="onTitleLink()">
-              <a class="nav-autocomplete-link">{{ title }}</a>
-            </mat-option>
-          }
-        </mat-autocomplete>
-      </mat-form-field>
+<a class="skip-link" href="#content">Skip to content</a>
+<header class="header" id="navbar">
+  <div class="trail-stripe" aria-hidden="true"></div>
+  <div class="header-inner">
+    <button class="icon-button header-menu-button" type="button" aria-label="Menu" [matMenuTriggerFor]="mobileMenu">
+      <app-icon name="menu" />
+    </button>
+
+    <a class="brand" routerLink="/" (click)="scrollToTop()" aria-label="Home">
+      @if (logo()) {
+        <img class="brand-logo" [src]="logo()" alt="" />
+      } @else {
+        <span class="blaze brand-mark" aria-hidden="true"></span>
+      }
+      <span class="brand-name">{{ 'ESHOP_TITLE' | translate | async }}</span>
+    </a>
+
+    <nav class="header-nav" aria-label="Main">
+      <a [routerLink]="['/' + (lang$ | async) + '/product/all']" routerLinkActive="is-active">{{ 'Products' | translate | async }}</a>
+      <a [routerLink]="['/' + (lang$ | async) + '/eshop/contact']" routerLinkActive="is-active">{{ 'Contact' | translate | async }}</a>
+    </nav>
+
+    <div class="header-search" role="search">
+      <app-icon class="header-search-icon" name="search" [size]="18" />
+      <input
+        type="search"
+        class="header-search-input"
+        aria-label="Search"
+        [placeholder]="('Search_products' | translate | async) ?? ''"
+        [formControl]="query"
+        [matAutocomplete]="auto"
+      />
+      <mat-autocomplete #auto="matAutocomplete" class="header-search-panel">
+        @for (title of productTitles$(); track title) {
+          <mat-option [value]="title" (onSelectionChange)="openProduct(title)">{{ title }}</mat-option>
+        }
+      </mat-autocomplete>
     </div>
-    <div class="nav-basic">
-      @if (cart$(); as cart) {
-        <a class="nav-cart-wrap" [routerLink]="['/' + (lang$ | async) + '/cart']" routerLinkActive="nav-active-link">
-          <span>{{ cart?.totalQty }}</span>
-          <i class="nav-cart-icon material-icons md-18">shopping_cart</i>
+
+    <div class="header-actions">
+      <label class="header-lang">
+        <span class="visually-hidden">Language</span>
+        <app-icon name="globe" [size]="18" />
+        <select aria-label="Language" [ngModel]="lang$ | async" (ngModelChange)="setLang($event)">
+          @for (option of languageOptions; track option) {
+            <option [value]="option">{{ option | uppercase }}</option>
+          }
+        </select>
+      </label>
+
+      <button
+        class="icon-button"
+        type="button"
+        (click)="theme.toggleMode()"
+        [attr.aria-label]="theme.isDark() ? 'Switch to light mode' : 'Switch to dark mode'"
+        [attr.aria-pressed]="theme.isDark()"
+      >
+        <app-icon [name]="theme.isDark() ? 'sun' : 'moon'" />
+      </button>
+
+      @if (user$(); as user) {
+        <button class="icon-button" type="button" aria-label="Account" [matMenuTriggerFor]="accountMenu">
+          <app-icon name="user" />
+        </button>
+      } @else {
+        <a class="header-login" [routerLink]="['/' + (lang$ | async) + '/authorize/signin']">
+          <app-icon name="login" [size]="18" />
+          <span>{{ 'Login' | translate | async }}</span>
         </a>
       }
-      <select class="browser-default nav-lang-select" aria-label="Language" [ngModel]="lang$ | async" (ngModelChange)="setLang($event)">
-        @for (option of languageOptions; track option) {
-          <option [value]="option">{{ option }}</option>
+
+      <a class="icon-button nav-cart-wrap" [routerLink]="['/' + (lang$ | async) + '/cart']" [attr.aria-label]="cartLabel()">
+        <app-icon name="cart" />
+        @if (cartCount()) {
+          <span class="cart-badge" aria-hidden="true">{{ cartCount() }}</span>
         }
-      </select>
-    </div>
-    <div class="nav-mobile">
-      <button mat-icon-button [matMenuTriggerFor]="menu">
-        <mat-icon>menu</mat-icon>
-      </button>
-      <mat-menu #menu="matMenu" [overlapTrigger]="false">
-        <ng-container *ngTemplateOutlet="menuItems" />
-      </mat-menu>
-    </div>
-    <div class="nav-desktop">
-      <ng-container *ngTemplateOutlet="menuItems" />
+      </a>
     </div>
   </div>
-</mat-toolbar>
+</header>
 
-<ng-template #menuItems>
+<mat-menu #accountMenu="matMenu" xPosition="before" class="header-menu">
+  <ng-container *ngTemplateOutlet="accountItems" />
+</mat-menu>
+
+<mat-menu #mobileMenu="matMenu" class="header-menu">
+  <a mat-menu-item [routerLink]="['/' + (lang$ | async) + '/product/all']">{{ 'Products' | translate | async }}</a>
+  <a mat-menu-item [routerLink]="['/' + (lang$ | async) + '/eshop/contact']">{{ 'Contact' | translate | async }}</a>
   @if (!user$()) {
-    @if (googleAuthUrl) {
-      <button mat-menu-item>
-        <mat-icon>account_box</mat-icon>
-        <a class="nav-link" href="{{ googleAuthUrl }}"> {{ 'Login' | translate | async }} {{ 'with' | translate | async }} Google </a>
-      </button>
-    }
-    <button mat-menu-item [routerLink]="['/' + (lang$ | async) + '/authorize/signin']" routerLinkActive="nav-active-link">
-      <mat-icon>account_circle</mat-icon>
-      <a class="nav-link">{{ 'Login' | translate | async }}</a>
-    </button>
+    <a mat-menu-item [routerLink]="['/' + (lang$ | async) + '/authorize/signin']">{{ 'Login' | translate | async }}</a>
+  }
+  <ng-container *ngTemplateOutlet="accountItems" />
+</mat-menu>
+
+<ng-template #accountItems>
+  @if (!user$() && googleAuthUrl) {
+    <a mat-menu-item [href]="googleAuthUrl">
+      <app-icon name="google" [size]="18" />
+      <span>{{ 'Login' | translate | async }} {{ 'with' | translate | async }} Google</span>
+    </a>
   }
   @if (user$()?.roles?.includes('admin')) {
-    <button mat-menu-item [routerLink]="['/' + (lang$ | async) + '/dashboard']" routerLinkActive="nav-active-link">
-      <mat-icon>dashboard</mat-icon>
-      <a class="nav-link"> {{ 'Dashboard' | translate | async }}</a>
-    </button>
+    <a mat-menu-item [routerLink]="['/' + (lang$ | async) + '/dashboard']">
+      <app-icon name="dashboard" [size]="18" />
+      <span>{{ 'Dashboard' | translate | async }}</span>
+    </a>
   }
   @if (userOrders$()?.length) {
-    <button mat-menu-item [routerLink]="['/' + (lang$ | async) + '/orders']" routerLinkActive="nav-active-link">
-      <mat-icon>assignment</mat-icon>
-      <a class="nav-link"> {{ 'Orders' | translate | async }}</a>
-    </button>
+    <a mat-menu-item [routerLink]="['/' + (lang$ | async) + '/orders']">
+      <app-icon name="orders" [size]="18" />
+      <span>{{ 'Orders' | translate | async }}</span>
+    </a>
   }
   @if (user$()) {
-    <button mat-menu-item (click)="onLogout()">
-      <mat-icon>exit_to_app</mat-icon>
-      <a class="nav-link"> {{ 'Logout' | translate | async }}</a>
+    <button mat-menu-item type="button" (click)="onLogout()">
+      <app-icon name="logout" [size]="18" />
+      <span>{{ 'Logout' | translate | async }}</span>
     </button>
   }
 </ng-template>

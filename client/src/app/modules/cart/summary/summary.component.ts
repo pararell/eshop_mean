@@ -3,12 +3,11 @@ import { Observable } from 'rxjs';
 import { TranslateService } from './../../../services/translate.service';
 import { Component, Signal, ChangeDetectionStrategy, inject, computed, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { Order } from '../../../shared/models';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 import { SignalStore } from '../../../store/signal.store';
-import { MatButton } from '@angular/material/button';
 import { OrderInfoComponent } from '../../../shared/components/order-info/order-info.component';
 import { TranslatePipe } from '../../../pipes/translate.pipe';
 
@@ -17,7 +16,7 @@ import { TranslatePipe } from '../../../pipes/translate.pipe';
   templateUrl: './summary.component.html',
   styleUrls: ['./summary.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButton, OrderInfoComponent, AsyncPipe, TranslatePipe],
+  imports: [RouterLink, OrderInfoComponent, AsyncPipe, TranslatePipe],
 })
 export class SummaryComponent {
   private location = inject(Location);

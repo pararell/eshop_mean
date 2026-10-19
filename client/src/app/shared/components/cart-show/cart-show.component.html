@@ -1,10 +1,16 @@
-<div class="cart_show-wrap" (click)="add.emit()">
-  <i class="material-icons cart_show-icon">add_shopping_cart</i>
-</div>
-@if (!!items) {
-  <span class="cart_show-quantity">{{ items }} ks</span>
-
-  <div class="cart_show-wrap" (click)="remove.emit()">
-    <i class="material-icons cart_show-icon">remove_shopping_cart</i>
+@if (items()) {
+  <div class="qty" [class.qty-large]="size() === 'large'" role="group" [attr.aria-label]="'Quantity' | translate | async">
+    <button type="button" class="qty-button cart_show-remove" (click)="remove.emit()" [attr.aria-label]="'Remove_one' | translate | async">
+      <app-icon [name]="items() === 1 ? 'trash' : 'minus'" [size]="16" />
+    </button>
+    <span class="qty-value" aria-live="polite">{{ items() }}</span>
+    <button type="button" class="qty-button cart_show-wrap" (click)="add.emit()" [attr.aria-label]="'Add_one' | translate | async">
+      <app-icon name="plus" [size]="16" />
+    </button>
   </div>
+} @else {
+  <button type="button" class="add-button cart_show-wrap" [class.add-button-large]="size() === 'large'" (click)="add.emit()">
+    <app-icon name="cart" [size]="size() === 'large' ? 20 : 18" />
+    <span>{{ 'Add_to_cart' | translate | async }}</span>
+  </button>
 }

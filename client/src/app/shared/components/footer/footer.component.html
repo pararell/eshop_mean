@@ -1,33 +1,58 @@
+<span class="elevation footer-ridge" aria-hidden="true"></span>
 <footer class="footer">
-  <div class="container">
-    <div>
-      <div class>
-        <h3 class="footer-title">{{ 'ESHOP_TITLE' | translate | async }}</h3>
-        <h4 class="footer-subtitle">{{ 'ESHOP_DESCRIPTION' | translate | async }}</h4>
-      </div>
-      <div class>
-        <h5 class="footer-subtitle">{{ 'LINKS' | translate | async }}</h5>
-        <ul class="footer-links">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a class="footer-logo" routerLink="/">
+        <span class="blaze footer-mark" aria-hidden="true"></span>
+        {{ 'ESHOP_TITLE' | translate | async }}
+      </a>
+      <p class="footer-description">{{ 'ESHOP_DESCRIPTION' | translate | async }}</p>
+      <ul class="footer-perks">
+        @if (cart(); as cart) {
           <li>
-            <a class [routerLink]="['/' + lang + '/eshop/contact']">
-              {{ 'CONTACT' | translate | async }}
-            </a>
+            <span class="blaze trail-green" aria-hidden="true"></span> {{ 'Free_shipping_limit' | translate | async }} {{ cart.shippingLimit }}
+            {{ currency() }}
           </li>
-          @for (page of pages$(); track page.titleUrl) {
-            <li>
-              <a class [routerLink]="['/' + lang + '/eshop/' + page.titleUrl]">
-                {{ page[lang]?.title || page.titleUrl }}
-              </a>
-            </li>
-          }
-        </ul>
-      </div>
+        }
+        <li><span class="blaze trail-blue" aria-hidden="true"></span> {{ 'Secure_payment' | translate | async }}</li>
+      </ul>
     </div>
+
+    <nav class="footer-column" aria-labelledby="footer-shop">
+      <h2 id="footer-shop" class="footer-heading">{{ 'Products' | translate | async }}</h2>
+      <ul>
+        <li>
+          <a [routerLink]="['/' + lang + '/product/all']">{{ 'All' | translate | async }} {{ 'products' | translate | async }}</a>
+        </li>
+        <li>
+          <a [routerLink]="['/' + lang + '/cart']">{{ 'Cart_title' | translate | async }}</a>
+        </li>
+        <li>
+          <a [routerLink]="['/' + lang + '/orders']">{{ 'Orders' | translate | async }}</a>
+        </li>
+      </ul>
+    </nav>
+
+    <nav class="footer-column" aria-labelledby="footer-info">
+      <h2 id="footer-info" class="footer-heading">{{ 'LINKS' | translate | async }}</h2>
+      <ul>
+        <li>
+          <a [routerLink]="['/' + lang + '/eshop/contact']">{{ 'CONTACT' | translate | async }}</a>
+        </li>
+        @for (page of pages$(); track page.titleUrl) {
+          <li>
+            <a [routerLink]="['/' + lang + '/eshop/' + page.titleUrl]">{{ page[lang]?.title || page.titleUrl }}</a>
+          </li>
+        }
+      </ul>
+    </nav>
   </div>
-  <div class="footer-copyright">
-    <div class="container">
-      © {{ currentYear }}
-      <a class href="https://github.com/pararell/eshop_mean"> More on github </a>
+
+  <div class="trail-stripe" aria-hidden="true"></div>
+  <div class="footer-bottom">
+    <div class="footer-inner footer-inner-bottom">
+      <span>© {{ currentYear }} {{ 'ESHOP_TITLE' | translate | async }}</span>
+      <a href="https://github.com/pararell/eshop_mean" rel="noopener">Source on GitHub</a>
     </div>
   </div>
 </footer>

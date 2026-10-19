@@ -1,75 +1,141 @@
-:host {
-  display: flex;
-  min-height: 100vh;
-  flex-direction: column;
-  position: relative;
+.products-sidebar-container {
+  background: transparent;
+  overflow: visible;
 
-  .main {
-    min-height: 100vh;
+  // The drawer container must not create its own scroll area: the page scrolls in .main-scroll-wrap
+  ::ng-deep > .mat-drawer-content {
+    overflow: visible;
+  }
+}
+
+.products-header {
+  border-bottom: 2px solid var(--color-text);
+  background: var(--color-bg);
+}
+
+.products-header-inner {
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding: var(--space-8) var(--gutter) var(--space-10);
+}
+
+.products-header nav {
+  margin-bottom: var(--space-5);
+}
+
+.products-title {
+  margin: 0;
+  font-size: var(--text-4xl);
+  font-weight: var(--weight-black);
+  line-height: 0.92;
+}
+
+.products-description {
+  max-width: 65ch;
+  margin: var(--space-3) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-lg);
+}
+
+.products-content {
+  padding-top: var(--space-8);
+  padding-bottom: var(--space-16);
+}
+
+.products-sidebar-desktop {
+  position: sticky;
+  top: calc(var(--header-height) + var(--space-6));
+  align-self: start;
+}
+
+.products-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-width: 0;
+}
+
+.products-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 36px;
+}
+
+.products-filter-button {
+  display: none;
+}
+
+.products-count {
+  margin-left: auto;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.products-progress {
+  margin-top: calc(-1 * var(--space-4));
+}
+
+.products-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-16) var(--space-4);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-muted);
+  text-align: center;
+
+  p {
+    margin: 0;
+  }
+}
+
+.products-drawer {
+  width: min(88vw, 340px);
+  padding: var(--space-4) var(--space-5) var(--space-8);
+  background: var(--color-surface);
+}
+
+.products-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+
+  h2 {
+    margin: 0;
+    font-size: var(--text-xl);
+  }
+}
+
+.products-drawer-close {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-surface-2);
+  }
+}
+
+@media (width <= 900px) {
+  .products-sidebar-desktop {
+    display: none;
   }
 
-  .products {
-    &-primary-header {
-      color: var(--primary-color);
-      background: #fff;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-      position: relative;
-    }
-
-    &-primary-container {
-      padding: 10px;
-    }
-
-    &-title {
-      font-weight: 500;
-      margin: 0;
-      padding: 0;
-      color: var(--primary-color);
-      text-align: center;
-      font-size: 1.2em;
-      line-height: 1.2em;
-      text-transform: capitalize;
-    }
-
-    &-description {
-      text-align: center;
-      margin: 0;
-      font-size: 14px;
-      color: var(--primary-color);
-      line-height: 16px;
-    }
-
-    &-spinner {
-      margin: auto;
-    }
-
-    &-sidebar-toggle {
-      display: none;
-
-      @media screen and (max-width: 600px) {
-        display: block;
-      }
-    }
-
-    &-sidebar-desktop {
-      @media screen and (max-width: 600px) {
-        display: none;
-      }
-    }
-
-    &-mobile-filter {
-      display: none;
-
-      @media screen and (max-width: 600px) {
-        color: var(--primary-color);
-        position: absolute;
-        display: flex;
-        cursor: pointer;
-      }
-    }
-
-    &-sidebar {
-      padding: 0 10px;
-    }
+  .products-filter-button {
+    display: inline-flex;
   }
 }

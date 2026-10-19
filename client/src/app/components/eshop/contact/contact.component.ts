@@ -8,8 +8,6 @@ import { filter, take } from 'rxjs/operators';
 import { ReCaptchaV3Service } from '../../../services/recaptcha.service';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '../../../pipes/translate.pipe';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { SignalStore } from '../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 import { MatProgressBar } from '@angular/material/progress-bar';
@@ -18,7 +16,7 @@ import { MatProgressBar } from '@angular/material/progress-bar';
   selector: 'app-contact',
   templateUrl: './contact.component.html',
   styleUrls: ['./contact.component.scss'],
-  imports: [CommonModule, TranslatePipe, MatButtonModule, MatIconModule, MatProgressBar, MatInputModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, TranslatePipe, MatProgressBar, MatInputModule, FormsModule, ReactiveFormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactComponent {
@@ -44,6 +42,7 @@ export class ContactComponent {
   }
 
   submit(): void {
+    if (this.contactForm.invalid) return;
     const formValues = this.contactForm.value;
     this.contactForm.reset();
     this.recaptchaV3Service.execute('contact').subscribe((token: string) => {

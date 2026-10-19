@@ -1,4 +1,4 @@
-import { Component, ElementRef, Renderer2, PLATFORM_ID, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ElementRef, Renderer2, PLATFORM_ID, ChangeDetectionStrategy, afterNextRender, inject } from '@angular/core';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, take, delay, map, skip } from 'rxjs/operators';
@@ -34,6 +34,8 @@ export class AppComponent {
   position = 0;
 
   constructor() {
+    // Hydrated and interactive: lets e2e tests type only once forms are live (typing earlier is lost)
+    afterNextRender(() => this.elRef.nativeElement.ownerDocument.documentElement.setAttribute('data-app-ready', ''));
     const translate = this.translate;
 
     this.translate

@@ -40,7 +40,17 @@
                 "output": "."
               }
             ],
-            "styles": ["client/src/assets/fonts/material-icons/material-icons.css", "client/src/styles/index.scss"],
+            "styles": [
+              "node_modules/@fontsource/barlow/400.css",
+              "node_modules/@fontsource/barlow/500.css",
+              "node_modules/@fontsource/barlow/600.css",
+              "node_modules/@fontsource/barlow-condensed/600.css",
+              "node_modules/@fontsource/barlow-condensed/700.css",
+              "node_modules/@fontsource/barlow-condensed/800.css",
+              "node_modules/@fontsource/ibm-plex-mono/500.css",
+              "client/src/assets/fonts/material-icons/material-icons.css",
+              "client/src/styles/index.scss"
+            ],
             "externalDependencies": [
               "@nestjs/microservices",
               "@nestjs/microservices/microservices-module",

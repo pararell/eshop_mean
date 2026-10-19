@@ -2,23 +2,20 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { JsonLDService } from './../../../services/jsonLD.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { filter, map, take, distinctUntilChanged, skip, withLatestFrom } from 'rxjs/operators';
-import { Component, OnDestroy, Signal, ChangeDetectionStrategy, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnDestroy, Signal, ChangeDetectionStrategy, computed, inject } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Observable, combineLatest, Subscription } from 'rxjs';
 import { Location, AsyncPipe } from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
-import { MatDialog } from '@angular/material/dialog';
 
 import { Cart, Product, Category } from '../../../shared/models';
-import { ImagesDialogComponent } from '../../../shared/components/images-dialog/images-dialog.component';
+import { ProductGalleryComponent } from '../../../shared/components/product-gallery/product-gallery.component';
+import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { TranslateService } from '../../../services/translate.service';
 import { SignalStore } from '../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
-import { MatButton } from '@angular/material/button';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { MatCard, MatCardContent } from '@angular/material/card';
 import { ProductContentComponent } from '../../../shared/components/product-content/product-content.component';
-import { MatTabGroup, MatTab } from '@angular/material/tabs';
 import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 @Component({
@@ -26,7 +23,7 @@ import { TranslatePipe } from '../../../pipes/translate.pipe';
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [MatButton, MatProgressBar, MatCard, ProductContentComponent, MatTabGroup, MatTab, MatCardContent, AsyncPipe, TranslatePipe],
+  imports: [MatProgressBar, ProductContentComponent, ProductGalleryComponent, IconComponent, RouterLink, AsyncPipe, TranslatePipe],
 })
 export class ProductComponent implements OnDestroy {
   private route = inject(ActivatedRoute);
@@ -35,7 +32,6 @@ export class ProductComponent implements OnDestroy {
   private location = inject(Location);
   private meta = inject(Meta);
   private title = inject(Title);
-  dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
   private translate = inject(TranslateService);
@@ -49,6 +45,13 @@ export class ProductComponent implements OnDestroy {
   categoriesSub!: Subscription;
   product$: Signal<Product | null>;
   cartIds$: Observable<{ [productId: string]: number }>;
+  /** Main image first, then the gallery images, without duplicates */
+  readonly galleryImages = computed(() => {
+    const product = this.selectors.product();
+    if (!product) return [];
+    return [...new Set([product.mainImage?.url, ...(product.images ?? [])].filter((url): url is string => !!url))];
+  });
+  readonly shippingLimit = computed(() => this.selectors.cart()?.shippingLimit);
 
   constructor() {
     this.lang$ = this.translate.getLang$();
@@ -101,18 +104,6 @@ export class ProductComponent implements OnDestroy {
 
   goBack(): void {
     this.location.back();
-  }
-
-  openDialog(index: number, images: string[]): void {
-    const dialogRef = this.dialog.open(ImagesDialogComponent, {
-      width: '100vw',
-      maxHeight: '100vh',
-      data: { index, images },
-    });
-
-    dialogRef.afterClosed().subscribe((_result) => {
-      console.log('The dialog was closed');
-    });
   }
 
   ngOnDestroy(): void {

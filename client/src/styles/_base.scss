@@ -1,0 +1,959 @@
+// Base: reset, typography, links, focus, layout primitives, trail-marking motifs and a few utilities.
+@use 'patterns';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color var(--duration-base) var(--ease-out);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
+  line-height: 1.05;
+  letter-spacing: 0.005em;
+  color: var(--color-text);
+}
+
+// Signpost lettering: page and section titles are condensed capitals
+h1,
+h2 {
+  text-transform: uppercase;
+}
+
+h1 {
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-black);
+}
+
+h2 {
+  font-size: var(--text-2xl);
+}
+
+h3 {
+  font-size: var(--text-xl);
+}
+
+h4 {
+  font-size: var(--text-lg);
+}
+
+h5,
+h6 {
+  font-size: var(--text-md);
+}
+
+p {
+  margin: 0 0 var(--space-3);
+}
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  text-underline-offset: 0.18em;
+  transition: color var(--duration-fast) var(--ease-out);
+
+  &:hover {
+    color: var(--color-primary-hover);
+    text-decoration: underline;
+  }
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+::selection {
+  background: var(--color-primary-soft);
+  color: var(--color-text);
+}
+
+// One clear focus ring for keyboard users everywhere
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+// Layout ------------------------------------------------------------------------------------------
+
+// The app scrolls inside this element (app.component); the header sticks to its top
+.main-scroll-wrap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden auto;
+  scroll-behavior: smooth;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  position: relative;
+  flex: 1 0 auto;
+  width: 100%;
+  min-height: 60vh;
+}
+
+.container,
+.container-mid {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding: var(--space-6) var(--gutter);
+}
+
+.container-mid,
+.container-narrow {
+  max-width: calc(var(--container-narrow) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.sidebar-layout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: var(--space-8);
+
+  @media (width <= 900px) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+  }
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+// Accessibility helpers
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: calc(var(--z-header) + 1);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  transform: translateY(-200%);
+
+  &:focus {
+    transform: none;
+  }
+}
+
+// Utilities still used by older templates --------------------------------------------------------
+
+.clickable {
+  cursor: pointer !important;
+}
+
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.items-start {
+  align-items: flex-start;
+}
+
+.margin-left-small {
+  margin-left: var(--space-1);
+}
+
+.margin-top-basic {
+  margin-top: var(--space-4);
+}
+
+.material-icons {
+  &.md-16 {
+    font-size: 16px;
+  }
+
+  &.md-18 {
+    font-size: 18px;
+  }
+
+  &.md-24 {
+    font-size: 24px;
+  }
+
+  &.md-36 {
+    font-size: 36px;
+  }
+
+  &.md-48 {
+    font-size: 48px;
+  }
+}
+
+.mdc-evolution-chip__action--presentational {
+  cursor: pointer !important;
+}
+
+// Shared storefront building blocks -----------------------------------------------------------------
+
+.section {
+  padding-block: var(--space-12);
+
+  @media (width <= 680px) {
+    padding-block: var(--space-8);
+  }
+}
+
+.section-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-3);
+  border-bottom: 2px solid var(--color-text);
+
+  h2 {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin: 0;
+    font-size: var(--text-3xl);
+  }
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-4);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+
+  &:hover {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+}
+
+// Native buttons and links styled as buttons (Material buttons keep their own styles)
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 46px;
+  padding: 0 var(--space-6);
+  border: 2px solid transparent;
+  border-radius: var(--radius-control);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+
+  &:hover {
+    background: var(--color-primary-hover);
+    color: var(--color-on-primary);
+  }
+}
+
+.btn-outline {
+  border-color: var(--color-text);
+  background: transparent;
+  color: var(--color-text);
+
+  &:hover {
+    background: var(--color-text);
+    color: var(--color-bg);
+  }
+}
+
+.btn-sm {
+  min-height: 36px;
+  padding: 0 var(--space-4);
+  font-size: var(--text-md);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  line-height: 1.5;
+}
+
+.badge-sale {
+  background: var(--trail-yellow);
+  color: #161616;
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
+
+// Stock values are free text ('onStock' | 'onWaitings' | 'unavailable' | …)
+.stock {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+
+  // A tiny trail blaze: white–color–white
+  &::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border: 1px solid var(--color-border-strong);
+    background: linear-gradient(var(--color-blaze) 33%, var(--stock-color, var(--color-border-strong)) 33% 67%, var(--color-blaze) 67%);
+  }
+
+  &.stock-onStock {
+    --stock-color: var(--trail-green);
+  }
+
+  &.stock-onWaitings {
+    --stock-color: var(--trail-yellow);
+  }
+
+  &.stock-unavailable {
+    --stock-color: var(--trail-red);
+  }
+}
+
+.price {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.price-current {
+  font-family: var(--font-display);
+  font-weight: var(--weight-black);
+  font-variant-numeric: tabular-nums;
+}
+
+.price-before {
+  color: var(--color-text-muted);
+  font-size: 0.85em;
+}
+
+// Trail marking motifs -------------------------------------------------------------------------------
+
+// A trail blaze: white–color–white bands, as painted on trees and rocks. Color via --blaze (inherited
+// from a .trail-* ancestor or set on the blaze itself); the default is the primary color.
+.blaze {
+  display: inline-block;
+  flex: none;
+  width: 0.9em;
+  height: 0.9em;
+  border: 1px solid var(--color-border-strong);
+  background: linear-gradient(var(--color-blaze) 33%, var(--blaze, var(--color-primary)) 33% 67%, var(--color-blaze) 67%);
+  vertical-align: -0.05em;
+}
+
+.trail-red {
+  --blaze: var(--trail-red);
+  --trail: var(--trail-red);
+}
+
+.trail-blue {
+  --blaze: var(--trail-blue);
+  --trail: var(--trail-blue);
+}
+
+.trail-green {
+  --blaze: var(--trail-green);
+  --trail: var(--trail-green);
+}
+
+.trail-yellow {
+  --blaze: var(--trail-yellow);
+  --trail: var(--trail-yellow);
+}
+
+// The four trail colors side by side (header edge, footer)
+.trail-stripe {
+  height: 4px;
+  background: linear-gradient(90deg, var(--trail-red) 0 25%, var(--trail-blue) 25% 50%, var(--trail-green) 50% 75%, var(--trail-yellow) 75% 100%);
+}
+
+// Topographic contour lines behind a block (position: relative on the block)
+.contour-bg {
+  position: relative;
+  isolation: isolate;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--color-contour);
+    mask: patterns.$contour-map 0 0 / 1000px 700px repeat;
+    pointer-events: none;
+  }
+}
+
+// Section divider drawn as an elevation profile
+.elevation {
+  display: block;
+  height: 48px;
+  background: var(--color-surface-2);
+  mask: patterns.$elevation-profile center bottom / 100% 100% no-repeat;
+}
+
+// Breadcrumbs as a trail: waypoints joined by a dashed path
+.waypoints {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.04em;
+  list-style: none;
+  text-transform: uppercase;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+
+  li + li::before {
+    content: '';
+    width: 22px;
+    border-top: 2px dotted var(--color-border-strong);
+  }
+
+  a {
+    color: var(--color-text-muted);
+
+    &:hover {
+      color: var(--color-text);
+    }
+  }
+
+  [aria-current] {
+    overflow: hidden;
+    color: var(--color-text);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+// A signpost board: outlined plate with a pointed end (the outline is the outer clip, the fill the inner)
+.signpost {
+  --signpost-tip: 18px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) calc(var(--signpost-tip) + var(--space-4)) var(--space-3) var(--space-4);
+  background: var(--color-text);
+  color: var(--color-text);
+  clip-path: polygon(0 0, calc(100% - var(--signpost-tip)) 0, 100% 50%, calc(100% - var(--signpost-tip)) 100%, 0 100%);
+  isolation: isolate;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    z-index: -1;
+    background: var(--color-surface);
+    clip-path: polygon(0 0, calc(100% - var(--signpost-tip) + 1px) 0, 100% 50%, calc(100% - var(--signpost-tip) + 1px) 100%, 0 100%);
+  }
+}
+
+// Page header used by the simple pages (title on contour lines, waypoints above) ---------------------
+.page-header {
+  border-bottom: 2px solid var(--color-text);
+  background: var(--color-bg);
+
+  .page-header-inner {
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding: var(--space-8) var(--gutter) var(--space-10);
+  }
+
+  nav {
+    margin-bottom: var(--space-5);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: var(--text-4xl);
+    font-weight: var(--weight-black);
+    line-height: 0.92;
+  }
+
+  p {
+    max-width: 60ch;
+    margin: var(--space-4) 0 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+}
+
+// Rich text from the admin editor (product descriptions, CMS pages)
+.prose {
+  color: var(--color-text);
+  font-size: var(--text-md);
+  line-height: 1.7;
+
+  h2,
+  h3 {
+    margin-top: var(--space-8);
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  ul,
+  ol {
+    padding-left: 1.25em;
+  }
+
+  li + li {
+    margin-top: var(--space-1);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  td,
+  th {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+  }
+
+  blockquote {
+    margin: var(--space-6) 0;
+    padding-left: var(--space-4);
+    border-left: 4px solid var(--color-primary);
+    color: var(--color-text-muted);
+  }
+}
+
+// A bordered panel (forms, order sheets)
+.panel {
+  padding: var(--space-6);
+  border: 2px solid var(--color-text);
+  background: var(--color-surface);
+
+  @media (width <= 520px) {
+    padding: var(--space-4);
+  }
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-xl);
+  text-transform: uppercase;
+}
+
+// "Label: value" rows (order data); the colon keeps the plain text readable
+.sheet-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-1) var(--space-4);
+    padding-block: var(--space-2);
+    border-bottom: 1px dotted var(--color-border-strong);
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  .sheet-label {
+    color: var(--color-text-muted);
+  }
+
+  .sheet-value {
+    font-weight: var(--weight-medium);
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  letter-spacing: 0.02em;
+}
+
+// Sign in / sign up: a contour-map panel next to the form
+.auth-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-height: calc(100vh - var(--header-height) - 200px);
+  border-bottom: 2px solid var(--color-text);
+
+  @media (width <= 860px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.auth-aside {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-4);
+  padding: var(--space-12) var(--gutter);
+  border-right: 2px solid var(--color-text);
+
+  h1 {
+    margin: 0;
+    font-size: var(--text-4xl);
+    font-weight: var(--weight-black);
+    line-height: 0.92;
+  }
+
+  p {
+    max-width: 40ch;
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+
+  @media (width <= 860px) {
+    padding-block: var(--space-10) var(--space-8);
+    border-right: 0;
+    border-bottom: 2px solid var(--color-text);
+  }
+}
+
+.auth-blaze {
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--color-text);
+}
+
+.auth-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-10) var(--gutter);
+  background: var(--color-surface);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 400px);
+
+  .btn {
+    width: 100%;
+  }
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-5) 0;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-top: 2px dotted var(--color-border-strong);
+  }
+}
+
+.auth-switch {
+  margin: var(--space-6) 0 0;
+  color: var(--color-text-muted);
+  text-align: center;
+
+  a {
+    color: var(--color-text);
+    font-weight: var(--weight-semibold);
+    text-decoration: underline;
+  }
+}
+
+.form-hint {
+  margin: calc(-1 * var(--space-2)) 0 var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 2px solid var(--color-text);
+  background: var(--color-surface);
+
+  .blaze {
+    margin-top: 0.2em;
+  }
+}
+
+.notice-success {
+  box-shadow: inset 6px 0 0 var(--trail-green);
+}
+
+.notice-error {
+  box-shadow: inset 6px 0 0 var(--color-danger);
+  color: var(--color-danger);
+}
+
+// Order sheet (shared/components/order-info) and order list -------------------------------------------
+.order-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.order-sheet-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 2px solid var(--color-text);
+
+  .eyebrow {
+    margin-bottom: var(--space-1);
+  }
+}
+
+.order-sheet-id {
+  margin: 0;
+  font-size: var(--text-xl);
+  overflow-wrap: anywhere;
+}
+
+.order-sheet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: var(--space-5);
+}
+
+// Order states as trail colors: new = blue, paid/completed = green, waiting = yellow, problems = red
+.order-status {
+  --trail: var(--color-border-strong);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 2px var(--space-3);
+  border: 2px solid var(--color-text);
+  background: var(--color-surface);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+
+  &::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: linear-gradient(var(--color-blaze) 33%, var(--trail) 33% 67%, var(--color-blaze) 67%);
+    outline: 1px solid var(--color-border-strong);
+  }
+
+  &[data-status='NEW'] {
+    --trail: var(--trail-blue);
+  }
+
+  &[data-status='PAID'],
+  &[data-status='COMPLETED'],
+  &[data-status='SHIPPING'] {
+    --trail: var(--trail-green);
+  }
+
+  &[data-status='PENDING_PAYMENT'] {
+    --trail: var(--trail-yellow);
+  }
+
+  &[data-status='PAYMENT_FAILED'],
+  &[data-status='CANCELED'],
+  &[data-status='REFUNDED'] {
+    --trail: var(--trail-red);
+  }
+}
+
+.order-items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.order-item {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding-block: var(--space-3);
+  border-bottom: 1px dotted var(--color-border-strong);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.order-item-image {
+  display: block;
+  aspect-ratio: 1;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface-2);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.order-item-title {
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+
+  &:hover {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+}
+
+.order-item-qty {
+  color: var(--color-text-muted);
+}
+
+.order-item-price {
+  font-weight: var(--weight-semibold);
+  white-space: nowrap;
+}

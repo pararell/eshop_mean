@@ -5,7 +5,9 @@
     <title>Eshop Mean</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000" />
+    <meta name="theme-color" content="#f4f1ea" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#10130f" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
     <meta name="robots" content="index, follow" />
     <meta name="description" content="Angular - Node.js - Eshop application - MEAN Eshop with dashboard" />
     <meta property="og:type" content="website" />
@@ -13,10 +15,10 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <style>
       .spinner {
-        height: 100px;
-        width: 100px;
+        height: 48px;
+        width: 48px;
         animation: rotate 0.9s infinite linear;
-        border: 15px solid #000;
+        border: 6px solid #b3121f;
         border-right-color: transparent;
         border-radius: 50%;
         margin: 100px auto;
@@ -31,9 +33,15 @@
         }
       }
     </style>
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet" />
+    <!-- Light/dark choice (ThemeService) applied before first paint; no choice = follow the system -->
+    <script>
+      (function () {
+        try {
+          var m = document.cookie.match(/(?:^|; )eshop_theme=(light|dark)/);
+          if (m) document.documentElement.setAttribute('data-theme', m[1]);
+        } catch (e) {}
+      })();
+    </script>
   </head>
 
   <body class="mat-typography">

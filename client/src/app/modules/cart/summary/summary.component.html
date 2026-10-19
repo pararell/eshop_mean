@@ -1,21 +1,32 @@
 <div class="main">
-  <div class="container">
-    <button (click)="goBack()" mat-raised-button color="primary">
-      <i class="material-icons left">arrow_back</i>
-      {{ 'Back' | translate | async }}
-    </button>
+  <header class="page-header contour-bg">
+    <div class="page-header-inner summary-head">
+      <span
+        class="blaze summary-blaze"
+        [class.trail-green]="order$() && !pending()"
+        [class.trail-yellow]="!order$() || pending()"
+        aria-hidden="true"
+      ></span>
+      @if (order$(); as order) {
+        <h1 role="status">
+          @if (pending()) {
+            {{ 'Payment_processing' | translate | async }}
+          } @else {
+            {{ 'SuccessOrder' | translate | async }}
+          }
+        </h1>
+      } @else {
+        <h1 role="status">{{ 'Payment_checking' | translate | async }}</h1>
+      }
+    </div>
+  </header>
 
+  <div class="container summary">
     @if (order$(); as order) {
-      <h2 role="status">
-        @if (pending()) {
-          {{ 'Payment_processing' | translate | async }}
-        } @else {
-          {{ 'SuccessOrder' | translate | async }}
-        }
-      </h2>
       <app-order-info [order]="order" [lang]="(lang$ | async)!" />
-    } @else {
-      <h2 role="status">{{ 'Payment_checking' | translate | async }}</h2>
+      <div class="summary-actions">
+        <a class="btn btn-primary" [routerLink]="['/' + (lang$ | async) + '/product/all']">{{ 'Shop_now' | translate | async }}</a>
+      </div>
     }
   </div>
 </div>

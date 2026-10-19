@@ -1,37 +1,22 @@
-@if (withSlider()) {
-  <app-carousel [intervalForSlider]="15000">
-    <ng-container *ngTemplateOutlet="categoriesTemplate" />
-  </app-carousel>
-}
-@if (!withSlider()) {
-  <div class="categories-list">
-    <ng-container *ngTemplateOutlet="categoriesTemplate" />
-  </div>
-}
-
-<ng-template #categoriesTemplate>
-  @for (category of categories(); track category.titleUrl) {
-    @if (!category.menuHidden) {
-      <div class="category_card">
-        <a
-          class="category_card-image"
-          [ngClass]="category.mainImage?.type ? 'category_card-image-cover' : ''"
-          [routerLink]="['/' + lang() + '/product/category/' + category.titleUrl]"
-          [attr.aria-labelledby]="category.titleUrl"
-          [style.background]="'url(' + category.mainImage?.url + ')'"
-        >
-          <span class="category_card-overlay">
-            <span class="category_card-info">
-              <h2 class="category_card-title">{{ category?.title }}</h2>
-              @if (category?.description) {
-                <p class="category_card-description">
-                  {{ category?.description }}
-                </p>
-              }
-            </span>
+<ul class="category-grid" [class.category-grid-scroll]="withSlider()" role="list">
+  @for (category of visibleCategories(); track category.titleUrl; let i = $index) {
+    <li class="category_card" [class]="trailClass(i)" [class.category_card-contain]="!category.mainImage?.type">
+      <a class="category_card-link" [routerLink]="['/' + lang() + '/product/category/' + category.titleUrl]">
+        <span class="category_card-media">
+          @if (category.mainImage?.url) {
+            <img [ngSrc]="category.mainImage!.url" alt="" fill sizes="(max-width: 680px) 72vw, 300px" />
+          }
+        </span>
+        <span class="signpost category_card-sign">
+          <span class="blaze" aria-hidden="true"></span>
+          <span class="category_card-info">
+            <span class="category_card-title">{{ category.title }}</span>
+            @if (category.description) {
+              <span class="category_card-description">{{ category.description }}</span>
+            }
           </span>
-        </a>
-      </div>
-    }
+        </span>
+      </a>
+    </li>
   }
-</ng-template>
+</ul>

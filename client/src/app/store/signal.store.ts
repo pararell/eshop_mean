@@ -38,6 +38,8 @@ export class SignalStore {
   };
 
   getUser = () => {
+    // Logged out: nothing to ask the server (avoids a 401 on every visit)
+    if (!this.apiService.hasAccessToken()) return;
     this.selectors.userState.update((state) => ({ ...state, loading: true }));
     this.apiService.getUser().subscribe((response) => {
       if (response.error) {

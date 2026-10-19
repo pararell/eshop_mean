@@ -1,159 +1,311 @@
 :host {
+  display: block;
+}
+
+.checkout-page {
+  padding-bottom: var(--space-16);
+}
+
+.checkout-header {
+  margin-bottom: var(--space-8);
+  padding-bottom: var(--space-4);
+  border-bottom: 2px solid var(--color-text);
+
+  nav {
+    margin-bottom: var(--space-4);
+  }
+}
+
+.checkout-title {
+  margin: 0;
+  font-size: var(--text-4xl);
+  font-weight: var(--weight-black);
+  line-height: 0.92;
+}
+
+// Form on the left, summary sticky on the right; on phones the summary comes first
+.checkout-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(320px, 1fr);
+  grid-template-areas: 'main summary';
+  align-items: start;
+  gap: var(--space-10);
+
+  @media (width <= 960px) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'summary'
+      'main';
+    gap: var(--space-8);
+  }
+}
+
+.checkout-main {
+  grid-area: main;
   display: flex;
-  min-height: 100vh;
   flex-direction: column;
+  gap: var(--space-10);
+}
 
-  ::ng-deep .mat-mdc-radio-button {
-    padding-bottom: 24px;
+.checkout-section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-5);
+  font-size: var(--text-2xl);
+}
+
+// Step number on a trail plate
+.checkout-step {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 2px solid var(--color-text);
+  background: var(--color-text);
+  color: var(--color-bg);
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  font-weight: var(--weight-medium);
+}
+
+.checkout-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 0 var(--space-4);
+
+  .field-full {
+    grid-column: 1 / -1;
   }
 
-  .cart {
-    &-with-order {
-      display: flex;
-      flex-wrap: wrap;
-      flex: 1 1 100%;
-
-      @media screen and (max-width: 1200px) {
-        display: block;
-      }
-    }
-
-    &-wrap {
-      box-shadow:
-        0 2px 2px 0 rgba(0, 0, 0, 0.14),
-        0 3px 1px -2px rgba(0, 0, 0, 0.12),
-        0 1px 5px 0 rgba(0, 0, 0, 0.2);
-      background: rgba(255, 255, 255, 1);
-      position: relative;
-      padding: 0 10px;
-      max-width: 600px;
-      margin: 0 10px 10px auto;
-      min-width: 300px;
-
-      @media screen and (max-width: 1200px) {
-        margin: 0 auto;
-      }
-    }
-
-    &-items {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 10px;
-    }
-
-    &-items-last {
-      border-top: 1px solid rgba(0, 0, 0, 0.1);
-      margin-top: 20px;
-    }
-
-    &-empty {
-      width: 100%;
-      margin: 0 auto 0 auto;
-    }
-
-    &-title {
-      padding: 0 10px;
-    }
-
-    &-image-wrap {
-      display: flex;
-      align-items: center;
-      width: 50%;
-    }
-
-    &-image {
-      height: 70px;
-    }
-
-    &-remove {
-      color: red;
-      cursor: pointer;
-    }
-
-    &-item-part {
-      min-width: 10%;
-    }
-
-    &-item-last-down {
-      width: 24px;
-    }
-
-    &-navigation-button {
-      float: right;
-      margin: 5px 2px;
-    }
-
-    &-order-title {
-      margin: 0 0 10px 20px;
-    }
+  @media (width <= 520px) {
+    grid-template-columns: minmax(0, 1fr);
   }
+}
 
-  .cart-address-field {
+.payment-choices {
+  display: grid;
+  gap: var(--space-3);
+}
+
+// The whole card selects the option (audit UI-09): the label fills the card, so the padding is clickable too
+.payment-choice {
+  display: block;
+  padding: 0 0 0 var(--space-2);
+  border: 2px solid var(--color-border-strong);
+  background: var(--color-surface);
+  transition: border-color var(--duration-fast) var(--ease-out);
+
+  &:hover {
+    border-color: var(--color-text);
+  }
+}
+
+.payment-choice--active {
+  border-color: var(--color-text);
+  box-shadow: inset 6px 0 0 var(--color-primary);
+}
+
+.payment-choice ::ng-deep .mdc-form-field {
+  display: flex;
+  width: 100%;
+
+  > label {
+    flex: 1;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    min-height: 52px;
+    padding: var(--space-3) var(--space-4) var(--space-3) 0;
+    cursor: pointer;
+  }
+}
+
+.payment-choice-label {
+  font-size: var(--text-md);
+}
+
+.checkout-hint {
+  margin: 0 0 var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.submit-order-button {
+  width: 100%;
+  min-height: 56px;
+  font-size: var(--text-xl);
+
+  &:disabled {
+    background: var(--color-surface-3);
+    color: var(--color-text-muted);
+    cursor: not-allowed;
+  }
+}
+
+// Summary: a route card
+.checkout-summary {
+  grid-area: summary;
+  position: sticky;
+  top: calc(var(--header-height) + var(--space-6));
+  padding: var(--space-5);
+  border: 2px solid var(--color-text);
+  background: var(--color-surface);
+
+  @media (width <= 960px) {
+    position: static;
+  }
+}
+
+.checkout-summary-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-xl);
+}
+
+.cart-items {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cart-item {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--space-3);
+  padding-block: var(--space-4);
+  border-top: 2px dotted var(--color-border-strong);
+}
+
+.cart-item-image {
+  display: block;
+  aspect-ratio: 1;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface-2);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.cart-item-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.cart-item-title {
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  line-height: 1.1;
+  text-transform: uppercase;
+
+  &:hover {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+}
+
+.cart-item-unit {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.cart-item-total {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  white-space: nowrap;
+}
+
+.cart-totals {
+  margin: 0;
+  padding-top: var(--space-3);
+  border-top: 2px solid var(--color-text);
+}
+
+.cart-totals-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: var(--space-1);
+  color: var(--color-text-muted);
+
+  dd {
+    margin: 0;
+    color: var(--color-text);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.cart-total {
+  margin-top: var(--space-2);
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-black);
+  text-transform: uppercase;
+}
+
+.free-shipping {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 2px dotted var(--color-border-strong);
+  font-size: var(--text-sm);
+
+  p {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-2);
+    margin: 0 0 var(--space-2);
   }
+}
 
-  .pay-success {
-    color: #4bb543;
-    font-size: 25px;
-    line-height: 30px;
-    padding: 20px;
+.free-shipping-track {
+  display: block;
+  height: 6px;
+  background: var(--color-surface-3);
+}
+
+.free-shipping-progress {
+  display: block;
+  height: 100%;
+  background: var(--trail-green);
+}
+
+.checkout-empty,
+.checkout-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-16) var(--space-4);
+  border: 2px dashed var(--color-border-strong);
+  text-align: center;
+
+  p {
+    margin: 0;
+    font-size: var(--text-lg);
   }
+}
 
-  .order-form-wrap {
-    background: #fff;
-    position: relative;
-    padding: 10px;
-    box-shadow:
-      0 2px 2px 0 rgba(0, 0, 0, 0.14),
-      0 3px 1px -2px rgba(0, 0, 0, 0.12),
-      0 1px 5px 0 rgba(0, 0, 0, 0.2);
-    max-width: 600px;
-    margin: 0 auto 10px 10px;
+.checkout-done {
+  font-size: var(--text-xl);
+}
 
-    @media screen and (max-width: 1200px) {
-      margin: 10px auto;
-    }
-  }
-
-  .delivery-button {
-    margin: 20px 0;
-    display: flex;
-    flex-flow: column;
-  }
-
-  .payment-choice {
-    padding: 0 0 0 10px;
-    margin: 10px 0;
-    border-radius: 2px;
-    box-shadow: 1px 1px 3px 0px rgba(0, 0, 0, 0.1);
-    min-height: 80px;
-    display: flex;
-
-    &--active {
-      background: #1de9b6;
-    }
-  }
-
-  .order-last-summary {
-    display: flex;
-    flex-flow: column;
-    padding: 0 0 20px 20px;
-  }
-
-  .submit-order-button {
-    margin: 25px 0;
-    width: 100%;
-  }
-
-  .order-field {
-    width: 100%;
-    margin: 0 5px;
-  }
-
-  .order-field-small {
-    flex: 1;
-    margin: 0 5px;
-  }
+.checkout-empty-blaze {
+  width: 48px;
+  height: 48px;
 }

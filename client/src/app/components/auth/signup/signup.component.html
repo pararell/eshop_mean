@@ -1,27 +1,34 @@
 <div class="main">
-  <div class="container">
-    <div class="sign-form-wrap">
-      <h1>SignUp</h1>
-      <form class="sign-form" [formGroup]="signUpForm">
-        <mat-form-field class="sign-field">
+  <div class="auth-layout">
+    <section class="auth-aside contour-bg">
+      <span class="blaze auth-blaze trail-blue" aria-hidden="true"></span>
+      <h1>{{ 'SignUp' | translate | async }}</h1>
+      <p>{{ 'Signup_text' | translate | async }}</p>
+    </section>
+
+    <section class="auth-main">
+      <form class="auth-form" [formGroup]="signUpForm" (ngSubmit)="submit()">
+        <mat-form-field appearance="outline">
           <mat-label>{{ 'Name' | translate | async }}</mat-label>
-          <input matInput formControlName="name" type="text" name="name" />
+          <input matInput formControlName="name" type="text" name="name" autocomplete="name" />
         </mat-form-field>
-        <mat-form-field class="sign-field">
+        <mat-form-field appearance="outline">
           <mat-label>Email</mat-label>
-          <input matInput formControlName="email" type="email" name="email" />
+          <input matInput formControlName="email" type="email" name="email" autocomplete="email" />
         </mat-form-field>
-        <mat-form-field class="sign-field">
+        <mat-form-field appearance="outline">
           <mat-label>{{ 'Password' | translate | async }}</mat-label>
-          <input matInput formControlName="password" type="password" name="password" />
+          <input matInput formControlName="password" type="password" name="password" autocomplete="new-password" aria-describedby="password-rule" />
         </mat-form-field>
-        <button type="submit" class="submit-sign-button" mat-raised-button color="primary" [disabled]="signUpForm.invalid" (click)="submit()">
+        <p class="form-hint" id="password-rule">{{ 'Password_rule' | translate | async }}</p>
+        <button type="submit" class="btn btn-primary submit-sign-button" [disabled]="signUpForm.invalid">
           {{ 'SignUp' | translate | async }}
         </button>
+        <p class="auth-switch">
+          {{ 'Have_account' | translate | async }}
+          <a class="signin-link" [routerLink]="['/' + (lang$ | async) + '/authorize/signin']">{{ 'SignIn' | translate | async }}</a>
+        </p>
       </form>
-      <a [routerLink]="['/' + (lang$ | async) + '/authorize/signin']" class="signin-link">
-        {{ 'SignIn' | translate | async }}
-      </a>
-    </div>
+    </section>
   </div>
 </div>

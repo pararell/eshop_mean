@@ -8,7 +8,8 @@ export { E2E } from '../support/fixtures.mjs';
 /**
  * Stand-in for Stripe.js (Payment Element, deferred-intent flow). It renders a fake card field,
  * records what the shop asked for in `window.__stripeCalls`, and "confirms" through the local
- * Stripe stub (support/start-server.mjs), which then sends the signed webhook to the app.
+ * Stripe stub (support/start-server.mjs; reached as https://api.stripe.com/__test/…, which
+ * isolateExternalServices routes to it), which then sends the signed webhook to the app.
  * `window.__e2eCardOutcome = 'declined'` makes the next payment fail like a declined card; `'redirect'`
  * pays and then redirects to return_url (3-D Secure on its own page).
  */
@@ -51,7 +52,8 @@ const fakeStripeJs = `
         const outcome = window.__e2eCardOutcome || 'succeeded';
         window.__e2eCardOutcome = undefined;
         const id = clientSecret.split('_secret_')[0];
-        const response = await fetch(window.__stripeStubUrl + '/__test/confirm/' + id, {
+        // Like real Stripe.js, talk to api.stripe.com (allowed by the CSP); the test routes it to the local stub
+        const response = await fetch('https://api.stripe.com/__test/confirm/' + id, {
           method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ outcome }),
         });
         const intent = await response.json();
@@ -76,16 +78,25 @@ export const e2eState = (): { databaseUrl: string; baseURL: string; aiStubUrl: s
 
 /** Keeps tests hermetic: fake Stripe.js, no TinyMCE cloud, reCAPTCHA or analytics. */
 export async function isolateExternalServices(page: Page) {
-  await page.addInitScript((url) => ((window as unknown as { __stripeStubUrl: string }).__stripeStubUrl = url), e2eState().stripeStubUrl);
+  const { stripeStubUrl } = e2eState();
+  await page.route('https://api.stripe.com/__test/**', async (route) => {
+    const response = await route.fetch({ url: stripeStubUrl + new URL(route.request().url()).pathname });
+    await route.fulfill({ response });
+  });
   await page.route('https://js.stripe.com/**', (route) => route.fulfill({ contentType: 'application/javascript', body: fakeStripeJs }));
   await page.route(/tiny\.cloud|tinymce|recaptcha|googletagmanager|google-analytics/, (route) => route.abort());
 }
 
 export async function signIn(page: Page, email: string, password: string) {
   await page.goto('/en/authorize/signin');
-  await page.locator('[formcontrolname=email]').fill(email);
-  await page.locator('[formcontrolname=password]').fill(password);
-  await page.locator('button[type=submit]').click();
+  const submit = page.locator('button[type=submit]');
+  // Typing can race the hydration of the server-rendered form; retype until the form accepted it
+  await expect(async () => {
+    await page.locator('[formcontrolname=email]').fill(email);
+    await page.locator('[formcontrolname=password]').fill(password);
+    await expect(submit).toBeEnabled({ timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
+  await submit.click();
 }
 
 /** Adds a product to the cart from its detail page, `times` times. */
@@ -98,6 +109,13 @@ export async function addToCart(page: Page, titleUrl: string, times = 1) {
   }
 }
 
+/** Opens a page and waits until Angular has hydrated it (typing before that is lost) */
+export async function gotoReady(page: Page, url: string) {
+  await page.goto(url);
+  await page.locator('html[data-app-ready]').waitFor({ state: 'attached' });
+}
+
+/** Fills the address section of the one-page checkout */
 export async function fillAddressStep(page: Page, email = 'jane@e2e.test') {
   const field = (name: string) => page.locator(`[formcontrolname="${name}"]`);
   await field('name').fill('Jane Doe');
@@ -106,12 +124,10 @@ export async function fillAddressStep(page: Page, email = 'jane@e2e.test') {
   await field('city').fill('Bratislava');
   await field('zip').fill('81101');
   await field('country').fill('SK');
-  await page.getByRole('button', { name: 'Next' }).first().click();
 }
 
 export async function choosePayment(page: Page, method: 'card' | 'delivery') {
   await page.getByRole('radio', { name: method === 'card' ? /with card/ : /on delivery/ }).check();
-  await page.getByRole('button', { name: 'Next' }).filter({ visible: true }).click();
 }
 
 /** Buys `qty` of a product with the (fake) card through the real checkout; returns the order number */

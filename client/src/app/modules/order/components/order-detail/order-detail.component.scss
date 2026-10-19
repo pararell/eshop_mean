@@ -1,89 +1,40 @@
-:host {
+.order-detail {
   display: flex;
-  min-height: 100vh;
   flex-direction: column;
+  gap: var(--space-6);
+  padding-bottom: var(--space-16);
+}
 
-  .container {
-    @media screen and (max-width: 600px) {
-      padding: 0 !important;
-    }
-  }
+.order-admin {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
 
-  .order-content {
-    display: flex;
-    flex-flow: wrap;
-  }
+.order-admin-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
 
-  .order-top-content {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-  }
+.order-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
 
-  h4 {
-    font-size: 20px;
-    line-height: 22px;
-    padding-right: 10px;
-  }
-
-  .product-info {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin: 20px 0;
-
-    .stock {
-      font-size: 16px;
-      color: #1de9b6;
-    }
-
-    .price {
-      padding: 0 100px;
-      font-size: 25px;
-      font-weight: 500;
-    }
-  }
-
-  .order-cart {
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-  }
-
-  .order-cart-title {
-    text-align: center;
-  }
-
-  .order-cart-img {
-    max-width: 100px;
-    margin: 0 5px;
-  }
-
-  .order-form {
-    display: flex;
-  }
-
-  .order-tags {
-    display: flex;
-    justify-content: flex-start;
-    padding-right: 10px;
-    margin: 20px 0;
-    font-size: 16px;
-  }
-
-  .order-edit-toggle {
-    cursor: pointer;
+  mat-form-field {
+    width: 240px;
   }
 }
 
 .order-refund {
-  margin: 12px 0;
-  padding: 8px 12px;
-  border: 1px solid rgb(0 0 0 / 12%);
-  border-radius: 4px;
+  padding-top: var(--space-4);
+  border-top: 2px dotted var(--color-border-strong);
 
-  h5 {
-    margin: 0 0 4px;
+  p {
+    margin: 0 0 var(--space-3);
   }
 }
 
@@ -91,14 +42,32 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-3);
+
+  label {
+    flex-basis: 100%;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
 
   input {
-    width: 120px;
-    padding: 6px 8px;
+    width: 140px;
+    height: 36px;
+    padding: 0 var(--space-3);
+    border: 2px solid var(--color-text);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
   }
 }
 
-.order-refund-error {
-  color: #c62828;
+// Refunds are destructive: danger color
+.order-refund-button {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+
+  &:hover {
+    background: var(--color-danger);
+    color: var(--color-surface);
+  }
 }

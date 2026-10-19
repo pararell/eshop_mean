@@ -1,21 +1,28 @@
-import { Component, ChangeDetectionStrategy, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 import { Category } from '../../models';
-import { CarouselComponent } from '../carousel/carousel.component';
-import { RouterLink } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
+const TRAILS = ['trail-red', 'trail-blue', 'trail-green', 'trail-yellow'];
 
 @Component({
   selector: 'app-categories-list',
   templateUrl: './categories-list.component.html',
   styleUrls: ['./categories-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CarouselComponent, RouterLink, CommonModule],
+  imports: [RouterLink, NgOptimizedImage],
 })
 export class CategoriesListComponent {
   readonly categories = input.required<Category[]>();
   readonly lang = input.required<string>();
+  /** true: one horizontally scrolling row on small screens; false: always a wrapping grid */
   readonly withSlider = input(true);
 
-  constructor() {}
+  readonly visibleCategories = computed(() => this.categories().filter((category) => !category.menuHidden));
+
+  /** Each category follows one trail color, in the order of the marked-trail system */
+  trailClass(index: number): string {
+    return TRAILS[index % TRAILS.length];
+  }
 }

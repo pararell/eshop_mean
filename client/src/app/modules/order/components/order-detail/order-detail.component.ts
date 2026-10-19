@@ -1,8 +1,8 @@
 import { filter, map } from 'rxjs/operators';
 import { FormGroup, Validators, FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Component, Signal, ChangeDetectionStrategy, inject, input, signal, computed } from '@angular/core';
-import { Location, AsyncPipe, DatePipe, KeyValuePipe } from '@angular/common';
+import { Location, AsyncPipe, KeyValuePipe } from '@angular/common';
 import { Observable, combineLatest } from 'rxjs';
 
 import { TranslateService } from '../../../../services/translate.service';
@@ -10,12 +10,11 @@ import { Order, OrderStatus } from '../../../../shared/models';
 import { SignalStore } from '../../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../../store/signal.store.selectors';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { MatButton } from '@angular/material/button';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { MatCard, MatCardContent } from '@angular/material/card';
-import { MatSelect, MatOption } from '@angular/material/select';
-import { MatChipListbox, MatChipOption } from '@angular/material/chips';
+import { MatFormField, MatSelect, MatOption } from '@angular/material/select';
 import { TranslatePipe } from '../../../../pipes/translate.pipe';
+import { OrderInfoComponent } from '../../../../shared/components/order-info/order-info.component';
+import { IconComponent } from '../../../../shared/components/icon/icon.component';
 
 @Component({
   selector: 'app-order-detail',
@@ -23,21 +22,17 @@ import { TranslatePipe } from '../../../../pipes/translate.pipe';
   styleUrls: ['./order-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
-    MatButton,
     MatProgressBar,
-    MatCard,
-    MatCardContent,
     ReactiveFormsModule,
     FormsModule,
+    MatFormField,
     MatSelect,
     MatOption,
-    MatChipListbox,
-    MatChipOption,
-    RouterLink,
     AsyncPipe,
-    DatePipe,
     KeyValuePipe,
     TranslatePipe,
+    OrderInfoComponent,
+    IconComponent,
   ],
 })
 export class OrderDetailComponent {

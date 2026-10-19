@@ -1,30 +1,46 @@
 <div class="main">
-  <div class="container">
+  <header class="page-header contour-bg">
+    <div class="page-header-inner">
+      <h1>{{ 'Orders' | translate | async }}</h1>
+    </div>
+  </header>
+  <div class="container orders">
     @if (!orders) {
       <mat-progress-bar mode="indeterminate" />
-    }
-    @if (orders) {
-      <div class="orders-list-wrapper">
-        @for (order of orders; track order) {
-          <div class="card scale-transition">
-            <div class="card-action">
-              <p>{{ 'Status' | translate | async }}: {{ order?.status }}</p>
-              <div class="action-wrap">
-                <button mat-raised-button color="primary" [routerLink]="[orderUrl() + $safeNavigationMigration(order?.orderId)]">
-                  {{ 'Detail' | translate | async }}
-                </button>
-              </div>
-              <br />
-              <div class="price-card">{{ 'Amount' | translate | async }}: {{ order?.amount }} {{ order?.currency }}</div>
-              <br />
-              <p>{{ 'Type' | translate | async }}: {{ order?.type }}</p>
-              <p>{{ 'Customer' | translate | async }}: {{ order?.customerEmail }}</p>
-              <p>{{ 'Created' | translate | async }}: {{ order.dateAdded | date: 'dd-MM-yy' }}</p>
-              <p>{{ 'Paid' | translate | async }}: {{ order?.outcome?.seller_message }}</p>
+    } @else if (!orders.length) {
+      <p class="orders-empty">{{ 'No_orders' | translate | async }}</p>
+    } @else {
+      <ul class="orders-list" role="list">
+        @for (order of orders; track order.orderId) {
+          <li class="orders-item">
+            <div class="orders-item-main">
+              <span class="orders-item-id mono">{{ order.orderId }}</span>
+              <span class="order-status" [attr.data-status]="order.status">{{ order.status }}</span>
             </div>
-          </div>
+            <ul class="sheet-rows orders-item-data">
+              <li>
+                <span class="sheet-label">{{ 'Amount' | translate | async }}:</span>&ngsp;<span class="sheet-value"
+                  >{{ order.amount }} {{ order.currency }}</span
+                >
+              </li>
+              <li>
+                <span class="sheet-label">{{ 'Created' | translate | async }}:</span>&ngsp;<span class="sheet-value">{{
+                  order.dateAdded | date: 'dd.MM.yyyy'
+                }}</span>
+              </li>
+              <li>
+                <span class="sheet-label">{{ 'Customer' | translate | async }}:</span>&ngsp;<span class="sheet-value">{{ order.customerEmail }}</span>
+              </li>
+              <li>
+                <span class="sheet-label">{{ 'Type' | translate | async }}:</span>&ngsp;<span class="sheet-value">{{ order.type }}</span>
+              </li>
+            </ul>
+            <button type="button" class="btn btn-outline btn-sm" [routerLink]="[orderUrl() + order.orderId]">
+              {{ 'Detail' | translate | async }}
+            </button>
+          </li>
         }
-      </div>
+      </ul>
     }
   </div>
 </div>

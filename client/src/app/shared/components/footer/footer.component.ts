@@ -19,6 +19,8 @@ import { RouterLink } from '@angular/router';
 export class FooterComponent implements OnDestroy {
   private selectors = inject(SignalStoreSelectors);
 
+  readonly cart = this.selectors.cart;
+  readonly currency = this.selectors.currency;
   currentYear = new Date().getFullYear();
   lang!: LanguageCode;
   getPagesSub: Subscription;

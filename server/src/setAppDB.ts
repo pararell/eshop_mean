@@ -8,6 +8,8 @@ import cors from 'cors';
 import compression from 'compression';
 import { json, urlencoded } from 'body-parser';
 import helmet from 'helmet';
+import { randomBytes } from 'node:crypto';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 
 import { PG_POOL } from './db/database.module';
 
@@ -23,18 +25,26 @@ const trustProxy = (value: string | undefined): boolean | number | string | unde
 };
 
 /**
- * Security headers (audit SEC-09). The Content-Security-Policy is report-only for now: violations
- * show in the browser console without breaking Stripe, TinyMCE, reCAPTCHA or analytics; it will be
- * enforced once verified (milestone M2).
+ * Security headers (audit SEC-09). The Content-Security-Policy is enforced. Inline scripts run only
+ * with the per-request nonce (`res.locals.cspNonce`), which SSR writes onto the page's script tags
+ * and Angular's root element (server/src/app-universal.module.ts). Styles stay 'unsafe-inline':
+ * Angular and Material set inline styles at runtime.
+ *
+ * `CSP_REPORT_ONLY=true` turns enforcement off again (violations are only logged in the browser
+ * console): an escape hatch if a third-party script breaks after a deploy.
  */
+const cspNonce = (_req: IncomingMessage, res: ServerResponse) =>
+  `'nonce-${(res as ServerResponse & { locals: { cspNonce: string } }).locals.cspNonce}'`;
+
 const securityHeaders = () =>
   helmet({
     contentSecurityPolicy: {
-      reportOnly: true,
+      reportOnly: process.env.CSP_REPORT_ONLY === 'true',
       directives: {
         defaultSrc: ["'self'"],
         scriptSrc: [
           "'self'",
+          cspNonce,
           'https://js.stripe.com',
           'https://*.js.stripe.com',
           'https://cdn.tiny.cloud',
@@ -42,8 +52,8 @@ const securityHeaders = () =>
           'https://www.gstatic.com',
           'https://www.googletagmanager.com',
         ],
-        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://cdn.tiny.cloud'],
-        fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com', 'https://cdn.tiny.cloud'],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://cdn.tiny.cloud'],
+        fontSrc: ["'self'", 'data:', 'https://cdn.tiny.cloud'],
         imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
         mediaSrc: ["'self'", 'https:'],
         connectSrc: [
@@ -60,6 +70,8 @@ const securityHeaders = () =>
         baseUri: ["'self'"],
         formAction: ["'self'"],
         frameAncestors: ["'self'"],
+        // Off: it would also upgrade http://localhost in development; production is HTTPS behind the proxy
+        upgradeInsecureRequests: null,
       },
     },
     // Images and media come from Cloudinary and other origins
@@ -73,6 +85,11 @@ export const setAppDB = (app: NestExpressApplication): void => {
   const proxy = trustProxy(process.env.TRUST_PROXY);
   if (proxy !== undefined) app.set('trust proxy', proxy);
 
+  // A fresh nonce for every response: inline scripts must carry it (see securityHeaders)
+  app.use((_req: IncomingMessage, res: ServerResponse & { locals: Record<string, unknown> }, next: () => void) => {
+    res.locals.cspNonce = randomBytes(16).toString('base64');
+    next();
+  });
   app.use(securityHeaders());
   app.use(compression());
   app.use(

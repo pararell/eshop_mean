@@ -1,60 +1,100 @@
 @if (!order) {
   <mat-progress-bar mode="indeterminate" />
-}
-@if (order) {
-  <mat-card appearance="outlined" class="card">
-    <mat-card-content class="order-top-content">
+} @else {
+  <article class="order-sheet">
+    <header class="order-sheet-head">
       <div>
-        <h4>{{ order?.orderId }}</h4>
-        <div class="product-info">
-          <div class="stock">Status: {{ order?.status }}</div>
-          <div class="price">{{ 'Amount' | translate | async }}: {{ order?.amount }} {{ order.currency }}</div>
-        </div>
-        <mat-chip-listbox class="order-tags">
-          <mat-chip-option>{{ 'Customer' | translate | async }}: {{ order?.customerEmail }}</mat-chip-option>
-        </mat-chip-listbox>
+        <p class="eyebrow">{{ 'Order' | translate | async }}</p>
+        <h2 class="order-sheet-id mono">{{ order.orderId }}</h2>
       </div>
-      <div>
-        @if (order?.description) {
-          <p>{{ 'Description' | translate | async }}: {{ order?.description }}</p>
-        }
-        <p>{{ 'Customer' | translate | async }}: {{ order?.customerEmail }}</p>
-        <p>{{ 'Created' | translate | async }}: {{ order.dateAdded | date: 'dd-MM-yy' }}</p>
-        <p>{{ 'Paid' | translate | async }}: {{ order?.outcome?.seller_message }}</p>
-        <p>{{ 'Total_price' | translate | async }}: {{ order?.cart?.totalPrice }}</p>
-        <p>{{ 'Total_quantity' | translate | async }}: {{ order?.cart?.totalQty }}</p>
-      </div>
-    </mat-card-content>
-    <mat-card-content class="order-content">
-      @if (order.addresses[0]; as address) {
-        <div>
-          <h4>{{ 'About_customer' | translate | async }}</h4>
-          <p>{{ 'City' | translate | async }}: {{ address.city }}</p>
-          <p>{{ 'Country' | translate | async }}: {{ address.country }}</p>
-          <p>{{ 'Address' | translate | async }}: {{ address.line1 }}</p>
-          <p>{{ 'Zip' | translate | async }}: {{ address.zip }}</p>
-          @if (address.name) {
-            <p>{{ 'Name' | translate | async }}: {{ address.name }}</p>
+      <span class="order-status" [attr.data-status]="order.status">{{ order.status }}</span>
+    </header>
+
+    <div class="order-sheet-grid">
+      <section class="panel">
+        <h3 class="panel-title"><span class="blaze" aria-hidden="true"></span>{{ 'Summary' | translate | async }}</h3>
+        <ul class="sheet-rows">
+          <li>
+            <span class="sheet-label">Status:</span>&ngsp;<span class="sheet-value">{{ order.status }}</span>
+          </li>
+          <li>
+            <span class="sheet-label">{{ 'Amount' | translate | async }}:</span>&ngsp;<span class="sheet-value"
+              >{{ order.amount }} {{ order.currency }}</span
+            >
+          </li>
+          <li>
+            <span class="sheet-label">{{ 'Total_price' | translate | async }}:</span>&ngsp;<span class="sheet-value"
+              >{{ order.cart.totalPrice }} {{ order.currency }}</span
+            >
+          </li>
+          <li>
+            <span class="sheet-label">{{ 'Total_quantity' | translate | async }}:</span>&ngsp;<span class="sheet-value">{{
+              order.cart.totalQty
+            }}</span>
+          </li>
+          <li>
+            <span class="sheet-label">{{ 'Paid' | translate | async }}:</span>&ngsp;<span class="sheet-value">{{
+              order.outcome?.seller_message
+            }}</span>
+          </li>
+          <li>
+            <span class="sheet-label">{{ 'Created' | translate | async }}:</span>&ngsp;<span class="sheet-value">{{
+              order.dateAdded | date: 'dd.MM.yyyy'
+            }}</span>
+          </li>
+          <li>
+            <span class="sheet-label">{{ 'Customer' | translate | async }}:</span>&ngsp;<span class="sheet-value">{{ order.customerEmail }}</span>
+          </li>
+          @if (order.description) {
+            <li>
+              <span class="sheet-label">{{ 'Description' | translate | async }}:</span>&ngsp;<span class="sheet-value">{{ order.description }}</span>
+            </li>
           }
-          <br />
-        </div>
+        </ul>
+      </section>
+
+      @if (order.addresses[0]; as address) {
+        <section class="panel">
+          <h3 class="panel-title"><span class="blaze trail-blue" aria-hidden="true"></span>{{ 'About_customer' | translate | async }}</h3>
+          <ul class="sheet-rows">
+            @if (address.name) {
+              <li>
+                <span class="sheet-label">{{ 'Name' | translate | async }}:</span>&ngsp;<span class="sheet-value">{{ address.name }}</span>
+              </li>
+            }
+            <li>
+              <span class="sheet-label">{{ 'Address' | translate | async }}:</span>&ngsp;<span class="sheet-value">{{ address.line1 }}</span>
+            </li>
+            <li>
+              <span class="sheet-label">{{ 'City' | translate | async }}:</span>&ngsp;<span class="sheet-value">{{ address.city }}</span>
+            </li>
+            <li>
+              <span class="sheet-label">{{ 'Zip' | translate | async }}:</span>&ngsp;<span class="sheet-value">{{ address.zip }}</span>
+            </li>
+            <li>
+              <span class="sheet-label">{{ 'Country' | translate | async }}:</span>&ngsp;<span class="sheet-value">{{ address.country }}</span>
+            </li>
+          </ul>
+        </section>
       }
-      <div>
-        <h4 class="order-cart-title">Cart</h4>
-        @for (cartItem of order?.cart?.items; track cartItem) {
-          <div>
-            <div class="order-cart">
-              <a [routerLink]="['/' + lang() + '/product/' + $safeNavigationMigration(cartItem?.item?.titleUrl)]">
-                <img class="order-cart-img" src="{{ cartItem?.item?.mainImage?.url }}" />
-              </a>
-              <div class="order-cart-text">
-                <span>{{ cartItem.qty }} ks </span> {{ cartItem?.item.title }} <br />
-                <span>{{ cartItem.price }} {{ order.currency }}</span>
-              </div>
-            </div>
-          </div>
+    </div>
+
+    <section class="panel">
+      <h3 class="panel-title"><span class="blaze trail-green" aria-hidden="true"></span>{{ 'Items' | translate | async }}</h3>
+      <ul class="order-items" role="list">
+        @for (cartItem of order.cart.items; track $index) {
+          <li class="order-item">
+            <a class="order-item-image" [routerLink]="['/' + lang() + '/product/' + cartItem.item.titleUrl]" tabindex="-1" aria-hidden="true">
+              @if (cartItem.item.mainImage.url) {
+                <img [src]="cartItem.item.mainImage.url" alt="" loading="lazy" />
+              }
+            </a>
+            <a class="order-item-title" [routerLink]="['/' + lang() + '/product/' + cartItem.item.titleUrl]">{{ cartItem.item.title }}</a>
+            <span class="order-item-qty mono">{{ cartItem.qty }} ×</span>
+            <span class="order-item-price">{{ cartItem.price }} {{ order.currency }}</span>
+          </li>
         }
-      </div>
-    </mat-card-content>
-  </mat-card>
+      </ul>
+    </section>
+  </article>
 }

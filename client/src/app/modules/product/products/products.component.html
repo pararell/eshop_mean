@@ -1,85 +1,106 @@
+<ng-template #filters let-inDrawer="inDrawer">
+  <app-sidebar
+    [class.disabled]="loadingProducts()"
+    [categories]="categories()"
+    [price]="filterPrice()"
+    [maxPrice]="maxPrice()!"
+    [minPrice]="minPrice()!"
+    [activeCategory]="category()"
+    [sortOptions]="sortOptions"
+    [currency]="currency()"
+    [lang]="lang()!"
+    [choosenSort]="sortBy()"
+    (changePrice)="priceRange($event)"
+    (changeSort)="changeSort($event)"
+    (changeCategory)="changeCategory(); sidebarOpened = inDrawer ? false : sidebarOpened"
+  />
+</ng-template>
+
 <mat-drawer-container class="products-sidebar-container" autosize hasBackdrop>
-  <mat-drawer #sideBar [(opened)]="sidebarOpened" class="products-sidebar" mode="over">
-    <app-sidebar
-      [class.disabled]="loadingProducts()"
-      [categories]="categories()"
-      [price]="filterPrice()"
-      [maxPrice]="maxPrice()!"
-      [minPrice]="minPrice()!"
-      [activeCategory]="category()"
-      [sortOptions]="sortOptions"
-      [currency]="currency()"
-      [lang]="lang()!"
-      [choosenSort]="sortBy()"
-      (changePrice)="priceRange($event)"
-      (changeSort)="changeSort($event)"
-      (changeCategory)="changeCategory()"
-    />
+  <mat-drawer #sideBar [(opened)]="sidebarOpened" class="products-drawer" mode="over" position="start">
+    <div class="products-drawer-header">
+      <h2>{{ 'Filter' | translate | async }}</h2>
+      <button type="button" class="products-drawer-close" (click)="sidebarOpened = false" aria-label="Close">
+        <app-icon name="close" />
+      </button>
+    </div>
+    <ng-container *ngTemplateOutlet="filters; context: { inDrawer: true }" />
   </mat-drawer>
   <mat-drawer-content>
     <div class="main">
-      <div class="products-primary-header">
-        <div class="products-primary-container">
-          <div class="products-mobile-filter" (click)="toggleSidebar()">
-            <i class="material-icons md-16">filter_list</i>
-            <span>{{ 'Filter' | translate | async }}</span>
-          </div>
-          @if (!categoryInfo()) {
-            <h1 class="products-title">{{ 'Products' | translate | async }}</h1>
-          }
-          @if (categoryInfo(); as categoryInfo) {
-            <h1 class="products-title">{{ categoryInfo.title }}</h1>
-            @if (categoryInfo.description) {
-              <p class="products-description">{{ categoryInfo.description }}</p>
-            }
+      <header class="products-header contour-bg">
+        <div class="products-header-inner">
+          <nav aria-label="Breadcrumb">
+            <ol class="waypoints">
+              <li>
+                <a routerLink="/">{{ 'ESHOP_TITLE' | translate | async }}</a>
+              </li>
+              @if (categoryInfo()) {
+                <li>
+                  <a [routerLink]="['/' + lang() + '/product/all']">{{ 'Products' | translate | async }}</a>
+                </li>
+              }
+              <li aria-current="page">{{ categoryInfo()?.title || ('Products' | translate | async) }}</li>
+            </ol>
+          </nav>
+          <h1 class="products-title">{{ categoryInfo()?.title || ('Products' | translate | async) }}</h1>
+          @if (categoryInfo()?.description) {
+            <p class="products-description">{{ categoryInfo()!.description }}</p>
           }
         </div>
-      </div>
+      </header>
+
       <div class="container products-content">
-        @if (loadingProducts()) {
-          <mat-progress-bar mode="indeterminate" />
-        }
-        @if (products(); as products) {
-          <div class="sidebar-layout">
-            <div class="sidebar-wrap">
-              <app-sidebar
-                class="products-sidebar-desktop"
-                [class.disabled]="loadingProducts()"
-                [categories]="categories()"
-                [price]="filterPrice()"
-                [maxPrice]="maxPrice()!"
-                [minPrice]="minPrice()!"
-                [activeCategory]="category()"
-                [sortOptions]="sortOptions"
-                [currency]="currency()"
-                [lang]="lang()!"
-                [choosenSort]="sortBy()"
-                (changePrice)="priceRange($event)"
-                (changeSort)="changeSort($event)"
-                (changeCategory)="changeCategory()"
-              />
-            </div>
-            <div class="main-wrap">
-              @if (subCategories(); as subCategories) {
-                @if (subCategories.length && pagination().page === 1) {
-                  <app-categories-list [categories]="subCategories" [lang]="lang()!" [withSlider]="false" />
-                }
+        <div class="sidebar-layout">
+          <aside class="products-sidebar-desktop" aria-label="Filters">
+            <ng-container *ngTemplateOutlet="filters; context: { inDrawer: false }" />
+          </aside>
+
+          <div class="products-main">
+            <div class="products-toolbar">
+              <button type="button" class="btn btn-outline btn-sm products-filter-button" (click)="toggleSidebar()">
+                <app-icon name="filter" [size]="16" />
+                {{ 'Filter' | translate | async }}
+              </button>
+              @if (pagination().total) {
+                <span class="products-count" aria-live="polite">{{ pagination().total }} {{ 'products' | translate | async }}</span>
               }
-              <app-products-list
-                [class.disabled]="loadingProducts()"
-                [products]="products"
-                [cartIds]="cartIds()"
-                [currency]="currency()"
-                [lang]="lang()!"
-                (addProduct)="addToCart($event)"
-                (removeProduct)="removeFromCart($event)"
-              />
+            </div>
+
+            @if (loadingProducts()) {
+              <mat-progress-bar class="products-progress" mode="indeterminate" />
+            }
+
+            @if (subCategories(); as subCategories) {
+              @if (subCategories.length && pagination().page === 1) {
+                <app-categories-list class="products-subcategories" [categories]="subCategories" [lang]="lang()!" />
+              }
+            }
+
+            @if (products(); as products) {
+              @if (products.length) {
+                <app-products-list
+                  [class.disabled]="loadingProducts()"
+                  [products]="products"
+                  [cartIds]="cartIds()"
+                  [currency]="currency()"
+                  [lang]="lang()!"
+                  (addProduct)="addToCart($event)"
+                  (removeProduct)="removeFromCart($event)"
+                />
+              } @else if (!loadingProducts()) {
+                <div class="products-empty">
+                  <app-icon name="search" [size]="28" />
+                  <p>{{ 'No_products' | translate | async }}</p>
+                  <a class="btn btn-outline btn-sm" [routerLink]="['/' + lang() + '/product/all']">{{ 'View_all' | translate | async }}</a>
+                </div>
+              }
               @if (pagination(); as pagination) {
                 <app-pagination [class.disabled]="loadingProducts()" [pagination]="pagination" (changePage)="changePage($event)" />
               }
-            </div>
+            }
           </div>
-        }
+        </div>
       </div>
     </div>
   </mat-drawer-content>

@@ -1,7 +1,6 @@
 import type { ThemeStyles } from '@eshop/shared';
 import { AnalyticsService } from './analytics.service';
-import { Injectable, PLATFORM_ID, inject } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { shareReplay, map, filter, take } from 'rxjs/operators';
 
@@ -25,7 +24,6 @@ export class EnvConfigurationService {
   private apiService = inject(ApiService);
   private themeService = inject(ThemeService);
   private analyticsService = inject(AnalyticsService);
-  private platformId = inject(PLATFORM_ID);
 
   public configuration$!: Observable<Config>;
   public config!: Config;
@@ -46,10 +44,12 @@ export class EnvConfigurationService {
 
           if (style === 'promoSlideBackground') {
             this.themeService.setCSSVariable(`url(${styleValue})`, `${varName}`);
+            this.themeService.heroImage.set(styleValue);
             return;
           }
           if (style === 'promoSlideBackgroundPosition') {
             this.themeService.setCSSVariable(`${styleValue}`, `${varName}`);
+            this.themeService.heroImagePosition.set(styleValue);
             return;
           }
           if (style.includes('Background')) {
@@ -58,22 +58,24 @@ export class EnvConfigurationService {
           }
           if (style === 'logo') {
             this.themeService.setCSSVariable(`url(${styleValue})`, 'logo');
+            this.themeService.logo.set(styleValue);
             return;
           }
           if (style === 'promoSlideVideo') {
             this.themeService.setVideo(styleValue);
           }
 
-          this.themeService.setCSSVariable(styleValue, varName);
-          if (style.includes('Color')) {
-            if (style.includes('primary')) {
-              this.themeService.setThemeColor(styleValue, 'theme-primary');
-            }
-
-            if (style.includes('secondary')) {
-              this.themeService.setThemeColor(styleValue, 'theme-secondary');
-            }
+          if (style === 'primaryColor') {
+            // Contrast-checked light/dark brand variants (design tokens), not the raw color
+            this.themeService.setBrandColor(styleValue);
+            return;
           }
+          if (style === 'secondaryColor' || style === 'backgroundColor') {
+            // Replaced by the design tokens (light/dark surfaces); typed theme tokens come with M4
+            return;
+          }
+
+          this.themeService.setCSSVariable(styleValue, varName);
         }
       });
     }
@@ -81,8 +83,9 @@ export class EnvConfigurationService {
 
   load(): Observable<Config> {
     if (!this.configuration$) {
+      // Also during SSR: the theme (brand color, logo, home banner) is then in the first HTML, so
+      // nothing shifts after hydration; the HTTP transfer cache hands the response to the browser
       this.configuration$ = this.apiService.getConfig().pipe(
-        filter(() => isPlatformBrowser(this.platformId)),
         map((response: { config: string }) => (response.config ? JSON.parse(atob(response.config)) : {})),
         shareReplay(1),
       );

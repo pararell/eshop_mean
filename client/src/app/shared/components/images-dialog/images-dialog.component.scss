@@ -1,13 +1,101 @@
 :host {
   display: block;
+  height: 100%;
+}
 
-  .next-btn {
-    float: right;
-    margin: 10px;
+.lightbox {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: #fff;
+}
+
+.lightbox-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+}
+
+.lightbox-counter {
+  margin-right: auto;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.lightbox-stage {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  min-height: 0;
+  padding: 0 var(--space-16) var(--space-6);
+  overflow: hidden;
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    cursor: zoom-in;
+  }
+}
+
+.is-zoomed .lightbox-stage {
+  display: block;
+  padding: 0;
+  overflow: auto;
+  text-align: center;
+
+  img {
+    max-width: none;
+    max-height: none;
+    cursor: zoom-out;
+  }
+}
+
+.lightbox-button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgb(255 255 255 / 25%);
+  border-radius: var(--radius-control);
+  background: rgb(255 255 255 / 8%);
+  color: #fff;
+  cursor: pointer;
+
+  &:hover,
+  &[aria-pressed='true'] {
+    background: rgb(255 255 255 / 20%);
+  }
+}
+
+.lightbox-arrow {
+  position: absolute;
+  top: 50%;
+  width: 52px;
+  height: 52px;
+  transform: translateY(-50%);
+}
+
+.lightbox-arrow-prev {
+  left: var(--space-4);
+}
+
+.lightbox-arrow-next {
+  right: var(--space-4);
+}
+
+@media (width <= 680px) {
+  .lightbox-stage {
+    padding-inline: var(--space-2);
   }
 
-  .prev-btn {
-    float: left;
-    margin: 10px;
+  .lightbox-arrow {
+    top: auto;
+    bottom: var(--space-4);
+    transform: none;
   }
 }
