@@ -1,5 +1,7 @@
-// Base: reset, typography, links, focus, layout primitives, trail-marking motifs and a few utilities.
 @use 'patterns';
+
+// Base: reset, typography, links, focus, layout primitives, shared building blocks and the few
+// trail-marking accents (blaze, arrow sign). Minimal: white, ink, hairlines, photos first.
 
 *,
 *::before,
@@ -34,21 +36,15 @@ h5,
 h6 {
   margin: 0 0 var(--space-3);
   font-family: var(--font-display);
-  font-weight: var(--weight-bold);
-  line-height: 1.05;
-  letter-spacing: 0.005em;
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
   color: var(--color-text);
-}
-
-// Signpost lettering: page and section titles are condensed capitals
-h1,
-h2 {
-  text-transform: uppercase;
 }
 
 h1 {
   font-size: var(--text-3xl);
-  font-weight: var(--weight-black);
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.01em;
 }
 
 h2 {
@@ -79,32 +75,25 @@ video {
 }
 
 a {
-  color: var(--color-primary);
+  color: inherit;
   text-decoration: none;
-  text-underline-offset: 0.18em;
+  text-underline-offset: 0.2em;
   transition: color var(--duration-fast) var(--ease-out);
 
   &:hover {
-    color: var(--color-primary-hover);
     text-decoration: underline;
   }
 }
 
-code {
-  font-family: var(--font-mono);
-  font-size: 0.9em;
-}
-
 ::selection {
-  background: var(--color-primary-soft);
+  background: var(--color-surface-3);
   color: var(--color-text);
 }
 
 // One clear focus ring for keyboard users everywhere
 :focus-visible {
-  outline: 3px solid var(--color-focus);
+  outline: 2px solid var(--color-focus);
   outline-offset: 2px;
-  border-radius: var(--radius-sm);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -142,7 +131,7 @@ code {
   width: 100%;
   max-width: var(--container-max);
   margin-inline: auto;
-  padding: var(--space-6) var(--gutter);
+  padding: var(--space-8) var(--gutter);
 }
 
 .container-mid,
@@ -154,8 +143,8 @@ code {
 
 .sidebar-layout {
   display: grid;
-  grid-template-columns: 240px minmax(0, 1fr);
-  gap: var(--space-8);
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: var(--space-12);
 
   @media (width <= 900px) {
     grid-template-columns: minmax(0, 1fr);
@@ -185,9 +174,8 @@ code {
   left: var(--space-2);
   z-index: calc(var(--z-header) + 1);
   padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-control);
-  background: var(--color-primary);
-  color: var(--color-on-primary);
+  background: var(--color-text);
+  color: var(--color-bg);
   transform: translateY(-200%);
 
   &:focus {
@@ -254,45 +242,39 @@ code {
   cursor: pointer !important;
 }
 
-// Shared storefront building blocks -----------------------------------------------------------------
+// Shared building blocks -----------------------------------------------------------------------------
 
 .section {
-  padding-block: var(--space-12);
+  padding-block: var(--space-20) var(--space-4);
 
   @media (width <= 680px) {
-    padding-block: var(--space-8);
+    padding-block: var(--space-12) var(--space-2);
   }
 }
 
+// Centered small-caps section title (as on the reference shops)
 .section-header {
   display: flex;
-  flex-wrap: wrap;
-  align-items: end;
-  justify-content: space-between;
-  gap: var(--space-2) var(--space-4);
-  margin-bottom: var(--space-6);
-  padding-bottom: var(--space-3);
-  border-bottom: 2px solid var(--color-text);
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-8);
+  text-align: center;
 
   h2 {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-3);
     margin: 0;
-    font-size: var(--text-3xl);
+    font-size: var(--text-xl);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
   }
 }
 
 .eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin: 0 0 var(--space-4);
-  color: var(--color-text-muted);
-  font-family: var(--font-mono);
+  margin: 0 0 var(--space-3);
   font-size: var(--text-xs);
-  font-weight: var(--weight-medium);
-  letter-spacing: 0.08em;
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
@@ -300,17 +282,9 @@ code {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  color: var(--color-text);
-  font-family: var(--font-display);
-  font-size: var(--text-lg);
-  font-weight: var(--weight-bold);
-  letter-spacing: var(--tracking-caps);
-  text-transform: uppercase;
-
-  &:hover {
-    color: var(--color-primary);
-    text-decoration: none;
-  }
+  font-weight: var(--weight-medium);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
 }
 
 // Native buttons and links styled as buttons (Material buttons keep their own styles)
@@ -321,28 +295,25 @@ code {
   gap: var(--space-2);
   min-height: 46px;
   padding: 0 var(--space-6);
-  border: 2px solid transparent;
+  border: 1px solid transparent;
   border-radius: var(--radius-control);
-  font-family: var(--font-display);
-  font-size: var(--text-lg);
-  font-weight: var(--weight-bold);
-  letter-spacing: var(--tracking-caps);
-  text-transform: uppercase;
+  font: inherit;
+  font-weight: var(--weight-medium);
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
   transition:
     background-color var(--duration-fast) var(--ease-out),
     border-color var(--duration-fast) var(--ease-out),
-    color var(--duration-fast) var(--ease-out),
-    transform var(--duration-fast) var(--ease-out);
+    color var(--duration-fast) var(--ease-out);
 
   &:hover {
     text-decoration: none;
   }
 
-  &:active {
-    transform: translateY(1px);
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
   }
 }
 
@@ -350,19 +321,20 @@ code {
   background: var(--color-primary);
   color: var(--color-on-primary);
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: var(--color-primary-hover);
     color: var(--color-on-primary);
   }
 }
 
 .btn-outline {
-  border-color: var(--color-text);
+  border-color: currentcolor;
   background: transparent;
   color: var(--color-text);
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: var(--color-text);
+    border-color: var(--color-text);
     color: var(--color-bg);
   }
 }
@@ -370,7 +342,7 @@ code {
 .btn-sm {
   min-height: 36px;
   padding: 0 var(--space-4);
-  font-size: var(--text-md);
+  font-size: var(--text-sm);
 }
 
 .badge {
@@ -378,51 +350,46 @@ code {
   align-items: center;
   gap: var(--space-1);
   padding: 2px var(--space-2);
-  border-radius: var(--radius-control);
   background: var(--color-surface-2);
-  color: var(--color-text-muted);
+  color: var(--color-text);
   font-size: var(--text-xs);
   font-weight: var(--weight-semibold);
-  line-height: 1.5;
+  letter-spacing: var(--tracking-caps);
+  line-height: 1.6;
+  text-transform: uppercase;
 }
 
 .badge-sale {
-  background: var(--trail-yellow);
-  color: #161616;
-  font-family: var(--font-display);
-  font-size: var(--text-sm);
-  font-weight: var(--weight-bold);
-  letter-spacing: var(--tracking-caps);
-  text-transform: uppercase;
+  background: var(--color-text);
+  color: var(--color-bg);
 }
 
 // Stock values are free text ('onStock' | 'onWaitings' | 'unavailable' | …)
 .stock {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   color: var(--color-text-muted);
   font-size: var(--text-sm);
 
-  // A tiny trail blaze: white–color–white
   &::before {
     content: '';
-    width: 10px;
-    height: 10px;
-    border: 1px solid var(--color-border-strong);
-    background: linear-gradient(var(--color-blaze) 33%, var(--stock-color, var(--color-border-strong)) 33% 67%, var(--color-blaze) 67%);
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--stock-color, var(--color-border-strong));
   }
 
   &.stock-onStock {
-    --stock-color: var(--trail-green);
+    --stock-color: var(--color-success);
   }
 
   &.stock-onWaitings {
-    --stock-color: var(--trail-yellow);
+    --stock-color: var(--color-warning);
   }
 
   &.stock-unavailable {
-    --stock-color: var(--trail-red);
+    --stock-color: var(--color-danger);
   }
 }
 
@@ -434,57 +401,50 @@ code {
 }
 
 .price-current {
-  font-family: var(--font-display);
-  font-weight: var(--weight-black);
   font-variant-numeric: tabular-nums;
 }
 
 .price-before {
   color: var(--color-text-muted);
-  font-size: 0.85em;
 }
 
-// Trail marking motifs -------------------------------------------------------------------------------
+// Trail-marking accents ------------------------------------------------------------------------------
 
 // A trail blaze: white–color–white bands, as painted on trees and rocks. Color via --blaze (inherited
-// from a .trail-* ancestor or set on the blaze itself); the default is the primary color.
+// from a .trail-* ancestor or set on the blaze itself); the default is trail red.
 .blaze {
   display: inline-block;
   flex: none;
-  width: 0.9em;
-  height: 0.9em;
-  border: 1px solid var(--color-border-strong);
-  background: linear-gradient(var(--color-blaze) 33%, var(--blaze, var(--color-primary)) 33% 67%, var(--color-blaze) 67%);
+  width: 1.15em;
+  height: 0.8em;
+  border-radius: 1px;
+  background: linear-gradient(var(--color-blaze) 30%, var(--blaze, var(--trail-red)) 30% 70%, var(--color-blaze) 70%);
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 15%);
   vertical-align: -0.05em;
 }
 
 .trail-red {
   --blaze: var(--trail-red);
-  --trail: var(--trail-red);
 }
 
 .trail-blue {
   --blaze: var(--trail-blue);
-  --trail: var(--trail-blue);
 }
 
 .trail-green {
   --blaze: var(--trail-green);
-  --trail: var(--trail-green);
 }
 
 .trail-yellow {
   --blaze: var(--trail-yellow);
-  --trail: var(--trail-yellow);
 }
 
-// The four trail colors side by side (header edge, footer)
+// Kept for older templates; no longer drawn
 .trail-stripe {
-  height: 4px;
-  background: linear-gradient(90deg, var(--trail-red) 0 25%, var(--trail-blue) 25% 50%, var(--trail-green) 50% 75%, var(--trail-yellow) 75% 100%);
+  display: none;
 }
 
-// Topographic contour lines behind a block (position: relative on the block)
+// Topographic contour lines behind a block, e.g. the product grids (faint, like a map underlay)
 .contour-bg {
   position: relative;
   isolation: isolate;
@@ -495,20 +455,43 @@ code {
     inset: 0;
     z-index: -1;
     background: var(--color-contour);
-    mask: patterns.$contour-map 0 0 / 1000px 700px repeat;
+    // A seamless tile, repeated over the whole block however long the product list is
+    mask: patterns.$contour-map 0 0 / 720px 720px repeat;
     pointer-events: none;
   }
 }
 
-// Section divider drawn as an elevation profile
+// A mountain ridge (elevation profile) in the color of the block below it, e.g. above the footer
 .elevation {
   display: block;
-  height: 48px;
-  background: var(--color-surface-2);
+  height: 56px;
+  background: var(--ridge-color, var(--color-footer));
   mask: patterns.$elevation-profile center bottom / 100% 100% no-repeat;
 }
 
-// Breadcrumbs as a trail: waypoints joined by a dashed path
+// A small white arrow sign, as on trail signposts (category labels, the 404 sign)
+.signpost {
+  --signpost-tip: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 38px;
+  padding: 0 calc(var(--signpost-tip) + var(--space-3)) 0 var(--space-3);
+  background: #fff;
+  color: #111;
+  font-family: var(--font-sign);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  line-height: 1;
+  clip-path: polygon(0 0, calc(100% - var(--signpost-tip)) 0, 100% 50%, calc(100% - var(--signpost-tip)) 100%, 0 100%);
+
+  // The sign's own white bands stay white in dark mode too
+  .blaze {
+    --color-blaze: #fff;
+  }
+}
+
+// Breadcrumbs
 .waypoints {
   display: flex;
   flex-wrap: wrap;
@@ -517,11 +500,8 @@ code {
   margin: 0;
   padding: 0;
   color: var(--color-text-muted);
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.04em;
+  font-size: var(--text-sm);
   list-style: none;
-  text-transform: uppercase;
 
   li {
     display: inline-flex;
@@ -531,17 +511,8 @@ code {
   }
 
   li + li::before {
-    content: '';
-    width: 22px;
-    border-top: 2px dotted var(--color-border-strong);
-  }
-
-  a {
-    color: var(--color-text-muted);
-
-    &:hover {
-      color: var(--color-text);
-    }
+    content: '/';
+    color: var(--color-border-strong);
   }
 
   [aria-current] {
@@ -552,54 +523,26 @@ code {
   }
 }
 
-// A signpost board: outlined plate with a pointed end (the outline is the outer clip, the fill the inner)
-.signpost {
-  --signpost-tip: 18px;
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3) calc(var(--signpost-tip) + var(--space-4)) var(--space-3) var(--space-4);
-  background: var(--color-text);
-  color: var(--color-text);
-  clip-path: polygon(0 0, calc(100% - var(--signpost-tip)) 0, 100% 50%, calc(100% - var(--signpost-tip)) 100%, 0 100%);
-  isolation: isolate;
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 2px;
-    z-index: -1;
-    background: var(--color-surface);
-    clip-path: polygon(0 0, calc(100% - var(--signpost-tip) + 1px) 0, 100% 50%, calc(100% - var(--signpost-tip) + 1px) 100%, 0 100%);
-  }
-}
-
-// Page header used by the simple pages (title on contour lines, waypoints above) ---------------------
+// Page header used by the simple pages ----------------------------------------------------------------
 .page-header {
-  border-bottom: 2px solid var(--color-text);
-  background: var(--color-bg);
-
   .page-header-inner {
     max-width: var(--container-max);
     margin-inline: auto;
-    padding: var(--space-8) var(--gutter) var(--space-10);
+    padding: var(--space-10) var(--gutter) var(--space-6);
   }
 
   nav {
-    margin-bottom: var(--space-5);
+    margin-bottom: var(--space-4);
   }
 
   h1 {
     margin: 0;
     font-size: var(--text-4xl);
-    font-weight: var(--weight-black);
-    line-height: 0.92;
   }
 
   p {
     max-width: 60ch;
-    margin: var(--space-4) 0 0;
+    margin: var(--space-3) 0 0;
     color: var(--color-text-muted);
     font-size: var(--text-lg);
   }
@@ -645,16 +588,15 @@ code {
   blockquote {
     margin: var(--space-6) 0;
     padding-left: var(--space-4);
-    border-left: 4px solid var(--color-primary);
+    border-left: 2px solid var(--color-text);
     color: var(--color-text-muted);
   }
 }
 
-// A bordered panel (forms, order sheets)
+// A quiet panel (order sheets, summaries)
 .panel {
   padding: var(--space-6);
-  border: 2px solid var(--color-text);
-  background: var(--color-surface);
+  background: var(--color-surface-2);
 
   @media (width <= 520px) {
     padding: var(--space-4);
@@ -666,8 +608,14 @@ code {
   align-items: center;
   gap: var(--space-3);
   margin: 0 0 var(--space-4);
-  font-size: var(--text-xl);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
+
+  .blaze {
+    display: none;
+  }
 }
 
 // "Label: value" rows (order data); the colon keeps the plain text readable
@@ -682,7 +630,7 @@ code {
     justify-content: space-between;
     gap: var(--space-1) var(--space-4);
     padding-block: var(--space-2);
-    border-bottom: 1px dotted var(--color-border-strong);
+    border-bottom: 1px solid var(--color-border);
 
     &:last-child {
       border-bottom: 0;
@@ -694,71 +642,48 @@ code {
   }
 
   .sheet-value {
-    font-weight: var(--weight-medium);
     text-align: right;
     overflow-wrap: anywhere;
   }
 }
 
 .mono {
-  font-family: var(--font-mono);
-  font-size: 0.9em;
+  font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
 }
 
-// Sign in / sign up: a contour-map panel next to the form
+// Sign in, sign up, contact: one narrow centered column -------------------------------------------------
 .auth-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  min-height: calc(100vh - var(--header-height) - 200px);
-  border-bottom: 2px solid var(--color-text);
-
-  @media (width <= 860px) {
-    grid-template-columns: minmax(0, 1fr);
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-16) var(--gutter) var(--space-20);
 }
 
 .auth-aside {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: var(--space-4);
-  padding: var(--space-12) var(--gutter);
-  border-right: 2px solid var(--color-text);
+  width: min(100%, 400px);
+  margin-bottom: var(--space-8);
+  text-align: center;
 
   h1 {
-    margin: 0;
-    font-size: var(--text-4xl);
-    font-weight: var(--weight-black);
-    line-height: 0.92;
+    margin: 0 0 var(--space-3);
+    font-size: var(--text-3xl);
   }
 
   p {
-    max-width: 40ch;
     margin: 0;
     color: var(--color-text-muted);
-    font-size: var(--text-lg);
-  }
-
-  @media (width <= 860px) {
-    padding-block: var(--space-10) var(--space-8);
-    border-right: 0;
-    border-bottom: 2px solid var(--color-text);
   }
 }
 
 .auth-blaze {
-  width: 48px;
-  height: 48px;
-  border: 2px solid var(--color-text);
+  display: none;
 }
 
 .auth-main {
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: var(--space-10) var(--gutter);
-  background: var(--color-surface);
+  width: 100%;
 }
 
 .auth-form {
@@ -777,15 +702,13 @@ code {
   gap: var(--space-3);
   margin: var(--space-5) 0;
   color: var(--color-text-muted);
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  text-transform: uppercase;
+  font-size: var(--text-sm);
 
   &::before,
   &::after {
     content: '';
     flex: 1;
-    border-top: 2px dotted var(--color-border-strong);
+    border-top: 1px solid var(--color-border);
   }
 }
 
@@ -796,7 +719,7 @@ code {
 
   a {
     color: var(--color-text);
-    font-weight: var(--weight-semibold);
+    font-weight: var(--weight-medium);
     text-decoration: underline;
   }
 }
@@ -812,20 +735,19 @@ code {
   align-items: flex-start;
   gap: var(--space-3);
   padding: var(--space-4);
-  border: 2px solid var(--color-text);
-  background: var(--color-surface);
+  background: var(--color-surface-2);
 
   .blaze {
-    margin-top: 0.2em;
+    display: none;
   }
 }
 
 .notice-success {
-  box-shadow: inset 6px 0 0 var(--trail-green);
+  box-shadow: inset 3px 0 0 var(--color-success);
 }
 
 .notice-error {
-  box-shadow: inset 6px 0 0 var(--color-danger);
+  box-shadow: inset 3px 0 0 var(--color-danger);
   color: var(--color-danger);
 }
 
@@ -843,10 +765,11 @@ code {
   justify-content: space-between;
   gap: var(--space-3);
   padding-bottom: var(--space-3);
-  border-bottom: 2px solid var(--color-text);
+  border-bottom: 1px solid var(--color-border);
 
   .eyebrow {
     margin-bottom: var(--space-1);
+    color: var(--color-text-muted);
   }
 }
 
@@ -862,45 +785,42 @@ code {
   gap: var(--space-5);
 }
 
-// Order states as trail colors: new = blue, paid/completed = green, waiting = yellow, problems = red
+// Order state: a small colored dot
 .order-status {
-  --trail: var(--color-border-strong);
+  --dot: var(--color-border-strong);
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  padding: 2px var(--space-3);
-  border: 2px solid var(--color-text);
-  background: var(--color-surface);
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.06em;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.04em;
 
   &::before {
     content: '';
-    width: 10px;
-    height: 10px;
-    background: linear-gradient(var(--color-blaze) 33%, var(--trail) 33% 67%, var(--color-blaze) 67%);
-    outline: 1px solid var(--color-border-strong);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--dot);
   }
 
   &[data-status='NEW'] {
-    --trail: var(--trail-blue);
+    --dot: var(--trail-blue);
   }
 
   &[data-status='PAID'],
   &[data-status='COMPLETED'],
   &[data-status='SHIPPING'] {
-    --trail: var(--trail-green);
+    --dot: var(--color-success);
   }
 
   &[data-status='PENDING_PAYMENT'] {
-    --trail: var(--trail-yellow);
+    --dot: var(--trail-yellow);
   }
 
   &[data-status='PAYMENT_FAILED'],
   &[data-status='CANCELED'],
   &[data-status='REFUNDED'] {
-    --trail: var(--trail-red);
+    --dot: var(--color-danger);
   }
 }
 
@@ -916,7 +836,7 @@ code {
   align-items: center;
   gap: var(--space-3);
   padding-block: var(--space-3);
-  border-bottom: 1px dotted var(--color-border-strong);
+  border-bottom: 1px solid var(--color-border);
 
   &:last-child {
     border-bottom: 0;
@@ -926,8 +846,7 @@ code {
 .order-item-image {
   display: block;
   aspect-ratio: 1;
-  border: 1px solid var(--color-border-strong);
-  background: var(--color-surface-2);
+  background: var(--color-surface-3);
 
   img {
     width: 100%;
@@ -937,16 +856,7 @@ code {
 }
 
 .order-item-title {
-  color: var(--color-text);
-  font-family: var(--font-display);
-  font-size: var(--text-lg);
-  font-weight: var(--weight-bold);
-  text-transform: uppercase;
-
-  &:hover {
-    color: var(--color-primary);
-    text-decoration: none;
-  }
+  font-weight: var(--weight-medium);
 }
 
 .order-item-qty {
@@ -954,6 +864,5 @@ code {
 }
 
 .order-item-price {
-  font-weight: var(--weight-semibold);
   white-space: nowrap;
 }

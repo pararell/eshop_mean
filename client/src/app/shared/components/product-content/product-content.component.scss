@@ -11,33 +11,30 @@
 .buy-box-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: var(--space-4);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+// Category links, each with its trail marker
 .buy-box-tag {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
   color: var(--color-text-muted);
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: var(--text-sm);
 
   &:hover {
     color: var(--color-text);
-    text-decoration: none;
   }
 }
 
 .buy-box-title {
   margin: 0;
-  font-size: var(--text-4xl);
-  font-weight: var(--weight-black);
-  line-height: 0.92;
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-medium);
+  line-height: 1.15;
   overflow-wrap: anywhere;
 }
 
@@ -45,7 +42,6 @@
   margin: 0;
   color: var(--color-text-muted);
   font-size: var(--text-lg);
-  line-height: var(--leading-normal);
 }
 
 .buy-box-price-row {
@@ -54,31 +50,37 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  padding-block: var(--space-4);
-  border-top: 2px solid var(--color-text);
-  border-bottom: 2px dotted var(--color-border-strong);
+  padding-block: var(--space-2) var(--space-4);
 }
 
 .buy-box-price .price-current {
-  font-size: var(--text-4xl);
-  line-height: 1;
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-medium);
 }
 
 .buy-box-cart {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-4);
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-3);
+
+  app-cart-show {
+    display: flex;
+  }
+
+  .text-link {
+    align-self: center;
+  }
 }
 
 .buy-box-perks {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  margin: var(--space-2) 0 0;
-  padding: var(--space-4) var(--space-5);
-  border: 2px solid var(--color-text);
-  background: var(--color-surface);
+  gap: var(--space-2);
+  margin: var(--space-4) 0 0;
+  padding: var(--space-5) 0 0;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
   font-size: var(--text-sm);
   list-style: none;
 
@@ -88,8 +90,7 @@
     gap: var(--space-3);
   }
 
-  .blaze {
-    width: 16px;
-    height: 16px;
+  app-icon {
+    color: var(--color-text);
   }
 }

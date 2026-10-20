@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { E2E, isolateExternalServices } from './helpers';
+import { E2E, gotoReady, isolateExternalServices } from './helpers';
 
 // BUG-03 regressions: the /en|/sk|/cs URL prefix decides the language, also for server rendering.
 
@@ -18,7 +18,7 @@ test('server renders the language of the URL', async ({ request }) => {
 });
 
 test('the language switcher changes the URL prefix', async ({ page }) => {
-  await page.goto(`/en/product/${E2E.car.titleUrl}`);
+  await gotoReady(page, `/en/product/${E2E.car.titleUrl}`);
   await expect(page.locator('.product')).toContainText(E2E.car.title);
 
   await page.getByRole('combobox', { name: 'Language' }).selectOption('sk');

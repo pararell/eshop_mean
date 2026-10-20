@@ -10,11 +10,11 @@
       <ul class="footer-perks">
         @if (cart(); as cart) {
           <li>
-            <span class="blaze trail-green" aria-hidden="true"></span> {{ 'Free_shipping_limit' | translate | async }} {{ cart.shippingLimit }}
+            {{ 'Free_shipping_limit' | translate | async }} {{ cart.shippingLimit }}
             {{ currency() }}
           </li>
         }
-        <li><span class="blaze trail-blue" aria-hidden="true"></span> {{ 'Secure_payment' | translate | async }}</li>
+        <li>{{ 'Secure_payment' | translate | async }}</li>
       </ul>
     </div>
 
@@ -48,7 +48,6 @@
     </nav>
   </div>
 
-  <div class="trail-stripe" aria-hidden="true"></div>
   <div class="footer-bottom">
     <div class="footer-inner footer-inner-bottom">
       <span>© {{ currentYear }} {{ 'ESHOP_TITLE' | translate | async }}</span>

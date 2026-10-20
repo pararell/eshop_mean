@@ -8,30 +8,40 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  height: 40px;
+  height: 38px;
   padding: 0 var(--space-4);
-  border: 0;
+  border: 1px solid var(--color-text);
   border-radius: var(--radius-control);
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-  font-family: var(--font-display);
-  font-size: var(--text-lg);
-  font-weight: var(--weight-bold);
-  letter-spacing: var(--tracking-caps);
-  text-transform: uppercase;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
   white-space: nowrap;
   cursor: pointer;
-  transition: background-color var(--duration-fast) var(--ease-out);
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
 
   &:hover {
-    background: var(--color-primary-hover);
+    background: var(--color-text);
+    color: var(--color-bg);
   }
 }
 
+// The product page's main button: solid and large
 .add-button-large {
-  height: 54px;
+  height: 52px;
   padding: 0 var(--space-8);
-  font-size: var(--text-xl);
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-size: var(--text-md);
+
+  &:hover {
+    background: var(--color-primary-hover);
+    color: var(--color-on-primary);
+  }
 }
 
 .qty {
@@ -39,30 +49,26 @@
   flex: 1;
   align-items: center;
   justify-content: space-between;
-  height: 40px;
-  padding: 3px;
-  border: 2px solid var(--color-text);
+  height: 38px;
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-control);
-  background: var(--color-surface);
 }
 
 .qty-large {
   height: 52px;
 
   .qty-button {
-    width: 44px;
+    width: 48px;
   }
 }
 
 .qty-button {
   display: grid;
   place-items: center;
-  width: 32px;
+  width: 36px;
   height: 100%;
-  aspect-ratio: 1;
   padding: 0;
   border: 0;
-  border-radius: var(--radius-control);
   background: transparent;
   color: var(--color-text);
   cursor: pointer;
@@ -73,10 +79,9 @@
 }
 
 .qty-value {
-  min-width: 2.25ch;
+  min-width: 2.5ch;
   padding: 0 var(--space-2);
-  font-family: var(--font-mono);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   font-variant-numeric: tabular-nums;
   text-align: center;
 }

@@ -2,9 +2,9 @@
 // Light is the default; dark applies with `data-theme="dark"` on <html>, or when the system prefers
 // dark and no explicit choice was made (`data-theme` absent). Set before first paint by index.html.
 //
-// The look is "trail marking": the Slovak/Czech hiking-trail system (white–color–white blazes in
-// red, blue, green and yellow, signposts with condensed lettering, contour maps). Light mode is map
-// paper, dark mode a night map. Corners stay nearly square, like signage.
+// The look is minimal (white, ink, hairlines, large photos). The Slovak/Czech trail markings
+// (white–color–white blazes, arrow signs) appear only as small accents: the logo blaze and the
+// category signs. Trail colors are never used for text or large areas.
 //
 // Brand colors can be overridden by the active shop theme: ThemeService writes
 // `--brand-primary-light`, `--brand-primary-dark`, … (contrast-checked variants of the theme color).
@@ -12,26 +12,27 @@
 :root {
   // Typography ---------------------------------------------------------------------------------
   --font-sans: 'Barlow', system-ui, -apple-system, 'Segoe UI', roboto, sans-serif;
-  --font-display: 'Barlow Condensed', 'Arial Narrow', var(--font-sans);
-  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', menlo, consolas, monospace;
+  --font-display: var(--font-sans);
+  /** Trail signs only (category signs, 404 sign) */
+  --font-sign: 'Barlow Condensed', 'Arial Narrow', var(--font-sans);
+  --font-mono: var(--font-sans);
 
-  // Fluid type scale (rem; 1rem = 16px). The condensed display face runs large.
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
   --text-md: 1rem;
   --text-lg: 1.125rem;
-  --text-xl: clamp(1.3rem, 1.15rem + 0.5vw, 1.5rem);
-  --text-2xl: clamp(1.75rem, 1.4rem + 1vw, 2.25rem);
-  --text-3xl: clamp(2.25rem, 1.6rem + 2.2vw, 3.25rem);
-  --text-4xl: clamp(3rem, 1.6rem + 5vw, 6rem);
-  --leading-tight: 1;
+  --text-xl: 1.375rem;
+  --text-2xl: clamp(1.5rem, 1.35rem + 0.6vw, 1.75rem);
+  --text-3xl: clamp(1.875rem, 1.5rem + 1.4vw, 2.5rem);
+  --text-4xl: clamp(2.375rem, 1.6rem + 3vw, 3.5rem);
+  --leading-tight: 1.1;
   --leading-normal: 1.55;
   --weight-regular: 400;
   --weight-medium: 500;
   --weight-semibold: 600;
-  --weight-bold: 700;
-  --weight-black: 800;
-  --tracking-caps: 0.04em;
+  --weight-bold: 600;
+  --weight-black: 600;
+  --tracking-caps: 0.06em;
 
   // Spacing (4px grid) ---------------------------------------------------------------------------
   --space-1: 0.25rem;
@@ -45,88 +46,90 @@
   --space-12: 3rem;
   --space-16: 4rem;
   --space-20: 5rem;
+  --space-24: 6rem;
 
-  // Shape, elevation, motion: signage corners -------------------------------------------------------
+  // Shape, motion ----------------------------------------------------------------------------------
   --radius-sm: 2px;
-  --radius-md: 3px;
-  --radius-lg: 4px;
-  --radius-xl: 6px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+  --radius-xl: 2px;
   /** Buttons, inputs, chips */
   --radius-control: 2px;
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --duration-fast: 120ms;
-  --duration-base: 200ms;
-  --duration-slow: 320ms;
+  --duration-base: 220ms;
+  --duration-slow: 500ms;
 
   // Layout
-  --container-max: 1280px;
+  --container-max: 1340px;
   --container-narrow: 760px;
-  --header-height: 68px;
-  --gutter: clamp(1rem, 0.6rem + 1.6vw, 2rem);
+  --header-height: 72px;
+  --gutter: clamp(1rem, 0.4rem + 2.4vw, 3rem);
   --z-header: 50;
   --z-overlay: 100;
 }
 
-// Light (default): map paper -------------------------------------------------------------------------
+// Light (default) -----------------------------------------------------------------------------------
 @mixin light-colors {
   color-scheme: light;
-  --color-bg: #f4f1ea;
-  --color-surface: #fffefb;
-  --color-surface-2: #ebe6db;
-  --color-surface-3: #e0d9cb;
-  --color-text: #161616;
-  --color-text-muted: #55524b;
-  --color-border: #d6cfc0;
-  --color-border-strong: #9d9585;
-  --color-primary: var(--brand-primary-light, #b3121f);
-  --color-primary-hover: var(--brand-primary-hover-light, #8f0e19);
+  --color-bg: #fff;
+  --color-surface: #fff;
+  /** Photo backgrounds, quiet panels */
+  --color-surface-2: #f5f5f3;
+  --color-surface-3: #ebebe8;
+  --color-text: #111;
+  --color-text-muted: #6b6b6b;
+  --color-border: #e8e8e6;
+  --color-border-strong: #c9c9c6;
+  --color-primary: var(--brand-primary-light, #111);
+  --color-primary-hover: var(--brand-primary-hover-light, #333);
   --color-on-primary: var(--brand-on-primary-light, #fff);
-  --color-primary-soft: var(--brand-primary-soft-light, #f6dedb);
-  --color-accent: #0b5aa6;
+  --color-primary-soft: var(--brand-primary-soft-light, #f0f0ee);
+  --color-accent: #111;
   --color-on-accent: #fff;
-  --color-accent-soft: #dce7f3;
+  --color-accent-soft: #f0f0ee;
   --color-success: #1d6b3a;
-  --color-success-soft: #dcefe2;
+  --color-success-soft: #e3f1e7;
   --color-warning: #7a5600;
   --color-warning-soft: #f8edcc;
-  --color-danger: #a3141c;
-  --color-danger-soft: #f8e1df;
+  --color-danger: #b3261e;
+  --color-danger-soft: #f9e3e1;
   --color-focus: #1a73e8;
-  --color-scrim: rgb(16 16 14 / 55%);
-  /** Contour lines and other map linework */
-  --color-contour: rgb(110 96 70 / 22%);
+  --color-scrim: rgb(0 0 0 / 45%);
   /** The white bands of a trail blaze */
   --color-blaze: #fff;
-  /** Footer: always a dark board */
-  --color-footer: #141613;
-  // Trail colors (decorative: markers, stripes; not for text)
+  /** Contour lines behind the product grids */
+  --color-contour: rgb(0 0 0 / 9%);
+  /** Footer: a dark band under the mountain ridge */
+  --color-footer: #161616;
+  // Trail colors: small accents only (blazes, sign markers)
   --trail-red: #c8102e;
   --trail-blue: #0057a8;
   --trail-green: #00843d;
   --trail-yellow: #f2c200;
-  --shadow-1: 0 1px 0 rgb(22 22 22 / 8%);
-  --shadow-2: 0 2px 0 rgb(22 22 22 / 10%), 0 6px 18px rgb(22 22 22 / 6%);
-  --shadow-3: 0 18px 40px rgb(22 22 22 / 16%);
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 6%);
+  --shadow-2: 0 6px 20px rgb(0 0 0 / 8%);
+  --shadow-3: 0 18px 40px rgb(0 0 0 / 14%);
 }
 
-// Dark: night map --------------------------------------------------------------------------------------
+// Dark ------------------------------------------------------------------------------------------------
 @mixin dark-colors {
   color-scheme: dark;
-  --color-bg: #10130f;
-  --color-surface: #171b16;
-  --color-surface-2: #1f241e;
-  --color-surface-3: #293027;
-  --color-text: #ece8de;
-  --color-text-muted: #a39f94;
-  --color-border: #2e342c;
-  --color-border-strong: #5a6352;
-  --color-primary: var(--brand-primary-dark, #ff6b5e);
-  --color-primary-hover: var(--brand-primary-hover-dark, #ff8a7f);
-  --color-on-primary: var(--brand-on-primary-dark, #1a0503);
-  --color-primary-soft: var(--brand-primary-soft-dark, #3a1a17);
-  --color-accent: #6fb2ff;
-  --color-on-accent: #04172b;
-  --color-accent-soft: #13263b;
+  --color-bg: #0f0f0f;
+  --color-surface: #0f0f0f;
+  --color-surface-2: #1a1a1a;
+  --color-surface-3: #242424;
+  --color-text: #f2f2f0;
+  --color-text-muted: #a3a3a0;
+  --color-border: #262626;
+  --color-border-strong: #3d3d3d;
+  --color-primary: var(--brand-primary-dark, #f2f2f0);
+  --color-primary-hover: var(--brand-primary-hover-dark, #fff);
+  --color-on-primary: var(--brand-on-primary-dark, #111);
+  --color-primary-soft: var(--brand-primary-soft-dark, #1f1f1f);
+  --color-accent: #f2f2f0;
+  --color-on-accent: #111;
+  --color-accent-soft: #1f1f1f;
   --color-success: #7dd3a0;
   --color-success-soft: #173326;
   --color-warning: #f2c46b;
@@ -134,16 +137,16 @@
   --color-danger: #f2b8b5;
   --color-danger-soft: #3d1d1b;
   --color-focus: #8ab4ff;
-  --color-scrim: rgb(0 0 0 / 65%);
-  --color-contour: rgb(190 210 170 / 10%);
-  --color-blaze: #ece8de;
-  --color-footer: #232a22;
+  --color-scrim: rgb(0 0 0 / 60%);
+  --color-blaze: #f2f2f0;
+  --color-contour: rgb(255 255 255 / 7%);
+  --color-footer: #1c1c1c;
   --trail-red: #e5484d;
   --trail-blue: #3b8eea;
   --trail-green: #2fae66;
   --trail-yellow: #f5cf3a;
-  --shadow-1: 0 1px 0 rgb(0 0 0 / 40%);
-  --shadow-2: 0 2px 0 rgb(0 0 0 / 45%), 0 8px 20px rgb(0 0 0 / 35%);
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 40%);
+  --shadow-2: 0 6px 20px rgb(0 0 0 / 45%);
   --shadow-3: 0 18px 44px rgb(0 0 0 / 55%);
 }
 

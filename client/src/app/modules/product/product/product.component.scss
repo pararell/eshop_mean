@@ -7,7 +7,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2) var(--space-6);
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-8);
   font-size: var(--text-sm);
 }
 
@@ -15,22 +15,18 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  height: 36px;
-  padding: 0 var(--space-4) 0 var(--space-3);
-  border: 2px solid var(--color-text);
-  border-radius: var(--radius-control);
+  height: 32px;
+  padding: 0;
+  border: 0;
   background: transparent;
   color: var(--color-text);
-  font-family: var(--font-display);
-  font-size: var(--text-md);
-  font-weight: var(--weight-bold);
-  letter-spacing: var(--tracking-caps);
-  text-transform: uppercase;
+  font: inherit;
+  font-weight: var(--weight-medium);
   cursor: pointer;
 
   &:hover {
-    background: var(--color-text);
-    color: var(--color-bg);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
   }
 }
 
@@ -40,32 +36,35 @@
 
 .product-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
   align-items: start;
-  gap: var(--space-12);
+  gap: var(--space-16);
 }
 
 .product-buy {
   position: sticky;
-  top: calc(var(--header-height) + var(--space-6));
+  top: calc(var(--header-height) + var(--space-8));
 }
 
 .product-details {
-  max-width: 820px;
-  margin-top: var(--space-16);
-  padding-top: var(--space-4);
-  border-top: 2px solid var(--color-text);
+  max-width: 760px;
+  margin-top: var(--space-20);
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--color-border);
 
   h2 {
     margin: 0 0 var(--space-5);
-    font-size: var(--text-3xl);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
   }
 }
 
 @media (width <= 900px) {
   .product-layout {
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-6);
+    gap: var(--space-8);
   }
 
   .product-buy {
@@ -77,6 +76,6 @@
   }
 
   .product-details {
-    margin-top: var(--space-10);
+    margin-top: var(--space-12);
   }
 }

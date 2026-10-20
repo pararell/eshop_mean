@@ -6,8 +6,8 @@ export type ColorMode = 'system' | 'light' | 'dark';
 
 const MODE_COOKIE = 'eshop_theme';
 /** Surfaces the brand color is checked against (see client/src/styles/_tokens.scss) */
-const LIGHT = { bg: '#f4f1ea', onPrimary: '#ffffff' };
-const DARK = { surface: '#171b16', onPrimary: '#1a0503' };
+const LIGHT = { bg: '#ffffff', onPrimary: '#ffffff' };
+const DARK = { surface: '#0f0f0f', onPrimary: '#111111' };
 /** WCAG AA for normal text */
 const MIN_CONTRAST = 4.5;
 

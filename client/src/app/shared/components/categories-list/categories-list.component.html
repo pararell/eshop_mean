@@ -4,17 +4,12 @@
       <a class="category_card-link" [routerLink]="['/' + lang() + '/product/category/' + category.titleUrl]">
         <span class="category_card-media">
           @if (category.mainImage?.url) {
-            <img [ngSrc]="category.mainImage!.url" alt="" fill sizes="(max-width: 680px) 72vw, 300px" />
+            <img [ngSrc]="category.mainImage!.url" alt="" fill sizes="(max-width: 680px) 50vw, 320px" />
           }
         </span>
         <span class="signpost category_card-sign">
           <span class="blaze" aria-hidden="true"></span>
-          <span class="category_card-info">
-            <span class="category_card-title">{{ category.title }}</span>
-            @if (category.description) {
-              <span class="category_card-description">{{ category.description }}</span>
-            }
-          </span>
+          <span class="category_card-title">{{ category.title }}</span>
         </span>
       </a>
     </li>

@@ -7,8 +7,8 @@ html {
   @include mat.theme(
     (
       color: (
-        primary: mat.$red-palette,
-        tertiary: mat.$blue-palette,
+        primary: mat.$azure-palette,
+        tertiary: mat.$azure-palette,
         theme-type: color-scheme,
       ),
       typography: (
@@ -73,16 +73,10 @@ html {
   --mat-button-outlined-container-shape: var(--radius-control);
   --mat-button-text-container-shape: var(--radius-control);
   --mat-button-protected-container-shape: var(--radius-control);
-  --mat-button-filled-label-text-font: var(--font-display);
-  --mat-button-outlined-label-text-font: var(--font-display);
-  --mat-button-text-label-text-font: var(--font-display);
-  --mat-button-protected-label-text-font: var(--font-display);
-  --mat-button-filled-label-text-size: var(--text-lg);
-  --mat-button-outlined-label-text-size: var(--text-lg);
-  --mat-button-text-label-text-size: var(--text-lg);
-  --mat-button-protected-label-text-size: var(--text-lg);
-  letter-spacing: var(--tracking-caps);
-  text-transform: uppercase;
+  --mat-button-filled-label-text-weight: 500;
+  --mat-button-outlined-label-text-weight: 500;
+  --mat-button-text-label-text-weight: 500;
+  --mat-button-protected-label-text-weight: 500;
 }
 
 // `color="warn"` (M2 API) still marks destructive buttons

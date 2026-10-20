@@ -7,9 +7,7 @@
 }
 
 .checkout-header {
-  margin-bottom: var(--space-8);
-  padding-bottom: var(--space-4);
-  border-bottom: 2px solid var(--color-text);
+  margin-bottom: var(--space-10);
 
   nav {
     margin-bottom: var(--space-4);
@@ -19,8 +17,7 @@
 .checkout-title {
   margin: 0;
   font-size: var(--text-4xl);
-  font-weight: var(--weight-black);
-  line-height: 0.92;
+  font-weight: var(--weight-medium);
 }
 
 // Form on the left, summary sticky on the right; on phones the summary comes first
@@ -29,7 +26,7 @@
   grid-template-columns: minmax(0, 1.4fr) minmax(320px, 1fr);
   grid-template-areas: 'main summary';
   align-items: start;
-  gap: var(--space-10);
+  gap: var(--space-16);
 
   @media (width <= 960px) {
     grid-template-columns: minmax(0, 1fr);
@@ -44,7 +41,7 @@
   grid-area: main;
   display: flex;
   flex-direction: column;
-  gap: var(--space-10);
+  gap: var(--space-12);
 }
 
 .checkout-section-title {
@@ -52,21 +49,22 @@
   align-items: center;
   gap: var(--space-3);
   margin: 0 0 var(--space-5);
-  font-size: var(--text-2xl);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
 }
 
-// Step number on a trail plate
 .checkout-step {
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
-  border: 2px solid var(--color-text);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
   background: var(--color-text);
   color: var(--color-bg);
-  font-family: var(--font-mono);
-  font-size: var(--text-md);
-  font-weight: var(--weight-medium);
+  font-size: var(--text-sm);
+  letter-spacing: 0;
 }
 
 .checkout-fields {
@@ -92,8 +90,7 @@
 .payment-choice {
   display: block;
   padding: 0 0 0 var(--space-2);
-  border: 2px solid var(--color-border-strong);
-  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
   transition: border-color var(--duration-fast) var(--ease-out);
 
   &:hover {
@@ -103,7 +100,7 @@
 
 .payment-choice--active {
   border-color: var(--color-text);
-  box-shadow: inset 6px 0 0 var(--color-primary);
+  box-shadow: inset 0 0 0 1px var(--color-text);
 }
 
 .payment-choice ::ng-deep .mdc-form-field {
@@ -133,24 +130,16 @@
 
 .submit-order-button {
   width: 100%;
-  min-height: 56px;
-  font-size: var(--text-xl);
-
-  &:disabled {
-    background: var(--color-surface-3);
-    color: var(--color-text-muted);
-    cursor: not-allowed;
-  }
+  min-height: 54px;
 }
 
-// Summary: a route card
+// Summary: a quiet panel
 .checkout-summary {
   grid-area: summary;
   position: sticky;
   top: calc(var(--header-height) + var(--space-6));
-  padding: var(--space-5);
-  border: 2px solid var(--color-text);
-  background: var(--color-surface);
+  padding: var(--space-6);
+  background: var(--color-surface-2);
 
   @media (width <= 960px) {
     position: static;
@@ -161,8 +150,15 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  margin: 0 0 var(--space-4);
-  font-size: var(--text-xl);
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+
+  .blaze {
+    display: none;
+  }
 }
 
 .cart-items {
@@ -179,14 +175,13 @@
   align-items: start;
   gap: var(--space-3);
   padding-block: var(--space-4);
-  border-top: 2px dotted var(--color-border-strong);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .cart-item-image {
   display: block;
   aspect-ratio: 1;
-  border: 1px solid var(--color-border-strong);
-  background: var(--color-surface-2);
+  background: var(--color-surface-3);
 
   img {
     width: 100%;
@@ -204,17 +199,8 @@
 }
 
 .cart-item-title {
-  color: var(--color-text);
-  font-family: var(--font-display);
-  font-size: var(--text-lg);
-  font-weight: var(--weight-bold);
-  line-height: 1.1;
-  text-transform: uppercase;
-
-  &:hover {
-    color: var(--color-primary);
-    text-decoration: none;
-  }
+  font-weight: var(--weight-semibold);
+  line-height: 1.3;
 }
 
 .cart-item-unit {
@@ -223,16 +209,12 @@
 }
 
 .cart-item-total {
-  font-family: var(--font-display);
-  font-size: var(--text-lg);
-  font-weight: var(--weight-bold);
   white-space: nowrap;
 }
 
 .cart-totals {
   margin: 0;
   padding-top: var(--space-3);
-  border-top: 2px solid var(--color-text);
 }
 
 .cart-totals-row {
@@ -251,17 +233,15 @@
 
 .cart-total {
   margin-top: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border-strong);
   color: var(--color-text);
-  font-family: var(--font-display);
-  font-size: var(--text-2xl);
-  font-weight: var(--weight-black);
-  text-transform: uppercase;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
 }
 
 .free-shipping {
   margin-top: var(--space-4);
-  padding-top: var(--space-4);
-  border-top: 2px dotted var(--color-border-strong);
   font-size: var(--text-sm);
 
   p {
@@ -271,18 +251,22 @@
     gap: var(--space-1) var(--space-2);
     margin: 0 0 var(--space-2);
   }
+
+  .blaze {
+    display: none;
+  }
 }
 
 .free-shipping-track {
   display: block;
-  height: 6px;
+  height: 3px;
   background: var(--color-surface-3);
 }
 
 .free-shipping-progress {
   display: block;
   height: 100%;
-  background: var(--trail-green);
+  background: var(--color-text);
 }
 
 .checkout-empty,
@@ -292,20 +276,19 @@
   align-items: center;
   gap: var(--space-4);
   padding: var(--space-16) var(--space-4);
-  border: 2px dashed var(--color-border-strong);
+  background: var(--color-surface-2);
   text-align: center;
 
   p {
     margin: 0;
     font-size: var(--text-lg);
   }
+
+  .blaze {
+    display: none;
+  }
 }
 
 .checkout-done {
   font-size: var(--text-xl);
-}
-
-.checkout-empty-blaze {
-  width: 48px;
-  height: 48px;
 }

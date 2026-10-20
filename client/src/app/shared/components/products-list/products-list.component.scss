@@ -4,15 +4,15 @@
 
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
-  gap: var(--space-6) var(--space-5);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
+  gap: var(--space-12) var(--space-6);
   margin: 0;
   padding: 0;
   list-style: none;
 
-  @media (width <= 520px) {
+  @media (width <= 680px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-4) var(--space-3);
+    gap: var(--space-8) var(--space-3);
   }
 }
 
@@ -20,38 +20,25 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  border: 2px solid var(--color-text);
-  background: var(--color-surface);
-  transition:
-    box-shadow var(--duration-base) var(--ease-out),
-    transform var(--duration-base) var(--ease-out);
+  align-items: center;
+  gap: var(--space-1);
+  text-align: center;
 
-  // Flat offset shadow in the trail color, like a plate standing off a post
-  &:hover {
-    box-shadow: 6px 6px 0 var(--color-primary);
-    transform: translate(-2px, -2px);
-
-    img {
-      transform: scale(1.04);
-    }
-  }
-
-  &:focus-within {
-    border-color: var(--color-primary);
+  &:hover img {
+    transform: scale(1.03);
   }
 }
 
 .product_card-media {
   position: relative;
   display: block;
+  width: 100%;
   overflow: hidden;
   aspect-ratio: 1;
-  border-bottom: 2px solid var(--color-text);
+  margin-bottom: var(--space-3);
   background: var(--color-surface-2);
 
   img {
-    width: 100%;
-    height: 100%;
     object-fit: cover;
     transition: transform var(--duration-slow) var(--ease-out);
   }
@@ -64,76 +51,31 @@
   z-index: 1;
 }
 
-.product_card-body {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-4);
-}
-
 .product_card-title {
   margin: 0;
-  font-size: var(--text-xl);
-  line-height: 1.05;
-  text-transform: uppercase;
-
-  a {
-    color: var(--color-text);
-
-    &:hover {
-      color: var(--color-primary);
-      text-decoration: none;
-    }
-  }
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  line-height: 1.35;
 }
 
-.product_card-description {
-  display: -webkit-box;
-  margin: 0;
-  overflow: hidden;
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-  line-height: 1.45;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+.product_card-price {
+  justify-content: center;
+  font-size: var(--text-md);
 }
 
-.product_card-footer {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: var(--space-3);
-
-  // Same layout on every card: price, then a full-width cart control
-  app-cart-show {
-    display: flex;
-  }
-  margin-top: auto;
-  padding-top: var(--space-3);
-  border-top: 2px dotted var(--color-border-strong);
-
-  .price-current {
-    font-size: var(--text-2xl);
-  }
+// "Add to cart": shown on hover with a pointer, always on touch screens and once in the cart
+.product_card-cart {
+  margin-top: var(--space-2);
+  transition: opacity var(--duration-base) var(--ease-out);
 }
 
-@media (width <= 520px) {
-  .product_card-body {
-    padding: var(--space-3);
+@media (hover: hover) {
+  .product_card-cart:not(.is-in-cart) {
+    opacity: 0;
   }
 
-  .product_card-description {
-    display: none;
-  }
-
-  .product_card-footer {
-    flex-direction: column;
-    align-items: stretch;
-
-    app-cart-show {
-      justify-content: center;
-    }
+  .product_card:hover .product_card-cart,
+  .product_card:focus-within .product_card-cart {
+    opacity: 1;
   }
 }

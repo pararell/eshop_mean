@@ -10,7 +10,6 @@
   </div>
 } @else {
   <button type="button" class="add-button cart_show-wrap" [class.add-button-large]="size() === 'large'" (click)="add.emit()">
-    <app-icon name="cart" [size]="size() === 'large' ? 20 : 18" />
     <span>{{ 'Add_to_cart' | translate | async }}</span>
   </button>
 }

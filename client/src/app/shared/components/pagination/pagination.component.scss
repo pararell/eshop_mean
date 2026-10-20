@@ -1,5 +1,6 @@
 :host {
   display: block;
+  margin-top: var(--space-12);
 }
 
 .pagination {
@@ -26,11 +27,11 @@
   min-width: 40px;
   height: 40px;
   padding: 0 var(--space-2);
-  border: 2px solid var(--color-text);
-  background: var(--color-surface);
+  border: 0;
+  background: transparent;
   color: var(--color-text);
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
 }
 
 .page-step,
@@ -38,24 +39,23 @@
   cursor: pointer;
 
   &:hover:not(:disabled) {
-    background: var(--color-text);
-    color: var(--color-bg);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
   }
 
   &:disabled {
-    border-color: var(--color-border);
-    color: var(--color-text-muted);
+    color: var(--color-border-strong);
     cursor: not-allowed;
   }
 }
 
 .page-link {
-  border-color: var(--color-border-strong);
+  color: var(--color-text-muted);
 }
 
 .page-current {
-  background: var(--color-text);
-  color: var(--color-bg);
+  font-weight: var(--weight-semibold);
+  box-shadow: inset 0 -1px 0 var(--color-text);
 }
 
 .page-gap {

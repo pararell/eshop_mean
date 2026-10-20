@@ -6,16 +6,20 @@
 }
 
 .header {
-  border-bottom: 2px solid var(--color-text);
-  background: color-mix(in srgb, var(--color-bg) 92%, transparent);
-  backdrop-filter: saturate(140%) blur(12px);
+  position: relative;
+  background: var(--color-bg);
+  color: var(--color-text);
+  box-shadow: 0 1px 0 var(--color-border);
+  transition:
+    background-color var(--duration-base) var(--ease-out),
+    color var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out);
 }
 
 .header-inner {
-  display: grid;
-  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  display: flex;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-10);
   max-width: var(--container-max);
   min-height: var(--header-height);
   margin-inline: auto;
@@ -26,244 +30,226 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-3);
-  color: var(--color-text);
-  font-family: var(--font-display);
-  font-size: 1.6rem;
-  font-weight: var(--weight-black);
-  letter-spacing: 0.02em;
-  line-height: 1;
-  text-transform: uppercase;
+  color: inherit;
+  font-size: 1.375rem;
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.01em;
 
   &:hover {
-    color: var(--color-text);
     text-decoration: none;
   }
 }
 
-.brand-mark {
-  width: 30px;
-  height: 30px;
-  border-width: 2px;
-  border-color: var(--color-text);
+.brand-blaze {
+  font-size: 1.3rem;
 }
 
 .brand-logo {
   width: auto;
-  height: 36px;
+  height: 32px;
 }
 
 .header-nav {
   display: flex;
-  gap: var(--space-1);
+  flex-wrap: wrap;
+  gap: 0 var(--space-6);
+  font-weight: var(--weight-medium);
+  transition:
+    opacity var(--duration-base) var(--ease-out),
+    transform var(--duration-base) var(--ease-out);
 
   a {
-    padding: var(--space-2) var(--space-3);
-    border-bottom: 3px solid transparent;
-    color: var(--color-text);
-    font-family: var(--font-display);
-    font-size: var(--text-lg);
-    font-weight: var(--weight-bold);
-    letter-spacing: var(--tracking-caps);
-    text-transform: uppercase;
+    position: relative;
+    padding-block: var(--space-2);
+    white-space: nowrap;
 
     &:hover {
-      border-bottom-color: var(--color-border-strong);
-      color: var(--color-text);
       text-decoration: none;
     }
 
-    &.is-active {
-      border-bottom-color: var(--color-primary);
+    // A thin underline marks the current section
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 1px;
+      background: currentcolor;
+      transform: scaleX(0);
+      transition: transform var(--duration-base) var(--ease-out);
     }
-  }
-}
 
-.header-search {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-self: end;
-  width: 100%;
-  max-width: 420px;
-}
-
-.header-search-icon {
-  position: absolute;
-  left: var(--space-3);
-  color: var(--color-text-muted);
-  pointer-events: none;
-}
-
-.header-search-input {
-  width: 100%;
-  height: 40px;
-  padding: 0 var(--space-4) 0 calc(var(--space-3) + 26px);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-control);
-  background: var(--color-surface);
-  color: var(--color-text);
-  font: inherit;
-  font-size: var(--text-sm);
-  transition:
-    border-color var(--duration-fast) var(--ease-out),
-    background-color var(--duration-fast) var(--ease-out);
-
-  &::placeholder {
-    color: var(--color-text-muted);
-  }
-
-  &:focus {
-    border-color: var(--color-primary);
-    background: var(--color-surface);
-    outline: none;
-    box-shadow: 0 0 0 3px var(--color-primary-soft);
+    &:hover::after,
+    &.is-active::after {
+      transform: scaleX(1);
+    }
   }
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.text-button,
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: 40px;
+  padding: 0 var(--space-2);
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
 }
 
 .icon-button {
-  position: relative;
-  display: inline-grid;
-  place-items: center;
   width: 40px;
-  height: 40px;
   padding: 0;
-  border: 0;
-  border-radius: var(--radius-control);
-  background: transparent;
-  color: var(--color-text);
-  cursor: pointer;
-  transition: background-color var(--duration-fast) var(--ease-out);
-
-  &:hover {
-    background: var(--color-surface-2);
-    color: var(--color-text);
-    text-decoration: none;
-  }
 }
 
 .header-menu-button {
   display: none;
 }
 
+.cart-count {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: var(--color-text);
+  color: var(--color-bg);
+  font-size: 12px;
+  font-weight: var(--weight-semibold);
+  line-height: 20px;
+  text-align: center;
+}
+
 .header-lang {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
   height: 40px;
-  padding: 0 var(--space-2);
-  border-radius: var(--radius-control);
-  color: var(--color-text-muted);
-  cursor: pointer;
-
-  &:hover {
-    background: var(--color-surface-2);
-  }
 
   select {
+    padding: 0 var(--space-1);
     border: 0;
     background: transparent;
-    color: var(--color-text);
+    color: inherit;
     font: inherit;
-    font-size: var(--text-sm);
-    font-weight: var(--weight-semibold);
+    font-weight: var(--weight-medium);
     cursor: pointer;
 
     &:focus-visible {
       outline: none;
     }
+
+    option {
+      color: #111;
+    }
   }
 
   &:focus-within {
-    outline: 3px solid var(--color-focus);
+    outline: 2px solid var(--color-focus);
     outline-offset: 2px;
   }
 }
 
-.header-login {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  height: 40px;
-  padding: 0 var(--space-4);
-  border-radius: var(--radius-control);
+// Search: a full-width bar under the header, opened by "Search"
+.header-search {
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg);
   color: var(--color-text);
-  font-family: var(--font-display);
+  box-shadow: 0 1px 0 var(--color-border);
+}
+
+.header-search-inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding: var(--space-3) var(--gutter);
+}
+
+.header-search-input {
+  flex: 1;
+  height: 48px;
+  border: 0;
+  border-bottom: 1px solid var(--color-text);
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
   font-size: var(--text-lg);
-  font-weight: var(--weight-bold);
-  letter-spacing: var(--tracking-caps);
-  text-transform: uppercase;
 
-  &:hover {
-    background: var(--color-surface-2);
-    color: var(--color-text);
-    text-decoration: none;
+  &::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  &:focus {
+    outline: none;
   }
 }
 
-.cart-badge {
-  position: absolute;
-  top: 2px;
-  right: 0;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  border-radius: var(--radius-control);
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: var(--weight-bold);
-  line-height: 18px;
-  text-align: center;
-}
+// Over the home photo: transparent with white text and menu; it turns white under the pointer
+:host(.overlay) {
+  margin-bottom: calc(-1 * var(--header-height));
 
-// Tablet: no main nav links (they move to the menu)
-@media (width <= 1024px) {
-  .header-inner {
-    grid-template-columns: auto auto minmax(0, 1fr) auto;
+  .header {
+    background: transparent;
+    color: #fff;
+    box-shadow: none;
   }
 
+  .cart-count {
+    background: #fff;
+    color: #111;
+  }
+
+  &:hover,
+  &:focus-within {
+    .header {
+      background: var(--color-bg);
+      color: var(--color-text);
+      box-shadow: 0 1px 0 var(--color-border);
+    }
+
+    .cart-count {
+      background: var(--color-text);
+      color: var(--color-bg);
+    }
+  }
+}
+
+// Tablet: the category links move to the menu
+@media (width <= 1100px) {
   .header-nav {
     display: none;
   }
 
   .header-menu-button {
-    display: inline-grid;
+    display: inline-flex;
+  }
+
+  .header-inner {
+    gap: var(--space-3);
   }
 }
 
-// Phone: search gets its own row
+// Phone: icons only (the labels stay for screen readers)
 @media (width <= 680px) {
-  .header-inner {
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    gap: var(--space-2) var(--space-2);
-    padding-block: var(--space-2);
-  }
-
-  .header-search {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    max-width: none;
-  }
-
-  .brand-name {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .header-lang app-icon {
-    display: none;
-  }
-
-  // Icon only on phones; the text stays for screen readers (the link's name)
-  .header-login span {
+  .action-label {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -276,9 +262,14 @@
     gap: 0;
   }
 
-  .header-login {
-    padding: 0;
-    width: 40px;
-    justify-content: center;
+  .brand {
+    font-size: 1.2rem;
+  }
+}
+
+@media (width > 680px) {
+  .login-icon,
+  .nav-cart-wrap app-icon {
+    display: none;
   }
 }

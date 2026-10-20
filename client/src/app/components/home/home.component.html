@@ -1,9 +1,9 @@
 <div class="main">
-  <section class="hero contour-bg" [class.hero-has-video]="!!video() || !!heroImage()" aria-labelledby="hero-title">
+  <section class="hero" aria-labelledby="hero-title">
     @if (video()) {
       <video
         #videoRef
-        class="hero-video"
+        class="hero-media"
         muted
         playsinline
         loop
@@ -15,43 +15,22 @@
       >
         <source [src]="video()" type="video/mp4" />
       </video>
-      <div class="hero-scrim"></div>
     } @else if (heroImage()) {
-      <img class="hero-video" [ngSrc]="heroImage()" [style.object-position]="heroImagePosition()" alt="" fill priority sizes="100vw" />
-      <div class="hero-scrim"></div>
+      <img class="hero-media" [ngSrc]="heroImage()" [style.object-position]="heroImagePosition()" alt="" fill priority sizes="100vw" />
+    } @else if (featured(); as featured) {
+      <img class="hero-media" [ngSrc]="featured.mainImage.url" alt="" fill priority sizes="100vw" />
     }
-    <div class="hero-inner">
-      <div class="hero-copy">
-        <span class="blaze hero-blaze" aria-hidden="true"></span>
-        <p class="eyebrow hero-eyebrow">{{ 'ESHOP_DESCRIPTION' | translate | async }}</p>
-        <h1 class="hero-title" id="hero-title">{{ 'Hero_title' | translate | async }}</h1>
-        <p class="hero-text">{{ 'Hero_text' | translate | async }}</p>
-        <div class="hero-actions">
-          <a class="btn btn-primary hero-cta" [routerLink]="['/' + lang() + '/product/all']">
-            {{ 'Shop_now' | translate | async }}
-            <app-icon name="arrowRight" [size]="18" />
-          </a>
-          @if ('Home_promo_text_link' | translate | async; as promoText) {
-            <a class="btn btn-outline hero-secondary" [href]="'Home_promo_link' | translate | async">{{ promoText }}</a>
-          }
-        </div>
-      </div>
+    <div class="hero-scrim"></div>
 
-      @if (!video() && !heroImage() && featured(); as featured) {
-        <a class="hero-feature" [routerLink]="['/' + lang() + '/product/' + featured.titleUrl]">
-          <span class="hero-feature-media">
-            <img [ngSrc]="featured.mainImage.url" alt="" fill priority sizes="(max-width: 900px) 90vw, 460px" />
-          </span>
-          <span class="hero-feature-coords" aria-hidden="true">N 49°10′ · E 20°08′ · 2655 m</span>
-          <span class="signpost hero-feature-card">
-            <span class="blaze" aria-hidden="true"></span>
-            <span class="hero-feature-text">
-              <span class="hero-feature-title">{{ featured.title }}</span>
-              <span class="price-current">{{ featured.salePrice | priceFormat }} {{ currency() }}</span>
-            </span>
-          </span>
-        </a>
-      }
+    <div class="hero-copy">
+      <h1 class="hero-title" id="hero-title">{{ 'Hero_title' | translate | async }}</h1>
+      <p class="hero-text">{{ 'Hero_text' | translate | async }}</p>
+      <div class="hero-actions">
+        <a class="btn btn-outline hero-cta" [routerLink]="['/' + lang() + '/product/all']">{{ 'Shop_now' | translate | async }}</a>
+        @if ('Home_promo_text_link' | translate | async; as promoText) {
+          <a class="btn btn-outline" [href]="'Home_promo_link' | translate | async">{{ promoText }}</a>
+        }
+      </div>
     </div>
 
     @if (video()) {
@@ -61,63 +40,42 @@
         (click)="toggleVideo()"
         [attr.aria-label]="(videoPlaying() ? 'Pause_video' : 'Play_video') | translate | async"
       >
-        <app-icon [name]="videoPlaying() ? 'pause' : 'play'" [size]="18" />
+        <app-icon [name]="videoPlaying() ? 'pause' : 'play'" [size]="16" />
       </button>
     }
-  </section>
-
-  <section class="perks" aria-label="Shop benefits">
-    <ul class="perks-list" role="list">
-      @if (cart(); as cart) {
-        <li>
-          <span class="blaze trail-green" aria-hidden="true"></span>
-          <span>{{ 'Free_shipping_limit' | translate | async }} {{ cart.shippingLimit }} {{ currency() }}</span>
-        </li>
-      }
-      <li>
-        <span class="blaze trail-yellow" aria-hidden="true"></span>
-        <span>{{ 'Home_promo' | translate | async }}</span>
-      </li>
-      <li>
-        <span class="blaze trail-blue" aria-hidden="true"></span>
-        <span>{{ 'Secure_payment' | translate | async }}</span>
-      </li>
-    </ul>
   </section>
 
   @if (categories().length) {
     <section class="container section" aria-labelledby="categories-title">
       <div class="section-header">
-        <h2 id="categories-title"><span class="blaze trail-blue" aria-hidden="true"></span>{{ 'Shop_by_category' | translate | async }}</h2>
+        <h2 id="categories-title">{{ 'Categories' | translate | async }}</h2>
       </div>
       <app-categories-list [categories]="categories()" [lang]="lang()!" />
     </section>
   }
 
-  <section class="container section home-products" aria-labelledby="products-title">
-    <div class="section-header">
-      <h2 id="products-title"><span class="blaze" aria-hidden="true"></span>{{ 'Products' | translate | async }}</h2>
-      <a class="text-link" [routerLink]="['/' + lang() + '/product/all']">
-        {{ 'View_all' | translate | async }}
-        <app-icon name="arrowRight" [size]="16" />
-      </a>
-    </div>
-    @if (loadingProducts() && !products()) {
-      <mat-progress-bar mode="indeterminate" />
-    }
-    @if (products(); as products) {
-      <app-products-list
-        [class.disabled]="loadingProducts()"
-        [products]="products"
-        [cartIds]="cartIds()"
-        [currency]="currency()"
-        [lang]="lang()!"
-        (addProduct)="addToCart($event)"
-        (removeProduct)="removeFromCart($event)"
-      />
-      @if (pagination(); as pagination) {
-        <app-pagination [class.disabled]="loadingProducts()" [pagination]="pagination" (changePage)="changePage($event)" />
+  <div class="contour-bg home-products-band">
+    <section class="container section home-products" aria-labelledby="products-title">
+      <div class="section-header">
+        <h2 id="products-title">{{ 'New_arrivals' | translate | async }}</h2>
+      </div>
+      @if (loadingProducts() && !products()) {
+        <mat-progress-bar mode="indeterminate" />
       }
-    }
-  </section>
+      @if (products(); as products) {
+        <app-products-list
+          [class.disabled]="loadingProducts()"
+          [products]="products"
+          [cartIds]="cartIds()"
+          [currency]="currency()"
+          [lang]="lang()!"
+          (addProduct)="addToCart($event)"
+          (removeProduct)="removeFromCart($event)"
+        />
+        <div class="home-more">
+          <a class="btn btn-primary" [routerLink]="['/' + lang() + '/product/all']">{{ 'View_all' | translate | async }}</a>
+        </div>
+      }
+    </section>
+  </div>
 </div>

@@ -3,35 +3,33 @@
     <li class="product_card">
       <a class="product_card-media" [routerLink]="['/' + lang() + '/product/' + product.titleUrl]" tabindex="-1" aria-hidden="true">
         @if (product.mainImage.url) {
-          <img [ngSrc]="product.mainImage.url" alt="" fill sizes="(max-width: 520px) 50vw, (max-width: 900px) 33vw, 300px" />
+          <img [ngSrc]="product.mainImage.url" alt="" fill sizes="(max-width: 680px) 50vw, (max-width: 1100px) 33vw, 320px" />
         }
       </a>
       @if (product.onSale && product.regularPrice) {
         <span class="badge badge-sale product_card-badge">{{ 'Sale' | translate | async }}</span>
       }
-      <div class="product_card-body">
-        <h3 class="product_card-title">
-          <a [routerLink]="['/' + lang() + '/product/' + product.titleUrl]">{{ product.title }}</a>
-        </h3>
-        @if (product.description) {
-          <p class="product_card-description">{{ product.description }}</p>
+      <h3 class="product_card-title">
+        <a [routerLink]="['/' + lang() + '/product/' + product.titleUrl]">{{ product.title }}</a>
+      </h3>
+      <span class="price product_card-price">
+        <span class="price-current">{{ product.salePrice | priceFormat }} {{ currency() }}</span>
+        @if (product.onSale && product.regularPrice) {
+          <s class="price-before">{{ product.regularPrice | priceFormat }} {{ currency() }}</s>
         }
-        <span class="stock stock-{{ product.stock }}">{{ product.stock | translate | async }}</span>
-        <div class="product_card-footer">
-          <span class="price">
-            <span class="price-current">{{ product.salePrice | priceFormat }} {{ currency() }}</span>
-            @if (product.onSale && product.regularPrice) {
-              <s class="price-before">{{ product.regularPrice | priceFormat }} {{ currency() }}</s>
-            }
-          </span>
-          @if (cartIds) {
-            <app-cart-show [items]="cartIds[product._id]" (add)="onAddProduct(product._id)" (remove)="onRemoveProduct(product._id)" />
-          }
-        </div>
-        @if (showEdit()) {
-          <button type="button" class="btn btn-outline btn-sm" (click)="onEditProduct(product.titleUrl)">{{ 'Edit' | translate | async }}</button>
-        }
-      </div>
+      </span>
+      @if (cartIds) {
+        <app-cart-show
+          class="product_card-cart"
+          [class.is-in-cart]="!!cartIds[product._id]"
+          [items]="cartIds[product._id]"
+          (add)="onAddProduct(product._id)"
+          (remove)="onRemoveProduct(product._id)"
+        />
+      }
+      @if (showEdit()) {
+        <button type="button" class="btn btn-outline btn-sm" (click)="onEditProduct(product.titleUrl)">{{ 'Edit' | translate | async }}</button>
+      }
     </li>
   }
 </ul>

@@ -24,8 +24,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { TranslateService } from '../../services/translate.service';
 import { Product, Category, Cart } from '../../shared/models';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { PriceFormatPipe } from '../../pipes/price.pipe';
-import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
 import { CategoriesListComponent } from '../../shared/components/categories-list/categories-list.component';
 import { ProductsListComponent } from '../../shared/components/products-list/products-list.component';
 import { IconComponent } from '../../shared/components/icon/icon.component';
@@ -42,12 +40,10 @@ import { ThemeService } from '../../services/theme.service';
     NgOptimizedImage,
     CategoriesListComponent,
     ProductsListComponent,
-    PaginationComponent,
     IconComponent,
     RouterLink,
     MatProgressBarModule,
     TranslatePipe,
-    PriceFormatPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

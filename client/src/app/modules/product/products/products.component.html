@@ -28,7 +28,7 @@
   </mat-drawer>
   <mat-drawer-content>
     <div class="main">
-      <header class="products-header contour-bg">
+      <header class="products-header">
         <div class="products-header-inner">
           <nav aria-label="Breadcrumb">
             <ol class="waypoints">
@@ -50,55 +50,57 @@
         </div>
       </header>
 
-      <div class="container products-content">
-        <div class="sidebar-layout">
-          <aside class="products-sidebar-desktop" aria-label="Filters">
-            <ng-container *ngTemplateOutlet="filters; context: { inDrawer: false }" />
-          </aside>
+      <div class="contour-bg">
+        <div class="container products-content">
+          <div class="sidebar-layout">
+            <aside class="products-sidebar-desktop" aria-label="Filters">
+              <ng-container *ngTemplateOutlet="filters; context: { inDrawer: false }" />
+            </aside>
 
-          <div class="products-main">
-            <div class="products-toolbar">
-              <button type="button" class="btn btn-outline btn-sm products-filter-button" (click)="toggleSidebar()">
-                <app-icon name="filter" [size]="16" />
-                {{ 'Filter' | translate | async }}
-              </button>
-              @if (pagination().total) {
-                <span class="products-count" aria-live="polite">{{ pagination().total }} {{ 'products' | translate | async }}</span>
+            <div class="products-main">
+              <div class="products-toolbar">
+                <button type="button" class="btn btn-outline btn-sm products-filter-button" (click)="toggleSidebar()">
+                  <app-icon name="filter" [size]="16" />
+                  {{ 'Filter' | translate | async }}
+                </button>
+                @if (pagination().total) {
+                  <span class="products-count" aria-live="polite">{{ pagination().total }} {{ 'products' | translate | async }}</span>
+                }
+              </div>
+
+              @if (loadingProducts()) {
+                <mat-progress-bar class="products-progress" mode="indeterminate" />
+              }
+
+              @if (subCategories(); as subCategories) {
+                @if (subCategories.length && pagination().page === 1) {
+                  <app-categories-list class="products-subcategories" [categories]="subCategories" [lang]="lang()!" />
+                }
+              }
+
+              @if (products(); as products) {
+                @if (products.length) {
+                  <app-products-list
+                    [class.disabled]="loadingProducts()"
+                    [products]="products"
+                    [cartIds]="cartIds()"
+                    [currency]="currency()"
+                    [lang]="lang()!"
+                    (addProduct)="addToCart($event)"
+                    (removeProduct)="removeFromCart($event)"
+                  />
+                } @else if (!loadingProducts()) {
+                  <div class="products-empty">
+                    <app-icon name="search" [size]="28" />
+                    <p>{{ 'No_products' | translate | async }}</p>
+                    <a class="btn btn-outline btn-sm" [routerLink]="['/' + lang() + '/product/all']">{{ 'View_all' | translate | async }}</a>
+                  </div>
+                }
+                @if (pagination(); as pagination) {
+                  <app-pagination [class.disabled]="loadingProducts()" [pagination]="pagination" (changePage)="changePage($event)" />
+                }
               }
             </div>
-
-            @if (loadingProducts()) {
-              <mat-progress-bar class="products-progress" mode="indeterminate" />
-            }
-
-            @if (subCategories(); as subCategories) {
-              @if (subCategories.length && pagination().page === 1) {
-                <app-categories-list class="products-subcategories" [categories]="subCategories" [lang]="lang()!" />
-              }
-            }
-
-            @if (products(); as products) {
-              @if (products.length) {
-                <app-products-list
-                  [class.disabled]="loadingProducts()"
-                  [products]="products"
-                  [cartIds]="cartIds()"
-                  [currency]="currency()"
-                  [lang]="lang()!"
-                  (addProduct)="addToCart($event)"
-                  (removeProduct)="removeFromCart($event)"
-                />
-              } @else if (!loadingProducts()) {
-                <div class="products-empty">
-                  <app-icon name="search" [size]="28" />
-                  <p>{{ 'No_products' | translate | async }}</p>
-                  <a class="btn btn-outline btn-sm" [routerLink]="['/' + lang() + '/product/all']">{{ 'View_all' | translate | async }}</a>
-                </div>
-              }
-              @if (pagination(); as pagination) {
-                <app-pagination [class.disabled]="loadingProducts()" [pagination]="pagination" (changePage)="changePage($event)" />
-              }
-            }
           </div>
         </div>
       </div>

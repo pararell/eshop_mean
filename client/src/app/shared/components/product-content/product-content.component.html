@@ -42,16 +42,16 @@
   <ul class="buy-box-perks" role="list">
     @if (shippingLimit()) {
       <li>
-        <span class="blaze trail-green" aria-hidden="true"></span>
+        <app-icon name="check" [size]="16" />
         {{ 'Free_shipping_limit' | translate | async }} {{ shippingLimit() }} {{ currency() }}
       </li>
     }
     <li>
-      <span class="blaze trail-yellow" aria-hidden="true"></span>
+      <app-icon name="check" [size]="16" />
       {{ 'Home_promo' | translate | async }}
     </li>
     <li>
-      <span class="blaze trail-blue" aria-hidden="true"></span>
+      <app-icon name="check" [size]="16" />
       {{ 'Secure_payment' | translate | async }}
     </li>
   </ul>

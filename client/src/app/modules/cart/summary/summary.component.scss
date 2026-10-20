@@ -1,15 +1,10 @@
 .summary-head h1 {
-  max-width: 24ch;
+  max-width: 28ch;
   font-size: var(--text-3xl);
-  line-height: 1;
 }
 
 .summary-blaze {
-  display: block;
-  width: 48px;
-  height: 48px;
-  margin-bottom: var(--space-5);
-  border: 2px solid var(--color-text);
+  display: none;
 }
 
 .summary {
@@ -17,5 +12,5 @@
 }
 
 .summary-actions {
-  margin-top: var(--space-6);
+  margin-top: var(--space-8);
 }

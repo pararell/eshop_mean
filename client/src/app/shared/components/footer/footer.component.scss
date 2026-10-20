@@ -1,20 +1,16 @@
-// Always dark, like a signpost board at dusk; a ridge (elevation profile) rises into it
 :host {
-  --footer-bg: var(--color-footer);
-  --footer-text: #ece8de;
   display: block;
-  margin-top: var(--space-16);
+  margin-top: var(--space-24);
 }
 
+// Mountains rise into the dark footer
 .footer-ridge {
-  height: 56px;
   margin-bottom: -1px;
-  background: var(--footer-bg);
 }
 
 .footer {
-  background: var(--footer-bg);
-  color: #b3aea3;
+  background: var(--color-footer);
+  color: #a8a8a5;
   font-size: var(--text-sm);
 }
 
@@ -24,7 +20,7 @@
   gap: var(--space-10);
   max-width: var(--container-max);
   margin-inline: auto;
-  padding: var(--space-10) var(--gutter) var(--space-12);
+  padding: var(--space-12) var(--gutter);
 
   @media (width <= 760px) {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -43,23 +39,13 @@
   align-items: center;
   gap: var(--space-3);
   margin-bottom: var(--space-3);
-  color: var(--footer-text);
-  font-family: var(--font-display);
-  font-size: var(--text-2xl);
-  font-weight: var(--weight-black);
-  text-transform: uppercase;
+  color: #f2f2f0;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
 
   &:hover {
-    color: var(--footer-text);
     text-decoration: none;
   }
-}
-
-.footer-mark {
-  --color-blaze: #ece8de;
-  width: 26px;
-  height: 26px;
-  border: 0;
 }
 
 .footer-description {
@@ -69,29 +55,19 @@
 .footer-perks {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  margin: var(--space-4) 0 0;
+  gap: var(--space-1);
+  margin: var(--space-3) 0 0;
   padding: 0;
   list-style: none;
-
-  li {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    color: var(--footer-text);
-  }
-
-  .blaze {
-    --color-blaze: #ece8de;
-    border: 0;
-  }
 }
 
 .footer-heading {
-  margin-bottom: var(--space-4);
-  color: var(--footer-text);
-  font-size: var(--text-lg);
+  margin-bottom: var(--space-3);
+  color: #f2f2f0;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
 }
 
 .footer-column ul {
@@ -105,18 +81,20 @@
 
 .footer-column a,
 .footer-bottom a {
-  color: #b3aea3;
+  color: #a8a8a5;
 
   &:hover {
-    color: #f5cf3a;
+    color: #fff;
   }
 }
 
 .footer-bottom {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  border-top: 1px solid rgb(255 255 255 / 12%);
+}
+
+// The logo's blaze keeps white bands on the dark footer
+.footer-mark {
+  --color-blaze: #fff;
 }
 
 .footer-inner-bottom {

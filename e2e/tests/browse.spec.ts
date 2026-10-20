@@ -46,9 +46,10 @@ test('home banner shows the image of the active theme', async ({ page }) => {
   );
   try {
     await page.goto('/');
-    // The theme loads in the browser; the banner switches from the newest product to the theme image
-    await expect(page.locator('.hero img.hero-video')).toHaveAttribute('src', image);
-    await expect(page.locator('.hero-feature')).toHaveCount(0);
+    // The theme is part of the server-rendered page
+    // Only the theme's image: it replaces the newest product as the banner
+    await expect(page.locator('.hero img.hero-media')).toHaveAttribute('src', image);
+    await expect(page.locator('.hero .hero-media')).toHaveCount(1);
   } finally {
     await withDb((db) => db.query(`DELETE FROM themes WHERE title_url = 'e2e-banner'`));
   }

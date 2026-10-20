@@ -1,6 +1,5 @@
 <a class="skip-link" href="#content">Skip to content</a>
 <header class="header" id="navbar">
-  <div class="trail-stripe" aria-hidden="true"></div>
   <div class="header-inner">
     <button class="icon-button header-menu-button" type="button" aria-label="Menu" [matMenuTriggerFor]="mobileMenu">
       <app-icon name="menu" />
@@ -10,37 +9,33 @@
       @if (logo()) {
         <img class="brand-logo" [src]="logo()" alt="" />
       } @else {
-        <span class="blaze brand-mark" aria-hidden="true"></span>
+        <span class="blaze brand-blaze" aria-hidden="true"></span>
       }
       <span class="brand-name">{{ 'ESHOP_TITLE' | translate | async }}</span>
     </a>
 
     <nav class="header-nav" aria-label="Main">
       <a [routerLink]="['/' + (lang$ | async) + '/product/all']" routerLinkActive="is-active">{{ 'Products' | translate | async }}</a>
+      @for (category of menuCategories(); track category.titleUrl) {
+        <a [routerLink]="['/' + (lang$ | async) + '/product/category/' + category.titleUrl]" routerLinkActive="is-active">{{ category.title }}</a>
+      }
       <a [routerLink]="['/' + (lang$ | async) + '/eshop/contact']" routerLinkActive="is-active">{{ 'Contact' | translate | async }}</a>
     </nav>
 
-    <div class="header-search" role="search">
-      <app-icon class="header-search-icon" name="search" [size]="18" />
-      <input
-        type="search"
-        class="header-search-input"
-        aria-label="Search"
-        [placeholder]="('Search_products' | translate | async) ?? ''"
-        [formControl]="query"
-        [matAutocomplete]="auto"
-      />
-      <mat-autocomplete #auto="matAutocomplete" class="header-search-panel">
-        @for (title of productTitles$(); track title) {
-          <mat-option [value]="title" (onSelectionChange)="openProduct(title)">{{ title }}</mat-option>
-        }
-      </mat-autocomplete>
-    </div>
-
     <div class="header-actions">
+      <button
+        class="text-button header-search-toggle"
+        type="button"
+        (click)="toggleSearch()"
+        [attr.aria-expanded]="searchOpen()"
+        aria-controls="header-search"
+      >
+        <app-icon name="search" [size]="18" />
+        <span class="action-label">{{ 'Search' | translate | async }}</span>
+      </button>
+
       <label class="header-lang">
         <span class="visually-hidden">Language</span>
-        <app-icon name="globe" [size]="18" />
         <select aria-label="Language" [ngModel]="lang$ | async" (ngModelChange)="setLang($event)">
           @for (option of languageOptions; track option) {
             <option [value]="option">{{ option | uppercase }}</option>
@@ -55,28 +50,55 @@
         [attr.aria-label]="theme.isDark() ? 'Switch to light mode' : 'Switch to dark mode'"
         [attr.aria-pressed]="theme.isDark()"
       >
-        <app-icon [name]="theme.isDark() ? 'sun' : 'moon'" />
+        <app-icon [name]="theme.isDark() ? 'sun' : 'moon'" [size]="18" />
       </button>
 
       @if (user$(); as user) {
         <button class="icon-button" type="button" aria-label="Account" [matMenuTriggerFor]="accountMenu">
-          <app-icon name="user" />
+          <app-icon name="user" [size]="19" />
         </button>
       } @else {
-        <a class="header-login" [routerLink]="['/' + (lang$ | async) + '/authorize/signin']">
-          <app-icon name="login" [size]="18" />
-          <span>{{ 'Login' | translate | async }}</span>
+        <a class="text-button header-login" [routerLink]="['/' + (lang$ | async) + '/authorize/signin']">
+          <app-icon class="login-icon" name="user" [size]="19" />
+          <span class="action-label">{{ 'Login' | translate | async }}</span>
         </a>
       }
 
-      <a class="icon-button nav-cart-wrap" [routerLink]="['/' + (lang$ | async) + '/cart']" [attr.aria-label]="cartLabel()">
-        <app-icon name="cart" />
+      <a class="text-button nav-cart-wrap" [routerLink]="['/' + (lang$ | async) + '/cart']" [attr.aria-label]="cartLabel()">
+        <app-icon name="cart" [size]="19" />
+        <span class="action-label">{{ 'Cart' | translate | async }}</span>
         @if (cartCount()) {
-          <span class="cart-badge" aria-hidden="true">{{ cartCount() }}</span>
+          <span class="cart-count" aria-hidden="true">{{ cartCount() }}</span>
         }
       </a>
     </div>
   </div>
+
+  @if (searchOpen()) {
+    <div class="header-search" id="header-search" role="search">
+      <div class="header-search-inner">
+        <app-icon class="header-search-icon" name="search" [size]="20" />
+        <input
+          #searchInput
+          type="search"
+          class="header-search-input"
+          aria-label="Search"
+          [placeholder]="('Search_products' | translate | async) ?? ''"
+          [formControl]="query"
+          [matAutocomplete]="auto"
+          (keydown.escape)="toggleSearch()"
+        />
+        <button class="icon-button" type="button" (click)="toggleSearch()" aria-label="Close search">
+          <app-icon name="close" [size]="18" />
+        </button>
+      </div>
+      <mat-autocomplete #auto="matAutocomplete" class="header-search-panel">
+        @for (title of productTitles$(); track title) {
+          <mat-option [value]="title" (onSelectionChange)="openProduct(title)">{{ title }}</mat-option>
+        }
+      </mat-autocomplete>
+    </div>
+  }
 </header>
 
 <mat-menu #accountMenu="matMenu" xPosition="before" class="header-menu">
@@ -85,6 +107,9 @@
 
 <mat-menu #mobileMenu="matMenu" class="header-menu">
   <a mat-menu-item [routerLink]="['/' + (lang$ | async) + '/product/all']">{{ 'Products' | translate | async }}</a>
+  @for (category of menuCategories(); track category.titleUrl) {
+    <a mat-menu-item [routerLink]="['/' + (lang$ | async) + '/product/category/' + category.titleUrl]">{{ category.title }}</a>
+  }
   <a mat-menu-item [routerLink]="['/' + (lang$ | async) + '/eshop/contact']">{{ 'Contact' | translate | async }}</a>
   @if (!user$()) {
     <a mat-menu-item [routerLink]="['/' + (lang$ | async) + '/authorize/signin']">{{ 'Login' | translate | async }}</a>
