@@ -89,6 +89,7 @@ export function buildSystemPrompt(languages: LanguageCode[], categories: string[
   return [
     'You write product listings for an online shop. An admin will review and edit everything you write before it is published.',
     `Write every text in each of these languages: ${languageList}. Write natural, idiomatic copy for each language; do not translate word for word.`,
+    `Write ${LANGUAGE_NAMES[languages[0]]} (${languages[0]}) first: it is the language the admin works in.`,
     'Use only facts that are visible in the photos or stated in the admin notes or the supplier text. Never invent materials, brands, certifications, dimensions, sizes or origin. If something important is unclear, leave it out and add a short warning.',
     'Never mention prices, discounts, stock, availability, delivery or payment.',
     'The descriptionHtml must not repeat the attributes; attributes are shown as a separate list.',

@@ -32,8 +32,11 @@ const stripeStub = await new StripeStub().start();
 stripeStub.webhook = { url: `${baseURL}/api/payments/webhook`, secret: STRIPE_WEBHOOK_SECRET };
 const stripeEnv = { STRIPE_API_BASE: stripeStub.url, STRIPE_WEBHOOK_SECRET };
 
+// AI drafts use the default provider (DeepSeek) against the stub; set explicitly so a local .env can't switch it
 const aiEnv = {
-  GEMINI_API_KEY: 'e2e-gemini-key',
+  AI_PROVIDER: 'deepseek',
+  AI_MODEL: 'deepseek-flash',
+  DEEPSEEK_API_KEY: 'e2e-deepseek-key',
   AI_BASE_URL: aiStub.url,
   AI_IMAGE_ORIGIN: aiStub.url,
   // The Cloudinary SDK sends uploads to upload_prefix (read from CLOUDINARY_URL at startup)

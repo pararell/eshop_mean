@@ -1,6 +1,7 @@
 import { AnthropicProvider } from './anthropic.provider';
+import { DeepSeekProvider } from './deepseek.provider';
 import { GeminiProvider } from './gemini.provider';
-import { LlmError, LlmRequest } from './llm-provider';
+import { LlmError, LlmRequest, retryAfterMs } from './llm-provider';
 
 const request: LlmRequest = {
   system: 'You write product listings.',
@@ -8,6 +9,7 @@ const request: LlmRequest = {
   images: [{ mimeType: 'image/jpeg', data: 'AAAA' }],
   schema: { type: 'object', properties: { title: { type: 'string' } }, required: ['title'] },
   timeoutMs: 5000,
+  maxOutputTokens: 4096,
 };
 
 const realFetch = global.fetch;
@@ -107,7 +109,13 @@ describe('AnthropicProvider', () => {
     expect(headers['x-api-key']).toBe('secret-key');
     expect(headers['anthropic-version']).toBe('2023-06-01');
     const body = sentBody();
-    expect(body).toMatchObject({ model: 'claude-haiku-5-5', system: request.system, tool_choice: { type: 'tool', name: 'save_product_draft' } });
+    expect(body).toMatchObject({
+      model: 'claude-haiku-5-5',
+      max_tokens: 4096,
+      system: request.system,
+      tool_choice: { type: 'tool', name: 'save_product_draft' },
+    });
+    expect(body.thinking).toBeUndefined();
     expect(body.tools[0].input_schema).toEqual(request.schema);
     expect(body.messages[0].content).toEqual([
       { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: 'AAAA' } },
@@ -126,5 +134,56 @@ describe('AnthropicProvider', () => {
     await expectLlmError(provider.generate(request), 'invalid_output');
     reply({ content: [{ type: 'text', text: 'Here you go' }], stop_reason: 'end_turn', usage: {} });
     await expectLlmError(provider.generate(request), 'invalid_output');
+  });
+});
+
+describe('DeepSeekProvider', () => {
+  const answer = {
+    content: [{ type: 'tool_use', name: 'save_product_draft', input: { title: 'Bunda' } }],
+    stop_reason: 'tool_use',
+    usage: { input_tokens: 500, output_tokens: 60 },
+  };
+
+  it("uses DeepSeek's Anthropic-compatible endpoint with thinking turned off", async () => {
+    const provider = new DeepSeekProvider('deepseek-flash', 'ds-key');
+    reply(answer);
+
+    await expect(provider.generate(request)).resolves.toEqual({ json: { title: 'Bunda' }, usage: { inputTokens: 500, outputTokens: 60 } });
+
+    expect(provider.name).toBe('deepseek');
+    expect(sent().url).toBe('https://api.deepseek.com/anthropic/v1/messages');
+    expect((sent().init.headers as Record<string, string>)['x-api-key']).toBe('ds-key');
+    const body = sentBody();
+    expect(body).toMatchObject({
+      model: 'deepseek-flash',
+      max_tokens: 4096,
+      thinking: { type: 'disabled' },
+      tool_choice: { type: 'tool', name: 'save_product_draft' },
+    });
+    expect(body.tools[0].input_schema).toEqual(request.schema);
+    expect(body.messages[0].content[0]).toEqual({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: 'AAAA' } });
+  });
+
+  it('names DeepSeek in errors and passes on Retry-After', async () => {
+    const provider = new DeepSeekProvider('deepseek-flash', 'ds-key', 'http://stub');
+    fetchMock.mockResolvedValueOnce(new Response('{"error":{"message":"busy"}}', { status: 429, headers: { 'retry-after': '3' } }));
+
+    const error = await provider.generate(request).catch((e: LlmError) => e);
+
+    expect(error).toBeInstanceOf(LlmError);
+    expect(error).toMatchObject({ kind: 'unavailable', retryAfterMs: 3000 });
+    expect((error as LlmError).message).toMatch(/^DeepSeek: HTTP 429/);
+    expect((error as LlmError).message).not.toContain('ds-key');
+  });
+});
+
+describe('retryAfterMs', () => {
+  const withHeader = (value?: string) => new Response(null, { status: 429, headers: value ? { 'retry-after': value } : {} });
+
+  it('reads seconds and HTTP dates', () => {
+    expect(retryAfterMs(withHeader('2'))).toBe(2000);
+    expect(retryAfterMs(withHeader('Wed, 21 Oct 2026 10:00:05 GMT'), Date.parse('2026-10-21T10:00:00Z'))).toBe(5000);
+    expect(retryAfterMs(withHeader())).toBeUndefined();
+    expect(retryAfterMs(withHeader('soon'))).toBeUndefined();
   });
 });

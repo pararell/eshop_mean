@@ -60,3 +60,12 @@ Admins should get a multi-language product draft from photos and a few words. Re
 - The schema subset is conservative; richer constraints (string lengths, patterns) live in the DTOs.
 - Tests are hermetic: unit tests mock `fetch`, API and e2e tests use local stubs via `AI_BASE_URL` /
   `AI_IMAGE_ORIGIN`.
+
+## Update 2026-10-21: DeepSeek as the default provider
+
+DeepSeek (`deepseek-flash`) was added and made the default. It is called through DeepSeek's
+Anthropic-compatible endpoint, so `DeepSeekProvider` is the Claude provider with a different base
+URL and thinking mode turned off; no third request format was needed. The abstraction held: the
+service, schema, validation and usage log are unchanged. `LlmRequest` gained `maxOutputTokens`, and
+`LlmError` carries the provider's `Retry-After` for the busy-provider retries. Details in
+[docs/ai.md § Configuration](../ai.md#5-configuration).

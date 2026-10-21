@@ -42,6 +42,9 @@ const testEnv: Record<string, string> = {
   AI_MODEL: '',
   GEMINI_API_KEY: '',
   ANTHROPIC_API_KEY: '',
+  DEEPSEEK_API_KEY: '',
+  // Retries of a busy provider without real waits
+  AI_RETRY_DELAY_MS: '0',
   AI_BASE_URL: '',
   AI_IMAGE_ORIGIN: '',
 };

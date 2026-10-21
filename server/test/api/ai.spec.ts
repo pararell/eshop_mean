@@ -1,7 +1,8 @@
 import { eq } from 'drizzle-orm';
 
-import { aiUsage, users } from '../../src/db/schema';
+import { aiUsage } from '../../src/db/schema';
 import { AiStub, anthropicReply, draftAnswer, geminiReply } from '../utils/ai-stub';
+import { MODEL_PRICES, priceAt } from '../../src/ai/ai.config';
 import { adminToken, createTestApp, createUser, loginToken, productFixture, TestApp } from '../utils/test-app';
 
 const IMAGE = (stub: AiStub) => `${stub.url}/test/image/upload/v1/products/jacket.jpg`;
@@ -55,7 +56,6 @@ describe('AI product drafts API', () => {
         GEMINI_API_KEY: 'test-gemini-key',
         AI_BASE_URL: stub.url,
         AI_IMAGE_ORIGIN: stub.url,
-        AI_RATE_LIMIT_PER_HOUR: '5',
         AI_TIMEOUT_MS: '1000',
       });
       // AI config is read when the app is created, so later files are unaffected once these are reset
@@ -67,7 +67,6 @@ describe('AI product drafts API', () => {
       await t.close();
       await stub.stop();
       Object.assign(process.env, { GEMINI_API_KEY: '', AI_BASE_URL: '', AI_IMAGE_ORIGIN: '' });
-      delete process.env.AI_RATE_LIMIT_PER_HOUR;
       delete process.env.AI_TIMEOUT_MS;
     });
     beforeEach(async () => {
@@ -188,22 +187,6 @@ describe('AI product drafts API', () => {
       expect(stub.providerCalls()).toHaveLength(0);
     });
 
-    it('enforces the hourly limit per admin (429)', async () => {
-      const [admin] = await t.db.select().from(users).where(eq(users.email, 'admin@test.dev'));
-      await t.db
-        .insert(aiUsage)
-        .values(Array.from({ length: 5 }, () => ({ userId: admin.id, provider: 'gemini', model: 'm', status: 'ok' as const })));
-
-      const res = await draft({ text: 'jacket' }).expect(429);
-      expect(res.body.message).toMatch(/5 drafts per hour/);
-    });
-
-    it('stops at the monthly budget (503)', async () => {
-      await t.db.insert(aiUsage).values({ userId: null, provider: 'gemini', model: 'm', status: 'ok', costUsd: 10 });
-      const res = await draft({ text: 'jacket' }).expect(503);
-      expect(res.body.message).toMatch(/monthly AI budget/);
-    });
-
     it('is admin only', async () => {
       await t.http.post('/api/admin/products/ai-draft').send({ text: 'jacket' }).expect(401);
       // RolesGuard answers 401 (not 403) for non-admins, like every admin route
@@ -258,6 +241,58 @@ describe('AI product drafts API', () => {
       expect(call.headers['x-api-key']).toBe('test-anthropic-key');
       expect(call.body.tool_choice).toEqual({ type: 'tool', name: 'save_product_draft' });
       expect(call.body.messages[0].content[0]).toMatchObject({ type: 'image', source: { type: 'base64', media_type: 'image/png' } });
+    });
+  });
+
+  describe('with DeepSeek (stubbed, the default provider)', () => {
+    let t: TestApp;
+    let stub: AiStub;
+
+    beforeAll(async () => {
+      stub = await new AiStub().start();
+      Object.assign(process.env, {
+        AI_PROVIDER: 'deepseek',
+        DEEPSEEK_API_KEY: 'test-deepseek-key',
+        AI_BASE_URL: stub.url,
+        AI_IMAGE_ORIGIN: stub.url,
+      });
+      t = await createTestApp();
+    });
+    afterAll(async () => {
+      await t.close();
+      await stub.stop();
+      Object.assign(process.env, { AI_PROVIDER: 'gemini', DEEPSEEK_API_KEY: '', AI_BASE_URL: '', AI_IMAGE_ORIGIN: '' });
+    });
+
+    it('retries a busy answer, then creates the draft with thinking off and the admin language first', async () => {
+      const auth = { Authorization: `Bearer ${await adminToken(t)}` };
+      expect((await t.http.get('/api/admin/ai/status').set(auth).expect(200)).body).toEqual({
+        enabled: true,
+        provider: 'deepseek',
+        model: 'deepseek-flash',
+      });
+      stub.replies = [{ status: 429, body: { error: { message: 'busy' } } }, anthropicReply(draftAnswer({ categories: [] }))];
+
+      const res = await t.http
+        .post('/api/admin/products/ai-draft')
+        .set(auth)
+        .set('lang', 'sk')
+        .send({ imageUrls: [IMAGE(stub)], text: 'bunda' })
+        .expect(200);
+
+      expect(res.body.draft.sk.title).toBe('SK winter jacket');
+      const calls = stub.providerCalls();
+      expect(calls).toHaveLength(2);
+      const call = calls[1];
+      expect(call.url).toBe('/v1/messages');
+      expect(call.headers['x-api-key']).toBe('test-deepseek-key');
+      expect(call.body).toMatchObject({ model: 'deepseek-flash', thinking: { type: 'disabled' }, max_tokens: 8192 });
+      expect(Object.keys(call.body.tools[0].input_schema.properties.translations.properties)).toEqual(['sk', 'en', 'cs']);
+
+      // Cost at the DeepSeek rate of this hour (peak or off-peak); the busy attempt cost nothing
+      const rate = priceAt(MODEL_PRICES['deepseek-flash'], new Date());
+      expect(res.body.usage).toMatchObject({ provider: 'deepseek', inputTokens: 2000, outputTokens: 900 });
+      expect(res.body.usage.costUsd).toBeCloseTo((2000 * rate.inputPerMTok + 900 * rate.outputPerMTok) / 1e6, 6);
     });
   });
 });

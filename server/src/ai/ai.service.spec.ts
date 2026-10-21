@@ -4,7 +4,7 @@ import { createTestDatabase, TestDatabase } from '../../test/utils/test-db';
 import { aiUsage, categories, products, users } from '../db/schema';
 import type { Database } from '../db/database.module';
 import { readAiConfig } from './ai.config';
-import { AiService } from './ai.service';
+import { AiService, primaryFirst } from './ai.service';
 import { LlmError, LlmProvider, LlmRequest, LlmResponse } from './providers/llm-provider';
 
 /** Scripted provider: each call takes the next step (an answer or an error) */
@@ -58,8 +58,13 @@ describe('AiService', () => {
   let provider: FakeProvider;
   let service: AiService;
   let userId: string;
-  const env = { CLOUDINARY_NAME: 'shop', GEMINI_API_KEY: 'k', AI_RATE_LIMIT_PER_HOUR: '3', AI_DAILY_LIMIT: '5', AI_MONTHLY_BUDGET_USD: '2' };
-  const config = { ...readAiConfig(env), price: { inputPerMTok: 0.5, outputPerMTok: 2 } };
+  const env = {
+    AI_PROVIDER: 'gemini',
+    CLOUDINARY_NAME: 'shop',
+    GEMINI_API_KEY: 'k',
+  };
+  // No real waits between retries in tests
+  const config = { ...readAiConfig(env), price: { inputPerMTok: 0.5, outputPerMTok: 2 }, retryDelayMs: 0 };
 
   beforeAll(async () => {
     database = await createTestDatabase();
@@ -97,7 +102,55 @@ describe('AiService', () => {
     expect(call.system).toContain('jackets');
     expect((call.schema as { properties: { categories: { items: { enum: string[] } } } }).properties.categories.items.enum).toEqual(['jackets']);
     expect(call.prompt).toContain('<<<\njacket\n>>>');
-    expect(call.timeoutMs).toBe(45_000);
+    expect(call.timeoutMs).toBe(0);
+    expect(call.maxOutputTokens).toBe(8192);
+  });
+
+  it("writes the admin's language first (lang header), the others after it", async () => {
+    provider.steps = [answer()];
+    await service.createDraft(userId, { text: 'jacket' }, 'sk');
+
+    const [call] = provider.calls;
+    const translations = (call.schema as { properties: { translations: { properties: object; required: string[] } } }).properties.translations;
+    expect(Object.keys(translations.properties)).toEqual(['sk', 'en', 'cs']);
+    expect(translations.required).toEqual(['sk', 'en', 'cs']);
+    expect(call.system).toContain('Write Slovak (sk) first');
+  });
+
+  it('keeps the configured order for a missing or unknown language', () => {
+    expect(primaryFirst(['en', 'sk', 'cs'], undefined)).toEqual(['en', 'sk', 'cs']);
+    expect(primaryFirst(['en', 'sk', 'cs'], 'de')).toEqual(['en', 'sk', 'cs']);
+    expect(primaryFirst(['en', 'sk', 'cs'], 'cs')).toEqual(['cs', 'en', 'sk']);
+  });
+
+  it('retries a busy provider (429/503) with backoff, then succeeds', async () => {
+    provider.steps = [new LlmError('unavailable', 'HTTP 429'), new LlmError('unavailable', 'HTTP 503'), answer()];
+
+    const result = await service.createDraft(userId, { text: 'jacket' });
+
+    expect(provider.calls).toHaveLength(3);
+    expect(result.draft.en!.title).toBe('Jacket');
+    expect((await db.select().from(aiUsage)).map((r) => r.status).sort()).toEqual(['error', 'error', 'ok']);
+  });
+
+  it('gives up after three busy answers with a clear 503', async () => {
+    provider.steps = [1, 2, 3].map(() => new LlmError('unavailable', 'HTTP 429'));
+
+    expect(await status(service.createDraft(userId, { text: 'jacket' }))).toMatchObject({
+      status: 503,
+      message: expect.stringMatching(/busy/),
+    });
+    expect(provider.calls).toHaveLength(3);
+  });
+
+  it("waits as long as the provider's Retry-After says (capped)", async () => {
+    const slow = new AiService(db, { ...config, retryDelayMs: 0 }, provider);
+    provider.steps = [new LlmError('unavailable', 'HTTP 429', undefined, 300), answer()];
+
+    const started = Date.now();
+    await slow.createDraft(userId, { text: 'jacket' });
+
+    expect(Date.now() - started).toBeGreaterThanOrEqual(290);
   });
 
   it('retries an invalid answer once and adds up both attempts', async () => {
@@ -112,7 +165,6 @@ describe('AiService', () => {
 
   it.each([
     ['timeout', 504, 'timeout'],
-    ['unavailable', 503, 'error'],
     ['auth', 502, 'error'],
     ['refused', 422, 'error'],
     ['upstream', 502, 'error'],
@@ -140,30 +192,10 @@ describe('AiService', () => {
     await expect(service.createDraft(userId, { text: 'jacket' })).resolves.toBeDefined();
   });
 
-  it('applies the hourly, daily and monthly limits from the usage log', async () => {
-    const log = (n: number, values: Partial<typeof aiUsage.$inferInsert> = {}) =>
-      db.insert(aiUsage).values(Array.from({ length: n }, () => ({ provider: 'gemini', model: 'm', status: 'ok' as const, ...values })));
-
-    await log(3, { userId });
-    expect(await status(service.createDraft(userId, { text: 'x' }))).toMatchObject({
-      status: 429,
-      message: expect.stringMatching(/3 drafts per hour/),
-    });
-
-    await db.delete(aiUsage);
-    await log(5, { userId: null });
-    expect(await status(service.createDraft(userId, { text: 'x' }))).toMatchObject({ status: 503, message: expect.stringMatching(/daily AI limit/) });
-
-    await db.delete(aiUsage);
-    await log(1, { userId: null, costUsd: 2 });
-    expect(await status(service.createDraft(userId, { text: 'x' }))).toMatchObject({
-      status: 503,
-      message: expect.stringMatching(/monthly AI budget/),
-    });
-
-    // usage from earlier months does not count
-    await db.delete(aiUsage);
-    await log(1, { userId: null, costUsd: 50, createdAt: new Date('2020-01-01') });
+  it('has no usage limits: a full usage log never blocks a draft', async () => {
+    await db
+      .insert(aiUsage)
+      .values(Array.from({ length: 500 }, () => ({ userId, provider: 'gemini', model: 'm', status: 'ok' as const, costUsd: 1 })));
     provider.steps = [answer()];
     await expect(service.createDraft(userId, { text: 'x' })).resolves.toBeDefined();
     expect(provider.calls).toHaveLength(1);

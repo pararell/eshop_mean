@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 
 import { E2E, isolateExternalServices, signIn } from './helpers';
 
-// The server talks to a local Gemini + Cloudinary stub (support/ai-stub.mjs); see what it received
+// The server talks to a local DeepSeek + Cloudinary stub (support/ai-stub.mjs); see what it received
 const aiStubUrl = () => JSON.parse(readFileSync(resolve(__dirname, '../../test-results/e2e-state.json'), 'utf8')).aiStubUrl as string;
 const stubRequests = async (): Promise<{ method: string; url: string; headers: Record<string, string>; body?: any }[]> =>
   (await fetch(`${aiStubUrl()}/__requests`)).json();
@@ -104,10 +104,13 @@ test('admin creates a complete multi-language product from a photo and a few wor
 
   // What the AI received: the resized uploaded photo and the admin's words; the key in a header
   const received = (await stubRequests()).slice(before);
-  const gemini = received.find((r) => r.url.includes(':generateContent'))!;
-  expect(gemini.headers['x-goog-api-key']).toBe('e2e-gemini-key');
-  expect(gemini.body.contents[0].parts[0].inlineData.mimeType).toBe('image/png');
-  expect(JSON.stringify(gemini.body.contents)).toContain("men's winter jacket");
+  const deepseek = received.find((r) => r.url === '/v1/messages')!;
+  expect(deepseek.headers['x-api-key']).toBe('e2e-deepseek-key');
+  expect(deepseek.body).toMatchObject({ model: 'deepseek-flash', thinking: { type: 'disabled' } });
+  expect(deepseek.body.messages[0].content[0].source.media_type).toBe('image/png');
+  expect(JSON.stringify(deepseek.body.messages)).toContain("men's winter jacket");
+  // The admin works in English: English is written first
+  expect(Object.keys(deepseek.body.tools[0].input_schema.properties.translations.properties)[0]).toBe('en');
   expect(received.some((r) => r.method === 'GET' && r.url.includes('/image/upload/c_limit,w_1024,h_1024,f_jpg,q_80/'))).toBe(true);
   expect(received.filter((r) => r.url.includes('/upload') && r.method === 'POST')).toHaveLength(1);
 });

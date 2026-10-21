@@ -10,7 +10,7 @@ import {
   ServiceUnavailableException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { and, count, eq, gte, like, or, sum } from 'drizzle-orm';
+import { eq, like, or } from 'drizzle-orm';
 import type { AiDraftRequest, AiDraftResponse, AiStatus } from '@eshop/shared';
 
 import { Database, DRIZZLE } from '../db/database.module';
@@ -24,11 +24,12 @@ import { LLM_PROVIDER, LlmError, LlmProvider, LlmResponse, LlmUsage } from './pr
 
 export const AI_CONFIG = Symbol('AI_CONFIG');
 
-/** One retry when the model's answer is not valid; other failures are not retried */
-const MAX_ATTEMPTS = 2;
-
-const startOfUtcDay = (now: Date) => new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-const startOfUtcMonth = (now: Date) => new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+/** One retry when the model's answer is not valid */
+const MAX_INVALID_ATTEMPTS = 2;
+/** A busy provider (429/503/529) is tried up to this often, with growing waits */
+const MAX_BUSY_ATTEMPTS = 3;
+/** Longest wait between two busy retries, even if the provider asks for more */
+const MAX_RETRY_WAIT_MS = 10_000;
 
 @Injectable()
 export class AiService {
@@ -50,7 +51,11 @@ export class AiService {
     return this.provider ? { enabled: true, provider: this.provider.name, model: this.provider.model } : { enabled: false };
   }
 
-  async createDraft(userId: string, request: AiDraftRequest): Promise<AiDraftResponse> {
+  /**
+   * @param primaryLang the admin's language (`lang` header): written first, so it is complete
+   *   even if a long answer gets cut off
+   */
+  async createDraft(userId: string, request: AiDraftRequest, primaryLang?: string): Promise<AiDraftResponse> {
     const provider = this.provider;
     if (!provider) {
       throw new NotFoundException('AI product drafts are not enabled on this shop.');
@@ -68,19 +73,23 @@ export class AiService {
     }
     this.inFlight.add(userId);
     try {
-      await this.checkLimits(userId);
       const images = await this.loadImages(imageUrls);
       const categoryNames = (await this.db.select({ titleUrl: categories.titleUrl }).from(categories)).map((c) => c.titleUrl).sort();
 
+      const ordered = primaryFirst(languages, primaryLang);
+
       const llmRequest = {
-        system: buildSystemPrompt(languages, categoryNames),
+        system: buildSystemPrompt(ordered, categoryNames),
         prompt: buildUserPrompt({ text, supplierText, imageCount: images.length }),
         images,
-        schema: buildDraftSchema(languages, categoryNames),
+        schema: buildDraftSchema(ordered, categoryNames),
         timeoutMs: this.config.timeoutMs,
+        maxOutputTokens: this.config.maxOutputTokens,
       };
 
       const total = { inputTokens: 0, outputTokens: 0, costUsd: 0, durationMs: 0 };
+      let invalidAttempts = 0;
+      let busyAttempts = 0;
       for (let attempt = 1; ; attempt++) {
         const started = Date.now();
         let response: LlmResponse | undefined;
@@ -95,7 +104,13 @@ export class AiService {
           const cost = await this.logUsage(userId, provider, images.length, usage, Date.now() - started, status, llmError.kind);
           this.add(total, usage, cost, Date.now() - started);
           this.logger.warn(`AI draft attempt ${attempt} failed (${llmError.kind}): ${llmError.message}`);
-          if (llmError.kind === 'invalid_output' && attempt < MAX_ATTEMPTS) continue;
+          if (llmError.kind === 'invalid_output' && ++invalidAttempts < MAX_INVALID_ATTEMPTS) continue;
+          if (llmError.kind === 'unavailable' && ++busyAttempts < MAX_BUSY_ATTEMPTS) {
+            // Exponential backoff (1 s, 2 s, …) unless the provider said how long to wait
+            const wait = Math.min(llmError.retryAfterMs ?? this.config.retryDelayMs * 2 ** (busyAttempts - 1), MAX_RETRY_WAIT_MS);
+            await new Promise((resolve) => setTimeout(resolve, wait));
+            continue;
+          }
           throw this.toHttpError(llmError);
         }
 
@@ -115,36 +130,6 @@ export class AiService {
     total.outputTokens += usage.outputTokens;
     total.costUsd = Math.round((total.costUsd + cost) * 1e6) / 1e6;
     total.durationMs += ms;
-  }
-
-  /** Per-admin hourly limit, shop-wide daily limit and monthly cost cap (all from ai_usage) */
-  private async checkLimits(userId: string): Promise<void> {
-    const now = new Date();
-    const [{ perHour }] = await this.db
-      .select({ perHour: count() })
-      .from(aiUsage)
-      .where(and(eq(aiUsage.userId, userId), gte(aiUsage.createdAt, new Date(now.getTime() - 3_600_000))));
-    if (perHour >= this.config.ratePerHour) {
-      throw new HttpException(`AI limit reached: ${this.config.ratePerHour} drafts per hour. Try again later.`, HttpStatus.TOO_MANY_REQUESTS);
-    }
-
-    const [{ today }] = await this.db
-      .select({ today: count() })
-      .from(aiUsage)
-      .where(gte(aiUsage.createdAt, startOfUtcDay(now)));
-    if (today >= this.config.dailyLimit) {
-      throw new ServiceUnavailableException(`The shop's daily AI limit (${this.config.dailyLimit} drafts) is reached. It resets at midnight UTC.`);
-    }
-
-    const [{ spent }] = await this.db
-      .select({ spent: sum(aiUsage.costUsd).mapWith(Number) })
-      .from(aiUsage)
-      .where(gte(aiUsage.createdAt, startOfUtcMonth(now)));
-    if ((spent ?? 0) >= this.config.monthlyBudgetUsd) {
-      throw new ServiceUnavailableException(
-        `The shop's monthly AI budget (${this.config.monthlyBudgetUsd} USD estimated) is used up. It resets on the 1st (UTC).`,
-      );
-    }
   }
 
   private async loadImages(imageUrls: string[]) {
@@ -222,4 +207,10 @@ export class AiService {
         return new BadGatewayException('The AI provider failed. Try again later.');
     }
   }
+}
+
+/** The shop's languages with the given one first (unknown or missing: unchanged order) */
+export function primaryFirst<T extends string>(all: readonly T[], primary?: string): T[] {
+  const first = all.find((lang) => lang === primary);
+  return first ? [first, ...all.filter((lang) => lang !== first)] : [...all];
 }

@@ -13,6 +13,8 @@ export interface LlmRequest {
   /** JSON Schema the answer must follow (the subset both providers support) */
   schema: Record<string, unknown>;
   timeoutMs: number;
+  /** Upper bound for the answer (all languages); too low cuts the JSON off */
+  maxOutputTokens: number;
 }
 
 export interface LlmUsage {
@@ -28,7 +30,7 @@ export interface LlmResponse {
 }
 
 export interface LlmProvider {
-  readonly name: 'gemini' | 'anthropic';
+  readonly name: 'gemini' | 'anthropic' | 'deepseek';
   readonly model: string;
   generate(request: LlmRequest): Promise<LlmResponse>;
 }
@@ -56,6 +58,8 @@ export class LlmError extends Error {
     message: string,
     /** Usage of a failed call, when the provider reported it */
     readonly usage?: LlmUsage,
+    /** How long the provider asked us to wait before retrying (Retry-After), if it said so */
+    readonly retryAfterMs?: number,
   ) {
     super(message);
     this.name = 'LlmError';
@@ -70,9 +74,10 @@ export const errorKindForStatus = (status: number): LlmErrorKind => {
 };
 
 /** Runs `fetch` with a timeout, turning aborts and network failures into LlmError */
+/** `timeoutMs` 0 = no timeout (the default) */
 export async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs: number): Promise<Response> {
   try {
-    return await fetch(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
+    return await fetch(url, timeoutMs > 0 ? { ...init, signal: AbortSignal.timeout(timeoutMs) } : init);
   } catch (error) {
     const name = (error as Error).name;
     if (name === 'TimeoutError' || name === 'AbortError') {
@@ -80,6 +85,21 @@ export async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs
     }
     throw new LlmError('upstream', `Could not reach the AI provider (${(error as Error).message})`);
   }
+}
+
+/** `Retry-After` in milliseconds (seconds or an HTTP date), or undefined */
+export function retryAfterMs(response: Response, now = Date.now()): number | undefined {
+  const value = response.headers.get('retry-after');
+  if (!value) return undefined;
+  const seconds = Number(value);
+  if (Number.isFinite(seconds)) return Math.max(0, seconds * 1000);
+  const date = Date.parse(value);
+  return Number.isNaN(date) ? undefined : Math.max(0, date - now);
+}
+
+/** The LlmError for a non-OK provider response */
+export async function httpError(label: string, response: Response): Promise<LlmError> {
+  return new LlmError(errorKindForStatus(response.status), `${label}: ${await errorDetail(response)}`, undefined, retryAfterMs(response));
 }
 
 /** Short, key-free description of a provider error body for logs */

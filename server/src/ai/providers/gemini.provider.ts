@@ -1,4 +1,4 @@
-import { errorDetail, errorKindForStatus, fetchWithTimeout, LlmError, LlmProvider, LlmRequest, LlmResponse } from './llm-provider';
+import { fetchWithTimeout, httpError, LlmError, LlmProvider, LlmRequest, LlmResponse } from './llm-provider';
 
 interface GeminiResponse {
   candidates?: { content?: { parts?: { text?: string; thought?: boolean }[] }; finishReason?: string }[];
@@ -16,7 +16,7 @@ export class GeminiProvider implements LlmProvider {
     private readonly baseUrl = 'https://generativelanguage.googleapis.com',
   ) {}
 
-  async generate({ system, prompt, images, schema, timeoutMs }: LlmRequest): Promise<LlmResponse> {
+  async generate({ system, prompt, images, schema, timeoutMs, maxOutputTokens }: LlmRequest): Promise<LlmResponse> {
     const response = await fetchWithTimeout(
       `${this.baseUrl}/v1beta/models/${encodeURIComponent(this.model)}:generateContent`,
       {
@@ -34,7 +34,7 @@ export class GeminiProvider implements LlmProvider {
             responseMimeType: 'application/json',
             responseJsonSchema: schema,
             temperature: 0.4,
-            maxOutputTokens: 8192,
+            maxOutputTokens,
           },
         }),
       },
@@ -42,7 +42,7 @@ export class GeminiProvider implements LlmProvider {
     );
 
     if (!response.ok) {
-      throw new LlmError(errorKindForStatus(response.status), `Gemini: ${await errorDetail(response)}`);
+      throw await httpError('Gemini', response);
     }
 
     const body = (await response.json()) as GeminiResponse;

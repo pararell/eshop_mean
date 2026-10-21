@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Headers, HttpCode, HttpStatus, Post, UseGuards, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import type { AiDraftResponse, AiStatus } from '@eshop/shared';
 
@@ -26,7 +26,8 @@ export class AiController {
     @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }))
     body: AiDraftRequestDto,
     @GetUser() user: User,
+    @Headers('lang') lang?: string,
   ): Promise<AiDraftResponse> {
-    return this.aiService.createDraft(user._id, body);
+    return this.aiService.createDraft(user._id, body, lang);
   }
 }

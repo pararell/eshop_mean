@@ -1,8 +1,9 @@
-// Local stand-in for Cloudinary (upload API + image delivery) and the Gemini API, so the e2e
+// Local stand-in for Cloudinary (upload API + image delivery) and the AI provider, so the e2e
 // server can run the AI product flow without any external service.
 //   POST /v1_1/<cloud>/<type>/upload          Cloudinary upload (CLOUDINARY_URL upload_prefix)
 //   GET  /<cloud>/image/upload/...            image delivery (AI_IMAGE_ORIGIN)
-//   POST /v1beta/models/<model>:generateContent  Gemini (AI_BASE_URL)
+//   POST /v1/messages                         DeepSeek, Anthropic-compatible API (AI_BASE_URL; the default provider)
+//   POST /v1beta/models/<model>:generateContent  Gemini (AI_BASE_URL with AI_PROVIDER=gemini)
 //   GET  /__requests                          what the stub received (for assertions)
 import { createServer } from 'node:http';
 
@@ -74,7 +75,12 @@ export async function startAiStub({ cloudName }) {
       };
 
       if (req.url === '/__requests') return send(200, requests);
-      requests.push({ method: req.method, url: req.url, headers: { 'x-goog-api-key': req.headers['x-goog-api-key'] }, body: json });
+      requests.push({
+        method: req.method,
+        url: req.url,
+        headers: { 'x-goog-api-key': req.headers['x-goog-api-key'], 'x-api-key': req.headers['x-api-key'] },
+        body: json,
+      });
 
       if (req.method === 'POST' && req.url.startsWith(`/v1_1/${cloudName}/`)) {
         uploads += 1;
@@ -86,6 +92,16 @@ export async function startAiStub({ cloudName }) {
         // Any transformation is ignored; the stored upload (or a 1x1 PNG) is returned as PNG
         const upload = Number(/e2e-upload-(\d+)/.exec(req.url)?.[1]);
         return send(200, stored.get(upload) ?? PNG, 'image/png');
+      }
+      if (req.method === 'POST' && req.url === '/v1/messages') {
+        const prompt = JSON.stringify(json?.messages ?? '');
+        if (prompt.includes(E2E.ai.failWord)) return send(500, { error: { message: 'stub failure' } });
+        aiCalls += 1;
+        return send(200, {
+          content: [{ type: 'tool_use', name: 'save_product_draft', input: draftAnswer(aiCalls) }],
+          stop_reason: 'tool_use',
+          usage: { input_tokens: 1500, output_tokens: 1000 },
+        });
       }
       if (req.method === 'POST' && req.url.includes(':generateContent')) {
         const prompt = JSON.stringify(json?.contents ?? '');
