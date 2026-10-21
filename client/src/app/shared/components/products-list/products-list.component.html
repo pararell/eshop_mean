@@ -3,7 +3,7 @@
     <li class="product_card">
       <a class="product_card-media" [routerLink]="['/' + lang() + '/product/' + product.titleUrl]" tabindex="-1" aria-hidden="true">
         @if (product.mainImage.url) {
-          <img [ngSrc]="product.mainImage.url" alt="" fill sizes="(max-width: 680px) 50vw, (max-width: 1100px) 33vw, 320px" />
+          <img [ngSrc]="product.mainImage.url" alt="" fill sizes="(max-width: 680px) 50vw, 33vw" />
         }
       </a>
       @if (product.onSale && product.regularPrice) {

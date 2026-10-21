@@ -9,7 +9,7 @@
         (click)="onMainClick()"
         aria-label="Zoom"
       >
-        <img [ngSrc]="current()" [alt]="alt()" fill priority sizes="(max-width: 900px) 100vw, 620px" draggable="false" />
+        <img [ngSrc]="current()" [alt]="alt()" fill priority sizes="(max-width: 900px) 100vw, 50vw" draggable="false" />
       </button>
       <span class="gallery-zoom" aria-hidden="true"><app-icon name="zoom" [size]="18" /></span>
     }
@@ -35,7 +35,7 @@
           [attr.aria-label]="'Image ' + (i + 1) + ' of ' + images().length"
           (click)="select(i)"
         >
-          <img [ngSrc]="image" alt="" fill sizes="72px" />
+          <img [ngSrc]="image" alt="" fill sizes="(max-width: 900px) 20vw, 10vw" />
         </button>
       }
     </div>

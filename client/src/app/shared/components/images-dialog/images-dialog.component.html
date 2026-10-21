@@ -1,16 +1,22 @@
-<div class="lightbox" [class.is-zoomed]="zoomed()">
+<div class="lightbox">
   <div class="lightbox-bar">
     <span class="lightbox-counter">{{ index() + 1 }} / {{ count }}</span>
-    <button type="button" class="lightbox-button" (click)="zoomed.set(!zoomed())" [attr.aria-pressed]="zoomed()" aria-label="Zoom">
-      <app-icon name="zoom" />
-    </button>
     <button type="button" class="lightbox-button" (click)="close()" aria-label="Close">
       <app-icon name="close" />
     </button>
   </div>
 
-  <div class="lightbox-stage">
-    <img [src]="current()" [alt]="data.alt || ''" (click)="zoomed.set(!zoomed())" />
+  <div
+    #viewport
+    class="lightbox-stage"
+    [class.is-zoomed]="zoomed()"
+    (pointerdown)="onPointerDown($event)"
+    (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp($event)"
+    (pointercancel)="onPointerUp($event)"
+    (wheel)="onWheel($event)"
+  >
+    <img #image [src]="current()" [alt]="data.alt || ''" [style.transform]="transform()" [class.is-animated]="animate()" draggable="false" />
   </div>
 
   @if (count > 1) {

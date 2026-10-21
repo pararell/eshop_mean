@@ -25,6 +25,6 @@
     border: 1px solid rgba(0, 0, 0, 0.1);
     background: #fff;
     max-width: 1000px;
-    margin: auto;
+    margin: var(--space-8) auto var(--space-12);
   }
 }

@@ -36,6 +36,7 @@
   overflow: hidden;
   aspect-ratio: 1;
   margin-bottom: var(--space-3);
+  border: 1px solid var(--color-border);
   background: var(--color-photo);
 
   // The whole product is visible whatever the photo's shape

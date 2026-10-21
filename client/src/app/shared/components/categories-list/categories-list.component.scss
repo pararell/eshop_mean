@@ -21,7 +21,8 @@
   display: block;
   overflow: hidden;
   aspect-ratio: 3 / 4;
-  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  background: var(--color-photo);
 
   &:hover {
     text-decoration: none;
@@ -36,16 +37,12 @@
   position: absolute;
   inset: 0;
 
+  // The whole image is visible whatever its shape; the bottom stays free for the trail sign
   img {
-    object-fit: cover;
+    padding: var(--space-6) var(--space-6) var(--space-16);
+    object-fit: contain;
     transition: transform var(--duration-slow) var(--ease-out);
   }
-}
-
-// Product-style category images (admin "contain" type): the whole image on the light background
-.category_card-contain .category_card-media img {
-  padding: var(--space-6);
-  object-fit: contain;
 }
 
 // The trail sign: the category name on a small white arrow board
@@ -64,6 +61,10 @@
 }
 
 @media (width <= 680px) {
+  .category_card-media img {
+    padding: var(--space-3) var(--space-3) var(--space-12);
+  }
+
   .category_card-sign {
     left: var(--space-2);
     bottom: var(--space-2);

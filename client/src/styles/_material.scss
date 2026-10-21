@@ -103,7 +103,15 @@ html {
 .mat-mdc-menu-item {
   gap: var(--space-3);
 
+  // Material projects our icon and label into its text span; centre them on one line
+  .mat-mdc-menu-item-text {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
   app-icon {
+    flex-shrink: 0;
     color: var(--color-text-muted);
   }
 }
