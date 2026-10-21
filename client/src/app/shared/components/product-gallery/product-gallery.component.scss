@@ -19,7 +19,7 @@
   position: relative;
   overflow: hidden;
   aspect-ratio: 1;
-  background: var(--color-surface-2);
+  background: var(--color-photo);
 
   &:hover .gallery-arrow {
     opacity: 1;
@@ -38,7 +38,8 @@
   touch-action: pan-y;
 
   img {
-    object-fit: cover;
+    padding: 4%;
+    object-fit: contain;
     user-select: none;
   }
 }

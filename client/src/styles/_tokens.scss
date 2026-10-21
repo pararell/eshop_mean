@@ -100,6 +100,8 @@
   --color-blaze: #fff;
   /** Contour lines behind the product grids */
   --color-contour: rgb(0 0 0 / 9%);
+  /** Behind product photos: white in both themes (most product shots have a white background) */
+  --color-photo: #fff;
   /** Footer: a dark band under the mountain ridge */
   --color-footer: #161616;
   // Trail colors: small accents only (blazes, sign markers)
@@ -140,6 +142,7 @@
   --color-scrim: rgb(0 0 0 / 60%);
   --color-blaze: #f2f2f0;
   --color-contour: rgb(255 255 255 / 7%);
+  --color-photo: #fff;
   --color-footer: #1c1c1c;
   --trail-red: #e5484d;
   --trail-blue: #3b8eea;

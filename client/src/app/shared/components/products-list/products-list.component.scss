@@ -36,10 +36,12 @@
   overflow: hidden;
   aspect-ratio: 1;
   margin-bottom: var(--space-3);
-  background: var(--color-surface-2);
+  background: var(--color-photo);
 
+  // The whole product is visible whatever the photo's shape
   img {
-    object-fit: cover;
+    padding: 6%;
+    object-fit: contain;
     transition: transform var(--duration-slow) var(--ease-out);
   }
 }
