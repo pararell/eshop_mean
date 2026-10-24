@@ -22,7 +22,7 @@ import { PaymentsModule } from './payments/payments.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    // PostgreSQL (docs/postgres-migration.md)
+    // PostgreSQL (docs/database.md)
     DatabaseModule,
     ProductsModule,
     CartModule,

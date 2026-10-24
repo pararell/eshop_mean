@@ -1,5 +1,5 @@
 // npm run db:migrate: applies pending migrations to DATABASE_URL.
-// For the server database, open the SSH tunnel first (docs/postgres-migration.md §8).
+// For the server database, open the SSH tunnel first (docs/database.md §4).
 import { runMigrations } from '../src/db/migrate';
 import { requireEnv } from './script-utils';
 

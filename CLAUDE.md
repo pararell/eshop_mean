@@ -2,7 +2,7 @@
 
 Guidance for AI agents and contributors working in this repository.
 Deeper references: [docs/architecture.md](docs/architecture.md) (modules, data flow, schemas),
-[docs/audit.md](docs/audit.md) (known issues, prioritized), [docs/testing.md](docs/testing.md) (how to run and write tests), [docs/postgres-migration.md](docs/postgres-migration.md) (how the database was migrated; runbook for schema changes and deploys), [docs/ai.md](docs/ai.md) (AI product drafts), [docs/payments.md](docs/payments.md) (Stripe card payments), [docs/adr/](docs/adr/) (architecture decisions).
+[docs/audit.md](docs/audit.md) (known issues, prioritized), [docs/testing.md](docs/testing.md) (how to run and write tests), [docs/database.md](docs/database.md) (schema rules, seeding, runbook for schema changes and deploys), [docs/ai.md](docs/ai.md) (AI product drafts), [docs/payments.md](docs/payments.md) (Stripe card payments), [docs/adr/](docs/adr/) (architecture decisions).
 
 Before finishing any change: `npm run typecheck && npm run lint && npm test`, plus `npm run test:e2e` for anything
 touching the client, SSR or checkout. Tests never call real external services (AI providers included: unit tests mock
@@ -87,7 +87,7 @@ server/                         NestJS app (server/nest-cli.json, server/tsconfi
     dto/                        class-validator DTOs (validation only where a pipe is applied)
   src/shared/                   constans.ts (languages, shipping defaults), utils (cart pricing, email)
 shared/types/index.d.ts         API/data types shared by client and server (`import type ... from '@eshop/shared'`)
-docs/                           architecture.md, audit.md, testing.md, ai.md, postgres-migration.md, adr/ (decision records)
+docs/                           architecture.md, audit.md, testing.md, ai.md, database.md, adr/ (decision records)
 e2e/                            Playwright specs + seeded test server (support/start-server.mjs) + AI/Cloudinary stub (support/ai-stub.mjs)
 server/test/                    API specs, DB specs, Jest setup, mocks (unit specs live next to code: src/**/*.spec.ts)
 server/src/db/                  PostgreSQL: Drizzle schema (source of truth for data), DatabaseModule, mappers
@@ -169,7 +169,7 @@ Copy `.env.example` → `.env` (gitignored, never commit it). It is read with
 - **Migrations run at container startup** (`server/src/db/startup.ts`, advisory lock; Watchtower deploys
   automatically). Therefore every migration must be **expand/contract**: only add tables, nullable or
   defaulted columns, indexes, enum values; never drop, rename or retype what the previous image uses.
-  Removals take two releases. Full runbook: [docs/postgres-migration.md § Runbook](docs/postgres-migration.md#8-runbook).
+  Removals take two releases. Full runbook: [docs/database.md § Runbook](docs/database.md#4-runbook).
 - The production database listens on the server's loopback only; reach it through an SSH tunnel.
   Its `DATABASE_URL` lives in a local, gitignored `.env.server`: load it with
   `set -a; . ./.env.server; set +a`, never print it, never commit it. Tests and local development

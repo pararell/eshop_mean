@@ -1,4 +1,4 @@
-// npm run db:seed: initial data for a fresh database (docs/postgres-migration.md §5).
+// npm run db:seed: initial data for a fresh database (docs/database.md §2).
 // Env: DATABASE_URL (required), SEED_ADMIN_EMAIL + SEED_ADMIN_PASSWORD (optional).
 import { existsSync, readFileSync } from 'node:fs';
 import { drizzle } from 'drizzle-orm/node-postgres';

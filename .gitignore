@@ -93,3 +93,7 @@ public
 # Test output
 test-results
 playwright-report
+
+# Intermediate output of npm run docs:media
+docs/images/raw/
+docs/images/*.webm

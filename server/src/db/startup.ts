@@ -5,7 +5,7 @@ import { checkMigrations, migrateWithLock } from './migrate';
 /**
  * Runs before the app is created (main.ts / main-ssr.ts). Deploys are automatic (Watchtower), so
  * the container applies pending migrations itself; migrations must therefore only add things
- * (expand/contract, see docs/postgres-migration.md § Runbook).
+ * (expand/contract, see docs/database.md § Runbook).
  *
  * `DB_MIGRATE_ON_START=false` turns this off; pending migrations are then only reported.
  * Throws when the database can't be migrated, so the process exits instead of serving errors.

@@ -7,7 +7,7 @@ language, the admin reviews and edits, sets price and stock, and saves. Nothing 
 - Design decision: [adr/0001-ai-provider-abstraction.md](adr/0001-ai-provider-abstraction.md)
 - Off switch: remove the API key (§5).
 
-![Fill with AI in the product editor](images/ai-filled.png)
+![Fill with AI in the product editor](images/ai-filled.webp)
 
 ## 1. Flow
 

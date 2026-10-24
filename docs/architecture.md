@@ -1,8 +1,8 @@
 # Architecture
 
 This document describes the state of the `master` branch as of 2026-10-15 (Angular 22.2,
-NestJS 12, PostgreSQL 18 via Drizzle ORM). It is meant for onboarding. The MongoDB → PostgreSQL
-migration is recorded in [postgres-migration.md](postgres-migration.md).
+NestJS 12, PostgreSQL 18 via Drizzle ORM). It is meant for onboarding. Database design, seeding and
+the schema-change runbook are in [database.md](database.md).
 
 Known problems are listed in [audit.md](audit.md); this document describes what _is_,
 not what should be.
@@ -293,7 +293,7 @@ assistant), which saves nothing until the admin presses Save.
 PostgreSQL 18. The source of truth is the Drizzle schema in
 [server/src/db/schema.ts](../server/src/db/schema.ts); the SQL is generated into
 [server/db/migrations/](../server/db/migrations/) (`npm run db:generate`). The design decisions are
-recorded in [postgres-migration.md](postgres-migration.md).
+recorded in [database.md](database.md).
 
 Common traits:
 

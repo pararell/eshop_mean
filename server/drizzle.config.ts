@@ -1,6 +1,6 @@
 import { defineConfig } from 'drizzle-kit';
 
-// Run from the repository root: npm run db:generate (see docs/postgres-migration.md)
+// Run from the repository root: npm run db:generate (see docs/database.md)
 export default defineConfig({
   dialect: 'postgresql',
   schema: './server/src/db/schema.ts',

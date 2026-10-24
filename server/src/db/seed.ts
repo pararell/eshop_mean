@@ -23,7 +23,7 @@ export interface SeedResult {
 }
 
 /**
- * Initial data for a fresh database (docs/postgres-migration.md §5). Idempotent and additive:
+ * Initial data for a fresh database (docs/database.md §2). Idempotent and additive:
  * it only fills what is missing and never overwrites data edited in the dashboard.
  */
 export async function seed(db: Database, options: SeedOptions = {}): Promise<SeedResult> {

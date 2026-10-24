@@ -12,7 +12,7 @@ async function expectUniqueViolation(query: Promise<unknown>, constraint: string
   expect(error?.cause).toMatchObject({ code: '23505', constraint });
 }
 
-/** Schema rules from docs/postgres-migration.md §3 that later code relies on. */
+/** Schema rules from docs/database.md §1 that later code relies on. */
 describe('PostgreSQL schema', () => {
   let t: TestDatabase;
 

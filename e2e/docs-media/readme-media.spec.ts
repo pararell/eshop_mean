@@ -4,9 +4,11 @@ import { expect, Page, test } from '@playwright/test';
 import { copyFileSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-import { E2E, isolateExternalServices, signIn } from '../tests/helpers';
+import { E2E, isolateExternalServices, signIn, withDb } from '../tests/helpers';
 
-const out = resolve(__dirname, '../../docs/images');
+const images = resolve(__dirname, '../../docs/images');
+/** Full-size PNGs; optimize-images.mjs turns them into the WebP files the docs use */
+const out = resolve(images, 'raw');
 mkdirSync(out, { recursive: true });
 
 test.use({ viewport: { width: 1280, height: 800 }, video: { mode: 'on', size: { width: 1280, height: 800 } } });
@@ -38,6 +40,8 @@ test('README media: AI product draft', async ({ page }) => {
   const photo = await demoPhoto(page);
 
   await isolateExternalServices(page);
+  // The e2e database has no shop name; show one instead of the raw translation key
+  await withDb((db) => db.query(`UPDATE translations SET keys = keys || '{"ESHOP_TITLE": "Eshop"}'::jsonb WHERE lang = 'en'`));
   // Make the (instant) stubbed AI take a moment, like the real one
   await page.route('**/api/admin/products/ai-draft', async (route) => {
     await new Promise((r) => setTimeout(r, 2500));
@@ -66,12 +70,10 @@ test('README media: AI product draft', async ({ page }) => {
   await page.waitForTimeout(400);
   await ai.getByRole('button', { name: 'Fill with AI', exact: true }).click();
   await expect(ai.getByRole('status')).toContainText('Looking at 1 photo');
-  await page.screenshot({ path: `${out}/ai-working.png` });
 
   // Result: marked fields in every language
   await expect(ai.getByText('16 fields were filled by AI')).toBeVisible();
   await page.waitForTimeout(1200);
-  await page.screenshot({ path: `${out}/ai-result.png` });
   await editor.locator('#languages-heading').scrollIntoViewIfNeeded();
   await page.mouse.wheel(0, 120);
   await page.waitForTimeout(1200);
@@ -82,5 +84,5 @@ test('README media: AI product draft', async ({ page }) => {
   await page.waitForTimeout(1200);
 
   await page.close();
-  copyFileSync(await page.video()!.path(), `${out}/ai-demo.webm`);
+  copyFileSync(await page.video()!.path(), `${images}/ai-demo.webm`);
 });

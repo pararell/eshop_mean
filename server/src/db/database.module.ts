@@ -11,7 +11,7 @@ export const DRIZZLE = Symbol('DRIZZLE');
 export const PG_POOL = Symbol('PG_POOL');
 
 /**
- * PostgreSQL connection for the app and the session store (docs/postgres-migration.md). The pool
+ * PostgreSQL connection for the app and the session store (docs/database.md). The pool
  * connects lazily, on the first query.
  */
 @Global()

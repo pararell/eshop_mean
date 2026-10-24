@@ -41,7 +41,7 @@ Findings resolved since the audit (2026-10-14). The finding texts below are kept
 | SEC-01          | Fixed             | Signup only persists whitelisted fields. Regression test in `server/test/api/auth.spec.ts`.                                                                                                                                                                                                                |
 | SEC-02          | Fixed             | Contact, order saves and email rendering are awaited or caught; unhandled rejections are logged. Regression tests in `orders.spec.ts` and `eshop.spec.ts`.                                                                                                                                                 |
 | SEC-07          | Fixed             | `.env*` is excluded by `.dockerignore` and no longer copied into the image.                                                                                                                                                                                                                                |
-| SEC-08 / DEP-01 | Fixed             | Angular 22.2, Nest 12.1, Mongoose 8.24.5 and `npm audit fix`: `npm audit --omit=dev` reports 0 vulnerabilities. Remaining dev-only advisories are in the Jest and stylelint toolchains (braces has no upstream fix).                                                                                       |
+| SEC-08 / DEP-01 | Fixed             | Angular 22.2, Nest 12.1, the database driver upgrade and `npm audit fix`: `npm audit --omit=dev` reports 0 vulnerabilities. Remaining dev-only advisories are in the Jest and stylelint toolchains (braces has no upstream fix).                                                                           |
 | SEC-19          | Mitigated         | Angular 22 `CommonEngine` rejects hosts outside an allow-list (derived from `ORIGIN` / `SERVER_URL`, or `NG_ALLOWED_HOSTS`). The SSR API base URL is still built from the validated `Host` header.                                                                                                         |
 | DEP-03, DEP-04  | Fixed             | Runtime packages are moved to `dependencies`; `cors`, `body-parser`, `multer` and the missing `@types` are declared.                                                                                                                                                                                       |
 | DEP-05          | Fixed (corrected) | Removed `deepmerge`, `fastify-static`, `saslprep`, `ts-loader`, `ts-node` and `@nestjs/serve-static`. **Correction:** `class-transformer` _is_ used, because Nest's `ValidationPipe` loads it at runtime, so it stays. `whatwg-url` stays while it is listed in `externalDependencies` and the Dockerfile. |
@@ -54,7 +54,7 @@ Findings resolved since the audit (2026-10-14). The finding texts below are kept
 | TYP-02          | Fixed             | Explicit `any` went from about 130 to 0 in application code. Lint enforces `no-explicit-any`.                                                                                                                                                                                                              |
 | TYP-03          | Fixed             | Server model interfaces are rebuilt on shared types in `shared/types/index.d.ts` (`@eshop/shared`), which client and server both use.                                                                                                                                                                      |
 | TD-02           | Fixed             | One `eslint.config.mjs` for the repo (0 errors), Prettier for the whole repo, and husky + lint-staged pre-commit. The legacy `.eslintrc.json` files are removed.                                                                                                                                           |
-| DEP-08          | Fixed             | Docker runtime holds only `dist/` + `pg`: 783 MB → 175 MB (186 MB while mongoose was still needed).                                                                                                                                                                                                        |
+| DEP-08          | Fixed             | Docker runtime holds only `dist/` + `pg`: 783 MB → 175 MB.                                                                                                                                                                                                                                                 |
 | SEC-26          | Mostly fixed      | The image runs as `node`, with `tini` as PID 1 and `CMD node …` (instant `docker stop`). A `HEALTHCHECK` is still missing.                                                                                                                                                                                 |
 | TD-15           | Fixed             | The stale `server/dist` is gone; `nest build` uses `rootDir: ./src`.                                                                                                                                                                                                                                       |
 | SEC-03          | Fixed             | The server derives the currency from the language (`currencyForLang`: en/sk → EUR, cs → CZK) for the Stripe charge and the stored order; the client value is ignored. Tests in `orders.spec.ts`.                                                                                                           |
@@ -79,7 +79,7 @@ Findings resolved since the audit (2026-10-14). The finding texts below are kept
 | SEC-24 | Fixed (PostgreSQL migration) | Login uses `bcrypt.compare`; the `salt` column is gone. |
 | BUG-22 | Fixed (PostgreSQL migration) | `23505` is now the right code; emails are unique on `lower(email)`, so a duplicate signup answers 409 from the database. Test in `auth.spec.ts`. |
 | TYP-04 | Mitigated | The `order_status` enum is enforced by the database; the DTO still accepts any string, so an invalid status from the admin answers 500 instead of being stored. Validating it in the DTO (422) is a small follow-up. |
-| DEP-09 | Partly | The second MongoDB connection is gone: the session store shares the app's `pg` pool. Duplicate body parsing (`body-parser` on top of Nest's) remains. |
+| DEP-09 | Partly | The second database connection is gone: the session store shares the app's `pg` pool. Duplicate body parsing (`body-parser` on top of Nest's) remains. |
 | PERF-01 | Partly | Category deletion is one `array_remove` update. Admin lists (`getAllOrders`, `getAllProducts`, `getAllCategories`) still have no pagination. |
 | PERF-02 | Fixed (PostgreSQL migration) | Unique indexes on slugs, `lower(email)`, `order_number`; GIN on `products.tags`; `product_translations (lang, visibility, sale_price)`; orders by user and date. |
 | PERF-03 | Partly | One listing query (`count(*) over ()`) plus one min/max query instead of four. The price range still ignores filters and visibility (kept for parity). |
@@ -183,14 +183,14 @@ Still open and notable: SEC-04 for cash-on-delivery orders, BUG-06 (stale cart p
 - Priority: high
 - Location: [package.json](../package.json)
 - Problem: `npm audit --omit=dev` reports 31 issues (3 critical, 21 high):
-  - mongoose 8.4.1: search injection, `sanitizeFilter` bypass, prototype pollution;
+  - the former database driver: search injection, filter bypass, prototype pollution;
   - Angular 20.2.2: XSRF token leak, transfer-cache leak;
   - multer, path-to-regexp and proxy-addr through Nest/Express;
   - tinymce XSS; validator.
 
   `npm audit` overall: 95 (6 critical, 62 high).
 
-- Fix: Step 5 upgrades, at least mongoose ≥ 8.24.5, Angular ≥ 20.3.x and
+- Fix: Step 5 upgrades, at least the patched database driver, Angular ≥ 20.3.x and
   `@nestjs/platform-express` ≥ 11.1.18.
 
 ### Medium
@@ -209,7 +209,7 @@ Still open and notable: SEC-04 for cash-on-delivery orders, BUG-06 (stale cart p
 - Priority: medium
 - Location: [server/src/products/products.service.ts:33](../server/src/products/products.service.ts#L33), [:35](../server/src/products/products.service.ts#L35), [:78](../server/src/products/products.service.ts#L78)
 - Problem: `new RegExp(userInput, 'i')`. An input like `(` gives a 500; catastrophic
-  patterns tie up MongoDB.
+  patterns tie up the database.
 - Fix: escape regex metacharacters and cap the length (or use a `$text` / prefix index).
 
 **SEC-11: Insecure session cookie**
@@ -454,7 +454,7 @@ Still open and notable: SEC-04 for cash-on-delivery orders, BUG-06 (stale cart p
 
 - Priority: medium
 - Location: [server/src/orders/orders.service.ts:14-15](../server/src/orders/orders.service.ts#L14-L15), [server/src/admin/admin.service.ts:11-15](../server/src/admin/admin.service.ts#L11-L15), [server/src/shared/utils/email/mailer.ts:5](../server/src/shared/utils/email/mailer.ts#L5), [server/src/app.module.ts:22](../server/src/app.module.ts#L22)
-- Problem: Stripe, Cloudinary, SendGrid and Mongo are configured at module load. This only
+- Problem: Stripe, Cloudinary, SendGrid and the database are configured at module load. This only
   works because of import order; it is fragile under bundling and untestable.
 - Fix: factory providers with `ConfigService`.
 
@@ -555,7 +555,7 @@ Still open and notable: SEC-04 for cash-on-delivery orders, BUG-06 (stale cart p
 
 - Priority: low
 - Location: [server/src/auth/auth.service.ts:36](../server/src/auth/auth.service.ts#L36)
-- Problem: `'23505'` instead of MongoDB `11000`. With no unique index, concurrent signups
+- Problem: The duplicate-key check used the wrong error code. With no unique index, concurrent signups
   can create duplicate users.
 - Fix: a unique index (schema change, deferred to the Postgres migration) and the correct
   code.
@@ -637,7 +637,7 @@ Still open and notable: SEC-04 for cash-on-delivery orders, BUG-06 (stale cart p
 - Priority: high
 - Location: repo-wide
 - Problem: 0 `*.spec.ts` files, no test runner, no `test` script.
-- Fix: Step 3 (Jest + Supertest with mongodb-memory-server, unit tests for
+- Fix: Step 3 (Jest + Supertest with a disposable test database, unit tests for
   `prepareCart` / `Cart`, Playwright e2e).
 
 ## Dependencies
@@ -645,7 +645,7 @@ Still open and notable: SEC-04 for cash-on-delivery orders, BUG-06 (stale cart p
 **DEP-01: Vulnerable versions**
 
 - Priority: high
-- Problem: see SEC-08. mongoose is pinned exactly at `8.4.1`.
+- Problem: see SEC-08. The database driver is pinned to an old exact version.
 - Fix: Step 5.
 
 **DEP-02: Stripe SDK v9 / API version 2020-08-27 / Charges API**
@@ -661,7 +661,7 @@ Still open and notable: SEC-04 for cash-on-delivery orders, BUG-06 (stale cart p
 
 - Priority: medium
 - Location: [package.json](../package.json)
-- Problem: `compression` and `connect-mongo` are used by `server/src/setAppDB.ts`. It only
+- Problem: `compression` and the session store are used by `server/src/setAppDB.ts`. It only
   works because the SSR bundle inlines them; `npm ci --omit=dev` plus an API-only start
   would break.
 - Fix: move them to `dependencies`.
@@ -711,14 +711,14 @@ Still open and notable: SEC-04 for cash-on-delivery orders, BUG-06 (stale cart p
 - Fix: `npm ci` in the build stage; copy only `dist` (plus the real externals) into the
   runtime stage.
 
-**DEP-09: Duplicate body parsing and a second MongoDB connection**
+**DEP-09: Duplicate body parsing and a second database connection**
 
 - Priority: low
 - Location: [server/src/setAppDB.ts:13-14](../server/src/setAppDB.ts#L13-L14), [:24-26](../server/src/setAppDB.ts#L24-L26)
-- Problem: `body-parser` on top of Nest's parser; `mongoose.connect` is called again for
-  the session store.
-- Fix: `app.useBodyParser`; reuse the Nest connection for `connect-mongo` (touches the DB
-  wiring, so defer to the migration).
+- Problem: `body-parser` on top of Nest's parser; a second database connection is opened
+  for the session store.
+- Fix: `app.useBodyParser`; reuse the app's connection for the session store (touches the DB
+  wiring, so defer to the database migration).
 
 **DEP-10: Material Icons / fonts loaded twice**
 

@@ -20,8 +20,9 @@ try {
   process.exit(0);
 }
 
-// 8 fps, 900 px wide, palette for a small, sharp GIF
-const filter = 'fps=8,scale=900:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=96[p];[b][p]paletteuse=dither=bayer:bayer_scale=4';
+// 6 fps, 760 px wide, a small shared palette and only changed pixels per frame: a fast-loading GIF
+const filter =
+  'fps=6,scale=760:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle';
 execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', video, '-vf', filter, gif], { stdio: 'inherit' });
 rmSync(video);
 console.log(`Wrote ${gif}`);

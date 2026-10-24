@@ -1,4 +1,4 @@
-// PostgreSQL 18 schema (see docs/postgres-migration.md §3). Migrations are generated from this
+// PostgreSQL 18 schema (see docs/database.md §1). Migrations are generated from this
 // file with `npm run db:generate`; never edit generated migration SQL by hand.
 import { sql } from 'drizzle-orm';
 import {

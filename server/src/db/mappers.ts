@@ -1,6 +1,6 @@
 // Row ⇄ API-shape mapping. The API keeps the JSON shapes it had with MongoDB (`_id`, per-language
 // sub-objects `en/sk/cs`, `mainImage`, `orderId`, `outcome`, `dateAdded`) so the client and the
-// pricing code don't change (docs/postgres-migration.md §4.1). Inputs are normalized the way
+// pricing code don't change (docs/database.md). Inputs are normalized the way
 // Mongoose casting did: numeric strings become numbers, '' becomes null, booleans accept 'true'.
 import type {
   Address,
