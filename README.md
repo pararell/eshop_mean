@@ -1,140 +1,173 @@
-![MEAN](https://res.cloudinary.com/dnpgh1vhi/image/upload/v1615640124/logo1_gvrmpd.svg)
+# eshop_mean
 
-# Eshop template
+**Full-stack e-commerce platform with an AI-assisted admin.** Angular SSR storefront, NestJS API,
+PostgreSQL, Stripe payments, and product entry where a photo and a few words become a complete
+product in every shop language.
 
-![Lines of code](https://img.shields.io/tokei/lines/github/pararell/eshop_mean)
-![GitHub repo size](https://img.shields.io/github/repo-size/pararell/eshop_mean)
+**[Live demo → eshop.privatelibrary.eu](https://eshop.privatelibrary.eu)**
+
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/pararell/eshop_mean)
+![License](https://img.shields.io/github/license/pararell/eshop_mean)
 ![GitHub Repo stars](https://img.shields.io/github/stars/pararell/eshop_mean?style=social)
 
-## Server : <img src="https://d33wubrfki0l68.cloudfront.net/e937e774cbbe23635999615ad5d7732decad182a/26072/logo-small.ede75a6b.svg" alt="nest.js" width="50"/> Nest.js with Express and PostgreSQL 18 (Drizzle ORM)
+![Storefront](docs/images/storefront.png)
 
-## Client : <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Angular_full_color_logo.svg/1200px-Angular_full_color_logo.svg.png" alt="angular" width="60"> Angular (Server-side rendering)
+## Features
 
-## Description
+**Storefront**
 
-- Eshop with products and administration
-- Typescript stack with decorators, PostgreSQL with Drizzle ORM and SQL migrations, JWT Passport
-- Theming with css variables
-- **AI product entry**: drop a photo, write a few words, and Gemini or Claude fills the product in every
-  shop language (title, descriptions, attributes, SEO texts). The admin reviews the marked fields,
-  sets price and stock, and saves. Optional, off without an API key. See [docs/ai.md](docs/ai.md).
+- Server-side rendering for fast first load and SEO (meta tags, schema.org)
+- Multi-language: English, Slovak, Czech
+- Categories, product detail with gallery, sale prices, search
+- Cart and checkout: card payment (Stripe) or cash on delivery
+- Customer accounts with email or Google login, order history
+- Themes driven by CSS variables, light and dark mode
 
-![eshop-mean](https://res.cloudinary.com/dnpgh1vhi/image/upload/v1629725636/eshop-mean.png)
+**Admin**
 
-### Admin: AI product drafts
+- Products, categories, orders, pages, themes and shop configuration
+- **AI product drafts**: upload a photo, write a few words, review, set price and stock, save
+- Order and contact notifications by email
+
+## AI in admin
 
 ![Fill with AI: photo, a few words, texts in every language](docs/images/ai-demo.gif)
+
+The admin drops a product photo and writes a short note (for example *"men's winter jacket, black,
+down, L–XXL"*). The AI fills title, descriptions, attributes and SEO texts **in every shop language**.
+AI-filled fields stay marked until the admin reviews them. Price and stock are always entered by a
+person, and nothing is saved automatically.
 
 | Product table                                    | AI-filled fields, marked until reviewed              |
 | ------------------------------------------------ | ---------------------------------------------------- |
 | ![Product table](docs/images/admin-products.png) | ![AI-filled product form](docs/images/ai-filled.png) |
 
-<sub>Recorded with a stubbed AI provider (`npm run docs:media`).</sub>
+How it works:
 
-## Blog
+- **Provider-agnostic**: an `LlmProvider` abstraction with interchangeable providers (DeepSeek,
+  Gemini, Claude), selected by environment variables
+- **Structured output**: the model returns JSON matching the product schema; categories come from
+  the database as an allowed list, so the model cannot invent them
+- **Validated** with the same DTO validation as a manual save
+- **Cost tracking**: tokens, latency and cost of every request are logged in `ai_usage`
+  (a typical product costs a fraction of a cent)
+- **Optional**: without an API key the feature is hidden
 
-- more info in blog [https://miroslavsmrtic.sk/blogs](https://miroslavsmrtic.sk/blogs)
+Details in [docs/ai.md](docs/ai.md). Media in this README are recorded with a stubbed provider
+(`npm run docs:media`).
 
-<img alt="eshop-mean setup" src="https://res.cloudinary.com/dnpgh1vhi/image/upload/v1629726575/Isometric_illustration_design_concept_loading_and_maintenance_process_kjtxck.jpg" height="200" style="margin: 0; padding: 0;">
+## Tech stack
 
-## Installation
+| Layer    | Technology                                                                   |
+| -------- | ---------------------------------------------------------------------------- |
+| Frontend | Angular 21, SSR, zoneless change detection, signals                          |
+| Backend  | NestJS (Express), Passport JWT, Google OAuth                                 |
+| Database | PostgreSQL 18, Drizzle ORM, SQL migrations                                   |
+| Services | Stripe (payments, webhooks), Cloudinary (images), Resend (email), reCAPTCHA  |
+| AI       | DeepSeek, Gemini or Claude through a common provider interface               |
+| Ops      | Docker (multi-stage image, non-root), Docker Compose, nginx, automatic deploy |
 
-One package.json contain now all neccessary for Nest and Angular, so server-side rendering with Angular is possible
+## Architecture
 
-```bash
-$ npm install
+```mermaid
+flowchart LR
+    B[Browser] --> N[nginx / HTTPS]
+    N --> A["Node.js process<br/>Angular SSR + NestJS API"]
+    A --> P[(PostgreSQL)]
+    A --> C[Cloudinary<br/>images]
+    A --> S[Stripe<br/>payments + webhooks]
+    A --> R[Resend<br/>email]
+    A --> L[AI provider<br/>DeepSeek / Gemini / Claude]
+    A --> G[Google OAuth]
 ```
 
-## Running the app
+One Node.js process serves both the server-rendered Angular app and the NestJS API, so the whole
+shop ships as a single Docker image.
+
+## Quick start
+
+Requirements: Node.js (LTS), Docker for the local database.
 
 ```bash
-# development - start BE - port 4000
-$ npm run start:dev
+# 1. dependencies
+npm install
 
-# development - start FE - port 3000
-$ npm run start:client
+# 2. local PostgreSQL
+docker run -d --name eshop-db -p 5432:5432 \
+  -e POSTGRES_USER=eshop -e POSTGRES_PASSWORD=eshop -e POSTGRES_DB=eshop \
+  pgvector/pgvector:pg18
 
-# watch mode server
-$ npm run start:dev
+# 3. configuration
+cp .env.example .env
+# set DATABASE_URL=postgres://eshop:eshop@localhost:5432/eshop and the keys you need
 
-# build ssr and serve
-$ npm run build
-$ npm run start
+# 4. database schema and admin account
+npm run db:migrate
+npm run db:seed
+
+# 5. run (API on :4000, client on :3000)
+npm run start:dev
+npm run start:client
 ```
 
-For another commands look to package.json
-
-## Set enviroment for BE
-
-- Rename .env.example to .env
+Production build:
 
 ```bash
-# BE HOST
-PORT=4000
-SERVER_URL="http://localhost:4000"
-
-# FE HOST
-ORIGIN="http://localhost:3000"
-
-# JWT settings
-JWT_EXPIRATION="7d"
-JWT_SECRET="youhavetochoseone"
-
-COOKIE_KEY="youhavetochoseone"
-
-# PostgreSQL (data and sessions); create the tables with `npm run db:migrate`
-DATABASE_URL="postgres://{user}:{password}@{host}:{port}/{databaseName}"
-
-# Emails (order confirmations, contact form) via Resend: https://resend.com
-# EMAIL_FROM must use a domain verified in Resend, e.g. "Shop <shop@your-domain.com>"
-RESEND_API_KEY=""
-
-# Images
-CLOUDINARY_NAME="set name from cloudinary api https://cloudinary.com (for images upload)"
-CLOUDINARY_KEY="set key from cloudinary api  https://cloudinary.com (for images upload)"
-CLOUDINARY_SECRET="set secret from cloudinary api https://cloudinary.com (for images upload)"
-
-# Pay
-STRIPE_SECRETKEY="set for paying with card for orders with stripe https://stripe.com"
-# Webhook signing secret (whsec_...) of https://<domain>/api/payments/webhook; see docs/payments.md
-STRIPE_WEBHOOK_SECRET=""
-
-# Google login
-GOOGLE_CLIENT_ID="set for google login activation"
-GOOGLE_CLIENT_SECRET="set for google login activation"
-
-# Admin emails get a copy of every order and contact message
-ADMIN_EMAILS="your@email.com, another@mail.com"
-
-# Recaptcha server key from google
-RECAPTCHA_SERVER_KEY="RECAPTCHA_SERVER_KEY"
-
-# Get location from IP - https://geolocation-db.com
-GEO_LOCATION_API_KEY="GEO_LOCATION_API_KEY"
-
-# AI product drafts (optional, off without a key; docs/ai.md). Server-side only, never FE_*
-# AI_PROVIDER: "gemini" (key from https://aistudio.google.com, free tier works) or "anthropic"
-AI_PROVIDER="gemini"
-GEMINI_API_KEY=""
-ANTHROPIC_API_KEY=""
-
-# FE ENV SEND FROM BE
-FE_STRIPE_PUBLISHABLE_KEY="FE_STRIPE_PUBLISHABLE_KEY"
-FE_TINYMCE_API_KEY="FE_TINYMCE_API_KEY"
-FE_RECAPTCHA_CLIENT_KEY="FE_RECAPTCHA_CLIENT_KEY"
+npm run build
+npm run start
 ```
+
+## Configuration
+
+All variables are documented in [`.env.example`](.env.example), which is the source of truth.
+The main groups:
+
+- **Server**: `PORT`, `SERVER_URL`, `ORIGIN`, `JWT_SECRET`, `COOKIE_KEY`
+- **Database**: `DATABASE_URL`
+- **Payments**: `STRIPE_SECRETKEY`, `STRIPE_WEBHOOK_SECRET`, `FE_STRIPE_PUBLISHABLE_KEY`
+  (see [docs/payments.md](docs/payments.md))
+- **Images and email**: `CLOUDINARY_*`, `RESEND_API_KEY`, `EMAIL_FROM`, `ADMIN_EMAILS`
+- **Login and spam protection**: `GOOGLE_CLIENT_*`, `RECAPTCHA_SERVER_KEY`, `FE_RECAPTCHA_CLIENT_KEY`
+- **AI (optional)**: `AI_PROVIDER` and the API key of the chosen provider (see [docs/ai.md](docs/ai.md))
+
+Secrets stay on the server. Only variables prefixed `FE_` are sent to the browser.
 
 ## Docker
 
 ```bash
-# pull docker
 docker pull pararel/eshop-mean:latest
-
-# run docker with env file
-docker run --env-file $PathToEnv --network=host pararel/eshop-mean:latest
-
-# run docker with env set in cmd line
-docker run --e DATABASE_URL=postgresUrl --e OTHER_ENV=otherEnvValue --network=host pararel/eshop-mean:latest
-
+docker run --env-file .env --network=host pararel/eshop-mean:latest
 ```
+
+Example with Docker Compose (database reachable only on localhost):
+
+```yaml
+services:
+  postgres:
+    image: pgvector/pgvector:pg18
+    env_file: .env.postgres
+    volumes:
+      - pgdata:/var/lib/postgresql
+    ports:
+      - "127.0.0.1:5432:5432"
+
+  eshop:
+    image: pararel/eshop-mean:latest
+    network_mode: host
+    env_file: .env
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:
+```
+
+## Project docs
+
+- [AI product drafts](docs/ai.md)
+- [Payments and Stripe webhooks](docs/payments.md)
+- [Changelog](CHANGELOG.md)
+
+## License
+
+[MIT](LICENSE)
