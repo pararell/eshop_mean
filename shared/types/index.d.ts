@@ -381,6 +381,15 @@ export type ShopConfig = {
 } & ByLanguage<{ shippingCost: ShippingCost }>;
 
 /** `GET /api/eshop/config`: base64 JSON of the public `FE_*` env values and active theme styles. */
+/** GET /api/version: the running build ("dev" when not built with scripts/build-ssr.mjs) */
+export interface BuildInfo {
+  version: string;
+  /** Short git commit SHA */
+  sha: string;
+  /** YYYY-MM-DD */
+  buildDate: string;
+}
+
 export interface PublicConfigResponse {
   config: string;
 }

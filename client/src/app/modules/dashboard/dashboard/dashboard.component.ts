@@ -12,6 +12,7 @@ import { ThemeEditComponent } from '../theme-edit/theme-edit.component';
 import { ConfigEditComponent } from '../config-edit/config-edit.component';
 import { TranslationsEditComponent } from '../translations-edit/translations-edit.component';
 import { AsyncPipe } from '@angular/common';
+import { buildLabel } from '../../../build-info';
 
 @Component({
   selector: 'app-dashboard',
@@ -37,4 +38,6 @@ export class DashboardComponent {
   private translate = inject(TranslateService);
 
   readonly lang$: Observable<string> = this.translate.getLang$();
+  /** The running build, so an admin can tell which version is deployed */
+  readonly version = buildLabel();
 }

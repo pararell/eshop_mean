@@ -198,6 +198,25 @@ docker pull pararel/eshop-mean:latest
 docker run --env-file .env --network=host pararel/eshop-mean:latest
 ```
 
+Build the image yourself (the version comes from `package.json`, the commit and date from build
+arguments, since the image has no `.git`):
+
+```bash
+docker buildx build --platform linux/amd64 \
+  --build-arg GIT_SHA=$(git rev-parse --short HEAD) \
+  --build-arg BUILD_DATE=$(date -u +%F) \
+  -t pararel/eshop-mean:1.0.0 -t pararel/eshop-mean:latest --push .
+```
+
+**Which version is running?** The browser console prints it on every page load
+(`Eshop v1.0.0 · a1b2c3d · 2026-10-24`), the admin dashboard shows it at the bottom, and the API
+answers it:
+
+```bash
+curl https://eshop.privatelibrary.eu/api/version
+# {"version":"1.0.0","sha":"a1b2c3d","buildDate":"2026-10-24"}
+```
+
 Example with Docker Compose, the database reachable only on localhost:
 
 ```yaml

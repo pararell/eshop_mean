@@ -6,7 +6,11 @@ ENV HUSKY=0
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY . .
-RUN npm run build:ssr
+# Build info compiled into the app (scripts/build-ssr.mjs); the build context has no .git, so pass
+#   --build-arg GIT_SHA=$(git rev-parse --short HEAD) --build-arg BUILD_DATE=$(date -u +%F)
+ARG GIT_SHA=dev
+ARG BUILD_DATE=
+RUN GIT_SHA=$GIT_SHA BUILD_DATE=$BUILD_DATE npm run build:ssr
 # The bundle keeps only a few packages external (angular.json externalDependencies); of those,
 # only pg is imported at runtime. Pin it to the lockfile version.
 RUN node -e "const p = require('./package-lock.json').packages; \
@@ -20,6 +24,11 @@ COPY --from=build /usr/src/app/runtime-package.json ./package.json
 RUN npm install --omit=dev --no-audit --no-fund && npm cache clean --force
 
 FROM node:24.21-alpine3.24
+ARG GIT_SHA=dev
+ARG BUILD_DATE=
+LABEL org.opencontainers.image.title="eshop_mean" \
+  org.opencontainers.image.revision="$GIT_SHA" \
+  org.opencontainers.image.created="$BUILD_DATE"
 # tini as PID 1 forwards SIGTERM/SIGINT to node, so `docker stop` doesn't wait for the kill timeout
 RUN apk add --no-cache tini
 WORKDIR /usr/src/app

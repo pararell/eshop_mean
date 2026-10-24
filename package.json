@@ -20,7 +20,7 @@
     "watch": "ng build --watch --configuration development",
     "dev:ssr": "ng run eshop:serve-ssr",
     "serve:ssr": "node dist/eshop/server/server.mjs",
-    "build:ssr": "NODE_ENV=production ng build --configuration production",
+    "build:ssr": "node scripts/build-ssr.mjs",
     "serve:client:prod": "ng serve --configuration production",
     "lint:client": "ng lint",
     "lint:scss": "stylelint **/**.scss --formatter verbose",
