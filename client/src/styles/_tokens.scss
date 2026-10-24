@@ -81,6 +81,8 @@
   --color-text-muted: #6b6b6b;
   --color-border: #e8e8e6;
   --color-border-strong: #c9c9c6;
+  /** Boundaries of form controls (inputs, radios): 3:1 against the page (WCAG 1.4.11) */
+  --color-border-control: #858582;
   --color-primary: var(--brand-primary-light, #111);
   --color-primary-hover: var(--brand-primary-hover-light, #333);
   --color-on-primary: var(--brand-on-primary-light, #fff);
@@ -125,6 +127,7 @@
   --color-text-muted: #a3a3a0;
   --color-border: #262626;
   --color-border-strong: #3d3d3d;
+  --color-border-control: #737370;
   --color-primary: var(--brand-primary-dark, #f2f2f0);
   --color-primary-hover: var(--brand-primary-hover-dark, #fff);
   --color-on-primary: var(--brand-on-primary-dark, #111);

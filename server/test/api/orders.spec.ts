@@ -96,6 +96,12 @@ describe('Orders API', () => {
       // one Resend request per order, keyed so a repeat within 24 h is ignored by Resend
       expect(emailSpy).toHaveBeenCalledTimes(1);
       expect(emailSpy.mock.calls[0][1]).toMatch(/^order-order\d+t\d+$/);
+      // A confirmation for the customer and a new-order email for the admins, HTML and plain text
+      const byRecipient = Object.fromEntries(sentEmails().map((msg) => [msg.to, msg]));
+      expect(byRecipient['buyer@test.dev'].subject).toMatch(/^Your order order\d+t\d+ at /);
+      expect(byRecipient['buyer@test.dev'].text).toContain('Payment: Cash on delivery');
+      expect(byRecipient['admin1@test.dev']).toMatchObject({ subject: expect.stringMatching(/^New order /), reply_to: 'buyer@test.dev' });
+      expect(byRecipient['admin1@test.dev'].html).toContain('/en/dashboard/orders/');
     });
 
     it('returns 422 instead of crashing on an invalid body (SEC-02 regression)', async () => {

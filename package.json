@@ -40,7 +40,8 @@
     "db:up": "docker compose up -d postgres",
     "db:generate": "drizzle-kit generate --config server/drizzle.config.ts",
     "db:migrate": "tsx server/scripts/db-migrate.ts",
-    "db:seed": "tsx server/scripts/db-seed.ts"
+    "db:seed": "tsx server/scripts/db-seed.ts",
+    "email:preview": "tsx server/scripts/email-preview.ts"
   },
   "dependencies": {
     "@angular/animations": "22.2.2",
@@ -105,6 +106,7 @@
     "@angular/cli": "22.2.2",
     "@angular/compiler-cli": "22.2.2",
     "@angular/language-service": "22.2.2",
+    "@axe-core/playwright": "^4.14.0",
     "@eslint/js": "^9.39.5",
     "@nestjs/cli": "^12.0.8",
     "@nestjs/schematics": "^12.0.7",

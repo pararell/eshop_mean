@@ -4,20 +4,21 @@ import { and, eq, inArray, ne } from 'drizzle-orm';
 import { firstValueFrom } from 'rxjs';
 import type { PublicConfigResponse, SessionCart, ShopConfig, Theme as ThemeData } from '@eshop/shared';
 
-import { adminEmails, sendMail } from '../shared/utils/email/mailer';
+import { adminEmails, sendEmails } from '../shared/utils/email/mailer';
+import { loadEmailShop } from '../shared/utils/email/email-shop';
+import { renderContactEmail } from '../shared/utils/email/contact-email';
 import { ContactDto } from './dto/contact.dto';
 import { PageDto } from './dto/page.dto';
 import { Cart } from '../cart/utils/cart';
 import { Page } from './models/page.model';
 import { Theme } from './models/theme.model';
 import { Config } from './models/config.model';
-import type { ContactEmail } from '../shared/utils/email/email.types';
 import { ShopSession } from '../shared/types/session';
 import { Database, DRIZZLE } from '../db/database.module';
 import { configShipping, configs, pages, pageTranslations, themes } from '../db/schema';
 import { configShippingValues, pageTranslationValues, toConfigDoc, toPageDoc, toThemeDoc } from '../db/mappers';
 import { isLanguage } from '../db/catalog';
-import { findTranslation } from '../translations/translation.queries';
+import { languages } from '../shared/constans';
 
 /** What MongoDB's updateOne() answered; the API returned it for edits (the client ignores it) */
 export interface UpdateResult {
@@ -61,16 +62,20 @@ export class EshopService {
     }
   }
 
-  async sendContact(contactDto: ContactDto, cart: Cart | SessionCart | undefined, lang: string): Promise<void> {
+  async sendContact(contactDto: ContactDto, _cart: Cart | SessionCart | undefined, lang: string): Promise<void> {
     const { token } = contactDto;
     const url = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SERVER_KEY}&response=${token}`;
 
     const result = await firstValueFrom(this.httpService.post(url));
     if (result.data.success) {
       try {
-        const translations = await findTranslation(this.db, lang);
-        const emailType: ContactEmail = { subject: 'Contact', cart, contact: contactDto, date: new Date() };
-        await sendMail([contactDto.email, ...adminEmails()], emailType, translations);
+        const language = isLanguage(lang) ? lang : languages[0];
+        const shop = await loadEmailShop(this.db, language);
+        const data = { lang: language, name: contactDto.name, email: contactDto.email, message: contactDto.notes };
+        await sendEmails([
+          { to: [contactDto.email], ...renderContactEmail(data, 'customer', shop) },
+          { to: adminEmails(), replyTo: contactDto.email, ...renderContactEmail(data, 'admin', shop) },
+        ]);
       } catch {
         throw new BadRequestException();
       }

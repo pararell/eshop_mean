@@ -48,10 +48,14 @@ const stateFile = resolve(root, 'test-results/e2e-state.json');
 mkdirSync(dirname(stateFile), { recursive: true });
 writeFileSync(stateFile, JSON.stringify({ databaseUrl, baseURL, aiStubUrl: aiStub.url, stripeStubUrl: stripeStub.url }));
 
+// Screenshots of the real Payment Element (e2e/docs-media/checkout-media.spec.ts) need a publishable
+// test key; payments still go to the local Stripe stub. Tests never set it.
+const realStripeJs = process.env.E2E_STRIPE_PUBLISHABLE_KEY ? { FE_STRIPE_PUBLISHABLE_KEY: process.env.E2E_STRIPE_PUBLISHABLE_KEY } : {};
+
 const server = spawn(process.execPath, ['dist/eshop/server/server.mjs'], {
   cwd: root,
   // Explicit values override anything a local .env would provide
-  env: { ...process.env, ...testEnv(baseURL), ...aiEnv, ...stripeEnv, DATABASE_URL: databaseUrl, PORT: port },
+  env: { ...process.env, ...testEnv(baseURL), ...aiEnv, ...stripeEnv, ...realStripeJs, DATABASE_URL: databaseUrl, PORT: port },
   stdio: ['ignore', 'pipe', 'pipe'],
 });
 

@@ -4,17 +4,18 @@ import { desc, eq } from 'drizzle-orm';
 import { Order, OrderStatus } from './models/order.model';
 import { User } from '../auth/models/user.model';
 import { OrderDto } from './dto/order.dto';
-import { adminEmails, sendMail } from '../shared/utils/email/mailer';
+import { adminEmails, sendEmails } from '../shared/utils/email/mailer';
+import { loadEmailShop } from '../shared/utils/email/email-shop';
+import { OrderEmailData, renderOrderEmail } from '../shared/utils/email/order-email';
 import { prepareCart } from '../shared/utils/prepareUtils';
-import { currencyForLang } from '../shared/constans';
+import { currencyForLang, languages } from '../shared/constans';
 import { CartModel } from '../cart/models/cart.model';
 import type { Order as OrderData, OrderRequest } from '@eshop/shared';
-import type { OrderEmail } from '../shared/utils/email/email.types';
 import { ShopSession } from '../shared/types/session';
 import { Database, DRIZZLE } from '../db/database.module';
 import { orderValues, toOrderDoc } from '../db/mappers';
 import { orders } from '../db/schema';
-import { findTranslation } from '../translations/translation.queries';
+import { isLanguage } from '../db/catalog';
 
 export interface OrderOutcome {
   error: string;
@@ -52,22 +53,33 @@ export class OrdersService {
     return { error: '', result: newOrder };
   }
 
-  /** Order emails to the customer and ADMIN_EMAILS; failures are logged, never thrown */
-  /** Order email to the customer and every ADMIN_EMAILS address (one Resend request); never throws */
+  /**
+   * Order confirmation to the customer and a new-order email to every ADMIN_EMAILS address, in the
+   * order's language, in one Resend request. Failures are logged, never thrown.
+   */
   async notifyOrder(order: Order, cartForLang: CartModel, lang: string): Promise<void> {
     try {
-      const translations = await findTranslation(this.db, lang);
-      const emailType: OrderEmail = {
-        subject: 'Order',
-        cart: cartForLang,
-        currency: order.currency,
+      const language = isLanguage(lang) ? lang : languages[0];
+      const shop = await loadEmailShop(this.db, language);
+      const data: OrderEmailData = {
         orderId: order.orderId,
+        date: order.dateAdded ? new Date(order.dateAdded) : new Date(),
+        lang: language,
+        currency: order.currency,
+        cart: cartForLang as OrderEmailData['cart'],
+        type: order.type,
+        customerEmail: order.customerEmail,
         address: order.addresses?.[0],
         notes: order.notes,
-        date: new Date(),
       };
       // Resend ignores a repeat with the same key for 24 h: an order is never announced twice
-      await sendMail([order.customerEmail, ...adminEmails()], emailType, translations, `order-${order.orderId}`);
+      await sendEmails(
+        [
+          { to: [order.customerEmail], ...renderOrderEmail(data, 'customer', shop) },
+          { to: adminEmails(), replyTo: order.customerEmail, ...renderOrderEmail(data, 'admin', shop) },
+        ],
+        `order-${order.orderId}`,
+      );
     } catch (error) {
       this.logger.error((error as Error).stack + ' Failed to send email');
     }

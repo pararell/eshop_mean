@@ -90,7 +90,7 @@
 .payment-choice {
   display: block;
   padding: 0 0 0 var(--space-2);
-  border: 1px solid var(--color-border-strong);
+  border: 1px solid var(--color-border-control);
   transition: border-color var(--duration-fast) var(--ease-out);
 
   &:hover {

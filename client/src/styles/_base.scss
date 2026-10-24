@@ -311,9 +311,12 @@ a {
     text-decoration: none;
   }
 
+  // Disabled: a quiet grey button with readable text (not a faded primary that disappears in dark mode)
   &:disabled {
+    border-color: var(--color-border-control);
+    background: var(--color-surface-2);
+    color: var(--color-text-muted);
     cursor: not-allowed;
-    opacity: 0.45;
   }
 }
 
@@ -324,6 +327,11 @@ a {
   &:hover:not(:disabled) {
     background: var(--color-primary-hover);
     color: var(--color-on-primary);
+  }
+
+  &:disabled {
+    background: var(--color-surface-2);
+    color: var(--color-text-muted);
   }
 }
 

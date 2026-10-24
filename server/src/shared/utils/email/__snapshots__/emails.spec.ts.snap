@@ -1,0 +1,1627 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`transactional emails cs contact emails match the snapshot: admin html 1`] = `
+"<!DOCTYPE html>
+<html lang="cs" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>Nová zpráva od Jana Nováková</title>
+<style>
+  :root { color-scheme: light dark; supported-color-schemes: light dark; }
+  body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }
+  table { border-collapse: collapse; }
+  img { border: 0; display: block; }
+  a { color: inherit; }
+  @media (max-width: 620px) {
+    .container { width: 100% !important; }
+    .pad { padding-left: 20px !important; padding-right: 20px !important; }
+    .item-img { width: 56px !important; }
+    .item-img img { width: 56px !important; height: 56px !important; }
+  }
+  @media (prefers-color-scheme: dark) {
+    .bg-page { background: #0f0f0f !important; }
+    .bg-card { background: #1a1a1a !important; }
+    .bg-soft { background: #242424 !important; }
+    h1, p, td, a, span { color: #f2f2f0 !important; }
+    .muted, .muted * { color: #a3a3a0 !important; }
+    .line { border-color: #3d3d3d !important; }
+    .btn { background: #f2f2f0 !important; }
+    .btn-link { color: #111111 !important; }
+  }
+</style>
+</head>
+<body class="bg-page" style="margin:0;padding:0;background:#f2f2f0">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all">Jana Nováková &lt;jana@example.com&gt;&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg-page" style="background:#f2f2f0">
+  <tr>
+    <td align="center" style="padding:24px 12px">
+      <!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+      <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px">
+        <tr><td class="pad" style="padding:8px 32px 20px">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td style="padding-right:10px;vertical-align:middle">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #d0d0cc">
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+        <tr><td width="26" height="6" bgcolor="#c8102e" style="font-size:0;line-height:0;background:#c8102e">&nbsp;</td></tr>
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+      </table>
+    </td>
+    <td style="vertical-align:middle">
+      <a href="https://eshop.example.com" style="font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:22px;font-weight:600;color:#111111;text-decoration:none">Eshop</a>
+    </td>
+  </tr>
+</table></td></tr>
+        <tr>
+          <td class="bg-card pad" style="background:#ffffff;padding:36px 32px;border-top:3px solid #111111">
+            <h1 style="margin:0 0 12px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:26px;line-height:1.2;font-weight:600;color:#111111">Nová zpráva z kontaktního formuláře</h1>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Odpovědět na</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111"><a href="mailto:jana@example.com">Jana Nováková &lt;jana@example.com&gt;</a></p>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Zpráva</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Do you have the MSR tent in blue?<br>Thanks!</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="pad muted" style="padding:20px 32px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.5;color:#5c5c5c">
+            Tento e-mail dostáváte na základě vaší aktivity v obchodě Eshop.<br><a href="https://eshop.example.com">eshop.example.com</a>
+          </td>
+        </tr>
+      </table>
+      <!--[if mso]></td></tr></table><![endif]-->
+    </td>
+  </tr>
+</table>
+</body>
+</html>"
+`;
+
+exports[`transactional emails cs contact emails match the snapshot: admin text 1`] = `
+"Nová zpráva z kontaktního formuláře
+
+Odpovědět na: Jana Nováková <jana@example.com>
+
+Zpráva:
+Do you have the MSR tent in blue?
+Thanks!
+
+--
+Eshop · https://eshop.example.com"
+`;
+
+exports[`transactional emails cs contact emails match the snapshot: customer html 1`] = `
+"<!DOCTYPE html>
+<html lang="cs" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>Vaši zprávu jsme přijali · Eshop</title>
+<style>
+  :root { color-scheme: light dark; supported-color-schemes: light dark; }
+  body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }
+  table { border-collapse: collapse; }
+  img { border: 0; display: block; }
+  a { color: inherit; }
+  @media (max-width: 620px) {
+    .container { width: 100% !important; }
+    .pad { padding-left: 20px !important; padding-right: 20px !important; }
+    .item-img { width: 56px !important; }
+    .item-img img { width: 56px !important; height: 56px !important; }
+  }
+  @media (prefers-color-scheme: dark) {
+    .bg-page { background: #0f0f0f !important; }
+    .bg-card { background: #1a1a1a !important; }
+    .bg-soft { background: #242424 !important; }
+    h1, p, td, a, span { color: #f2f2f0 !important; }
+    .muted, .muted * { color: #a3a3a0 !important; }
+    .line { border-color: #3d3d3d !important; }
+    .btn { background: #f2f2f0 !important; }
+    .btn-link { color: #111111 !important; }
+  }
+</style>
+</head>
+<body class="bg-page" style="margin:0;padding:0;background:#f2f2f0">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all">Vaši zprávu jsme přijali a brzy se vám ozveme.&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg-page" style="background:#f2f2f0">
+  <tr>
+    <td align="center" style="padding:24px 12px">
+      <!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+      <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px">
+        <tr><td class="pad" style="padding:8px 32px 20px">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td style="padding-right:10px;vertical-align:middle">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #d0d0cc">
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+        <tr><td width="26" height="6" bgcolor="#c8102e" style="font-size:0;line-height:0;background:#c8102e">&nbsp;</td></tr>
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+      </table>
+    </td>
+    <td style="vertical-align:middle">
+      <a href="https://eshop.example.com" style="font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:22px;font-weight:600;color:#111111;text-decoration:none">Eshop</a>
+    </td>
+  </tr>
+</table></td></tr>
+        <tr>
+          <td class="bg-card pad" style="background:#ffffff;padding:36px 32px;border-top:3px solid #111111">
+            <h1 style="margin:0 0 12px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:26px;line-height:1.2;font-weight:600;color:#111111">Děkujeme za zprávu</h1><p style="margin:0 0 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;line-height:1.55;color:#111111;">Dobrý den, Jana Nováková,</p><p style="margin:0 0 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;line-height:1.55;color:#111111;">vaši zprávu jsme přijali a brzy se vám ozveme.</p>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Vaše zpráva</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Do you have the MSR tent in blue?<br>Thanks!</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="pad muted" style="padding:20px 32px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.5;color:#5c5c5c">
+            Máte dotaz? Napište na <a href="mailto:shop@example.com">shop@example.com</a>.<br>Tento e-mail dostáváte na základě vaší aktivity v obchodě Eshop.<br><a href="https://eshop.example.com">eshop.example.com</a>
+          </td>
+        </tr>
+      </table>
+      <!--[if mso]></td></tr></table><![endif]-->
+    </td>
+  </tr>
+</table>
+</body>
+</html>"
+`;
+
+exports[`transactional emails cs contact emails match the snapshot: customer text 1`] = `
+"Děkujeme za zprávu
+
+Dobrý den, Jana Nováková,
+vaši zprávu jsme přijali a brzy se vám ozveme.
+
+Vaše zpráva:
+Do you have the MSR tent in blue?
+Thanks!
+
+--
+Eshop · https://eshop.example.com"
+`;
+
+exports[`transactional emails cs new-order email (admin) matches the snapshot: html 1`] = `
+"<!DOCTYPE html>
+<html lang="cs" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>Nová objednávka order1792489574t42 · 389,90 Kč</title>
+<style>
+  :root { color-scheme: light dark; supported-color-schemes: light dark; }
+  body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }
+  table { border-collapse: collapse; }
+  img { border: 0; display: block; }
+  a { color: inherit; }
+  @media (max-width: 620px) {
+    .container { width: 100% !important; }
+    .pad { padding-left: 20px !important; padding-right: 20px !important; }
+    .item-img { width: 56px !important; }
+    .item-img img { width: 56px !important; height: 56px !important; }
+  }
+  @media (prefers-color-scheme: dark) {
+    .bg-page { background: #0f0f0f !important; }
+    .bg-card { background: #1a1a1a !important; }
+    .bg-soft { background: #242424 !important; }
+    h1, p, td, a, span { color: #f2f2f0 !important; }
+    .muted, .muted * { color: #a3a3a0 !important; }
+    .line { border-color: #3d3d3d !important; }
+    .btn { background: #f2f2f0 !important; }
+    .btn-link { color: #111111 !important; }
+  }
+</style>
+</head>
+<body class="bg-page" style="margin:0;padding:0;background:#f2f2f0">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all">Děkujeme za objednávku. Celkem 389,90 Kč.&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg-page" style="background:#f2f2f0">
+  <tr>
+    <td align="center" style="padding:24px 12px">
+      <!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+      <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px">
+        <tr><td class="pad" style="padding:8px 32px 20px">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td style="padding-right:10px;vertical-align:middle">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #d0d0cc">
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+        <tr><td width="26" height="6" bgcolor="#c8102e" style="font-size:0;line-height:0;background:#c8102e">&nbsp;</td></tr>
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+      </table>
+    </td>
+    <td style="vertical-align:middle">
+      <a href="https://eshop.example.com" style="font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:22px;font-weight:600;color:#111111;text-decoration:none">Eshop</a>
+    </td>
+  </tr>
+</table></td></tr>
+        <tr>
+          <td class="bg-card pad" style="background:#ffffff;padding:36px 32px;border-top:3px solid #111111">
+            <h1 style="margin:0 0 12px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:26px;line-height:1.2;font-weight:600;color:#111111">Nová objednávka</h1><p style="margin:0 0 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;line-height:1.55;color:#111111;">Jana Nováková &lt;jana@example.com&gt; vytvořil(a) objednávku.</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg-soft" style="background:#f7f7f5;margin:8px 0 28px">
+  <tr>
+    <td style="padding:14px 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:14px;color:#111111">
+      <span class="muted" style="color:#5c5c5c">Číslo objednávky</span><br><strong>order1792489574t42</strong>
+    </td>
+    <td style="padding:14px 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:14px;color:#111111">
+      <span class="muted" style="color:#5c5c5c">Datum</span><br><strong>24. října 2026</strong>
+    </td>
+  </tr>
+</table>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Položky</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td class="item-img line" width="72" style="padding:12px 12px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top">
+      <img src="https://res.cloudinary.com/dnpgh1vhi/image/upload/c_pad,b_white,w_160,h_160,f_jpg,q_80/v1792489574/file_hdt4kv.jpg" width="72" height="72" alt="" style="width:72px;height:72px;object-fit:contain;background:#ffffff;border:1px solid #e2e2df">
+    </td>
+    <td class="line" style="padding:12px 8px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.4;color:#111111">
+      <strong>MSR Tent, Green with Red Accents</strong><br>
+      <span class="muted" style="color:#5c5c5c;font-size:14px">Ks 1 × 300,00 Kč</span>
+    </td>
+    <td class="line" align="right" style="padding:12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">
+      300,00 Kč
+    </td>
+  </tr>
+  <tr>
+    <td class="item-img line" width="72" style="padding:12px 12px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top">
+      <img src="https://res.cloudinary.com/demo/image/upload/c_pad,b_white,w_160,h_160,f_jpg,q_80/sample.jpg" width="72" height="72" alt="" style="width:72px;height:72px;object-fit:contain;background:#ffffff;border:1px solid #e2e2df">
+    </td>
+    <td class="line" style="padding:12px 8px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.4;color:#111111">
+      <strong>Trekking Poles &lt;Carbon&gt;</strong><br>
+      <span class="muted" style="color:#5c5c5c;font-size:14px">Ks 2 × 42,50 Kč</span>
+    </td>
+    <td class="line" align="right" style="padding:12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">
+      85,00 Kč
+    </td>
+  </tr></table>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:12px 0 28px">
+  
+  <tr>
+    <td style="padding:4px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">Mezisoučet</td>
+    <td align="right" style="padding:4px 0 0;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">385,00 Kč</td>
+  </tr>
+  
+  <tr>
+    <td style="padding:4px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">Doprava</td>
+    <td align="right" style="padding:4px 0 0;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">4,90 Kč</td>
+  </tr>
+  
+  <tr>
+    <td style="padding:12px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:18px;font-weight:600;color:#111111">Celkem</td>
+    <td align="right" style="padding:12px 0 0;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:18px;font-weight:600;color:#111111">389,90 Kč</td>
+  </tr>
+</table>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Zákazník</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Jana Nováková<br><a href="mailto:jana@example.com">jana@example.com</a></p>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Platba</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Dobírka</p>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Doručovací adresa</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Jana Nováková<br>Hlavná 12<br>811 01 Bratislava<br>Slovakia</p>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Poznámka</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Please call before delivery.<br>The bell does not work.</p>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 8px">
+  <tr>
+    <td class="btn" bgcolor="#111111" style="background:#111111;border-radius:2px">
+      <a class="btn-link" href="https://eshop.example.com/cs/dashboard/orders/order1792489574t42" style="display:inline-block;padding:14px 28px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;font-weight:600;line-height:1;color:#ffffff;text-decoration:none">Otevřít v administraci</a>
+    </td>
+  </tr>
+</table>
+          </td>
+        </tr>
+        <tr>
+          <td class="pad muted" style="padding:20px 32px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.5;color:#5c5c5c">
+            Tento e-mail dostáváte na základě vaší aktivity v obchodě Eshop.<br><a href="https://eshop.example.com" style="color:#5c5c5c">eshop.example.com</a>
+          </td>
+        </tr>
+      </table>
+      <!--[if mso]></td></tr></table><![endif]-->
+    </td>
+  </tr>
+</table>
+</body>
+</html>"
+`;
+
+exports[`transactional emails cs new-order email (admin) matches the snapshot: subject 1`] = `"Nová objednávka order1792489574t42 · 389,90 Kč"`;
+
+exports[`transactional emails cs new-order email (admin) matches the snapshot: text 1`] = `
+"Nová objednávka
+
+Jana Nováková <jana@example.com> vytvořil(a) objednávku.
+
+Číslo objednávky: order1792489574t42
+Datum: 24. října 2026
+
+Položky:
+- MSR Tent, Green with Red Accents: 1 × 300,00 Kč = 300,00 Kč
+- Trekking Poles <Carbon>: 2 × 42,50 Kč = 85,00 Kč
+
+Mezisoučet: 385,00 Kč
+Doprava: 4,90 Kč
+Celkem: 389,90 Kč
+
+Zákazník: Jana Nováková <jana@example.com>
+Platba: Dobírka
+
+Doručovací adresa:
+Jana Nováková
+Hlavná 12
+811 01 Bratislava
+Slovakia
+
+Poznámka:
+Please call before delivery.
+The bell does not work.
+
+Otevřít v administraci: https://eshop.example.com/cs/dashboard/orders/order1792489574t42
+
+--
+Eshop · https://eshop.example.com"
+`;
+
+exports[`transactional emails cs order confirmation (customer, card) matches the snapshot: html 1`] = `
+"<!DOCTYPE html>
+<html lang="cs" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>Vaše objednávka order1792489574t42 v Eshop</title>
+<style>
+  :root { color-scheme: light dark; supported-color-schemes: light dark; }
+  body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }
+  table { border-collapse: collapse; }
+  img { border: 0; display: block; }
+  a { color: inherit; }
+  @media (max-width: 620px) {
+    .container { width: 100% !important; }
+    .pad { padding-left: 20px !important; padding-right: 20px !important; }
+    .item-img { width: 56px !important; }
+    .item-img img { width: 56px !important; height: 56px !important; }
+  }
+  @media (prefers-color-scheme: dark) {
+    .bg-page { background: #0f0f0f !important; }
+    .bg-card { background: #1a1a1a !important; }
+    .bg-soft { background: #242424 !important; }
+    h1, p, td, a, span { color: #f2f2f0 !important; }
+    .muted, .muted * { color: #a3a3a0 !important; }
+    .line { border-color: #3d3d3d !important; }
+    .btn { background: #f2f2f0 !important; }
+    .btn-link { color: #111111 !important; }
+  }
+</style>
+</head>
+<body class="bg-page" style="margin:0;padding:0;background:#f2f2f0">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all">Děkujeme za objednávku. Celkem 389,90 Kč.&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg-page" style="background:#f2f2f0">
+  <tr>
+    <td align="center" style="padding:24px 12px">
+      <!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+      <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px">
+        <tr><td class="pad" style="padding:8px 32px 20px">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td style="padding-right:10px;vertical-align:middle">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #d0d0cc">
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+        <tr><td width="26" height="6" bgcolor="#c8102e" style="font-size:0;line-height:0;background:#c8102e">&nbsp;</td></tr>
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+      </table>
+    </td>
+    <td style="vertical-align:middle">
+      <a href="https://eshop.example.com" style="font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:22px;font-weight:600;color:#111111;text-decoration:none">Eshop</a>
+    </td>
+  </tr>
+</table></td></tr>
+        <tr>
+          <td class="bg-card pad" style="background:#ffffff;padding:36px 32px;border-top:3px solid #111111">
+            <h1 style="margin:0 0 12px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:26px;line-height:1.2;font-weight:600;color:#111111">Děkujeme za objednávku</h1><p style="margin:0 0 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;line-height:1.55;color:#111111;">Dobrý den, Jana Nováková,</p><p style="margin:0 0 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;line-height:1.55;color:#111111;">platbu jsme přijali a vaši objednávku připravujeme. Až ji odešleme, dáme vám vědět.</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg-soft" style="background:#f7f7f5;margin:8px 0 28px">
+  <tr>
+    <td style="padding:14px 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:14px;color:#111111">
+      <span class="muted" style="color:#5c5c5c">Číslo objednávky</span><br><strong>order1792489574t42</strong>
+    </td>
+    <td style="padding:14px 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:14px;color:#111111">
+      <span class="muted" style="color:#5c5c5c">Datum</span><br><strong>24. října 2026</strong>
+    </td>
+  </tr>
+</table>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Položky</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td class="item-img line" width="72" style="padding:12px 12px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top">
+      <img src="https://res.cloudinary.com/dnpgh1vhi/image/upload/c_pad,b_white,w_160,h_160,f_jpg,q_80/v1792489574/file_hdt4kv.jpg" width="72" height="72" alt="" style="width:72px;height:72px;object-fit:contain;background:#ffffff;border:1px solid #e2e2df">
+    </td>
+    <td class="line" style="padding:12px 8px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.4;color:#111111">
+      <strong>MSR Tent, Green with Red Accents</strong><br>
+      <span class="muted" style="color:#5c5c5c;font-size:14px">Ks 1 × 300,00 Kč</span>
+    </td>
+    <td class="line" align="right" style="padding:12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">
+      300,00 Kč
+    </td>
+  </tr>
+  <tr>
+    <td class="item-img line" width="72" style="padding:12px 12px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top">
+      <img src="https://res.cloudinary.com/demo/image/upload/c_pad,b_white,w_160,h_160,f_jpg,q_80/sample.jpg" width="72" height="72" alt="" style="width:72px;height:72px;object-fit:contain;background:#ffffff;border:1px solid #e2e2df">
+    </td>
+    <td class="line" style="padding:12px 8px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.4;color:#111111">
+      <strong>Trekking Poles &lt;Carbon&gt;</strong><br>
+      <span class="muted" style="color:#5c5c5c;font-size:14px">Ks 2 × 42,50 Kč</span>
+    </td>
+    <td class="line" align="right" style="padding:12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">
+      85,00 Kč
+    </td>
+  </tr></table>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:12px 0 28px">
+  
+  <tr>
+    <td style="padding:4px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">Mezisoučet</td>
+    <td align="right" style="padding:4px 0 0;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">385,00 Kč</td>
+  </tr>
+  
+  <tr>
+    <td style="padding:4px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">Doprava</td>
+    <td align="right" style="padding:4px 0 0;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">4,90 Kč</td>
+  </tr>
+  
+  <tr>
+    <td style="padding:12px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:18px;font-weight:600;color:#111111">Celkem</td>
+    <td align="right" style="padding:12px 0 0;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:18px;font-weight:600;color:#111111">389,90 Kč</td>
+  </tr>
+</table>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Platba</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Zaplaceno kartou</p>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Doručovací adresa</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Jana Nováková<br>Hlavná 12<br>811 01 Bratislava<br>Slovakia</p>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Poznámka</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Please call before delivery.<br>The bell does not work.</p>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 8px">
+  <tr>
+    <td class="btn" bgcolor="#111111" style="background:#111111;border-radius:2px">
+      <a class="btn-link" href="https://eshop.example.com/cs/orders/order1792489574t42" style="display:inline-block;padding:14px 28px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;font-weight:600;line-height:1;color:#ffffff;text-decoration:none">Zobrazit objednávku</a>
+    </td>
+  </tr>
+</table>
+          </td>
+        </tr>
+        <tr>
+          <td class="pad muted" style="padding:20px 32px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.5;color:#5c5c5c">
+            Máte dotaz? Napište na <a href="mailto:shop@example.com">shop@example.com</a>.<br>Tento e-mail dostáváte na základě vaší aktivity v obchodě Eshop.<br><a href="https://eshop.example.com" style="color:#5c5c5c">eshop.example.com</a>
+          </td>
+        </tr>
+      </table>
+      <!--[if mso]></td></tr></table><![endif]-->
+    </td>
+  </tr>
+</table>
+</body>
+</html>"
+`;
+
+exports[`transactional emails cs order confirmation (customer, card) matches the snapshot: subject 1`] = `"Vaše objednávka order1792489574t42 v Eshop"`;
+
+exports[`transactional emails cs order confirmation (customer, card) matches the snapshot: text 1`] = `
+"Děkujeme za objednávku
+
+Dobrý den, Jana Nováková,
+platbu jsme přijali a vaši objednávku připravujeme. Až ji odešleme, dáme vám vědět.
+
+Číslo objednávky: order1792489574t42
+Datum: 24. října 2026
+
+Položky:
+- MSR Tent, Green with Red Accents: 1 × 300,00 Kč = 300,00 Kč
+- Trekking Poles <Carbon>: 2 × 42,50 Kč = 85,00 Kč
+
+Mezisoučet: 385,00 Kč
+Doprava: 4,90 Kč
+Celkem: 389,90 Kč
+
+Platba: Zaplaceno kartou
+
+Doručovací adresa:
+Jana Nováková
+Hlavná 12
+811 01 Bratislava
+Slovakia
+
+Poznámka:
+Please call before delivery.
+The bell does not work.
+
+Zobrazit objednávku: https://eshop.example.com/cs/orders/order1792489574t42
+
+--
+Máte dotaz? Napište na shop@example.com.
+Eshop · https://eshop.example.com"
+`;
+
+exports[`transactional emails en contact emails match the snapshot: admin html 1`] = `
+"<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>New message from Jana Nováková</title>
+<style>
+  :root { color-scheme: light dark; supported-color-schemes: light dark; }
+  body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }
+  table { border-collapse: collapse; }
+  img { border: 0; display: block; }
+  a { color: inherit; }
+  @media (max-width: 620px) {
+    .container { width: 100% !important; }
+    .pad { padding-left: 20px !important; padding-right: 20px !important; }
+    .item-img { width: 56px !important; }
+    .item-img img { width: 56px !important; height: 56px !important; }
+  }
+  @media (prefers-color-scheme: dark) {
+    .bg-page { background: #0f0f0f !important; }
+    .bg-card { background: #1a1a1a !important; }
+    .bg-soft { background: #242424 !important; }
+    h1, p, td, a, span { color: #f2f2f0 !important; }
+    .muted, .muted * { color: #a3a3a0 !important; }
+    .line { border-color: #3d3d3d !important; }
+    .btn { background: #f2f2f0 !important; }
+    .btn-link { color: #111111 !important; }
+  }
+</style>
+</head>
+<body class="bg-page" style="margin:0;padding:0;background:#f2f2f0">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all">Jana Nováková &lt;jana@example.com&gt;&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg-page" style="background:#f2f2f0">
+  <tr>
+    <td align="center" style="padding:24px 12px">
+      <!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+      <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px">
+        <tr><td class="pad" style="padding:8px 32px 20px">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td style="padding-right:10px;vertical-align:middle">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #d0d0cc">
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+        <tr><td width="26" height="6" bgcolor="#c8102e" style="font-size:0;line-height:0;background:#c8102e">&nbsp;</td></tr>
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+      </table>
+    </td>
+    <td style="vertical-align:middle">
+      <a href="https://eshop.example.com" style="font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:22px;font-weight:600;color:#111111;text-decoration:none">Eshop</a>
+    </td>
+  </tr>
+</table></td></tr>
+        <tr>
+          <td class="bg-card pad" style="background:#ffffff;padding:36px 32px;border-top:3px solid #111111">
+            <h1 style="margin:0 0 12px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:26px;line-height:1.2;font-weight:600;color:#111111">New message from the contact form</h1>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Reply to</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111"><a href="mailto:jana@example.com">Jana Nováková &lt;jana@example.com&gt;</a></p>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Message</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Do you have the MSR tent in blue?<br>Thanks!</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="pad muted" style="padding:20px 32px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.5;color:#5c5c5c">
+            You are receiving this email because of your activity at Eshop.<br><a href="https://eshop.example.com">eshop.example.com</a>
+          </td>
+        </tr>
+      </table>
+      <!--[if mso]></td></tr></table><![endif]-->
+    </td>
+  </tr>
+</table>
+</body>
+</html>"
+`;
+
+exports[`transactional emails en contact emails match the snapshot: admin text 1`] = `
+"New message from the contact form
+
+Reply to: Jana Nováková <jana@example.com>
+
+Message:
+Do you have the MSR tent in blue?
+Thanks!
+
+--
+Eshop · https://eshop.example.com"
+`;
+
+exports[`transactional emails en contact emails match the snapshot: customer html 1`] = `
+"<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>We received your message · Eshop</title>
+<style>
+  :root { color-scheme: light dark; supported-color-schemes: light dark; }
+  body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }
+  table { border-collapse: collapse; }
+  img { border: 0; display: block; }
+  a { color: inherit; }
+  @media (max-width: 620px) {
+    .container { width: 100% !important; }
+    .pad { padding-left: 20px !important; padding-right: 20px !important; }
+    .item-img { width: 56px !important; }
+    .item-img img { width: 56px !important; height: 56px !important; }
+  }
+  @media (prefers-color-scheme: dark) {
+    .bg-page { background: #0f0f0f !important; }
+    .bg-card { background: #1a1a1a !important; }
+    .bg-soft { background: #242424 !important; }
+    h1, p, td, a, span { color: #f2f2f0 !important; }
+    .muted, .muted * { color: #a3a3a0 !important; }
+    .line { border-color: #3d3d3d !important; }
+    .btn { background: #f2f2f0 !important; }
+    .btn-link { color: #111111 !important; }
+  }
+</style>
+</head>
+<body class="bg-page" style="margin:0;padding:0;background:#f2f2f0">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all">We have received your message and will get back to you soon.&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg-page" style="background:#f2f2f0">
+  <tr>
+    <td align="center" style="padding:24px 12px">
+      <!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+      <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px">
+        <tr><td class="pad" style="padding:8px 32px 20px">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td style="padding-right:10px;vertical-align:middle">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #d0d0cc">
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+        <tr><td width="26" height="6" bgcolor="#c8102e" style="font-size:0;line-height:0;background:#c8102e">&nbsp;</td></tr>
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+      </table>
+    </td>
+    <td style="vertical-align:middle">
+      <a href="https://eshop.example.com" style="font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:22px;font-weight:600;color:#111111;text-decoration:none">Eshop</a>
+    </td>
+  </tr>
+</table></td></tr>
+        <tr>
+          <td class="bg-card pad" style="background:#ffffff;padding:36px 32px;border-top:3px solid #111111">
+            <h1 style="margin:0 0 12px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:26px;line-height:1.2;font-weight:600;color:#111111">Thank you for your message</h1><p style="margin:0 0 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;line-height:1.55;color:#111111;">Hi Jana Nováková,</p><p style="margin:0 0 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;line-height:1.55;color:#111111;">we have received your message and will get back to you soon.</p>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Your message</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Do you have the MSR tent in blue?<br>Thanks!</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="pad muted" style="padding:20px 32px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.5;color:#5c5c5c">
+            Questions? Write to <a href="mailto:shop@example.com">shop@example.com</a>.<br>You are receiving this email because of your activity at Eshop.<br><a href="https://eshop.example.com">eshop.example.com</a>
+          </td>
+        </tr>
+      </table>
+      <!--[if mso]></td></tr></table><![endif]-->
+    </td>
+  </tr>
+</table>
+</body>
+</html>"
+`;
+
+exports[`transactional emails en contact emails match the snapshot: customer text 1`] = `
+"Thank you for your message
+
+Hi Jana Nováková,
+we have received your message and will get back to you soon.
+
+Your message:
+Do you have the MSR tent in blue?
+Thanks!
+
+--
+Eshop · https://eshop.example.com"
+`;
+
+exports[`transactional emails en new-order email (admin) matches the snapshot: html 1`] = `
+"<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>New order order1792489574t42 · €389.90</title>
+<style>
+  :root { color-scheme: light dark; supported-color-schemes: light dark; }
+  body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }
+  table { border-collapse: collapse; }
+  img { border: 0; display: block; }
+  a { color: inherit; }
+  @media (max-width: 620px) {
+    .container { width: 100% !important; }
+    .pad { padding-left: 20px !important; padding-right: 20px !important; }
+    .item-img { width: 56px !important; }
+    .item-img img { width: 56px !important; height: 56px !important; }
+  }
+  @media (prefers-color-scheme: dark) {
+    .bg-page { background: #0f0f0f !important; }
+    .bg-card { background: #1a1a1a !important; }
+    .bg-soft { background: #242424 !important; }
+    h1, p, td, a, span { color: #f2f2f0 !important; }
+    .muted, .muted * { color: #a3a3a0 !important; }
+    .line { border-color: #3d3d3d !important; }
+    .btn { background: #f2f2f0 !important; }
+    .btn-link { color: #111111 !important; }
+  }
+</style>
+</head>
+<body class="bg-page" style="margin:0;padding:0;background:#f2f2f0">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all">Thank you for your order. Total €389.90.&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg-page" style="background:#f2f2f0">
+  <tr>
+    <td align="center" style="padding:24px 12px">
+      <!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+      <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px">
+        <tr><td class="pad" style="padding:8px 32px 20px">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td style="padding-right:10px;vertical-align:middle">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #d0d0cc">
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+        <tr><td width="26" height="6" bgcolor="#c8102e" style="font-size:0;line-height:0;background:#c8102e">&nbsp;</td></tr>
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+      </table>
+    </td>
+    <td style="vertical-align:middle">
+      <a href="https://eshop.example.com" style="font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:22px;font-weight:600;color:#111111;text-decoration:none">Eshop</a>
+    </td>
+  </tr>
+</table></td></tr>
+        <tr>
+          <td class="bg-card pad" style="background:#ffffff;padding:36px 32px;border-top:3px solid #111111">
+            <h1 style="margin:0 0 12px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:26px;line-height:1.2;font-weight:600;color:#111111">New order</h1><p style="margin:0 0 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;line-height:1.55;color:#111111;">Jana Nováková &lt;jana@example.com&gt; placed an order.</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg-soft" style="background:#f7f7f5;margin:8px 0 28px">
+  <tr>
+    <td style="padding:14px 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:14px;color:#111111">
+      <span class="muted" style="color:#5c5c5c">Order number</span><br><strong>order1792489574t42</strong>
+    </td>
+    <td style="padding:14px 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:14px;color:#111111">
+      <span class="muted" style="color:#5c5c5c">Date</span><br><strong>24 October 2026</strong>
+    </td>
+  </tr>
+</table>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Items</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td class="item-img line" width="72" style="padding:12px 12px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top">
+      <img src="https://res.cloudinary.com/dnpgh1vhi/image/upload/c_pad,b_white,w_160,h_160,f_jpg,q_80/v1792489574/file_hdt4kv.jpg" width="72" height="72" alt="" style="width:72px;height:72px;object-fit:contain;background:#ffffff;border:1px solid #e2e2df">
+    </td>
+    <td class="line" style="padding:12px 8px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.4;color:#111111">
+      <strong>MSR Tent, Green with Red Accents</strong><br>
+      <span class="muted" style="color:#5c5c5c;font-size:14px">Qty 1 × €300.00</span>
+    </td>
+    <td class="line" align="right" style="padding:12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">
+      €300.00
+    </td>
+  </tr>
+  <tr>
+    <td class="item-img line" width="72" style="padding:12px 12px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top">
+      <img src="https://res.cloudinary.com/demo/image/upload/c_pad,b_white,w_160,h_160,f_jpg,q_80/sample.jpg" width="72" height="72" alt="" style="width:72px;height:72px;object-fit:contain;background:#ffffff;border:1px solid #e2e2df">
+    </td>
+    <td class="line" style="padding:12px 8px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.4;color:#111111">
+      <strong>Trekking Poles &lt;Carbon&gt;</strong><br>
+      <span class="muted" style="color:#5c5c5c;font-size:14px">Qty 2 × €42.50</span>
+    </td>
+    <td class="line" align="right" style="padding:12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">
+      €85.00
+    </td>
+  </tr></table>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:12px 0 28px">
+  
+  <tr>
+    <td style="padding:4px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">Subtotal</td>
+    <td align="right" style="padding:4px 0 0;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">€385.00</td>
+  </tr>
+  
+  <tr>
+    <td style="padding:4px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">Shipping</td>
+    <td align="right" style="padding:4px 0 0;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">€4.90</td>
+  </tr>
+  
+  <tr>
+    <td style="padding:12px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:18px;font-weight:600;color:#111111">Total</td>
+    <td align="right" style="padding:12px 0 0;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:18px;font-weight:600;color:#111111">€389.90</td>
+  </tr>
+</table>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Customer</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Jana Nováková<br><a href="mailto:jana@example.com">jana@example.com</a></p>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Payment</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Cash on delivery</p>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Shipping address</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Jana Nováková<br>Hlavná 12<br>811 01 Bratislava<br>Slovakia</p>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Notes</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Please call before delivery.<br>The bell does not work.</p>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 8px">
+  <tr>
+    <td class="btn" bgcolor="#111111" style="background:#111111;border-radius:2px">
+      <a class="btn-link" href="https://eshop.example.com/en/dashboard/orders/order1792489574t42" style="display:inline-block;padding:14px 28px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;font-weight:600;line-height:1;color:#ffffff;text-decoration:none">Open in the dashboard</a>
+    </td>
+  </tr>
+</table>
+          </td>
+        </tr>
+        <tr>
+          <td class="pad muted" style="padding:20px 32px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.5;color:#5c5c5c">
+            You are receiving this email because of your activity at Eshop.<br><a href="https://eshop.example.com" style="color:#5c5c5c">eshop.example.com</a>
+          </td>
+        </tr>
+      </table>
+      <!--[if mso]></td></tr></table><![endif]-->
+    </td>
+  </tr>
+</table>
+</body>
+</html>"
+`;
+
+exports[`transactional emails en new-order email (admin) matches the snapshot: subject 1`] = `"New order order1792489574t42 · €389.90"`;
+
+exports[`transactional emails en new-order email (admin) matches the snapshot: text 1`] = `
+"New order
+
+Jana Nováková <jana@example.com> placed an order.
+
+Order number: order1792489574t42
+Date: 24 October 2026
+
+Items:
+- MSR Tent, Green with Red Accents: 1 × €300.00 = €300.00
+- Trekking Poles <Carbon>: 2 × €42.50 = €85.00
+
+Subtotal: €385.00
+Shipping: €4.90
+Total: €389.90
+
+Customer: Jana Nováková <jana@example.com>
+Payment: Cash on delivery
+
+Shipping address:
+Jana Nováková
+Hlavná 12
+811 01 Bratislava
+Slovakia
+
+Notes:
+Please call before delivery.
+The bell does not work.
+
+Open in the dashboard: https://eshop.example.com/en/dashboard/orders/order1792489574t42
+
+--
+Eshop · https://eshop.example.com"
+`;
+
+exports[`transactional emails en order confirmation (customer, card) matches the snapshot: html 1`] = `
+"<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>Your order order1792489574t42 at Eshop</title>
+<style>
+  :root { color-scheme: light dark; supported-color-schemes: light dark; }
+  body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }
+  table { border-collapse: collapse; }
+  img { border: 0; display: block; }
+  a { color: inherit; }
+  @media (max-width: 620px) {
+    .container { width: 100% !important; }
+    .pad { padding-left: 20px !important; padding-right: 20px !important; }
+    .item-img { width: 56px !important; }
+    .item-img img { width: 56px !important; height: 56px !important; }
+  }
+  @media (prefers-color-scheme: dark) {
+    .bg-page { background: #0f0f0f !important; }
+    .bg-card { background: #1a1a1a !important; }
+    .bg-soft { background: #242424 !important; }
+    h1, p, td, a, span { color: #f2f2f0 !important; }
+    .muted, .muted * { color: #a3a3a0 !important; }
+    .line { border-color: #3d3d3d !important; }
+    .btn { background: #f2f2f0 !important; }
+    .btn-link { color: #111111 !important; }
+  }
+</style>
+</head>
+<body class="bg-page" style="margin:0;padding:0;background:#f2f2f0">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all">Thank you for your order. Total €389.90.&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg-page" style="background:#f2f2f0">
+  <tr>
+    <td align="center" style="padding:24px 12px">
+      <!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+      <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px">
+        <tr><td class="pad" style="padding:8px 32px 20px">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td style="padding-right:10px;vertical-align:middle">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #d0d0cc">
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+        <tr><td width="26" height="6" bgcolor="#c8102e" style="font-size:0;line-height:0;background:#c8102e">&nbsp;</td></tr>
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+      </table>
+    </td>
+    <td style="vertical-align:middle">
+      <a href="https://eshop.example.com" style="font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:22px;font-weight:600;color:#111111;text-decoration:none">Eshop</a>
+    </td>
+  </tr>
+</table></td></tr>
+        <tr>
+          <td class="bg-card pad" style="background:#ffffff;padding:36px 32px;border-top:3px solid #111111">
+            <h1 style="margin:0 0 12px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:26px;line-height:1.2;font-weight:600;color:#111111">Thank you for your order</h1><p style="margin:0 0 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;line-height:1.55;color:#111111;">Hi Jana Nováková,</p><p style="margin:0 0 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;line-height:1.55;color:#111111;">we have received your payment and are preparing your order. We will let you know when it ships.</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg-soft" style="background:#f7f7f5;margin:8px 0 28px">
+  <tr>
+    <td style="padding:14px 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:14px;color:#111111">
+      <span class="muted" style="color:#5c5c5c">Order number</span><br><strong>order1792489574t42</strong>
+    </td>
+    <td style="padding:14px 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:14px;color:#111111">
+      <span class="muted" style="color:#5c5c5c">Date</span><br><strong>24 October 2026</strong>
+    </td>
+  </tr>
+</table>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Items</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td class="item-img line" width="72" style="padding:12px 12px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top">
+      <img src="https://res.cloudinary.com/dnpgh1vhi/image/upload/c_pad,b_white,w_160,h_160,f_jpg,q_80/v1792489574/file_hdt4kv.jpg" width="72" height="72" alt="" style="width:72px;height:72px;object-fit:contain;background:#ffffff;border:1px solid #e2e2df">
+    </td>
+    <td class="line" style="padding:12px 8px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.4;color:#111111">
+      <strong>MSR Tent, Green with Red Accents</strong><br>
+      <span class="muted" style="color:#5c5c5c;font-size:14px">Qty 1 × €300.00</span>
+    </td>
+    <td class="line" align="right" style="padding:12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">
+      €300.00
+    </td>
+  </tr>
+  <tr>
+    <td class="item-img line" width="72" style="padding:12px 12px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top">
+      <img src="https://res.cloudinary.com/demo/image/upload/c_pad,b_white,w_160,h_160,f_jpg,q_80/sample.jpg" width="72" height="72" alt="" style="width:72px;height:72px;object-fit:contain;background:#ffffff;border:1px solid #e2e2df">
+    </td>
+    <td class="line" style="padding:12px 8px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.4;color:#111111">
+      <strong>Trekking Poles &lt;Carbon&gt;</strong><br>
+      <span class="muted" style="color:#5c5c5c;font-size:14px">Qty 2 × €42.50</span>
+    </td>
+    <td class="line" align="right" style="padding:12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">
+      €85.00
+    </td>
+  </tr></table>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:12px 0 28px">
+  
+  <tr>
+    <td style="padding:4px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">Subtotal</td>
+    <td align="right" style="padding:4px 0 0;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">€385.00</td>
+  </tr>
+  
+  <tr>
+    <td style="padding:4px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">Shipping</td>
+    <td align="right" style="padding:4px 0 0;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">€4.90</td>
+  </tr>
+  
+  <tr>
+    <td style="padding:12px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:18px;font-weight:600;color:#111111">Total</td>
+    <td align="right" style="padding:12px 0 0;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:18px;font-weight:600;color:#111111">€389.90</td>
+  </tr>
+</table>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Payment</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Paid by card</p>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Shipping address</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Jana Nováková<br>Hlavná 12<br>811 01 Bratislava<br>Slovakia</p>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Notes</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Please call before delivery.<br>The bell does not work.</p>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 8px">
+  <tr>
+    <td class="btn" bgcolor="#111111" style="background:#111111;border-radius:2px">
+      <a class="btn-link" href="https://eshop.example.com/en/orders/order1792489574t42" style="display:inline-block;padding:14px 28px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;font-weight:600;line-height:1;color:#ffffff;text-decoration:none">View your order</a>
+    </td>
+  </tr>
+</table>
+          </td>
+        </tr>
+        <tr>
+          <td class="pad muted" style="padding:20px 32px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.5;color:#5c5c5c">
+            Questions? Write to <a href="mailto:shop@example.com">shop@example.com</a>.<br>You are receiving this email because of your activity at Eshop.<br><a href="https://eshop.example.com" style="color:#5c5c5c">eshop.example.com</a>
+          </td>
+        </tr>
+      </table>
+      <!--[if mso]></td></tr></table><![endif]-->
+    </td>
+  </tr>
+</table>
+</body>
+</html>"
+`;
+
+exports[`transactional emails en order confirmation (customer, card) matches the snapshot: subject 1`] = `"Your order order1792489574t42 at Eshop"`;
+
+exports[`transactional emails en order confirmation (customer, card) matches the snapshot: text 1`] = `
+"Thank you for your order
+
+Hi Jana Nováková,
+we have received your payment and are preparing your order. We will let you know when it ships.
+
+Order number: order1792489574t42
+Date: 24 October 2026
+
+Items:
+- MSR Tent, Green with Red Accents: 1 × €300.00 = €300.00
+- Trekking Poles <Carbon>: 2 × €42.50 = €85.00
+
+Subtotal: €385.00
+Shipping: €4.90
+Total: €389.90
+
+Payment: Paid by card
+
+Shipping address:
+Jana Nováková
+Hlavná 12
+811 01 Bratislava
+Slovakia
+
+Notes:
+Please call before delivery.
+The bell does not work.
+
+View your order: https://eshop.example.com/en/orders/order1792489574t42
+
+--
+Questions? Write to shop@example.com.
+Eshop · https://eshop.example.com"
+`;
+
+exports[`transactional emails sk contact emails match the snapshot: admin html 1`] = `
+"<!DOCTYPE html>
+<html lang="sk" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>Nová správa od Jana Nováková</title>
+<style>
+  :root { color-scheme: light dark; supported-color-schemes: light dark; }
+  body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }
+  table { border-collapse: collapse; }
+  img { border: 0; display: block; }
+  a { color: inherit; }
+  @media (max-width: 620px) {
+    .container { width: 100% !important; }
+    .pad { padding-left: 20px !important; padding-right: 20px !important; }
+    .item-img { width: 56px !important; }
+    .item-img img { width: 56px !important; height: 56px !important; }
+  }
+  @media (prefers-color-scheme: dark) {
+    .bg-page { background: #0f0f0f !important; }
+    .bg-card { background: #1a1a1a !important; }
+    .bg-soft { background: #242424 !important; }
+    h1, p, td, a, span { color: #f2f2f0 !important; }
+    .muted, .muted * { color: #a3a3a0 !important; }
+    .line { border-color: #3d3d3d !important; }
+    .btn { background: #f2f2f0 !important; }
+    .btn-link { color: #111111 !important; }
+  }
+</style>
+</head>
+<body class="bg-page" style="margin:0;padding:0;background:#f2f2f0">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all">Jana Nováková &lt;jana@example.com&gt;&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg-page" style="background:#f2f2f0">
+  <tr>
+    <td align="center" style="padding:24px 12px">
+      <!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+      <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px">
+        <tr><td class="pad" style="padding:8px 32px 20px">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td style="padding-right:10px;vertical-align:middle">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #d0d0cc">
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+        <tr><td width="26" height="6" bgcolor="#c8102e" style="font-size:0;line-height:0;background:#c8102e">&nbsp;</td></tr>
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+      </table>
+    </td>
+    <td style="vertical-align:middle">
+      <a href="https://eshop.example.com" style="font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:22px;font-weight:600;color:#111111;text-decoration:none">Eshop</a>
+    </td>
+  </tr>
+</table></td></tr>
+        <tr>
+          <td class="bg-card pad" style="background:#ffffff;padding:36px 32px;border-top:3px solid #111111">
+            <h1 style="margin:0 0 12px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:26px;line-height:1.2;font-weight:600;color:#111111">Nová správa z kontaktného formulára</h1>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Odpovedať na</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111"><a href="mailto:jana@example.com">Jana Nováková &lt;jana@example.com&gt;</a></p>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Správa</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Do you have the MSR tent in blue?<br>Thanks!</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="pad muted" style="padding:20px 32px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.5;color:#5c5c5c">
+            Tento e-mail dostávate na základe vašej aktivity v obchode Eshop.<br><a href="https://eshop.example.com">eshop.example.com</a>
+          </td>
+        </tr>
+      </table>
+      <!--[if mso]></td></tr></table><![endif]-->
+    </td>
+  </tr>
+</table>
+</body>
+</html>"
+`;
+
+exports[`transactional emails sk contact emails match the snapshot: admin text 1`] = `
+"Nová správa z kontaktného formulára
+
+Odpovedať na: Jana Nováková <jana@example.com>
+
+Správa:
+Do you have the MSR tent in blue?
+Thanks!
+
+--
+Eshop · https://eshop.example.com"
+`;
+
+exports[`transactional emails sk contact emails match the snapshot: customer html 1`] = `
+"<!DOCTYPE html>
+<html lang="sk" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>Vašu správu sme prijali · Eshop</title>
+<style>
+  :root { color-scheme: light dark; supported-color-schemes: light dark; }
+  body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }
+  table { border-collapse: collapse; }
+  img { border: 0; display: block; }
+  a { color: inherit; }
+  @media (max-width: 620px) {
+    .container { width: 100% !important; }
+    .pad { padding-left: 20px !important; padding-right: 20px !important; }
+    .item-img { width: 56px !important; }
+    .item-img img { width: 56px !important; height: 56px !important; }
+  }
+  @media (prefers-color-scheme: dark) {
+    .bg-page { background: #0f0f0f !important; }
+    .bg-card { background: #1a1a1a !important; }
+    .bg-soft { background: #242424 !important; }
+    h1, p, td, a, span { color: #f2f2f0 !important; }
+    .muted, .muted * { color: #a3a3a0 !important; }
+    .line { border-color: #3d3d3d !important; }
+    .btn { background: #f2f2f0 !important; }
+    .btn-link { color: #111111 !important; }
+  }
+</style>
+</head>
+<body class="bg-page" style="margin:0;padding:0;background:#f2f2f0">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all">Vašu správu sme prijali a čoskoro sa vám ozveme.&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg-page" style="background:#f2f2f0">
+  <tr>
+    <td align="center" style="padding:24px 12px">
+      <!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+      <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px">
+        <tr><td class="pad" style="padding:8px 32px 20px">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td style="padding-right:10px;vertical-align:middle">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #d0d0cc">
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+        <tr><td width="26" height="6" bgcolor="#c8102e" style="font-size:0;line-height:0;background:#c8102e">&nbsp;</td></tr>
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+      </table>
+    </td>
+    <td style="vertical-align:middle">
+      <a href="https://eshop.example.com" style="font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:22px;font-weight:600;color:#111111;text-decoration:none">Eshop</a>
+    </td>
+  </tr>
+</table></td></tr>
+        <tr>
+          <td class="bg-card pad" style="background:#ffffff;padding:36px 32px;border-top:3px solid #111111">
+            <h1 style="margin:0 0 12px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:26px;line-height:1.2;font-weight:600;color:#111111">Ďakujeme za správu</h1><p style="margin:0 0 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;line-height:1.55;color:#111111;">Dobrý deň, Jana Nováková,</p><p style="margin:0 0 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;line-height:1.55;color:#111111;">vašu správu sme prijali a čoskoro sa vám ozveme.</p>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Vaša správa</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Do you have the MSR tent in blue?<br>Thanks!</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="pad muted" style="padding:20px 32px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.5;color:#5c5c5c">
+            Máte otázku? Napíšte na <a href="mailto:shop@example.com">shop@example.com</a>.<br>Tento e-mail dostávate na základe vašej aktivity v obchode Eshop.<br><a href="https://eshop.example.com">eshop.example.com</a>
+          </td>
+        </tr>
+      </table>
+      <!--[if mso]></td></tr></table><![endif]-->
+    </td>
+  </tr>
+</table>
+</body>
+</html>"
+`;
+
+exports[`transactional emails sk contact emails match the snapshot: customer text 1`] = `
+"Ďakujeme za správu
+
+Dobrý deň, Jana Nováková,
+vašu správu sme prijali a čoskoro sa vám ozveme.
+
+Vaša správa:
+Do you have the MSR tent in blue?
+Thanks!
+
+--
+Eshop · https://eshop.example.com"
+`;
+
+exports[`transactional emails sk new-order email (admin) matches the snapshot: html 1`] = `
+"<!DOCTYPE html>
+<html lang="sk" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>Nová objednávka order1792489574t42 · 389,90 €</title>
+<style>
+  :root { color-scheme: light dark; supported-color-schemes: light dark; }
+  body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }
+  table { border-collapse: collapse; }
+  img { border: 0; display: block; }
+  a { color: inherit; }
+  @media (max-width: 620px) {
+    .container { width: 100% !important; }
+    .pad { padding-left: 20px !important; padding-right: 20px !important; }
+    .item-img { width: 56px !important; }
+    .item-img img { width: 56px !important; height: 56px !important; }
+  }
+  @media (prefers-color-scheme: dark) {
+    .bg-page { background: #0f0f0f !important; }
+    .bg-card { background: #1a1a1a !important; }
+    .bg-soft { background: #242424 !important; }
+    h1, p, td, a, span { color: #f2f2f0 !important; }
+    .muted, .muted * { color: #a3a3a0 !important; }
+    .line { border-color: #3d3d3d !important; }
+    .btn { background: #f2f2f0 !important; }
+    .btn-link { color: #111111 !important; }
+  }
+</style>
+</head>
+<body class="bg-page" style="margin:0;padding:0;background:#f2f2f0">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all">Ďakujeme za objednávku. Spolu 389,90 €.&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg-page" style="background:#f2f2f0">
+  <tr>
+    <td align="center" style="padding:24px 12px">
+      <!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+      <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px">
+        <tr><td class="pad" style="padding:8px 32px 20px">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td style="padding-right:10px;vertical-align:middle">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #d0d0cc">
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+        <tr><td width="26" height="6" bgcolor="#c8102e" style="font-size:0;line-height:0;background:#c8102e">&nbsp;</td></tr>
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+      </table>
+    </td>
+    <td style="vertical-align:middle">
+      <a href="https://eshop.example.com" style="font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:22px;font-weight:600;color:#111111;text-decoration:none">Eshop</a>
+    </td>
+  </tr>
+</table></td></tr>
+        <tr>
+          <td class="bg-card pad" style="background:#ffffff;padding:36px 32px;border-top:3px solid #111111">
+            <h1 style="margin:0 0 12px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:26px;line-height:1.2;font-weight:600;color:#111111">Nová objednávka</h1><p style="margin:0 0 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;line-height:1.55;color:#111111;">Jana Nováková &lt;jana@example.com&gt; vytvoril(a) objednávku.</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg-soft" style="background:#f7f7f5;margin:8px 0 28px">
+  <tr>
+    <td style="padding:14px 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:14px;color:#111111">
+      <span class="muted" style="color:#5c5c5c">Číslo objednávky</span><br><strong>order1792489574t42</strong>
+    </td>
+    <td style="padding:14px 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:14px;color:#111111">
+      <span class="muted" style="color:#5c5c5c">Dátum</span><br><strong>24. októbra 2026</strong>
+    </td>
+  </tr>
+</table>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Položky</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td class="item-img line" width="72" style="padding:12px 12px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top">
+      <img src="https://res.cloudinary.com/dnpgh1vhi/image/upload/c_pad,b_white,w_160,h_160,f_jpg,q_80/v1792489574/file_hdt4kv.jpg" width="72" height="72" alt="" style="width:72px;height:72px;object-fit:contain;background:#ffffff;border:1px solid #e2e2df">
+    </td>
+    <td class="line" style="padding:12px 8px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.4;color:#111111">
+      <strong>MSR Tent, Green with Red Accents</strong><br>
+      <span class="muted" style="color:#5c5c5c;font-size:14px">Ks 1 × 300,00 €</span>
+    </td>
+    <td class="line" align="right" style="padding:12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">
+      300,00 €
+    </td>
+  </tr>
+  <tr>
+    <td class="item-img line" width="72" style="padding:12px 12px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top">
+      <img src="https://res.cloudinary.com/demo/image/upload/c_pad,b_white,w_160,h_160,f_jpg,q_80/sample.jpg" width="72" height="72" alt="" style="width:72px;height:72px;object-fit:contain;background:#ffffff;border:1px solid #e2e2df">
+    </td>
+    <td class="line" style="padding:12px 8px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.4;color:#111111">
+      <strong>Trekking Poles &lt;Carbon&gt;</strong><br>
+      <span class="muted" style="color:#5c5c5c;font-size:14px">Ks 2 × 42,50 €</span>
+    </td>
+    <td class="line" align="right" style="padding:12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">
+      85,00 €
+    </td>
+  </tr></table>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:12px 0 28px">
+  
+  <tr>
+    <td style="padding:4px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">Medzisúčet</td>
+    <td align="right" style="padding:4px 0 0;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">385,00 €</td>
+  </tr>
+  
+  <tr>
+    <td style="padding:4px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">Doprava</td>
+    <td align="right" style="padding:4px 0 0;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">4,90 €</td>
+  </tr>
+  
+  <tr>
+    <td style="padding:12px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:18px;font-weight:600;color:#111111">Spolu</td>
+    <td align="right" style="padding:12px 0 0;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:18px;font-weight:600;color:#111111">389,90 €</td>
+  </tr>
+</table>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Zákazník</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Jana Nováková<br><a href="mailto:jana@example.com">jana@example.com</a></p>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Platba</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Dobierka</p>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Adresa doručenia</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Jana Nováková<br>Hlavná 12<br>811 01 Bratislava<br>Slovakia</p>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Poznámka</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Please call before delivery.<br>The bell does not work.</p>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 8px">
+  <tr>
+    <td class="btn" bgcolor="#111111" style="background:#111111;border-radius:2px">
+      <a class="btn-link" href="https://eshop.example.com/sk/dashboard/orders/order1792489574t42" style="display:inline-block;padding:14px 28px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;font-weight:600;line-height:1;color:#ffffff;text-decoration:none">Otvoriť v administrácii</a>
+    </td>
+  </tr>
+</table>
+          </td>
+        </tr>
+        <tr>
+          <td class="pad muted" style="padding:20px 32px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.5;color:#5c5c5c">
+            Tento e-mail dostávate na základe vašej aktivity v obchode Eshop.<br><a href="https://eshop.example.com" style="color:#5c5c5c">eshop.example.com</a>
+          </td>
+        </tr>
+      </table>
+      <!--[if mso]></td></tr></table><![endif]-->
+    </td>
+  </tr>
+</table>
+</body>
+</html>"
+`;
+
+exports[`transactional emails sk new-order email (admin) matches the snapshot: subject 1`] = `"Nová objednávka order1792489574t42 · 389,90 €"`;
+
+exports[`transactional emails sk new-order email (admin) matches the snapshot: text 1`] = `
+"Nová objednávka
+
+Jana Nováková <jana@example.com> vytvoril(a) objednávku.
+
+Číslo objednávky: order1792489574t42
+Dátum: 24. októbra 2026
+
+Položky:
+- MSR Tent, Green with Red Accents: 1 × 300,00 € = 300,00 €
+- Trekking Poles <Carbon>: 2 × 42,50 € = 85,00 €
+
+Medzisúčet: 385,00 €
+Doprava: 4,90 €
+Spolu: 389,90 €
+
+Zákazník: Jana Nováková <jana@example.com>
+Platba: Dobierka
+
+Adresa doručenia:
+Jana Nováková
+Hlavná 12
+811 01 Bratislava
+Slovakia
+
+Poznámka:
+Please call before delivery.
+The bell does not work.
+
+Otvoriť v administrácii: https://eshop.example.com/sk/dashboard/orders/order1792489574t42
+
+--
+Eshop · https://eshop.example.com"
+`;
+
+exports[`transactional emails sk order confirmation (customer, card) matches the snapshot: html 1`] = `
+"<!DOCTYPE html>
+<html lang="sk" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>Vaša objednávka order1792489574t42 v Eshop</title>
+<style>
+  :root { color-scheme: light dark; supported-color-schemes: light dark; }
+  body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }
+  table { border-collapse: collapse; }
+  img { border: 0; display: block; }
+  a { color: inherit; }
+  @media (max-width: 620px) {
+    .container { width: 100% !important; }
+    .pad { padding-left: 20px !important; padding-right: 20px !important; }
+    .item-img { width: 56px !important; }
+    .item-img img { width: 56px !important; height: 56px !important; }
+  }
+  @media (prefers-color-scheme: dark) {
+    .bg-page { background: #0f0f0f !important; }
+    .bg-card { background: #1a1a1a !important; }
+    .bg-soft { background: #242424 !important; }
+    h1, p, td, a, span { color: #f2f2f0 !important; }
+    .muted, .muted * { color: #a3a3a0 !important; }
+    .line { border-color: #3d3d3d !important; }
+    .btn { background: #f2f2f0 !important; }
+    .btn-link { color: #111111 !important; }
+  }
+</style>
+</head>
+<body class="bg-page" style="margin:0;padding:0;background:#f2f2f0">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all">Ďakujeme za objednávku. Spolu 389,90 €.&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg-page" style="background:#f2f2f0">
+  <tr>
+    <td align="center" style="padding:24px 12px">
+      <!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+      <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px">
+        <tr><td class="pad" style="padding:8px 32px 20px">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td style="padding-right:10px;vertical-align:middle">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #d0d0cc">
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+        <tr><td width="26" height="6" bgcolor="#c8102e" style="font-size:0;line-height:0;background:#c8102e">&nbsp;</td></tr>
+        <tr><td width="26" height="5" bgcolor="#ffffff" style="font-size:0;line-height:0;background:#ffffff">&nbsp;</td></tr>
+      </table>
+    </td>
+    <td style="vertical-align:middle">
+      <a href="https://eshop.example.com" style="font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:22px;font-weight:600;color:#111111;text-decoration:none">Eshop</a>
+    </td>
+  </tr>
+</table></td></tr>
+        <tr>
+          <td class="bg-card pad" style="background:#ffffff;padding:36px 32px;border-top:3px solid #111111">
+            <h1 style="margin:0 0 12px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:26px;line-height:1.2;font-weight:600;color:#111111">Ďakujeme za objednávku</h1><p style="margin:0 0 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;line-height:1.55;color:#111111;">Dobrý deň, Jana Nováková,</p><p style="margin:0 0 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;line-height:1.55;color:#111111;">platbu sme prijali a vašu objednávku pripravujeme. Keď ju odošleme, dáme vám vedieť.</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="bg-soft" style="background:#f7f7f5;margin:8px 0 28px">
+  <tr>
+    <td style="padding:14px 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:14px;color:#111111">
+      <span class="muted" style="color:#5c5c5c">Číslo objednávky</span><br><strong>order1792489574t42</strong>
+    </td>
+    <td style="padding:14px 16px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:14px;color:#111111">
+      <span class="muted" style="color:#5c5c5c">Dátum</span><br><strong>24. októbra 2026</strong>
+    </td>
+  </tr>
+</table>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Položky</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td class="item-img line" width="72" style="padding:12px 12px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top">
+      <img src="https://res.cloudinary.com/dnpgh1vhi/image/upload/c_pad,b_white,w_160,h_160,f_jpg,q_80/v1792489574/file_hdt4kv.jpg" width="72" height="72" alt="" style="width:72px;height:72px;object-fit:contain;background:#ffffff;border:1px solid #e2e2df">
+    </td>
+    <td class="line" style="padding:12px 8px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.4;color:#111111">
+      <strong>MSR Tent, Green with Red Accents</strong><br>
+      <span class="muted" style="color:#5c5c5c;font-size:14px">Ks 1 × 300,00 €</span>
+    </td>
+    <td class="line" align="right" style="padding:12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">
+      300,00 €
+    </td>
+  </tr>
+  <tr>
+    <td class="item-img line" width="72" style="padding:12px 12px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top">
+      <img src="https://res.cloudinary.com/demo/image/upload/c_pad,b_white,w_160,h_160,f_jpg,q_80/sample.jpg" width="72" height="72" alt="" style="width:72px;height:72px;object-fit:contain;background:#ffffff;border:1px solid #e2e2df">
+    </td>
+    <td class="line" style="padding:12px 8px 12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.4;color:#111111">
+      <strong>Trekking Poles &lt;Carbon&gt;</strong><br>
+      <span class="muted" style="color:#5c5c5c;font-size:14px">Ks 2 × 42,50 €</span>
+    </td>
+    <td class="line" align="right" style="padding:12px 0;border-bottom:1px solid #e2e2df;vertical-align:top;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">
+      85,00 €
+    </td>
+  </tr></table>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:12px 0 28px">
+  
+  <tr>
+    <td style="padding:4px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">Medzisúčet</td>
+    <td align="right" style="padding:4px 0 0;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">385,00 €</td>
+  </tr>
+  
+  <tr>
+    <td style="padding:4px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">Doprava</td>
+    <td align="right" style="padding:4px 0 0;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;color:#111111">4,90 €</td>
+  </tr>
+  
+  <tr>
+    <td style="padding:12px 0 0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:18px;font-weight:600;color:#111111">Spolu</td>
+    <td align="right" style="padding:12px 0 0;white-space:nowrap;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:18px;font-weight:600;color:#111111">389,90 €</td>
+  </tr>
+</table>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Platba</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Zaplatené kartou</p>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Adresa doručenia</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Jana Nováková<br>Hlavná 12<br>811 01 Bratislava<br>Slovakia</p>
+<p class="muted" style="margin:0 0 4px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5c5c5c">Poznámka</p>
+<p style="margin:0 0 20px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:15px;line-height:1.5;color:#111111">Please call before delivery.<br>The bell does not work.</p>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 8px">
+  <tr>
+    <td class="btn" bgcolor="#111111" style="background:#111111;border-radius:2px">
+      <a class="btn-link" href="https://eshop.example.com/sk/orders/order1792489574t42" style="display:inline-block;padding:14px 28px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:16px;font-weight:600;line-height:1;color:#ffffff;text-decoration:none">Zobraziť objednávku</a>
+    </td>
+  </tr>
+</table>
+          </td>
+        </tr>
+        <tr>
+          <td class="pad muted" style="padding:20px 32px;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:13px;line-height:1.5;color:#5c5c5c">
+            Máte otázku? Napíšte na <a href="mailto:shop@example.com">shop@example.com</a>.<br>Tento e-mail dostávate na základe vašej aktivity v obchode Eshop.<br><a href="https://eshop.example.com" style="color:#5c5c5c">eshop.example.com</a>
+          </td>
+        </tr>
+      </table>
+      <!--[if mso]></td></tr></table><![endif]-->
+    </td>
+  </tr>
+</table>
+</body>
+</html>"
+`;
+
+exports[`transactional emails sk order confirmation (customer, card) matches the snapshot: subject 1`] = `"Vaša objednávka order1792489574t42 v Eshop"`;
+
+exports[`transactional emails sk order confirmation (customer, card) matches the snapshot: text 1`] = `
+"Ďakujeme za objednávku
+
+Dobrý deň, Jana Nováková,
+platbu sme prijali a vašu objednávku pripravujeme. Keď ju odošleme, dáme vám vedieť.
+
+Číslo objednávky: order1792489574t42
+Dátum: 24. októbra 2026
+
+Položky:
+- MSR Tent, Green with Red Accents: 1 × 300,00 € = 300,00 €
+- Trekking Poles <Carbon>: 2 × 42,50 € = 85,00 €
+
+Medzisúčet: 385,00 €
+Doprava: 4,90 €
+Spolu: 389,90 €
+
+Platba: Zaplatené kartou
+
+Adresa doručenia:
+Jana Nováková
+Hlavná 12
+811 01 Bratislava
+Slovakia
+
+Poznámka:
+Please call before delivery.
+The bell does not work.
+
+Zobraziť objednávku: https://eshop.example.com/sk/orders/order1792489574t42
+
+--
+Máte otázku? Napíšte na shop@example.com.
+Eshop · https://eshop.example.com"
+`;

@@ -14,6 +14,32 @@ All notable changes to this project are documented in this file. The format foll
   them as build arguments:
   `docker buildx build --build-arg GIT_SHA=$(git rev-parse --short HEAD) --build-arg BUILD_DATE=$(date -u +%F) …`.
   Without them (or in `ng serve` / `nest start`) the fields read `dev`.
+- `npm run email:preview` renders every email with sample data into `test-results/email-preview/`.
+- E2E contrast checks (axe, WCAG AA) for the cart and checkout in light and dark mode.
+
+### Changed
+
+- **Order and contact emails redesigned:** responsive, table-based HTML (Gmail, Outlook, Apple Mail,
+  phones) with a plain-text alternative, readable in email dark mode, in the customer's language
+  (built-in English, Slovak and Czech texts). Customers get an order confirmation (items with
+  photos, subtotal, shipping, total, payment method, address, link to the order); admins get a
+  separate new-order email with the customer's contact, a dashboard link and `Reply-To` set to
+  the customer. The contact form sends a copy to the sender and a notice to the admins.
+  Subjects are now descriptive (`Your order … at …`, `New order … · total`) instead of `Order` /
+  `Contact`. Still sent through Resend; no new environment variables.
+- Form controls (inputs, radios, payment choices) use a new `--color-border-control` token with
+  3:1 contrast; disabled buttons are a readable grey instead of a faded primary color.
+
+### Fixed
+
+- **Checkout in dark mode:** the Stripe Payment Element is styled from the design tokens (Stripe's
+  `night` theme in dark mode) and follows the light/dark switch without a reload; the Pay button
+  uses the shop's button styles and stays visible when disabled.
+
+### Security
+
+- Customer input (name, address, notes, contact message) and product titles are HTML-escaped in
+  emails; before, they were inserted as raw HTML.
 
 ## [1.0.0](https://github.com/pararell/eshop_mean/compare/v0.9.2...v1.0.0) (2026-10-24)
 

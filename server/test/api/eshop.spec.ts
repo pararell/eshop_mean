@@ -69,7 +69,11 @@ describe('Eshop API (config, pages, contact)', () => {
       expect(recipients.sort()).toEqual(['admin1@test.dev', 'admin2@test.dev', 'visitor@test.dev']);
       // one Resend request for all three, each recipient a separate message
       expect(emailSpy).toHaveBeenCalledTimes(1);
-      expect(sentEmails()[0]).toMatchObject({ from: 'shop@test.dev', subject: 'Contact' });
+      // The sender gets a copy, the admins a notice they can reply to
+      const byRecipient = Object.fromEntries(sentEmails().map((msg) => [msg.to, msg]));
+      expect(byRecipient['visitor@test.dev']).toMatchObject({ from: 'shop@test.dev', subject: expect.stringContaining('We received your message') });
+      expect(byRecipient['visitor@test.dev'].text).toContain('Hello');
+      expect(byRecipient['admin1@test.dev']).toMatchObject({ subject: 'New message from Visitor', reply_to: 'visitor@test.dev' });
     });
 
     it('rejects an invalid captcha with 400 and keeps running (SEC-02 regression)', async () => {

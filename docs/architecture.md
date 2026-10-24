@@ -257,7 +257,9 @@ assistant), which saves nothing until the admin presses Save.
   on delivery), then summary.
 - **Cash on delivery:** `POST /api/orders/add`
   1. builds an `Order` from the session cart (`status: NEW`, `type: PAYMENT_ON_DELIVERY`);
-  2. emails the customer and every `ADMIN_EMAILS` address via Resend (one batch request).
+  2. emails an order confirmation to the customer and a new-order email to every `ADMIN_EMAILS`
+     address via Resend (one batch request; templates in `server/src/shared/utils/email/`,
+     preview with `npm run email:preview`).
 - **Card** (Stripe Payment Element, deferred intent; details in [payments.md](payments.md)):
   1. The Payment Element shows the cart amount; on Pay, `elements.submit()` validates it.
   2. `POST /api/payments/intent` creates a `PENDING_PAYMENT` order and a PaymentIntent from the

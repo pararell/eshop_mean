@@ -14,21 +14,23 @@ import {
 } from '@angular/core';
 import { AsyncPipe, isPlatformBrowser } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { MatButton } from '@angular/material/button';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { firstValueFrom } from 'rxjs';
 // The `pure` entry loads Stripe.js only when called (never during SSR or on other pages)
 import { loadStripe } from '@stripe/stripe-js/pure';
-import type { Stripe, StripeElements, StripeElementLocale } from '@stripe/stripe-js';
+import type { Appearance, Stripe, StripeElements, StripeElementLocale } from '@stripe/stripe-js';
 import type { PaymentIntentRequest } from '@eshop/shared';
 
 import { ApiService } from '../../../services/api.service';
 import { EnvConfigurationService } from '../../../services/env-configuration.service';
+import { ThemeService } from '../../../services/theme.service';
 import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 /** Stripe amounts are integer minor units */
 const toMinor = (amount: number) => Math.round(amount * 100);
 const GENERIC_ERROR = 'Payment_error';
+/** Stripe's iframe can't use the self-hosted Barlow, so the form uses the system font */
+const SYSTEM_FONT = "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
 
 /**
  * Card payment with the Stripe Payment Element (docs/payments.md), deferred-intent flow: the element
@@ -40,13 +42,14 @@ const GENERIC_ERROR = 'Payment_error';
   templateUrl: './card.component.html',
   styleUrls: ['./card.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButton, MatProgressBar, AsyncPipe, TranslatePipe],
+  imports: [MatProgressBar, AsyncPipe, TranslatePipe],
 })
 export class CardComponent implements OnInit {
   private api = inject(ApiService);
   private env = inject(EnvConfigurationService);
   private platformId = inject(PLATFORM_ID);
   private destroyRef = inject(DestroyRef);
+  private theme = inject(ThemeService);
 
   /** Cart total in major units (server-computed) */
   readonly price = input.required<number>();
@@ -75,6 +78,11 @@ export class CardComponent implements OnInit {
       const amount = toMinor(this.price());
       this.elements?.update({ amount });
     });
+    // The iframe doesn't inherit our CSS: restyle it when the customer switches light/dark
+    effect(() => {
+      const dark = this.theme.isDark();
+      this.elements?.update({ appearance: this.appearance(dark) });
+    });
     this.destroyRef.onDestroy(() => this.elements?.getElement('payment')?.destroy());
   }
 
@@ -92,7 +100,7 @@ export class CardComponent implements OnInit {
       amount: toMinor(this.price()),
       currency: this.currency().toLowerCase(),
       locale: this.lang() as StripeElementLocale,
-      appearance: { theme: 'stripe', variables: { colorPrimary: this.primaryColor(), borderRadius: '4px' } },
+      appearance: this.appearance(this.theme.isDark()),
     });
     const element = this.elements.create('payment', {
       layout: 'tabs',
@@ -146,8 +154,50 @@ export class CardComponent implements OnInit {
     }
   }
 
-  private primaryColor(): string {
-    const value = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
-    return /^#[0-9a-f]{3,8}$/i.test(value) ? value : '#3f51b5';
+  /**
+   * The Payment Element's look from our design tokens (light/dark), on top of Stripe's own light
+   * (`stripe`) or dark (`night`) theme. Colors are read resolved from the page, since Stripe needs
+   * concrete values and some tokens point to the shop's brand variables.
+   */
+  private appearance(dark: boolean): Appearance {
+    const color = (token: string, fallback: string) => this.resolveColor(token) ?? fallback;
+    const text = color('--color-text', dark ? '#f2f2f0' : '#111111');
+    const muted = color('--color-text-muted', dark ? '#a3a3a0' : '#6b6b6b');
+    const border = color('--color-border-control', dark ? '#737370' : '#858582');
+    const focus = color('--color-focus', dark ? '#8ab4ff' : '#1a73e8');
+    return {
+      theme: dark ? 'night' : 'stripe',
+      variables: {
+        colorPrimary: color('--color-primary', dark ? '#f2f2f0' : '#111111'),
+        colorBackground: color('--color-surface', dark ? '#0f0f0f' : '#ffffff'),
+        colorText: text,
+        colorTextSecondary: muted,
+        colorTextPlaceholder: muted,
+        colorDanger: color('--color-danger', dark ? '#f2b8b5' : '#b3261e'),
+        colorIcon: muted,
+        fontFamily: SYSTEM_FONT,
+        fontSizeBase: '16px',
+        borderRadius: '2px',
+        spacingUnit: '4px',
+      },
+      rules: {
+        '.Label': { color: text, fontWeight: '500' },
+        '.Input': { border: `1px solid ${border}`, boxShadow: 'none' },
+        '.Input:focus': { border: `1px solid ${focus}`, boxShadow: `0 0 0 1px ${focus}`, outline: 'none' },
+        '.Tab': { border: `1px solid ${border}`, boxShadow: 'none' },
+        '.Tab:focus': { boxShadow: `0 0 0 2px ${focus}` },
+        '.Tab--selected': { borderColor: text, boxShadow: `0 0 0 1px ${text}` },
+      },
+    };
+  }
+
+  /** A CSS custom property as the computed `rgb(…)` color, or null (e.g. before the styles load) */
+  private resolveColor(token: string): string | null {
+    const probe = document.createElement('span');
+    probe.style.cssText = `position:absolute;visibility:hidden;color:var(${token})`;
+    document.body.appendChild(probe);
+    const value = getComputedStyle(probe).color;
+    probe.remove();
+    return value && !value.startsWith('var') ? value : null;
   }
 }

@@ -6,6 +6,10 @@ export interface EmailMessage {
   to: string;
   subject: string;
   html: string;
+  /** Plain-text alternative */
+  text?: string;
+  /** Where replies go (the contact form sender for the admins' copy) */
+  reply_to?: string;
 }
 
 const logger = new Logger('Email');
