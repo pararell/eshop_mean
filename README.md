@@ -35,7 +35,7 @@ complete product in every shop language.
 | ---------------------------------------------------------- | ---------------------------------------------------------------- |
 | Server-side rendering for a fast first load and SEO        | Products, categories, pages, themes, shop settings, translations |
 | Meta tags and schema.org product data                      | **AI product drafts** from a photo and a few words               |
-| English, Slovak and Czech, with the language in the URL    | Orders and their status; card refunds through the admin API      |
+| English, Slovak and Czech, with the language in the URL    | Orders: status, full or partial card refunds                     |
 | Categories, product gallery with zoom, sale prices, search | Image upload to Cloudinary                                       |
 | Cart and checkout: card (Stripe) or cash on delivery       | Order and contact-form notifications by email (Resend)           |
 | Email or Google login, order history                       | Shipping costs and price limits per language                     |

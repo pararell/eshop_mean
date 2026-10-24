@@ -1,6 +1,6 @@
 {
   "name": "eshop",
-  "version": "0.9.2",
+  "version": "1.0.0",
   "description": "Ecommerce template",
   "author": "Miroslav Smrtic",
   "private": false,
@@ -32,7 +32,6 @@
     "test:e2e": "npm run build:ssr && playwright test -c e2e/playwright.config.ts",
     "test:e2e:ui": "playwright test -c e2e/playwright.config.ts --ui",
     "docs:media": "npm run build:ssr && playwright test -c e2e/docs-media.config.ts && node e2e/docs-media/optimize-images.mjs && node e2e/docs-media/make-gif.mjs",
-    "release": "standard-version",
     "start": "npm run serve:ssr",
     "typecheck": "tsc --noEmit -p client/tsconfig.app.json && tsc --noEmit -p server/tsconfig.json && tsc -p server/tsconfig.spec.json && tsc -p e2e/tsconfig.json",
     "format:check": "prettier --check .",
@@ -144,7 +143,6 @@
     "postcss-scss": "^4.0.9",
     "prettier": "^3.6.2",
     "sass": "^1.81.0",
-    "standard-version": "^9.5.0",
     "stylelint": "^17.16.0",
     "stylelint-config-recommended": "^18.0.0",
     "stylelint-config-standard": "^40.0.0",
