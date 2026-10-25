@@ -205,7 +205,7 @@ arguments, since the image has no `.git`):
 docker buildx build --platform linux/amd64 \
   --build-arg GIT_SHA=$(git rev-parse --short HEAD) \
   --build-arg BUILD_DATE=$(date -u +%F) \
-  -t pararel/eshop-mean:1.0.0 -t pararel/eshop-mean:latest --push .
+  -t pararel/eshop-mean:1.0.1 -t pararel/eshop-mean:latest --push .
 ```
 
 **Which version is running?** The browser console prints it on every page load

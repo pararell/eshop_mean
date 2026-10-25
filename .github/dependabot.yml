@@ -1,0 +1,45 @@
+# Dependabot version updates: weekly, grouped so a week brings a few pull requests, not dozens.
+# Security updates are separate (repository Settings → Code security → Dependabot security
+# updates) and are opened as soon as an advisory is published.
+# Overrides in package.json (see CLAUDE.md § Dependency overrides) are not touched by Dependabot;
+# remove them when the parent package ships the fixed version.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: Europe/Bratislava
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      # Angular framework and CLI move together (same release train)
+      angular:
+        patterns: ['@angular/*', '@angular-devkit/*', '@angular-eslint/*', '@schematics/angular']
+      nestjs:
+        patterns: ['@nestjs/*']
+      production-minor-patch:
+        dependency-type: production
+        update-types: [minor, patch]
+      development-minor-patch:
+        dependency-type: development
+        update-types: [minor, patch]
+    ignore:
+      # Major upgrades are planned by hand (Angular/Nest/Node need code changes and a changelog entry)
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: Europe/Bratislava
+    commit-message:
+      prefix: chore
+      include: scope

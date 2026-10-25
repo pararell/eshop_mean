@@ -158,6 +158,20 @@ Copy `.env.example` → `.env` (gitignored, never commit it). It is read with
 | `AI_PROVIDER`, `DEEPSEEK_API_KEY`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`                           | AI product drafts (default provider DeepSeek); **off without the key**. Server-side only (never `FE_`). Limits, model and prices: `AI_*`, see [docs/ai.md](docs/ai.md) § Configuration        | `ai/ai.config.ts`                                                     |
 | `FE_STRIPE_PUBLISHABLE_KEY`, `FE_TINYMCE_API_KEY`, `FE_RECAPTCHA_CLIENT_KEY`, `FE_ANALYTICS_TOKEN` | **Public.** Every env var whose name contains `FE_` is sent to the browser by `GET /api/eshop/config`.                                                                                        | `eshop/eshop.service.ts`                                              |
 
+## Dependency overrides
+
+`package.json` `overrides` force fixed versions where a parent package pins a vulnerable one
+(added in 1.0.1). Remove each override once the parent ships the fix (`npm ls <package>` shows
+who pulls it in), then check `npm audit`.
+
+| Override                                               | Why                                                                                                                                           | Remove when                                              |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `@nestjs/platform-express` → `multer: $multer` (2.5.0) | Nest pins `multer` 2.4.0 exactly (also in 12.2.0); 2.4.0 has a DoS via a pending async `fileFilter` (fixed in 2.5.0). Uses our direct version | `@nestjs/platform-express` depends on multer ≥ 2.5.0     |
+| `@angular/build` → `vite: 8.3.5`                       | `@angular/build` 22.2.4 pins `vite` 8.3.0 exactly; 8.3.0–8.3.2 have dev-server file-exposure and `launch-editor` advisories. Dev only         | `@angular/build` depends on vite ≥ 8.3.3                 |
+| `@esbuild-kit/core-utils` → `esbuild: ^0.25.12`        | drizzle-kit's deprecated loader pins esbuild 0.18 (dev-server request advisory, ≤ 0.24.2). Dev only; `db:generate` verified with 0.25         | drizzle-kit drops `@esbuild-kit` or ships esbuild ≥ 0.25 |
+
+Dependabot (`.github/dependabot.yml`) opens weekly grouped minor/patch updates; majors are done by hand.
+
 ## Database
 
 - PostgreSQL 18 through Drizzle ORM. `server/src/db/schema.ts` is the source of truth;
