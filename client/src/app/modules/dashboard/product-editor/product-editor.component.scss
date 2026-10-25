@@ -24,7 +24,7 @@
 .editor-slug {
   padding: 2px 8px;
   border-radius: 4px;
-  background: rgb(0 0 0 / 6%);
+  background: var(--color-surface-sunken);
 }
 
 .editor-loading {
@@ -42,9 +42,10 @@
 
 .editor-section {
   padding: 16px;
-  border: 1px solid rgb(0 0 0 / 12%);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--color-surface-raised);
+  color: var(--color-text);
 
   h2 {
     margin: 0 0 16px;
@@ -78,7 +79,7 @@
 }
 
 .editor-prefix {
-  opacity: 0.6;
+  color: var(--color-text-muted);
 }
 
 .lang {
@@ -99,7 +100,7 @@
   gap: 8px;
   padding: 8px 12px;
   border-radius: 4px;
-  background: #f3e5f5;
+  background: var(--color-ai-soft);
 }
 
 .tab-label {
@@ -109,7 +110,7 @@
 }
 
 .tab-label-error {
-  color: #b00020;
+  color: var(--color-danger);
   font-size: 18px;
   width: 18px;
   height: 18px;
@@ -124,7 +125,7 @@
 
 .tab-label-muted {
   font-size: 0.8em;
-  opacity: 0.6;
+  color: var(--color-text-muted);
 }
 
 .description {
@@ -148,7 +149,7 @@
 
 // AI-filled fields: purple left border and badge until edited or accepted
 .ai-filled {
-  border-left: 4px solid #6a1b9a;
+  border-left: 4px solid var(--color-ai);
   padding-left: 8px;
 }
 
@@ -156,8 +157,8 @@
   display: inline-block;
   padding: 0 5px;
   border-radius: 3px;
-  background: #6a1b9a;
-  color: #fff;
+  background: var(--color-ai);
+  color: var(--color-on-ai);
   font-size: 11px;
   font-weight: 600;
   line-height: 18px;
@@ -173,8 +174,8 @@
   z-index: 2;
   margin: 0 -16px;
   padding: 12px 16px;
-  border-top: 1px solid rgb(0 0 0 / 12%);
-  background: #fafafa;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface-raised);
 }
 
 .editor-actions,
@@ -197,7 +198,7 @@
 
 .editor-error {
   margin: 0 0 8px;
-  color: #b00020;
+  color: var(--color-danger);
 }
 
 @media (width <= 600px) {

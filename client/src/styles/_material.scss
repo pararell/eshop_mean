@@ -131,3 +131,21 @@ html {
 .lightbox-backdrop {
   background: rgb(6 8 7 / 94%);
 }
+
+// Chip fields keep the text input next to the grid (not inside it, see product-editor.component.html);
+// lay chips and input out on one wrapping row as Material does when the input is inside
+.mat-mdc-form-field-infix:has(> .mat-mdc-chip-grid) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+
+  > .mat-mdc-chip-grid {
+    flex: 0 1 auto;
+  }
+
+  > .mat-mdc-chip-input {
+    flex: 1 1 160px;
+    min-width: 120px;
+  }
+}

@@ -15,15 +15,16 @@
 
   .dashboard-title {
     margin: 0;
-    color: var(--primary-color);
+    color: var(--color-text);
     padding: 0 5px;
     position: relative;
   }
 
   .dashboard-tab-content {
     padding: 15px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    background: #fff;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-raised);
+    color: var(--color-text);
     max-width: 1000px;
     margin: var(--space-8) auto var(--space-12);
   }

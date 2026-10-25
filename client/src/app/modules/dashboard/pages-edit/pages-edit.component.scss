@@ -1,6 +1,7 @@
 :host {
   .main {
-    background: #fff;
+    background: var(--color-surface-raised);
+    color: var(--color-text);
   }
 
   .pages_edit-top {

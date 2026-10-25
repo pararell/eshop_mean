@@ -15,7 +15,8 @@
   }
 
   .translations_edit-wrapper {
-    background: #fff;
+    background: var(--color-surface-raised);
+    color: var(--color-text);
     padding: 20px;
   }
 

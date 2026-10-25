@@ -1,18 +1,12 @@
-import AxeBuilder from '@axe-core/playwright';
 import { expect, Page, test } from '@playwright/test';
-import { addToCart, choosePayment, E2E, isolateExternalServices } from './helpers';
+import { addToCart, axeViolations, choosePayment, E2E, isolateExternalServices } from './helpers';
 
 test.beforeEach(({ page }) => isolateExternalServices(page));
 
 /** WCAG AA text contrast (axe `color-contrast`, 4.5:1 / 3:1 for large text) on the checkout */
-async function contrastViolations(page: Page) {
-  const results = await new AxeBuilder({ page })
-    .withRules(['color-contrast'])
-    // Stripe's iframe is styled through `appearance`, not our CSS
-    .exclude('[data-testid="payment-element"]')
-    .analyze();
-  return results.violations.flatMap((v) => v.nodes.map((n) => `${n.target.join(' ')}: ${n.failureSummary?.split('\n').pop()?.trim()}`));
-}
+const contrastViolations = (page: Page) =>
+  // Stripe's iframe is styled through `appearance`, not our CSS
+  axeViolations(page, { rules: ['color-contrast'], exclude: ['[data-testid="payment-element"]'] });
 
 for (const colorScheme of ['light', 'dark'] as const) {
   test(`cart and checkout meet WCAG AA contrast (${colorScheme})`, async ({ page }) => {

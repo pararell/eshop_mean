@@ -1,8 +1,6 @@
 @if (editorApiKey$ | async; as editorApiKey) {
-  <editor
-    apiKey="{{ editorApiKey }}"
-    [ngModel]="description()"
-    (ngModelChange)="onEditorChange($event)"
-    [init]="{ plugins: ['image', 'media', 'link', 'code'] }"
-  />
+  <!-- One iteration per color mode: a new mode recreates the editor with the matching skin -->
+  @for (mode of [dark()]; track mode) {
+    <editor apiKey="{{ editorApiKey }}" [ngModel]="content()" (ngModelChange)="onEditorChange($event)" [init]="init()" />
+  }
 }

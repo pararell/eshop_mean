@@ -81,16 +81,17 @@
                 <button matChipRemove type="button" [attr.aria-label]="'Remove category ' + tag"><mat-icon>cancel</mat-icon></button>
               </mat-chip-row>
             }
-            <input
-              #categoryInput
-              placeholder="Add category…"
-              [matChipInputFor]="chipGrid"
-              [matAutocomplete]="categoryAuto"
-              [disabled]="aiBusy()"
-              (input)="categoryQuery.set(categoryInput.value)"
-              (matChipInputTokenEnd)="onCategoryInput($event)"
-            />
           </mat-chip-grid>
+          <!-- Next to the grid, not inside it: a combobox is not an allowed child of role=grid (axe aria-required-children) -->
+          <input
+            #categoryInput
+            placeholder="Add category…"
+            [matChipInputFor]="chipGrid"
+            [matAutocomplete]="categoryAuto"
+            [disabled]="aiBusy()"
+            (input)="categoryQuery.set(categoryInput.value)"
+            (matChipInputTokenEnd)="onCategoryInput($event)"
+          />
           <mat-autocomplete #categoryAuto="matAutocomplete" (optionSelected)="onCategorySelected($event, categoryInput)">
             @for (category of filteredCategories(); track category) {
               <mat-option [value]="category">{{ category }}</mat-option>

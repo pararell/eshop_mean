@@ -18,9 +18,9 @@
   gap: 4px;
   width: 100%;
   padding: 24px 16px;
-  border: 2px dashed rgb(0 0 0 / 25%);
+  border: 2px dashed var(--color-border-control);
   border-radius: 8px;
-  background: rgb(0 0 0 / 2%);
+  background: var(--color-surface-sunken);
   color: inherit;
   font: inherit;
   cursor: pointer;
@@ -28,12 +28,12 @@
   &:hover,
   &:focus-visible,
   &-over {
-    border-color: var(--primary-color, #3f51b5);
-    background: rgb(63 81 181 / 6%);
+    border-color: var(--color-text);
+    background: var(--color-primary-soft);
   }
 
   &:focus-visible {
-    outline: 2px solid var(--primary-color, #3f51b5);
+    outline: 2px solid var(--color-focus);
     outline-offset: 2px;
   }
 
@@ -55,13 +55,13 @@
 
 .dropzone-hint {
   font-size: 0.85em;
-  opacity: 0.75;
+  color: var(--color-text-muted);
 }
 
 .gallery-errors {
   margin: 8px 0 0;
   padding-left: 20px;
-  color: #b00020;
+  color: var(--color-danger);
 }
 
 .gallery {
@@ -78,10 +78,10 @@
   display: flex;
   flex-direction: column;
   width: 200px;
-  border: 1px solid rgb(0 0 0 / 15%);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   overflow: hidden;
-  background: #fff;
+  background: var(--color-surface-raised);
   cursor: grab;
 
   img {
@@ -91,7 +91,7 @@
   }
 
   &-main {
-    border: 2px solid var(--primary-color, #3f51b5);
+    border: 2px solid var(--color-text);
   }
 
   &-uploading {
@@ -120,13 +120,14 @@
 .badge {
   padding: 1px 6px;
   border-radius: 4px;
-  background: rgb(0 0 0 / 70%);
+  background: var(--color-overlay);
   color: #fff;
   font-size: 11px;
   font-weight: 600;
 
   &-ai {
-    background: #6a1b9a;
+    background: var(--color-ai);
+    color: var(--color-on-ai);
   }
 }
 
@@ -138,7 +139,7 @@
 .gallery-note {
   margin: 8px 0 0;
   font-size: 0.85em;
-  opacity: 0.8;
+  color: var(--color-text-muted);
 }
 
 .gallery-url {
@@ -155,7 +156,7 @@
 
 .cdk-drag-preview {
   border-radius: 8px;
-  box-shadow: 0 6px 16px rgb(0 0 0 / 25%);
+  box-shadow: var(--shadow-3);
 }
 
 .cdk-drag-placeholder {

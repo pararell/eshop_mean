@@ -1,3 +1,4 @@
+import AxeBuilder from '@axe-core/playwright';
 import { expect, Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -162,5 +163,27 @@ export async function expectCartCount(page: Page, count: number) {
     await expect(badge).not.toContainText(/\d/);
   } else {
     await expect(badge).toContainText(String(count));
+  }
+}
+
+/**
+ * Accessibility violations (axe, WCAG 2.1 A/AA) as readable lines, [] when clean.
+ * The app scrolls inside `.main-scroll-wrap` (absolutely positioned, overflow auto); axe treats
+ * content in it as off-screen and silently skips it, so it is un-clipped during the check.
+ */
+export async function axeViolations(page: Page, options: { rules?: string[]; exclude?: string[] } = {}): Promise<string[]> {
+  const unclip = await page.addStyleTag({
+    content: '.main-scroll-wrap { position: static !important; overflow: visible !important; } body { overflow: visible !important; }',
+  });
+  try {
+    let builder = new AxeBuilder({ page });
+    builder = options.rules ? builder.withRules(options.rules) : builder.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']);
+    for (const selector of options.exclude ?? []) builder = builder.exclude(selector);
+    const { violations } = await builder.analyze();
+    return violations.flatMap((v) =>
+      v.nodes.map((n) => `${v.id}: ${n.target.join(' ')} (${(n.any[0]?.message ?? n.failureSummary ?? '').split('\n')[0].slice(0, 140)})`),
+    );
+  } finally {
+    await unclip.evaluate((el) => (el as Element).remove());
   }
 }

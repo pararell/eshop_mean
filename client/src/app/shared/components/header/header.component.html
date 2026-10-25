@@ -5,7 +5,7 @@
       <app-icon name="menu" />
     </button>
 
-    <a class="brand" routerLink="/" (click)="scrollToTop()" aria-label="Home">
+    <a class="brand" routerLink="/" (click)="scrollToTop()">
       @if (logo()) {
         <img class="brand-logo" [src]="logo()" alt="" />
       } @else {

@@ -21,7 +21,7 @@
 
 .products-count {
   margin-left: auto;
-  opacity: 0.75;
+  color: var(--color-text-muted);
 }
 
 .products-filters {
@@ -48,7 +48,7 @@
   cursor: pointer;
 
   &:hover {
-    background: rgb(0 0 0 / 3%);
+    background: var(--color-surface-sunken);
   }
 }
 
@@ -63,8 +63,8 @@
   object-fit: cover;
 
   &-empty {
-    background: rgb(0 0 0 / 6%);
-    opacity: 0.6;
+    background: var(--color-surface-sunken);
+    color: var(--color-text-muted);
   }
 }
 
@@ -75,11 +75,11 @@
 
 .products-slug {
   font-size: 0.8em;
-  opacity: 0.6;
+  color: var(--color-text-muted);
 }
 
 .products-missing {
-  color: #b00020;
+  color: var(--color-danger);
   font-size: 0.9em;
 }
 
@@ -91,17 +91,18 @@
 .status {
   padding: 2px 8px;
   border-radius: 10px;
-  background: rgb(0 0 0 / 8%);
+  background: var(--color-surface-sunken);
+  color: var(--color-text-muted);
   font-size: 0.85em;
   white-space: nowrap;
 
   &-visible {
-    background: #e8f5e9;
-    color: #1b5e20;
+    background: var(--color-success-soft);
+    color: var(--color-success);
   }
 
   &-missing {
-    background: #fdecea;
-    color: #8a1c13;
+    background: var(--color-danger-soft);
+    color: var(--color-danger);
   }
 }

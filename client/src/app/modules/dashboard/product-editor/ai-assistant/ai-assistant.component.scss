@@ -3,7 +3,7 @@
 }
 
 .ai-panel {
-  border-left: 4px solid #6a1b9a;
+  border-left: 4px solid var(--color-ai);
 
   mat-panel-title {
     display: flex;
@@ -12,7 +12,7 @@
     font-weight: 500;
 
     mat-icon {
-      color: #6a1b9a;
+      color: var(--color-ai);
     }
   }
 }
@@ -53,7 +53,7 @@
 
 .ai-panel-note {
   font-size: 0.85em;
-  opacity: 0.8;
+  color: var(--color-text-muted);
 }
 
 .ai-panel-error {
@@ -63,18 +63,19 @@
   margin-top: 8px;
   padding: 8px 12px;
   border-radius: 4px;
-  background: #fdecea;
-  color: #8a1c13;
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
 }
 
 .ai-panel-result {
   margin-top: 16px;
   padding: 12px 16px;
   border-radius: 4px;
-  background: #f3e5f5;
+  background: var(--color-ai-soft);
+  color: var(--color-text);
 
   &:focus-visible {
-    outline: 2px solid #6a1b9a;
+    outline: 2px solid var(--color-focus);
   }
 
   h4 {
@@ -101,8 +102,8 @@
 .ai-mark-sample {
   padding: 0 4px;
   border-radius: 3px;
-  background: #6a1b9a;
-  color: #fff;
+  background: var(--color-ai);
+  color: var(--color-on-ai);
   font-size: 0.8em;
   font-weight: 600;
 }

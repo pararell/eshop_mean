@@ -9,7 +9,8 @@
     }
   }
   .main {
-    background: #fff;
+    background: var(--color-surface-raised);
+    color: var(--color-text);
   }
 
   .config_edit-top {

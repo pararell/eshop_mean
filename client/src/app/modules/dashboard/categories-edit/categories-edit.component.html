@@ -130,8 +130,9 @@
         <button mat-raised-button color="primary" class="edit-find-button" (click)="addSubCategory()">Add SubCategory</button>
       </div>
       @if (categoryEditForm.get('subCategories')!.value; as allCategories) {
-        <mat-chip-listbox class="category_edit-subCategories">
-          @if (allCategories && allCategories.length) {
+        <!-- Only rendered with chips: an empty chip listbox has no role but keeps listbox-only ARIA attributes -->
+        @if (allCategories.length) {
+          <mat-chip-listbox class="category_edit-subCategories">
             @for (subCategory of allCategories; track subCategory) {
               <mat-chip-option class="clickable" (click)="removeSubCategory(subCategory)">
                 @if (subCategory) {
@@ -139,8 +140,8 @@
                 }
               </mat-chip-option>
             }
-          }
-        </mat-chip-listbox>
+          </mat-chip-listbox>
+        }
       }
 
       <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!categoryEditForm.valid">
