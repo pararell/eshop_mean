@@ -1,39 +1,40 @@
-import { toObservable } from '@angular/core/rxjs-interop';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, ChangeDetectionStrategy, computed, inject, signal } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
+import { MatSelect, MatOption } from '@angular/material/select';
+import { MatInput } from '@angular/material/input';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { MatIcon } from '@angular/material/icon';
 
-import { languages } from '../../../shared/constants';
 import { ThemeService } from '../../../services/theme.service';
-import { Theme } from '../../../shared/models';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 import { SignalStore } from '../../../store/signal.store';
-import { MatFormField, MatLabel, MatSelect, MatOption } from '@angular/material/select';
-import { MatInput } from '@angular/material/input';
-import { MatButton } from '@angular/material/button';
-import { MatRadioGroup, MatRadioButton } from '@angular/material/radio';
-import { AsyncPipe } from '@angular/common';
-import { TranslatePipe } from '../../../pipes/translate.pipe';
+import { AdminPageHeaderComponent } from '../admin-ui/admin-page-header.component';
+import { AdminItemListComponent, AdminListItem } from '../admin-ui/admin-item-list.component';
+import { confirmAction } from '../admin-ui/confirm-dialog.component';
 
+/**
+ * Themes: list + editor. Changes preview live on the page (ThemeService CSS variables), as
+ * before; only the active theme is used by the shop.
+ */
 @Component({
   selector: 'app-theme-edit',
   templateUrl: './theme-edit.component.html',
   styleUrls: ['./theme-edit.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    ReactiveFormsModule,
     MatFormField,
     MatLabel,
+    MatHint,
     MatInput,
-    ReactiveFormsModule,
-    FormsModule,
-    MatButton,
     MatSelect,
     MatOption,
-    MatRadioGroup,
-    MatRadioButton,
-    AsyncPipe,
-    TranslatePipe,
+    MatSlideToggle,
+    MatIcon,
+    AdminPageHeaderComponent,
+    AdminItemListComponent,
   ],
 })
 export class ThemeEditComponent {
@@ -42,23 +43,27 @@ export class ThemeEditComponent {
   private fb = inject(FormBuilder);
   private themeService = inject(ThemeService);
 
-  themes$: Observable<Theme[] | null>;
+  private dialog = inject(MatDialog);
   themesEditForm: FormGroup;
-  languageOptions = languages;
-  choosenLanguageSub$ = new BehaviorSubject<string>(languages[0]);
-  newTheme = '';
-  chosenTheme = '';
-  sendRequest = false;
+  readonly themes = computed(() => {
+    const list = this.selectos.themes();
+    return Array.isArray(list) ? list : [];
+  });
+  /** titleUrl of the open theme; '' for a new one; null when nothing is open */
+  readonly selected = signal<string | null>(null);
+  readonly listItems = computed<AdminListItem[]>(() =>
+    this.themes()
+      .map((theme) => ({ id: theme.titleUrl, label: theme.titleUrl, meta: theme.active ? 'active' : '' }))
+      .sort((a, b) => Number(!!b.meta) - Number(!!a.meta) || a.label.localeCompare(b.label)),
+  );
 
   constructor() {
     this.store.getThemes();
 
     this.themesEditForm = this.fb.group({
-      titleUrl: ['', Validators.required],
+      titleUrl: ['', [Validators.required, Validators.pattern(/^[a-z0-9_-]+$/)]],
       ...this.startFormValues(),
     });
-
-    this.themes$ = toObservable(this.selectos.themes);
 
     this.themesEditForm.valueChanges.subscribe((values) => {
       this.themeService.setCSSVariable(values.primaryColor, 'primary-color');
@@ -81,40 +86,48 @@ export class ThemeEditComponent {
     });
   }
 
-  addTheme(): void {
-    if (this.newTheme) {
-      this.themesEditForm.get('titleUrl')!.setValue(this.newTheme);
-      const newForm = {
-        titleUrl: this.newTheme,
-        ...this.startFormValues(),
-      };
-      this.themesEditForm.setValue(newForm);
+  /** Opens a theme (or a new one with defaults, id '') in the form */
+  async select(titleUrl: string): Promise<void> {
+    if (this.selected() === titleUrl) return;
+    if (
+      this.themesEditForm.dirty &&
+      !(await confirmAction(this.dialog, {
+        title: 'Discard changes?',
+        message: 'The open theme has unsaved changes.',
+        confirm: 'Discard',
+        danger: true,
+      }))
+    ) {
+      return;
     }
-  }
-
-  choseTheme(): void {
-    if (this.chosenTheme) {
-      this.themesEditForm.get('titleUrl')!.setValue(this.chosenTheme);
-      this.themes$.pipe(take(1)).subscribe((themes) => {
-        // The chosen title comes from the loaded list, so both are present here
-        const foundTheme = themes!.find((theme) => theme.titleUrl === this.chosenTheme)!;
-        this.themesEditForm.get('active')!.setValue(!!foundTheme.active);
-        this.themesEditForm.get('freeShippingPromo')!.setValue(foundTheme.styles.freeShippingPromo || 'none');
-        this.themesEditForm.get('promoSlideBackground')!.setValue(foundTheme.styles.promoSlideBackground || '');
-        this.themesEditForm.get('promoSlideVideo')!.setValue(foundTheme.styles.promoSlideVideo || '');
-        this.themesEditForm.get('promoSlideBackgroundPosition')!.setValue(foundTheme.styles.promoSlideBackgroundPosition || '');
-        this.themesEditForm.get('promo')!.setValue(foundTheme.styles.promo || 'none');
-        this.themesEditForm.get('primaryColor')!.setValue(foundTheme.styles.primaryColor || '');
-        this.themesEditForm.get('secondaryColor')!.setValue(foundTheme.styles.secondaryColor || '');
-        this.themesEditForm.get('backgroundColor')!.setValue(foundTheme.styles.backgroundColor || '');
-        this.themesEditForm.get('mainBackground')!.setValue(foundTheme.styles.mainBackground || '');
-        this.themesEditForm.get('logo')!.setValue(foundTheme.styles.logo || '');
-      });
-    }
+    const found = this.themes().find((theme) => theme.titleUrl === titleUrl);
+    const styles = found?.styles;
+    const defaults = this.startFormValues();
+    this.themesEditForm.reset({
+      titleUrl: found?.titleUrl ?? '',
+      active: found ? !!found.active : defaults.active,
+      freeShippingPromo: styles?.freeShippingPromo || defaults.freeShippingPromo,
+      promoSlideBackground: styles?.promoSlideBackground || '',
+      promoSlideVideo: styles?.promoSlideVideo || '',
+      promoSlideBackgroundPosition: styles?.promoSlideBackgroundPosition || defaults.promoSlideBackgroundPosition,
+      promo: styles?.promo || defaults.promo,
+      primaryColor: styles?.primaryColor || (found ? '' : defaults.primaryColor),
+      secondaryColor: styles?.secondaryColor || (found ? '' : defaults.secondaryColor),
+      backgroundColor: styles?.backgroundColor || (found ? '' : defaults.backgroundColor),
+      mainBackground: styles?.mainBackground || '',
+      logo: styles?.logo || '',
+    });
+    if (found) this.themesEditForm.get('titleUrl')!.disable();
+    else this.themesEditForm.get('titleUrl')!.enable();
+    this.selected.set(titleUrl);
   }
 
   saveTheme(): void {
-    const formValues = this.themesEditForm.value;
+    if (this.themesEditForm.invalid) {
+      this.themesEditForm.markAllAsTouched();
+      return;
+    }
+    const formValues = this.themesEditForm.getRawValue();
     const request = {
       titleUrl: formValues.titleUrl,
       active: formValues.active,
@@ -132,12 +145,23 @@ export class ThemeEditComponent {
       },
     };
     this.store.addOrEditTheme(request);
-    this.sendRequest = true;
+    this.themesEditForm.markAsPristine();
+    this.selected.set(formValues.titleUrl);
+    this.themesEditForm.get('titleUrl')!.disable();
   }
 
-  removeTheme(): void {
-    this.store.removeTheme(this.chosenTheme);
-    this.sendRequest = true;
+  async removeTheme(): Promise<void> {
+    const titleUrl = this.themesEditForm.getRawValue().titleUrl as string;
+    const confirmed = await confirmAction(this.dialog, {
+      title: 'Delete theme?',
+      message: `"${titleUrl}" is deleted. If it is the active theme, the shop falls back to the default look.`,
+      confirm: 'Delete',
+      danger: true,
+    });
+    if (!confirmed) return;
+    this.store.removeTheme(titleUrl);
+    this.themesEditForm.markAsPristine();
+    this.selected.set(null);
   }
 
   private startFormValues() {

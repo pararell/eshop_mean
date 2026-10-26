@@ -1,11 +1,9 @@
 <div class="editor">
-  <header class="editor-header">
-    <a mat-button [routerLink]="listLink()"><mat-icon aria-hidden="true">arrow_back</mat-icon> Products</a>
-    <h1 class="editor-title">{{ isNew() ? 'New product' : 'Edit product' }}</h1>
+  <app-admin-page-header [title]="isNew() ? 'New product' : 'Edit product'" [subtitle]="isNew() ? '' : (titleUrl() ?? '')">
     @if (!isNew()) {
-      <code class="editor-slug">{{ titleUrl() }}</code>
+      <a class="btn btn-outline" [routerLink]="['/', lang(), 'product', titleUrl()]" target="_blank">View in shop</a>
     }
-  </header>
+  </app-admin-page-header>
 
   @if (loading()) {
     <div class="editor-loading" role="status"><mat-progress-spinner mode="indeterminate" diameter="40" aria-label="Loading product" /></div>

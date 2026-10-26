@@ -1,0 +1,166 @@
+// Admin frame, right side: top bar (breadcrumbs, search, user menu) and the page area.
+// The sidebar and the responsive rules are in admin-shell.component.scss.
+// Top bar ---------------------------------------------------------------------------------------
+.frame {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.top {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--top-height);
+  padding: 0 var(--space-6);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface-raised);
+}
+
+.icon-btn,
+.avatar {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-surface-sunken);
+  }
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-weight: var(--weight-semibold);
+
+  &:hover {
+    background: var(--color-primary-hover);
+  }
+}
+
+.crumbs {
+  min-width: 0;
+
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  li + li::before {
+    content: '/';
+    margin-right: var(--space-2);
+  }
+
+  li[aria-current] {
+    overflow: hidden;
+    max-width: 32ch;
+    color: var(--color-text);
+    font-weight: var(--weight-medium);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  a {
+    color: inherit;
+  }
+}
+
+.top-search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: min(360px, 32vw);
+  height: 38px;
+  margin-left: auto;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border-control);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+
+  &:focus-within {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 1px;
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-text);
+    font: inherit;
+
+    &::placeholder {
+      color: var(--color-text-muted);
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  kbd {
+    padding: 0 5px;
+    border: 1px solid var(--color-border-control);
+    border-radius: 3px;
+    font: var(--text-xs) / 1.4 var(--font-sans);
+  }
+}
+
+.top-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--color-text);
+  }
+}
+
+// Only on phones (see the media query in admin-shell.component.scss)
+.icon-btn.top-menu {
+  display: none;
+}
+
+.menu-email {
+  margin: 0;
+  padding: var(--space-2) var(--space-4) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+// Page ------------------------------------------------------------------------------------------
+.content {
+  flex: 1;
+  width: 100%;
+  max-width: 1280px;
+  padding: var(--space-6) var(--space-6) var(--space-12);
+
+  &:focus {
+    outline: none;
+  }
+}

@@ -1,79 +1,35 @@
 :host {
-  ::ng-deep .mat-mdc-radio-button ~ .mat-radio-button {
-    margin-left: 16px;
+  display: block;
+}
+
+.lang-fields {
+  padding-top: var(--space-4);
+  align-items: center;
+
+  mat-slide-toggle {
+    margin-bottom: var(--space-4);
   }
+}
 
-  @media screen and (max-width: 600px) {
-    ::ng-deep .mat-mdc-radio-button ~ .mat-radio-button {
-      margin-left: 4px;
+.category-products {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  a {
+    display: inline-block;
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--color-border-control);
+    border-radius: 14px;
+    color: var(--color-text);
+    font-size: var(--text-sm);
+
+    &:hover {
+      background: var(--color-surface-sunken);
+      text-decoration: none;
     }
-  }
-
-  .category_edit {
-    &-form {
-      width: 100%;
-    }
-
-    &-field {
-      width: 100%;
-      margin: 0 5px;
-    }
-
-    &-field-small {
-      margin: 0 5px;
-      flex: 1;
-    }
-
-    &-full-input {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-      flex-flow: wrap;
-    }
-
-    &-subtitle {
-      font-weight: 500;
-      margin: 40px 5px 20px 5px;
-      border-bottom: 1px solid var(--color-border);
-    }
-
-    &-infotitle {
-      font-weight: 500;
-    }
-
-    &-add-images {
-      margin: 25px 0;
-    }
-
-    &-after-send {
-      display: flex;
-      align-items: center;
-      padding: 50px;
-    }
-
-    &-btn-action {
-      margin: 0 10px;
-    }
-
-    &-subCategories {
-      margin: 10px 0 50px 0;
-      display: block;
-    }
-  }
-
-  .check-title {
-    color: var(--color-text-muted);
-    font-size: 0.8rem;
-    padding: 5px 0;
-    margin-top: 15px;
-  }
-
-  .file-field .btn {
-    float: none !important;
-  }
-
-  .categories-title-wrapp {
-    display: flex;
-    justify-content: space-between;
   }
 }

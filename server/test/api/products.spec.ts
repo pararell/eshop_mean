@@ -184,6 +184,31 @@ describe('Products API', () => {
       expect(doc.en.salePrice).toBe(99);
     });
 
+    it('creates a product through edit when the titleUrl is new, without a 404 (BUG-08 regression)', async () => {
+      const token = await adminToken(t);
+
+      await t.http.patch('/api/products/edit').set('Authorization', `Bearer ${token}`).send(productFixture('new-car')).expect(200);
+
+      expect(await t.model('Product').countDocuments({ titleUrl: 'new-car' })).toBe(1);
+    });
+
+    it('creates and edits a category through the upsert, without a 404 (BUG-08 regression)', async () => {
+      const token = await adminToken(t);
+      const category = (title: string) => ({
+        titleUrl: 'tents',
+        mainImage: { url: '', name: 'tents', type: false },
+        subCategories: [],
+        en: { title, description: '', position: 1, visibility: true, menuHidden: false },
+      });
+
+      await t.http.patch('/api/products/categories/edit').set('Authorization', `Bearer ${token}`).send(category('Tents')).expect(200);
+      await t.http.patch('/api/products/categories/edit').set('Authorization', `Bearer ${token}`).send(category('Tents and shelters')).expect(200);
+
+      const res = await t.http.get('/api/products/categories/all').set('Authorization', `Bearer ${token}`).expect(200);
+      const tents = res.body.find((c: { category: { titleUrl: string } }) => c.category.titleUrl === 'tents');
+      expect(tents.category.en.title).toBe('Tents and shelters');
+    });
+
     it('deletes a product', async () => {
       const token = await adminToken(t);
       await t.model('Product').create(productFixture('car'));

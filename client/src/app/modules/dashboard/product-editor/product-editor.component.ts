@@ -54,12 +54,15 @@ const errorMessage = (error: unknown, fallback: string): string => {
  * Admin product editor (`/:lang/dashboard/products/new` and `/products/:titleUrl`). Nothing is saved
  * until the admin presses Save; AI-filled fields stay marked until they are edited or accepted.
  */
+import { AdminPageHeaderComponent } from '../admin-ui/admin-page-header.component';
+
 @Component({
   selector: 'app-product-editor',
   templateUrl: './product-editor.component.html',
   styleUrls: ['./product-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    AdminPageHeaderComponent,
     ReactiveFormsModule,
     RouterLink,
     MatAutocomplete,
@@ -114,7 +117,7 @@ export class ProductEditorComponent implements OnInit {
 
   readonly lang = this.selectors.appLang;
   readonly isNew = computed(() => !this.titleUrl());
-  readonly listLink = computed(() => `/${this.lang()}/dashboard`);
+  readonly listLink = computed(() => `/${this.lang()}/dashboard/products`);
 
   /** The store holds the raw response, which is an `{ error }` object when loading failed */
   private readonly allProducts = computed(() => {

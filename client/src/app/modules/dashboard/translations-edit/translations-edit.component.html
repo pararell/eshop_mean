@@ -1,47 +1,99 @@
-<div class="translations_edit-wrapper">
-  <form [formGroup]="languageForm">
-    <div class="translations-subform">
-      <div>
-        <mat-form-field class="product_edit-field">
-          <mat-label>Add key</mat-label>
-          <input matInput formControlName="add" />
-        </mat-form-field>
-        <button class="translations-button" mat-flat-button color="accent" (click)="addKeyToTranslation()">+</button>
-      </div>
-      <div>
-        <button class="translations-button" mat-raised-button color="primary" type="submit" [disabled]="languageForm.invalid" (click)="submitForm()">
-          Save from inputs
-        </button>
-        <button class="translations-button" mat-raised-button color="primary" type="submit" [disabled]="languageForm.invalid" (click)="submitJSON()">
-          Save from JSONS
-        </button>
-      </div>
-    </div>
-    <div class="translations-subform">
-      @for (translation of translationSub$ | async; track translation; let i = $index) {
-        <div>
-          <div [formGroup]="langGroup(translation.lang)">
-            <h1>{{ translation.lang }}</h1>
+<app-admin-page-header title="Translations" [subtitle]="keys().length + ' texts · ' + missingCount() + ' missing in some language'">
+  <button type="button" class="btn btn-primary" (click)="save()">Save</button>
+</app-admin-page-header>
 
-            @for (sentence of translation.keys | keyvalue; track sentence) {
-              <div class="translation-sentence">
-                @if (!i) {
-                  <button class="translations-button" (click)="removeTranslation(sentence.key)" mat-mini-fab color="accent">-</button>
-                }
-                <mat-form-field class="product_edit-field">
-                  <mat-label>{{ sentence.key }}</mat-label>
-                  <input matInput [formControlName]="sentence.key" />
-                </mat-form-field>
-              </div>
-            }
-          </div>
-          <mat-form-field>
-            <mat-label>{{ translation.lang }} JSON</mat-label>
-            <textarea class="translation-textarea" matInput [formControlName]="translation.lang + '_json'"> </textarea>
-          </mat-form-field>
-          <br />
-        </div>
+<section class="admin-card" aria-label="Shop texts">
+  <div class="translations-toolbar">
+    <mat-slide-toggle [checked]="jsonMode()" (change)="toggleJson($event.checked)">Edit as JSON</mat-slide-toggle>
+    @if (!jsonMode()) {
+      <mat-form-field class="translations-search" subscriptSizing="dynamic">
+        <mat-label>Search keys and texts</mat-label>
+        <input matInput type="search" [ngModel]="query()" (ngModelChange)="query.set($event); pageIndex.set(0)" />
+      </mat-form-field>
+      <mat-slide-toggle [checked]="missingOnly()" (change)="missingOnly.set($event.checked); pageIndex.set(0)">Missing only</mat-slide-toggle>
+      <form class="translations-add" (submit)="$event.preventDefault(); addKey()">
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label>New key</mat-label>
+          <input matInput [value]="newKey()" (input)="newKey.set($any($event.target).value)" autocomplete="off" />
+        </mat-form-field>
+        <button type="submit" class="btn btn-outline" [disabled]="!newKey().trim()">Add key</button>
+      </form>
+    }
+  </div>
+
+  @if (jsonMode()) {
+    <div class="translations-json">
+      @for (code of languages; track code) {
+        <mat-form-field>
+          <mat-label>{{ code.toUpperCase() }} (JSON)</mat-label>
+          <textarea matInput rows="18" spellcheck="false" [ngModel]="json()[code]" (ngModelChange)="setJson(code, $event)"></textarea>
+          <mat-hint>{{ '{ "Key": "Text", … }' }}</mat-hint>
+        </mat-form-field>
       }
     </div>
-  </form>
+    @if (jsonError()) {
+      <p class="translations-error" role="alert">{{ jsonError() }}</p>
+    }
+  } @else if (page().length) {
+    <div class="translations-table-wrap">
+      <table class="translations-table">
+        <thead>
+          <tr>
+            <th scope="col">Key</th>
+            @for (code of languages; track code) {
+              <th scope="col">{{ code.toUpperCase() }}</th>
+            }
+            <th scope="col"><span class="visually-hidden">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (key of page(); track key) {
+            <tr>
+              <th scope="row" class="translations-key">
+                {{ key }}
+                @if (isMissing(key)) {
+                  <span class="admin-pill is-warn">missing</span>
+                }
+              </th>
+              @for (code of languages; track code) {
+                <td>
+                  <input
+                    class="translations-input"
+                    [attr.aria-label]="key + ' (' + code.toUpperCase() + ')'"
+                    [value]="texts()[code][key] ?? ''"
+                    (input)="setText(code, key, $any($event.target).value)"
+                  />
+                </td>
+              }
+              <td class="translations-actions">
+                <button type="button" class="icon-action" [attr.aria-label]="'Remove ' + key" (click)="removeKey(key)">
+                  <mat-icon aria-hidden="true">delete</mat-icon>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <mat-paginator
+      [length]="filtered().length"
+      [pageIndex]="pageIndex()"
+      [pageSize]="pageSize()"
+      [pageSizeOptions]="[25, 50, 100, 250]"
+      (page)="onPage($event)"
+      aria-label="Translation pages"
+    />
+  } @else {
+    <p class="admin-state">
+      <strong>{{ keys().length ? 'No match' : 'No texts yet' }}</strong>
+      {{ keys().length ? 'Try another search or turn off "Missing only".' : 'Add the first key above.' }}
+    </p>
+  }
+</section>
+
+<div class="admin-savebar">
+  <button type="button" class="btn btn-primary" (click)="save()">Save</button>
+  @if (dirty() || jsonMode()) {
+    <span class="admin-savebar-state">{{ jsonMode() ? 'Saving uses the JSON' : 'Unsaved changes' }}</span>
+  }
 </div>

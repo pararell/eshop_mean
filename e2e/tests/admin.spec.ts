@@ -87,14 +87,16 @@ test('the editor explains what is missing before saving', async ({ page }) => {
 
 test('admin opens the order list and an order detail', async ({ page }) => {
   await page.goto('/en/dashboard/orders');
-  const list = page.locator('app-orders-list');
-  await expect(list).toContainText('seed@e2e.test');
+  const table = page.getByRole('table', { name: 'Orders' });
+  await expect(table).toContainText('seed@e2e.test');
+  await expect(table).toContainText(E2E.order.customer);
 
-  // The Detail link is built from the orderUrl input + orderId
-  // closest element around the seeded order that contains its own Detail button
-  const seededOrder = list.getByText('seed@e2e.test').locator('xpath=ancestor::*[.//button[normalize-space()="Detail"]][1]');
-  await seededOrder.getByRole('button', { name: 'Detail' }).click();
+  // Search narrows the list; the order number opens the detail
+  await page.getByLabel('Search order, email or name').fill('seed@e2e');
+  await expect(table.getByRole('row')).toHaveCount(2);
+  await table.getByRole('link', { name: E2E.order.orderId }).click();
   await expect(page).toHaveURL(`/en/dashboard/orders/${E2E.order.orderId}`);
+  await expect(page.getByRole('heading', { level: 1, name: `Order ${E2E.order.orderId}` })).toBeVisible();
   const detail = page.locator('app-order-detail');
   await expect(detail).toContainText('Status: NEW');
   await expect(detail).toContainText(`${E2E.order.amount} EUR`);

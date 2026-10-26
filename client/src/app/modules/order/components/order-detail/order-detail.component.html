@@ -1,11 +1,14 @@
 <div class="main">
   <div class="container order-detail">
-    <nav class="order-detail-nav">
-      <button type="button" class="btn btn-outline btn-sm" (click)="goBack()">
-        <app-icon name="arrowLeft" [size]="16" />
-        {{ 'Back' | translate | async }}
-      </button>
-    </nav>
+    <!-- The admin has breadcrumbs instead -->
+    @if (type() !== 'EDIT') {
+      <nav class="order-detail-nav">
+        <button type="button" class="btn btn-outline btn-sm" (click)="goBack()">
+          <app-icon name="arrowLeft" [size]="16" />
+          {{ 'Back' | translate | async }}
+        </button>
+      </nav>
+    }
 
     @if (order$(); as order) {
       @if (type() === 'EDIT') {

@@ -1,5 +1,51 @@
 :host {
+  display: block;
+}
+
+.orders-count {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.orders {
+  padding-bottom: var(--space-2);
+}
+
+.orders-filters {
   display: flex;
-  min-height: 100vh;
-  flex-direction: column;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-4);
+  padding: var(--space-4) var(--space-5);
+}
+
+.orders-search {
+  flex: 1 1 280px;
+}
+
+.orders-table-wrap {
+  overflow-x: auto;
+}
+
+.orders-row {
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-surface-sunken);
+  }
+}
+
+.orders-link {
+  color: var(--color-text);
+  font-weight: var(--weight-medium);
+}
+
+.orders-email {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.orders-num {
+  text-align: right;
+  white-space: nowrap;
 }

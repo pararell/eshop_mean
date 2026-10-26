@@ -1,118 +1,136 @@
-import { toObservable } from '@angular/core/rxjs-interop';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
-import { Observable, BehaviorSubject, from } from 'rxjs';
-import { delay, take } from 'rxjs/operators';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatTab, MatTabGroup } from '@angular/material/tabs';
+import { MatIcon } from '@angular/material/icon';
 
+import type { LanguageCode } from '@eshop/shared';
 import { languages } from '../../../shared/constants';
 import { Page } from '../../../shared/models';
-import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 import { SignalStore } from '../../../store/signal.store';
-import { MatFormField, MatLabel, MatSelect, MatOption } from '@angular/material/select';
-import { MatInput } from '@angular/material/input';
-import { MatButton } from '@angular/material/button';
+import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 import { TinyEditorComponent } from '../tiny-editor.ts/tiny-editor.component';
-import { AsyncPipe } from '@angular/common';
-import { TranslatePipe } from '../../../pipes/translate.pipe';
+import { AdminPageHeaderComponent } from '../admin-ui/admin-page-header.component';
+import { AdminItemListComponent, AdminListItem } from '../admin-ui/admin-item-list.component';
+import { confirmAction } from '../admin-ui/confirm-dialog.component';
 
+/** Content pages (about, terms, …): list + editor with a title and rich text per language */
 @Component({
   selector: 'app-pages-edit',
   templateUrl: './pages-edit.component.html',
   styleUrls: ['./pages-edit.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    ReactiveFormsModule,
+    RouterLink,
     MatFormField,
     MatLabel,
+    MatHint,
     MatInput,
-    ReactiveFormsModule,
-    FormsModule,
-    MatButton,
-    MatSelect,
-    MatOption,
+    MatTabGroup,
+    MatTab,
+    MatIcon,
     TinyEditorComponent,
-    AsyncPipe,
-    TranslatePipe,
+    AdminPageHeaderComponent,
+    AdminItemListComponent,
   ],
 })
 export class PagesEditComponent {
   private store = inject(SignalStore);
   private selectors = inject(SignalStoreSelectors);
   private fb = inject(FormBuilder);
+  private dialog = inject(MatDialog);
 
-  pages$: Observable<Page[] | null>;
-  pagesEditForm: FormGroup;
-  languageOptions = languages;
-  choosenLanguageSub$ = new BehaviorSubject<string>(languages[0]);
-  newPage = '';
-  chosenPage = '';
-  sendRequest = false;
+  readonly languages = languages;
+  readonly lang = this.selectors.appLang;
+  readonly pages = computed(() => {
+    const list = this.selectors.pages();
+    return Array.isArray(list) ? list : [];
+  });
+  /** titleUrl of the open page; '' for a new one; null when nothing is open */
+  readonly selected = signal<string | null>(null);
+
+  readonly form: FormGroup = this.fb.group({
+    titleUrl: ['', [Validators.required, Validators.pattern(/^[a-z0-9_-]+$/)]],
+    ...Object.fromEntries(languages.map((lang) => [lang, this.fb.group({ title: '', contentHTML: '' })])),
+  });
+
+  readonly listItems = computed<AdminListItem[]>(() =>
+    this.pages()
+      .map((page) => ({ id: page.titleUrl, label: this.titleOf(page), meta: page.titleUrl }))
+      .sort((a, b) => a.label.localeCompare(b.label)),
+  );
 
   constructor() {
     this.store.getPages();
-
-    this.pagesEditForm = this.fb.group({
-      titleUrl: ['', Validators.required],
-      ...this.createLangForm(this.languageOptions),
-    });
-
-    this.pages$ = toObservable(this.selectors.pages);
   }
 
-  onPageEditorChange(content: string, lang: string): void {
-    this.pagesEditForm.get(lang)!.get('contentHTML')!.setValue(content);
+  titleOf(page: Page): string {
+    return page[this.lang() as LanguageCode]?.title || page.en?.title || page.titleUrl;
   }
 
-  addPage(): void {
-    if (this.newPage) {
-      this.pagesEditForm.get('titleUrl')!.setValue(this.newPage);
-      this.languageOptions.forEach((lang) => {
-        this.pagesEditForm.get(lang)!.get('title')!.setValue(this.newPage);
-      });
-    }
+  /** Current text of a language, for the rich-text editor */
+  content(lang: string): string {
+    return this.form.get([lang, 'contentHTML'])!.value ?? '';
   }
 
-  chosePage(): void {
-    if (this.chosenPage) {
-      this.pagesEditForm.get('titleUrl')!.setValue(this.chosenPage);
-      this.pages$.pipe(take(1)).subscribe((pages) => {
-        // chosenPage comes from the loaded list, so the page exists
-        const foundPage = pages!.find((page) => page.titleUrl === this.chosenPage)!;
-        this.languageOptions.forEach((lang) => {
-          this.pagesEditForm.get(lang)!.get('title')!.setValue(foundPage[lang]!.title);
-          this.pagesEditForm.get(lang)!.get('contentHTML')!.setValue(foundPage[lang]!.contentHTML);
-        });
-      });
-    }
-  }
-
-  setLang(lang: string): void {
-    this.choosenLanguageSub$.next('');
-    from(lang)
-      .pipe(delay(100))
-      .subscribe(() => {
-        this.choosenLanguageSub$.next(lang);
-      });
-  }
-
-  savePage(): void {
-    const request = this.pagesEditForm.value;
-    this.store.addOrEditPage(request);
-    this.sendRequest = true;
-  }
-
-  removePage(): void {
-    this.store.removePage(this.chosenPage);
-    this.sendRequest = true;
-  }
-
-  private createLangForm(languageOptions: Array<string>) {
-    return languageOptions
-      .map((lang: string) => ({
-        [lang]: this.fb.group({
-          title: '',
-          contentHTML: '',
-        }),
+  async select(titleUrl: string): Promise<void> {
+    if (this.selected() === titleUrl) return;
+    if (
+      this.form.dirty &&
+      !(await confirmAction(this.dialog, {
+        title: 'Discard changes?',
+        message: 'The open page has unsaved changes.',
+        confirm: 'Discard',
+        danger: true,
       }))
-      .reduce((prev, curr) => ({ ...prev, ...curr }), {});
+    ) {
+      return;
+    }
+    const found = this.pages().find((page) => page.titleUrl === titleUrl);
+    this.form.reset({
+      titleUrl: found?.titleUrl ?? '',
+      ...Object.fromEntries(languages.map((lang) => [lang, { title: found?.[lang]?.title ?? '', contentHTML: found?.[lang]?.contentHTML ?? '' }])),
+    });
+    if (found) this.form.get('titleUrl')!.disable();
+    else this.form.get('titleUrl')!.enable();
+    this.selected.set(titleUrl);
+  }
+
+  onContentChange(content: string, lang: string): void {
+    const control = this.form.get([lang, 'contentHTML'])!;
+    if (control.value !== content) {
+      control.setValue(content);
+      this.form.markAsDirty();
+    }
+  }
+
+  save(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    const value = this.form.getRawValue();
+    this.store.addOrEditPage(value);
+    this.form.markAsPristine();
+    this.selected.set(value.titleUrl);
+    this.form.get('titleUrl')!.disable();
+  }
+
+  async remove(): Promise<void> {
+    const titleUrl = this.form.getRawValue().titleUrl as string;
+    const confirmed = await confirmAction(this.dialog, {
+      title: 'Delete page?',
+      message: `"${titleUrl}" is removed in every language. Links to it stop working. This can't be undone.`,
+      confirm: 'Delete',
+      danger: true,
+    });
+    if (!confirmed) return;
+    this.store.removePage(titleUrl);
+    this.form.markAsPristine();
+    this.selected.set(null);
   }
 }

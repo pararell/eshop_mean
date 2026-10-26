@@ -1,9 +1,9 @@
 import { Component, ElementRef, Renderer2, PLATFORM_ID, ChangeDetectionStrategy, afterNextRender, inject } from '@angular/core';
-import { isPlatformBrowser, isPlatformServer } from '@angular/common';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { isPlatformBrowser, isPlatformServer, PlatformLocation } from '@angular/common';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { filter, take, delay, map, skip } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { NavigationStart, Router, RouterOutlet } from '@angular/router';
+import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterOutlet } from '@angular/router';
 
 import { TranslateService } from './services/translate.service';
 import { JsonLDService } from './services/jsonLD.service';
@@ -12,6 +12,8 @@ import { SignalStore } from './store/signal.store';
 import { SignalStoreSelectors } from './store/signal.store.selectors';
 import { FooterComponent } from './shared/components/footer/footer.component';
 import { HeaderComponent } from './shared/components/header/header.component';
+
+const isAdminUrl = (url: string) => /^\/[a-z]{2}\/dashboard(?:[/?#]|$)/.test(url);
 
 @Component({
   selector: 'eshop-mean-app',
@@ -29,6 +31,18 @@ export class AppComponent {
   private platformId = inject(PLATFORM_ID);
   private signalStore = inject(SignalStore);
   private selectors = inject(SignalStoreSelectors);
+
+  /**
+   * The admin has its own frame (modules/dashboard/admin-shell): no shop header and footer there.
+   * Known from the first render (also in SSR), and switched as soon as a navigation starts.
+   */
+  readonly admin = toSignal(
+    this.router.events.pipe(
+      filter((e) => e instanceof NavigationStart || e instanceof NavigationEnd || e instanceof NavigationCancel || e instanceof NavigationError),
+      map((e) => isAdminUrl(e instanceof NavigationStart ? e.url : this.router.url)),
+    ),
+    { initialValue: isAdminUrl(inject(PlatformLocation).pathname) },
+  );
 
   rememberScroll: { [component: string]: number } = {};
   position = 0;
@@ -77,7 +91,9 @@ export class AppComponent {
       .pipe(filter((lang) => !!lang && isPlatformBrowser(this.platformId)))
       .subscribe((lang) => {
         this.signalStore.getCart(lang);
-        this.signalStore.getPages({ lang, titles: true });
+        // Page titles for the shop menu. Not in the admin: its page editor loads the full pages into
+        // the same state, and a later titles-only answer would replace their content
+        if (!this.admin()) this.signalStore.getPages({ lang, titles: true });
       });
 
     if (isPlatformServer(this.platformId)) {

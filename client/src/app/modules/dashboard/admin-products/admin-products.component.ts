@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UpperCasePipe } from '@angular/common';
 import { MatButton } from '@angular/material/button';
 import { MatFormField, MatLabel, MatPrefix } from '@angular/material/form-field';
@@ -12,6 +13,7 @@ import { MatSort, MatSortHeader, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 
 import { Product } from '../../../shared/models';
+import { AdminPageHeaderComponent } from '../admin-ui/admin-page-header.component';
 import { SignalStore } from '../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 
@@ -39,12 +41,14 @@ type Visibility = 'all' | 'visible' | 'hidden' | 'incomplete';
     MatSort,
     MatSortHeader,
     MatTableModule,
+    AdminPageHeaderComponent,
   ],
 })
 export class AdminProductsComponent implements OnInit {
   private store = inject(SignalStore);
   private selectors = inject(SignalStoreSelectors);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   readonly lang = this.selectors.appLang;
   readonly currency = this.selectors.currency;
@@ -100,6 +104,17 @@ export class AdminProductsComponent implements OnInit {
     const start = this.pageIndex() * this.pageSize();
     return this.sorted().slice(start, start + this.pageSize());
   });
+
+  constructor() {
+    // `?q=` from the admin top-bar search
+    this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe((params) => {
+      const q = params.get('q');
+      if (q !== null) {
+        this.search.set(q);
+        this.resetPage();
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.store.getAllProducts();

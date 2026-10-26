@@ -1,12 +1,10 @@
-<div class="products">
-  <div class="products-toolbar">
-    <a mat-flat-button color="primary" [routerLink]="['/' + lang() + '/dashboard/products/new']">
-      <mat-icon aria-hidden="true">add</mat-icon> New product
-    </a>
-    <button mat-button type="button" (click)="refresh()"><mat-icon aria-hidden="true">refresh</mat-icon> Refresh</button>
-    <span class="products-count" role="status" aria-live="polite">{{ filtered().length }} of {{ products().length }} products</span>
-  </div>
+<app-admin-page-header title="Products">
+  <span headerInfo class="products-count" role="status" aria-live="polite">{{ filtered().length }} of {{ products().length }} products</span>
+  <button type="button" class="btn btn-outline" (click)="refresh()"><mat-icon aria-hidden="true">refresh</mat-icon> Refresh</button>
+  <a class="btn btn-primary" [routerLink]="['/' + lang() + '/dashboard/products/new']"> <mat-icon aria-hidden="true">add</mat-icon> New product </a>
+</app-admin-page-header>
 
+<div class="products admin-card">
   <div class="products-filters">
     <mat-form-field class="products-search">
       <mat-label>Search title or URL</mat-label>

@@ -1,164 +1,141 @@
-@if (!sendRequest && (choosenLanguageSub$ | async); as chooseLang) {
-  <div class="categories-title-wrapp">
-    <h2>{{ 'Categories_edit' | translate | async }}</h2>
-    <div>
-      <mat-form-field class="browser-default lang-select">
-        <mat-label>
-          {{ 'Language_for_product_detail' | translate | async }}
-        </mat-label>
-        <mat-select [ngModel]="chooseLang" (ngModelChange)="setLang($event)">
-          @for (option of languageOptions; track option) {
-            <mat-option [value]="option">
-              {{ option }}
-            </mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-    </div>
-  </div>
-  <form class="category_edit-form" [formGroup]="categoryEditForm" novalidate>
-    <div class="category_edit-full-input">
-      <mat-form-field class="category_edit-field">
-        <input matInput placeholder="TitleUrl" aria-label="TitleUrl" [matAutocomplete]="auto" formControlName="titleUrl" />
-        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="editCategory()">
-          @for (title of filteredTitles$ | async; track title) {
-            <mat-option [value]="title">
-              <span>{{ title }}</span>
-            </mat-option>
-          }
-        </mat-autocomplete>
-      </mat-form-field>
-      <button mat-raised-button color="primary" class="edit-find-button" (click)="editCategory()">
-        {{ 'Edit' | translate | async }}
-      </button>
-    </div>
-    @if (categoryProductsTitlesUrl.length) {
-      <mat-chip-listbox class="category-tags">
-        @for (productTitleUrl of categoryProductsTitlesUrl; track productTitleUrl) {
-          <mat-chip-option class="clickable">
-            <span>{{ productTitleUrl }}</span>
-          </mat-chip-option>
-        }
-      </mat-chip-listbox>
-    }
-    <ng-container>
-      <h3 class="category_edit-subtitle">Content (for chosen language/market)</h3>
-      <div [formGroupName]="chooseLang">
-        <div class="category_edit-full-input">
-          <mat-form-field class="category_edit-field">
-            <mat-label>{{ 'Title' | translate | async }}</mat-label>
-            <input matInput formControlName="title" type="text" name="title" />
-          </mat-form-field>
-        </div>
-        <div class="category_edit-full-input">
-          <mat-form-field class="category_edit-field">
-            <mat-label>
-              {{ 'Short_description' | translate | async }}
-            </mat-label>
-            <textarea matInput formControlName="description" name="description"> </textarea>
-          </mat-form-field>
-        </div>
-        <div class="category_edit-full-input">
-          <div class="category_edit-field-small">
-            <div class="check-title">{{ 'Visibility' | translate | async }}</div>
-            <mat-radio-group aria-label="Visibility" formControlName="visibility">
-              <mat-radio-button name="visibility" [value]="true" id="visible">
-                {{ 'Visible' | translate | async }}
-              </mat-radio-button>
-              <mat-radio-button name="visibility" [value]="false" id="hidden">
-                {{ 'Hidden' | translate | async }}
-              </mat-radio-button>
-            </mat-radio-group>
-          </div>
-          <div class="category_edit-field-small">
-            <div class="check-title">{{ 'Menu hidden' | translate | async }}</div>
-            <mat-radio-group aria-label="Menu hidden" formControlName="menuHidden">
-              <mat-radio-button name="menuHidden" [value]="true" id="menuHidden">
-                {{ 'Hidden' | translate | async }}
-              </mat-radio-button>
-              <mat-radio-button name="menuHidden" [value]="false" id="menuVisible">
-                {{ 'Visible' | translate | async }}
-              </mat-radio-button>
-            </mat-radio-group>
-          </div>
-          <div class="category_edit-field-small">
-            <mat-form-field class="category_edit-field">
-              <mat-label>{{ 'Position' | translate | async }}</mat-label>
-              <input matInput formControlName="position" type="number" name="position" />
-            </mat-form-field>
-          </div>
-        </div>
-      </div>
-      <div class="category_edit-full-input">
-        <mat-form-field class="category_edit-field">
-          <mat-label>
-            {{ 'Main_image_url' | translate | async }}
-          </mat-label>
-          <input matInput formControlName="mainImage" name="mainImage" />
-        </mat-form-field>
-        <div class="category_edit-field-small">
-          <div class="check-title">{{ 'Image_type' | translate | async }}</div>
-          <mat-radio-group aria-label="Image type" [(ngModel)]="mainImageType" [ngModelOptions]="{ standalone: true }">
-            <mat-radio-button name="Contain" [value]="false" id="Contain">
-              {{ 'Contain' | translate | async }}
-            </mat-radio-button>
-            <mat-radio-button name="Cover" [value]="true" id="Cover">
-              {{ 'Cover' | translate | async }}
-            </mat-radio-button>
-          </mat-radio-group>
-        </div>
-      </div>
+<app-admin-page-header title="Categories" [subtitle]="categories().length + ' categories'">
+  <button type="button" class="btn btn-primary" (click)="select('')">
+    <mat-icon aria-hidden="true">add</mat-icon>
+    New category
+  </button>
+</app-admin-page-header>
 
-      <div class="category_edit-full-input">
-        <mat-form-field class="category_edit-field-small">
-          <mat-label> Subcategories </mat-label>
-          <input
-            matInput
-            [(ngModel)]="subCategory"
-            [ngModelOptions]="{ standalone: true }"
-            name="subCategory"
-            [matAutocomplete]="autoSubCategories"
-          />
-          <mat-autocomplete #autoSubCategories="matAutocomplete">
-            @for (category of categories$ | async; track category) {
-              <mat-option [value]="category.category.titleUrl">
-                <span>{{ category.category.titleUrl }}</span>
-              </mat-option>
-            }
-          </mat-autocomplete>
-        </mat-form-field>
-        <button mat-raised-button color="primary" class="edit-find-button" (click)="addSubCategory()">Add SubCategory</button>
-      </div>
-      @if (categoryEditForm.get('subCategories')!.value; as allCategories) {
-        <!-- Only rendered with chips: an empty chip listbox has no role but keeps listbox-only ARIA attributes -->
-        @if (allCategories.length) {
-          <mat-chip-listbox class="category_edit-subCategories">
-            @for (subCategory of allCategories; track subCategory) {
-              <mat-chip-option class="clickable" (click)="removeSubCategory(subCategory)">
-                @if (subCategory) {
-                  <span>{{ subCategory }} x</span>
+<div class="admin-split">
+  <app-admin-item-list
+    heading="All categories"
+    [items]="listItems()"
+    [selected]="selected()"
+    emptyText="Create one, or add one to a product."
+    (choose)="select($event)"
+  />
+
+  @if (selected() === null) {
+    <section class="admin-card admin-state" aria-label="No category open">
+      <strong>Choose a category</strong>
+      <span>Pick one from the list to edit it, or create a new one.</span>
+    </section>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="save()" novalidate aria-labelledby="category-form-title">
+      <section class="admin-card">
+        <div class="admin-card-head">
+          <h2 id="category-form-title">{{ selected() ? 'Edit category' : 'New category' }}</h2>
+          @if (selected()) {
+            <a class="btn btn-outline btn-sm" [routerLink]="['/', lang(), 'product', 'category', selected()]" target="_blank">View in shop</a>
+          }
+        </div>
+        <div class="admin-card-body admin-fields">
+          <mat-form-field subscriptSizing="dynamic">
+            <mat-label>URL (slug)</mat-label>
+            <input matInput formControlName="titleUrl" autocomplete="off" />
+            <mat-hint>{{ selected() ? "Can't be changed after creating" : 'Lowercase letters, digits, - and _' }}</mat-hint>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Image URL</mat-label>
+            <input matInput formControlName="mainImage" type="url" />
+          </mat-form-field>
+          <fieldset class="admin-fieldset admin-field-wide">
+            <legend>Image display</legend>
+            <mat-radio-group formControlName="mainImageCover" aria-label="Image display">
+              <mat-radio-button [value]="false">Whole image (contain)</mat-radio-button>
+              <mat-radio-button [value]="true">Fill the tile (cover)</mat-radio-button>
+            </mat-radio-group>
+          </fieldset>
+          <mat-form-field class="admin-field-wide">
+            <mat-label>Subcategories</mat-label>
+            <mat-chip-grid #subGrid aria-label="Subcategories">
+              @for (sub of form.get('subCategories')!.value; track sub) {
+                <mat-chip-row (removed)="removeSubCategory(sub)">
+                  {{ sub }}
+                  <button matChipRemove type="button" [attr.aria-label]="'Remove subcategory ' + sub"><mat-icon>cancel</mat-icon></button>
+                </mat-chip-row>
+              }
+            </mat-chip-grid>
+            <input
+              #subInput
+              placeholder="Add subcategory…"
+              [matChipInputFor]="subGrid"
+              [matAutocomplete]="subAuto"
+              (input)="subCategoryQuery.set(subInput.value)"
+              (matChipInputTokenEnd)="addSubCategory($event)"
+            />
+            <mat-autocomplete #subAuto="matAutocomplete" (optionSelected)="addSubCategory({ value: $event.option.value }); subInput.value = ''">
+              @for (option of subCategoryOptions(); track option) {
+                <mat-option [value]="option">{{ option }}</mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+      </section>
+
+      <section class="admin-card" aria-labelledby="category-texts-title">
+        <div class="admin-card-head">
+          <h2 id="category-texts-title">Texts and visibility</h2>
+          <p class="admin-hint">Per language: each shop language has its own title, visibility and menu position.</p>
+        </div>
+        <mat-tab-group animationDuration="0ms" class="admin-card-body">
+          @for (code of languages; track code) {
+            <mat-tab [label]="code.toUpperCase()">
+              <div class="admin-fields lang-fields" [formGroupName]="code">
+                <mat-form-field>
+                  <mat-label>Title ({{ code.toUpperCase() }})</mat-label>
+                  <input matInput formControlName="title" />
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Menu position ({{ code.toUpperCase() }})</mat-label>
+                  <input matInput formControlName="position" type="number" min="0" />
+                  <mat-hint>Lower numbers come first</mat-hint>
+                </mat-form-field>
+                <mat-form-field class="admin-field-wide">
+                  <mat-label>Description ({{ code.toUpperCase() }})</mat-label>
+                  <textarea matInput formControlName="description" rows="3"></textarea>
+                </mat-form-field>
+                <mat-slide-toggle formControlName="visibility">Visible in the shop ({{ code.toUpperCase() }})</mat-slide-toggle>
+                <mat-slide-toggle formControlName="menuHidden">Hidden in the menu ({{ code.toUpperCase() }})</mat-slide-toggle>
+              </div>
+            </mat-tab>
+          }
+        </mat-tab-group>
+      </section>
+
+      @if (selected()) {
+        <section class="admin-card" aria-labelledby="category-products-title">
+          <div class="admin-card-head">
+            <h2 id="category-products-title">Products in this category</h2>
+            <span class="admin-pill">{{ products().length }}</span>
+          </div>
+          <div class="admin-card-body">
+            @if (products().length) {
+              <ul class="category-products" role="list">
+                @for (product of products(); track product) {
+                  <li>
+                    <a [routerLink]="['/', lang(), 'dashboard', 'products', product]">{{ product }}</a>
+                  </li>
                 }
-              </mat-chip-option>
+              </ul>
+            } @else {
+              <p class="admin-hint">No products yet. Add the category in a product's editor.</p>
             }
-          </mat-chip-listbox>
-        }
+          </div>
+        </section>
       }
 
-      <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!categoryEditForm.valid">
-        {{ 'Save' | translate | async }}
-      </button>
-    </ng-container>
-
-    <button mat-raised-button color="primary" (click)="onRemove()" [disabled]="!categoryEditForm.valid">
-      {{ 'Remove' | translate | async }}
-    </button>
-  </form>
-}
-@if (sendRequest) {
-  <div class="category_edit-after-send">
-    <span> {{ 'Request_sended' | translate | async }}</span>
-    <button class="product_edit-btn-action" mat-raised-button color="primary" (click)="sendRequest = !sendRequest">
-      {{ 'Again' | translate | async }}
-    </button>
-  </div>
-}
+      <div class="admin-savebar">
+        <button type="submit" class="btn btn-primary">Save</button>
+        @if (form.dirty) {
+          <span class="admin-savebar-state">Unsaved changes</span>
+        }
+        @if (selected()) {
+          <button type="button" class="btn btn-danger-text admin-savebar-end" (click)="remove()">
+            <mat-icon aria-hidden="true">delete</mat-icon>
+            Delete category
+          </button>
+        }
+      </div>
+    </form>
+  }
+</div>

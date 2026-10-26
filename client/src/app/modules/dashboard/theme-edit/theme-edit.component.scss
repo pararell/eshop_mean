@@ -1,41 +1,7 @@
 :host {
-  ::ng-deep .mat-mdc-radio-button ~ .mat-radio-button {
-    margin-left: 16px;
-  }
+  display: block;
+}
 
-  @media screen and (max-width: 600px) {
-    ::ng-deep .mat-mdc-radio-button ~ .mat-radio-button {
-      margin-left: 4px;
-    }
-  }
-
-  .main {
-    background: var(--color-surface-raised);
-    color: var(--color-text);
-  }
-
-  .theme_edit-top {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .theme_edit-after-send {
-    display: flex;
-    align-items: center;
-    padding: 50px;
-  }
-
-  .theme_edit-field-full {
-    width: 100%;
-    margin: 5px;
-  }
-
-  .theme_edit-cta {
-    margin: 20px 0;
-    display: flex;
-    justify-content: space-between;
-    width: 50%;
-  }
+.theme-active {
+  padding-top: var(--space-3);
 }

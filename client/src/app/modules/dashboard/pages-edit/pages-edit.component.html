@@ -1,59 +1,68 @@
-@if (!sendRequest && (choosenLanguageSub$ | async); as chooseLang) {
-  <div class="pages_edit-top">
-    <div>
-      <mat-form-field class="pages_edit-field">
-        <mat-label>{{ 'Add_page' | translate | async }}</mat-label>
-        <input matInput [(ngModel)]="newPage" />
-      </mat-form-field>
-      <button class="translations-button" mat-flat-button color="accent" (click)="addPage()">+</button>
-    </div>
-    <mat-form-field class="page-select">
-      <mat-label>
-        {{ 'From_existing_pages' | translate | async }}
-      </mat-label>
-      <mat-select [(ngModel)]="chosenPage" (ngModelChange)="chosePage()">
-        @for (option of pages$ | async; track option) {
-          <mat-option [value]="option.titleUrl">
-            {{ option.titleUrl }}
-          </mat-option>
+<app-admin-page-header title="Pages" [subtitle]="pages().length + ' pages'">
+  <button type="button" class="btn btn-primary" (click)="select('')">
+    <mat-icon aria-hidden="true">add</mat-icon>
+    New page
+  </button>
+</app-admin-page-header>
+
+<div class="admin-split">
+  <app-admin-item-list
+    heading="All pages"
+    [items]="listItems()"
+    [selected]="selected()"
+    emptyText="Create the first page."
+    (choose)="select($event)"
+  />
+
+  @if (selected() === null) {
+    <section class="admin-card admin-state" aria-label="No page open">
+      <strong>Choose a page</strong>
+      <span>Pick one from the list to edit it, or create a new one.</span>
+    </section>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="save()" novalidate aria-labelledby="page-form-title">
+      <section class="admin-card">
+        <div class="admin-card-head">
+          <h2 id="page-form-title">{{ selected() ? 'Edit page' : 'New page' }}</h2>
+          @if (selected()) {
+            <a class="btn btn-outline btn-sm" [routerLink]="['/', lang(), 'eshop', selected()]" target="_blank">View in shop</a>
+          }
+        </div>
+        <div class="admin-card-body">
+          <mat-form-field class="page-url" subscriptSizing="dynamic">
+            <mat-label>URL (slug)</mat-label>
+            <input matInput formControlName="titleUrl" autocomplete="off" />
+            <mat-hint>{{ selected() ? "Can't be changed after creating" : 'Lowercase letters, digits, - and _' }}</mat-hint>
+          </mat-form-field>
+        </div>
+        <mat-tab-group animationDuration="0ms" class="admin-card-body">
+          @for (code of languages; track code) {
+            <mat-tab [label]="code.toUpperCase()">
+              <div class="page-lang" [formGroupName]="code">
+                <mat-form-field class="page-title">
+                  <mat-label>Title ({{ code.toUpperCase() }})</mat-label>
+                  <input matInput formControlName="title" />
+                </mat-form-field>
+                <p class="admin-hint">Content ({{ code.toUpperCase() }})</p>
+                <app-tiny-editor [description]="content(code)" (editorContentChange)="onContentChange($event, code)" />
+              </div>
+            </mat-tab>
+          }
+        </mat-tab-group>
+      </section>
+
+      <div class="admin-savebar">
+        <button type="submit" class="btn btn-primary">Save</button>
+        @if (form.dirty) {
+          <span class="admin-savebar-state">Unsaved changes</span>
         }
-      </mat-select>
-    </mat-form-field>
-    <mat-form-field class="lang-select">
-      <mat-label>
-        {{ 'Language_for_page' | translate | async }}
-      </mat-label>
-      <mat-select [ngModel]="chooseLang" (ngModelChange)="setLang($event)">
-        @for (option of languageOptions; track option) {
-          <mat-option [value]="option">
-            {{ option }}
-          </mat-option>
+        @if (selected()) {
+          <button type="button" class="btn btn-danger-text admin-savebar-end" (click)="remove()">
+            <mat-icon aria-hidden="true">delete</mat-icon>
+            Delete page
+          </button>
         }
-      </mat-select>
-    </mat-form-field>
-  </div>
-  @if (pagesEditForm.get('titleUrl')!.value) {
-    <form class="pages_edit-form" [formGroup]="pagesEditForm">
-      <h2>{{ pagesEditForm.get('titleUrl')!.value }}</h2>
-      <div [formGroupName]="chooseLang">
-        <mat-form-field class="pages_edit-field">
-          <mat-label>Title</mat-label>
-          <input matInput formControlName="title" />
-        </mat-form-field>
       </div>
-      @if (pagesEditForm.get(chooseLang)!.value; as langValue) {
-        <app-tiny-editor [description]="langValue.contentHTML" (editorContentChange)="onPageEditorChange($event, chooseLang)" />
-      }
     </form>
   }
-  <button mat-flat-button color="primary" [disabled]="pagesEditForm.invalid" (click)="savePage()">Save</button>
-  <button mat-flat-button color="primary" [disabled]="pagesEditForm.invalid" (click)="removePage()">Remove</button>
-}
-@if (sendRequest) {
-  <div class="pages_edit-after-send">
-    <span> {{ 'Request_sended' | translate | async }}</span>
-    <button class="product_edit-btn-action" mat-raised-button color="primary" (click)="sendRequest = !sendRequest">
-      {{ 'Again' | translate | async }}
-    </button>
-  </div>
-}
+</div>

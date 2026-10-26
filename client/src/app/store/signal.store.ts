@@ -2,6 +2,7 @@ import { SignalStoreSelectors } from './signal.store.selectors';
 import { Injectable, inject } from '@angular/core';
 import type { CategoryInput, ContactRequest, OrderRequest, ProductInput, ShopConfig, SignInRequest, SignUpRequest } from '@eshop/shared';
 import { ApiService, PagesQuery, ProductsQuery } from '../services/api.service';
+import { AdminNotifyService } from '../modules/dashboard/admin-ui/admin-notify.service';
 import { Cart, Order, Page, Product, Theme, Translations, User } from '../shared/models';
 
 /**
@@ -17,6 +18,17 @@ const keepAsIs = <T>(value: unknown): T => value as T;
 export class SignalStore {
   private apiService = inject(ApiService);
   private selectors = inject(SignalStoreSelectors);
+  private notify = inject(AdminNotifyService);
+
+  /** Admin saves/deletes: a toast with the outcome, then `reload` on success */
+  private adminResult = (response: { error?: unknown } | null | undefined, done: string, failed: string, reload: () => void) => {
+    if (response?.error) {
+      this.notify.error(failed, response.error);
+      return;
+    }
+    this.notify.success(done);
+    reload();
+  };
 
   signIn = (payload: SignInRequest) => {
     this.selectors.userState.update((state) => ({ ...state, loading: true }));
@@ -82,18 +94,14 @@ export class SignalStore {
   addOrEditPage = (payload: Page) => {
     this.apiService.addOrEditPage(payload).subscribe((response) => {
       // Reload the list rather than storing the save result in it (audit BUG-28)
-      if (!response?.error) {
-        this.getPages();
-      }
+      this.adminResult(response, 'Page saved', 'Saving the page failed', () => this.getPages());
     });
   };
 
   removePage = (payload: string) => {
     this.apiService.removePage(payload).subscribe((response) => {
       // Reload the list rather than storing the save result in it (audit BUG-28)
-      if (!response?.error) {
-        this.getPages();
-      }
+      this.adminResult(response, 'Page deleted', 'Deleting the page failed', () => this.getPages());
     });
   };
 
@@ -106,18 +114,14 @@ export class SignalStore {
   addOrEditTheme = (payload: Theme) => {
     this.apiService.addOrEditTheme(payload).subscribe((response) => {
       // Reload the list rather than storing the save result in it (audit BUG-28)
-      if (!response?.error) {
-        this.getThemes();
-      }
+      this.adminResult(response, 'Theme saved', 'Saving the theme failed', () => this.getThemes());
     });
   };
 
   removeTheme = (payload: string) => {
     this.apiService.removeTheme(payload).subscribe((response) => {
       // Reload the list rather than storing the save result in it (audit BUG-28)
-      if (!response?.error) {
-        this.getThemes();
-      }
+      this.adminResult(response, 'Theme deleted', 'Deleting the theme failed', () => this.getThemes());
     });
   };
 
@@ -130,18 +134,14 @@ export class SignalStore {
   addOrEditConfig = (payload: ShopConfig) => {
     this.apiService.addOrEditConfig(payload).subscribe((response) => {
       // Reload the list rather than storing the save result in it (audit BUG-28)
-      if (!response?.error) {
-        this.getConfigs();
-      }
+      this.adminResult(response, 'Shop config saved', 'Saving the config failed', () => this.getConfigs());
     });
   };
 
   removeConfig = (payload: string) => {
     this.apiService.removeConfig(payload).subscribe((response) => {
       // Reload the list rather than storing the save result in it (audit BUG-28)
-      if (!response?.error) {
-        this.getConfigs();
-      }
+      this.adminResult(response, 'Shop config deleted', 'Deleting the config failed', () => this.getConfigs());
     });
   };
 
@@ -336,13 +336,13 @@ export class SignalStore {
 
   editCategory = (payload: CategoryInput) => {
     this.apiService.editCategory(payload).subscribe((response) => {
-      console.log(response);
+      this.adminResult(response, 'Category saved', 'Saving the category failed', () => this.getAllCategories());
     });
   };
 
   removeCategory = (payload: string) => {
     this.apiService.removeCategory(payload).subscribe((response) => {
-      console.log(response);
+      this.adminResult(response, 'Category deleted', 'Deleting the category failed', () => this.getAllCategories());
     });
   };
 
@@ -397,13 +397,9 @@ export class SignalStore {
   editTranslation = (payload: Translations[]) => {
     this.selectors.dashboardState.update((state) => ({ ...state, loading: true }));
     this.apiService.editAllTranslation(payload).subscribe((result) => {
-      // Known bug (audit BUG-12): the response is an array, so `_id` never matches
-      const response = keepAsIs<Translations>(result);
-      this.selectors.dashboardState.update((state) => ({
-        ...state,
-        loading: false,
-        translations: state.translations.map((trans) => (trans._id === response._id ? response : trans)),
-      }));
+      this.selectors.dashboardState.update((state) => ({ ...state, loading: false }));
+      // The response is the saved list (audit BUG-12): reload instead of merging it by `_id`
+      this.adminResult(result as { error?: unknown }, 'Translations saved', 'Saving the translations failed', () => this.getAllTranslations());
     });
   };
 }

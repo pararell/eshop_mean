@@ -1,145 +1,143 @@
-import { toObservable } from '@angular/core/rxjs-interop';
-import { filter, take } from 'rxjs/operators';
-import { FormBuilder, FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
-import { Component, OnDestroy, ChangeDetectionStrategy, inject } from '@angular/core';
-import { Observable, BehaviorSubject, Subscription } from 'rxjs';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatIcon } from '@angular/material/icon';
 
+import type { LanguageCode } from '@eshop/shared';
 import { languages } from '../../../shared/constants';
-import { Translations } from '../../../shared/models';
-
-/** A language's dictionary while editing (new languages get a numeric placeholder id). */
-type EditableTranslation = Pick<Translations, 'lang' | 'keys'> & { _id?: string; id?: number };
 import { SignalStore } from '../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
-import { MatFormField, MatLabel } from '@angular/material/select';
-import { MatInput } from '@angular/material/input';
-import { MatButton, MatMiniFabButton } from '@angular/material/button';
-import { AsyncPipe, KeyValuePipe } from '@angular/common';
+import { AdminPageHeaderComponent } from '../admin-ui/admin-page-header.component';
+import { confirmAction } from '../admin-ui/confirm-dialog.component';
 
+type Texts = Record<LanguageCode, Record<string, string>>;
+const emptyTexts = (): Texts => Object.fromEntries(languages.map((lang) => [lang, {}])) as Texts;
+
+/**
+ * UI texts of the shop: one row per key, one column per language. Search, "missing only",
+ * add/remove keys, and a JSON mode for bulk edits. Saving sends every language
+ * (`PATCH /api/translations/all`), as before.
+ */
 @Component({
   selector: 'app-translations-edit',
   templateUrl: './translations-edit.component.html',
   styleUrls: ['./translations-edit.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [ReactiveFormsModule, MatFormField, MatLabel, MatInput, MatButton, MatMiniFabButton, AsyncPipe, KeyValuePipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [FormsModule, MatFormField, MatLabel, MatHint, MatInput, MatSlideToggle, MatPaginator, MatIcon, AdminPageHeaderComponent],
 })
-export class TranslationsEditComponent implements OnDestroy {
+export class TranslationsEditComponent {
   private store = inject(SignalStore);
   private selectors = inject(SignalStoreSelectors);
-  private fb = inject(FormBuilder);
+  private dialog = inject(MatDialog);
 
-  translations$: Observable<Translations[]>;
-  loading$: Observable<boolean>;
-  languageForm: FormGroup;
-  translationSub$ = new BehaviorSubject<EditableTranslation[]>([]);
-  translationsSub: Subscription;
-  allLanguages = languages;
+  readonly languages = languages;
+  readonly texts = signal<Texts>(emptyTexts());
+  readonly dirty = signal(false);
+  readonly query = signal('');
+  readonly missingOnly = signal(false);
+  readonly newKey = signal('');
+  readonly pageIndex = signal(0);
+  readonly pageSize = signal(50);
+  readonly jsonMode = signal(false);
+  readonly json = signal<Record<string, string>>({});
+  readonly jsonError = signal('');
+
+  readonly keys = computed(() => [...new Set(languages.flatMap((lang) => Object.keys(this.texts()[lang])))].sort((a, b) => a.localeCompare(b)));
+  readonly isMissing = (key: string) => languages.some((lang) => !this.texts()[lang][key]?.trim());
+  readonly missingCount = computed(() => this.keys().filter((key) => this.isMissing(key)).length);
+  readonly filtered = computed(() => {
+    const query = this.query().trim().toLowerCase();
+    return this.keys().filter(
+      (key) =>
+        (!this.missingOnly() || this.isMissing(key)) &&
+        (!query || key.toLowerCase().includes(query) || languages.some((lang) => (this.texts()[lang][key] ?? '').toLowerCase().includes(query))),
+    );
+  });
+  readonly page = computed(() => this.filtered().slice(this.pageIndex() * this.pageSize(), (this.pageIndex() + 1) * this.pageSize()));
 
   constructor() {
     this.store.getAllTranslations();
-
-    this.languageForm = this.fb.group({
-      add: '',
-    });
-
-    this.translations$ = toObservable(this.selectors.translations);
-    this.loading$ = toObservable(this.selectors.dashboardLoading);
-
-    this.translationsSub = this.translations$.subscribe((translations) => {
-      const initTranslations = !translations.length ? this.allLanguages.map((lang, i) => ({ id: i, lang, keys: {} })) : translations;
-      initTranslations.forEach((translation: EditableTranslation) => {
-        const keys = translation.keys ? translation.keys : {};
-        const newUsergroup: FormGroup = this.fb.group({});
-        Object.keys(keys).map((key) => {
-          newUsergroup.addControl(key, new FormControl(keys[key]));
-        });
-        this.languageForm.setControl(translation.lang, newUsergroup);
-        this.languageForm.setControl(translation.lang + '_json', new FormControl(JSON.stringify(keys)));
-      });
-
-      this.translationSub$.next(initTranslations);
+    // Load (and reload after saving) unless there are unsaved edits
+    effect(() => {
+      const list = this.selectors.translations();
+      if (untracked(this.dirty)) return;
+      const texts = emptyTexts();
+      for (const translation of Array.isArray(list) ? list : []) {
+        if ((languages as string[]).includes(translation.lang)) texts[translation.lang as LanguageCode] = { ...(translation.keys ?? {}) };
+      }
+      this.texts.set(texts);
     });
   }
 
-  addKeyToTranslation(): void {
-    const newKey = this.languageForm.get('add')!.value;
-    if (newKey) {
-      this.translationSub$.pipe(take(1)).subscribe((translations) => {
-        console.log(this.languageForm);
-        const updateTransations = translations.map((translation) => {
-          console.log(translation, 'translation');
-          const langGroup = this.languageForm.get(translation.lang) as FormGroup;
-          langGroup.addControl(newKey, new FormControl(newKey));
+  setText(lang: LanguageCode, key: string, value: string): void {
+    this.texts.update((texts) => ({ ...texts, [lang]: { ...texts[lang], [key]: value } }));
+    this.dirty.set(true);
+  }
 
-          return { ...translation, keys: { ...translation.keys, [newKey]: newKey } };
-        });
+  addKey(): void {
+    const key = this.newKey().trim();
+    if (!key || this.keys().includes(key)) return;
+    this.texts.update((texts) => Object.fromEntries(languages.map((lang) => [lang, { ...texts[lang], [key]: '' }])) as Texts);
+    this.dirty.set(true);
+    this.newKey.set('');
+    this.query.set(key);
+    this.pageIndex.set(0);
+  }
 
-        this.translationSub$.next(updateTransations);
-      });
+  async removeKey(key: string): Promise<void> {
+    const confirmed = await confirmAction(this.dialog, {
+      title: 'Remove text?',
+      message: `"${key}" is removed in every language when you save. Pages that use it show the key instead.`,
+      confirm: 'Remove',
+      danger: true,
+    });
+    if (!confirmed) return;
+    this.texts.update(
+      (texts) =>
+        Object.fromEntries(languages.map((lang) => [lang, Object.fromEntries(Object.entries(texts[lang]).filter(([k]) => k !== key))])) as Texts,
+    );
+    this.dirty.set(true);
+  }
 
-      this.languageForm.get('add')!.patchValue('');
+  onPage(event: PageEvent): void {
+    this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
+  }
+
+  toggleJson(on: boolean): void {
+    if (on) this.json.set(Object.fromEntries(languages.map((lang) => [lang, JSON.stringify(this.texts()[lang], null, 2)])));
+    this.jsonError.set('');
+    this.jsonMode.set(on);
+  }
+
+  setJson(lang: string, value: string): void {
+    this.json.update((json) => ({ ...json, [lang]: value }));
+  }
+
+  save(): void {
+    let texts = this.texts();
+    if (this.jsonMode()) {
+      try {
+        texts = Object.fromEntries(
+          languages.map((lang) => {
+            const parsed: unknown = JSON.parse(this.json()[lang] || '{}');
+            if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed))
+              throw new Error(`${lang.toUpperCase()}: expected an object of "key": "text"`);
+            return [lang, parsed as Record<string, string>];
+          }),
+        ) as Texts;
+      } catch (error) {
+        this.jsonError.set(`Not saved: ${(error as Error).message}`);
+        return;
+      }
+      this.texts.set(texts);
     }
-  }
-
-  removeTranslation(toRemove: string): void {
-    this.translationSub$.pipe(take(1)).subscribe((translations) => {
-      const updateTransations = translations.map((translation) => {
-        const langGroup = this.languageForm.get(translation.lang) as FormGroup;
-        langGroup.removeControl(toRemove);
-
-        return {
-          ...translation,
-          keys: Object.keys(translation.keys)
-            .filter((key) => key !== toRemove)
-            .reduce((prev, curr) => ({ ...prev, [curr]: translation.keys[curr] }), {}),
-        };
-      });
-      this.translationSub$.next(updateTransations);
-    });
-  }
-
-  /** Form group of one language's keys (created in the constructor) */
-  langGroup(lang: string): FormGroup {
-    return this.languageForm.controls[lang] as FormGroup;
-  }
-
-  submitForm(): void {
-    const allTranslations = Object.keys(this.languageForm.value)
-      .filter((value) => (this.allLanguages as string[]).includes(value))
-      .map((lang) => ({
-        lang,
-        keys: this.languageForm.value[lang],
-      }));
-    this.store.editTranslation(allTranslations);
-    this.loading$
-      .pipe(
-        filter((loading) => !loading),
-        take(1),
-      )
-      .subscribe(() => {
-        this.store.getAllTranslations();
-      });
-  }
-
-  submitJSON(): void {
-    const allTranslations = Object.keys(this.languageForm.value)
-      .filter((value) => value.includes('_json'))
-      .map((lang) => ({
-        lang: lang.replace('_json', ''),
-        keys: JSON.parse(this.languageForm.value[lang]),
-      }));
-    this.store.editTranslation(allTranslations);
-    this.loading$
-      .pipe(
-        filter((loading) => !loading),
-        take(1),
-      )
-      .subscribe(() => {
-        this.store.getAllTranslations();
-      });
-  }
-
-  ngOnDestroy(): void {
-    this.translationsSub.unsubscribe();
+    this.store.editTranslation(languages.map((lang) => ({ lang, keys: texts[lang] })));
+    this.dirty.set(false);
+    this.jsonError.set('');
   }
 }

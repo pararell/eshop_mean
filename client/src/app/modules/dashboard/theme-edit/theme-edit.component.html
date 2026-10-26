@@ -1,104 +1,127 @@
-@if (!sendRequest) {
-  <div class="theme_edit-top">
-    <div>
-      <mat-form-field class="theme_edit-field">
-        <mat-label>{{ 'Add_theme' | translate | async }}</mat-label>
-        <input matInput [(ngModel)]="newTheme" />
-      </mat-form-field>
-      <button class="translations-button" mat-flat-button color="accent" (click)="addTheme()">+</button>
-    </div>
-    <mat-form-field class="theme-select">
-      <mat-label>
-        {{ 'From_existing_themes' | translate | async }}
-      </mat-label>
-      <mat-select [(ngModel)]="chosenTheme" (ngModelChange)="choseTheme()">
-        @for (option of themes$ | async; track option) {
-          <mat-option [value]="option.titleUrl">
-            {{ option.titleUrl }}
-          </mat-option>
+<app-admin-page-header title="Themes" [subtitle]="themes().length + ' themes'">
+  <button type="button" class="btn btn-primary" (click)="select('')">
+    <mat-icon aria-hidden="true">add</mat-icon>
+    New theme
+  </button>
+</app-admin-page-header>
+
+<div class="admin-split">
+  <app-admin-item-list
+    heading="All themes"
+    [items]="listItems()"
+    [selected]="selected()"
+    emptyText="Create the first theme."
+    (choose)="select($event)"
+  />
+
+  @if (selected() === null) {
+    <section class="admin-card admin-state" aria-label="No theme open">
+      <strong>Choose a theme</strong>
+      <span>Pick one to edit it (changes preview live), or create a new one.</span>
+    </section>
+  } @else {
+    <form [formGroup]="themesEditForm" (ngSubmit)="saveTheme()" novalidate aria-labelledby="theme-form-title">
+      <section class="admin-card">
+        <div class="admin-card-head">
+          <h2 id="theme-form-title">{{ selected() ? 'Edit theme' : 'New theme' }}</h2>
+          <p class="admin-hint">Changes preview live on this page. The shop uses only the active theme.</p>
+        </div>
+        <div class="admin-card-body admin-fields">
+          <mat-form-field subscriptSizing="dynamic">
+            <mat-label>Name (slug)</mat-label>
+            <input matInput formControlName="titleUrl" autocomplete="off" />
+            <mat-hint>{{ selected() ? "Can't be changed after creating" : 'Lowercase letters, digits, - and _' }}</mat-hint>
+          </mat-form-field>
+          <div class="theme-active">
+            <mat-slide-toggle formControlName="active">Active theme</mat-slide-toggle>
+            <p class="admin-hint">Activating it deactivates the others.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="admin-card" aria-labelledby="theme-colors-title">
+        <div class="admin-card-head"><h2 id="theme-colors-title">Brand colors</h2></div>
+        <div class="admin-card-body admin-fields">
+          <mat-form-field>
+            <mat-label>Primary color</mat-label>
+            <input matInput type="color" formControlName="primaryColor" />
+            <mat-hint>Buttons and accents; adjusted for contrast</mat-hint>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Secondary color</mat-label>
+            <input matInput type="color" formControlName="secondaryColor" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Background color</mat-label>
+            <input matInput type="color" formControlName="backgroundColor" />
+          </mat-form-field>
+        </div>
+      </section>
+
+      <section class="admin-card" aria-labelledby="theme-images-title">
+        <div class="admin-card-head"><h2 id="theme-images-title">Logo and background</h2></div>
+        <div class="admin-card-body admin-fields">
+          <mat-form-field class="admin-field-wide">
+            <mat-label>Logo URL</mat-label>
+            <input matInput type="url" formControlName="logo" />
+            <mat-hint>Shown in the header instead of the trail sign</mat-hint>
+          </mat-form-field>
+          <mat-form-field class="admin-field-wide">
+            <mat-label>Main background URL</mat-label>
+            <input matInput type="url" formControlName="mainBackground" />
+          </mat-form-field>
+        </div>
+      </section>
+
+      <section class="admin-card" aria-labelledby="theme-home-title">
+        <div class="admin-card-head"><h2 id="theme-home-title">Home page promo</h2></div>
+        <div class="admin-card-body admin-fields">
+          <mat-form-field class="admin-field-wide">
+            <mat-label>Photo URL</mat-label>
+            <input matInput type="url" formControlName="promoSlideBackground" />
+          </mat-form-field>
+          <mat-form-field class="admin-field-wide">
+            <mat-label>Video URL (MP4)</mat-label>
+            <input matInput type="url" formControlName="promoSlideVideo" />
+            <mat-hint>Plays muted instead of the photo; the photo is its poster</mat-hint>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Photo position</mat-label>
+            <mat-select formControlName="promoSlideBackgroundPosition">
+              <mat-option value="center">Center</mat-option>
+              <mat-option value="top">Top</mat-option>
+              <mat-option value="bottom">Bottom</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Promo banner</mat-label>
+            <mat-select formControlName="promo">
+              <mat-option value="none">Hidden</mat-option>
+              <mat-option value="block">Shown</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Free shipping banner</mat-label>
+            <mat-select formControlName="freeShippingPromo">
+              <mat-option value="none">Hidden</mat-option>
+              <mat-option value="block">Shown</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </section>
+
+      <div class="admin-savebar">
+        <button type="submit" class="btn btn-primary">Save</button>
+        @if (themesEditForm.dirty) {
+          <span class="admin-savebar-state">Unsaved changes</span>
         }
-      </mat-select>
-    </mat-form-field>
-  </div>
-  @if (themesEditForm.get('titleUrl')!.value) {
-    <form class="theme_edit-form" [formGroup]="themesEditForm">
-      <h2>
-        {{ themesEditForm.get('titleUrl')!.value }}
-      </h2>
-      <mat-form-field class="theme_edit-field">
-        <mat-label>Primary color</mat-label>
-        <input matInput type="color" formControlName="primaryColor" />
-      </mat-form-field>
-      <mat-form-field class="theme_edit-field">
-        <mat-label>Secondary color</mat-label>
-        <input matInput type="color" formControlName="secondaryColor" />
-      </mat-form-field>
-      <mat-form-field class="theme_edit-field">
-        <mat-label>Background color</mat-label>
-        <input matInput type="color" formControlName="backgroundColor" />
-      </mat-form-field>
-      <mat-form-field class="theme_edit-field-full">
-        <mat-label>Main Background</mat-label>
-        <input matInput formControlName="mainBackground" />
-      </mat-form-field>
-      <mat-form-field class="theme_edit-field-full">
-        <mat-label>Logo</mat-label>
-        <input matInput formControlName="logo" />
-      </mat-form-field>
-      <mat-form-field class="theme_edit-field-full">
-        <mat-label>Promo slide background</mat-label>
-        <input matInput formControlName="promoSlideBackground" />
-      </mat-form-field>
-      <mat-form-field class="theme_edit-field-full">
-        <mat-label>Promo slide video</mat-label>
-        <input matInput formControlName="promoSlideVideo" />
-      </mat-form-field>
-      <mat-form-field class="theme_edit-field-full">
-        <mat-label> Promo slide background position </mat-label>
-        <mat-select formControlName="promoSlideBackgroundPosition">
-          <mat-option [value]="'center'">Center</mat-option>
-          <mat-option [value]="'top'">Top</mat-option>
-          <mat-option [value]="'bottom'">Bottom</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field class="theme_edit-field-full">
-        <mat-label>
-          {{ 'Show_shipping_promo' | translate | async }}
-        </mat-label>
-        <mat-select formControlName="freeShippingPromo">
-          <mat-option [value]="'none'">{{ 'Hide' | translate | async }}</mat-option>
-          <mat-option [value]="'block'">{{ 'Show' | translate | async }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field class="theme_edit-field-full">
-        <mat-label>{{ 'Show_promo' | translate | async }}</mat-label>
-        <mat-select formControlName="promo">
-          <mat-option [value]="'none'">{{ 'Hide' | translate | async }}</mat-option>
-          <mat-option [value]="'block'">{{ 'Show' | translate | async }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <mat-radio-group aria-label="Active" formControlName="active">
-        <mat-radio-button name="active" [value]="true" id="active">
-          {{ 'Active' | translate | async }}
-        </mat-radio-button>
-        <mat-radio-button name="inactive" [value]="false" id="inactive">
-          {{ 'Inactive' | translate | async }}
-        </mat-radio-button>
-      </mat-radio-group>
+        @if (selected()) {
+          <button type="button" class="btn btn-danger-text admin-savebar-end" (click)="removeTheme()">
+            <mat-icon aria-hidden="true">delete</mat-icon>
+            Delete theme
+          </button>
+        }
+      </div>
     </form>
   }
-  <div class="theme_edit-cta">
-    <button mat-flat-button color="primary" [disabled]="themesEditForm.invalid" (click)="saveTheme()">Save</button>
-    <button mat-flat-button color="primary" [disabled]="themesEditForm.invalid" (click)="removeTheme()">Remove</button>
-  </div>
-}
-@if (sendRequest) {
-  <div class="theme_edit-after-send">
-    <span>
-      {{ 'Request_sended' | translate | async }}
-    </span>
-    <button class="product_edit-btn-action" mat-raised-button color="primary" (click)="sendRequest = !sendRequest">
-      {{ 'Again' | translate | async }}
-    </button>
-  </div>
-}
+</div>

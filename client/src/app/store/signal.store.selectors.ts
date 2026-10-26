@@ -139,6 +139,10 @@ export class SignalStoreSelectors {
   public readonly productImages = computed(() => this.dashboardState().productImages);
   public readonly translations = computed(() => this.dashboardState().translations);
   public readonly allProducts = computed(() => this.dashboardState().allProducts);
-  public readonly allCategories = computed(() => this.dashboardState().allCategories);
+  /** A failed request stores `{ error }` (e.g. during SSR, where admin calls are not signed in): only lists count */
+  public readonly allCategories = computed(() => {
+    const list = this.dashboardState().allCategories;
+    return Array.isArray(list) ? list : [];
+  });
   public readonly dashboardLoading = computed(() => this.dashboardState().loading);
 }

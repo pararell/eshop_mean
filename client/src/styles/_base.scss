@@ -347,6 +347,28 @@ a {
   }
 }
 
+.btn-danger {
+  border-color: var(--color-danger);
+  background: var(--color-danger);
+  color: var(--color-surface);
+
+  &:hover:not(:disabled) {
+    background: var(--color-danger);
+    filter: brightness(1.08);
+  }
+}
+
+// A quiet destructive action (text only), e.g. "Delete" next to Save
+.btn-danger-text {
+  border-color: transparent;
+  background: transparent;
+  color: var(--color-danger);
+
+  &:hover:not(:disabled) {
+    background: var(--color-danger-soft);
+  }
+}
+
 .btn-sm {
   min-height: 36px;
   padding: 0 var(--space-4);

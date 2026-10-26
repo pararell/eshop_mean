@@ -43,3 +43,7 @@ updates:
     commit-message:
       prefix: chore
       include: scope
+    ignore:
+      # Node majors (e.g. 24 → 26) must match Angular's supported Node range (package.json engines)
+      - dependency-name: node
+        update-types: ['version-update:semver-major']

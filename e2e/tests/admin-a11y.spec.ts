@@ -19,22 +19,34 @@ for (const colorScheme of ['light', 'dark'] as const) {
       failures.push(...(await axeViolations(page)).map((v) => `${name}: ${v}`));
     };
 
-    await page.goto('/en/dashboard');
-    await ready(page);
-    for (const tab of ['Products', 'Categories', 'Pages', 'Theme', 'Config', 'Translations']) {
-      await page.getByRole('tab', { name: tab, exact: true }).click();
-      await check(`dashboard/${tab}`);
-    }
     for (const [name, url] of [
+      ['products', '/en/dashboard/products'],
+      ['categories', '/en/dashboard/categories'],
+      ['pages', '/en/dashboard/pages'],
+      ['themes', '/en/dashboard/themes'],
+      ['config', '/en/dashboard/config'],
+      ['translations', '/en/dashboard/translations'],
       ['new product', '/en/dashboard/products/new'],
       ['edit product', `/en/dashboard/products/${E2E.car.titleUrl}`],
       ['orders', '/en/dashboard/orders'],
       ['order detail', `/en/dashboard/orders/${E2E.order.orderId}`],
-      ['translations', '/en/dashboard/translations'],
     ]) {
       await page.goto(url);
       await ready(page);
       await check(name);
+    }
+
+    // The list + editor pages: the open editor too
+    for (const [path, button] of [
+      ['categories', 'New category'],
+      ['pages', 'New page'],
+      ['themes', 'New theme'],
+      ['config', 'New config'],
+    ]) {
+      await page.goto(`/en/dashboard/${path}`);
+      await ready(page);
+      await page.getByRole('button', { name: button }).click();
+      await check(`${path} editor`);
     }
     expect(failures).toEqual([]);
   });

@@ -1,19 +1,12 @@
 :host {
-  .main {
-    background: var(--color-surface-raised);
-    color: var(--color-text);
-  }
+  display: block;
+}
 
-  .pages_edit-top {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-  }
+.page-url,
+.page-title {
+  width: min(100%, 480px);
+}
 
-  .pages_edit-after-send {
-    display: flex;
-    align-items: center;
-    padding: 50px;
-  }
+.page-lang {
+  padding-top: var(--space-4);
 }

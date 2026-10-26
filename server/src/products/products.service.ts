@@ -120,16 +120,10 @@ export class ProductsService {
     }
   }
 
+  /** Updates the product, or creates it when the titleUrl is new (upsert); either way 200 (audit BUG-08) */
   async editProduct(productReq: ProductInput): Promise<void> {
-    const { titleUrl } = productReq;
-    const found = await upsertProduct(this.db, productReq as unknown as Record<string, unknown>);
-
-    // Known bug (audit BUG-08): an upsert that inserts still answers 404, as with MongoDB
-    if (!found) {
-      throw new NotFoundException(`Product with title ${titleUrl} not found`);
-    } else {
-      void this.addCategory(productReq);
-    }
+    await upsertProduct(this.db, productReq as unknown as Record<string, unknown>);
+    void this.addCategory(productReq);
   }
 
   async deleteProductByName(titleUrl: string): Promise<void> {
@@ -152,14 +146,9 @@ export class ProductsService {
     return this.prepareAllCategories(await toCategoryDocs(this.db, categoryRows), productRows);
   }
 
+  /** Updates the category, or creates it when the titleUrl is new (upsert); either way 200 (audit BUG-08) */
   async editCategory(categoryReq: CategoryInput): Promise<void> {
-    const { titleUrl } = categoryReq;
-    const found = await upsertCategory(this.db, categoryReq as unknown as Record<string, unknown>);
-
-    // Known bug (audit BUG-08): an upsert that inserts still answers 404, as with MongoDB
-    if (!found) {
-      throw new NotFoundException(`Category with title ${titleUrl} not found`);
-    }
+    await upsertCategory(this.db, categoryReq as unknown as Record<string, unknown>);
   }
 
   async deleteCategoryByName(titleUrl: string): Promise<void> {

@@ -75,6 +75,7 @@ Findings resolved since the audit (2026-10-14). The finding texts below are kept
 | SEC-09          | Fixed             | The CSP is enforced with a per-request nonce; `CSP_REPORT_ONLY=true` is the escape hatch.                                                                                                                                                                                                                  |
 | UI-05           | Fixed             | `<html lang>` follows the active language, including in SSR output.                                                                                                                                                                                                                                        |
 
+| BUG-08 | Fixed (admin redesign) | Product and category edits are upserts that answer 200 when they create the record too (no 404 after a successful insert). Tests in `products.spec.ts`. |
 | SEC-10 | Fixed (PostgreSQL migration) | Search and category filter use `ILIKE` with `%`/`_` escaped (`likePattern` in `server/src/db/catalog.ts`): a literal substring match, no regex. |
 | SEC-24 | Fixed (PostgreSQL migration) | Login uses `bcrypt.compare`; the `salt` column is gone. |
 | BUG-22 | Fixed (PostgreSQL migration) | `23505` is now the right code; emails are unique on `lower(email)`, so a duplicate signup answers 409 from the database. Test in `auth.spec.ts`. |

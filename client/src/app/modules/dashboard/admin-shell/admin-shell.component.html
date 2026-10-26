@@ -1,0 +1,119 @@
+<a class="skip-link" href="#admin-main">Skip to content</a>
+
+<!-- Sidebar: a rail of icons when collapsed (desktop), off-canvas on narrow screens -->
+<aside class="side" id="admin-nav" aria-label="Admin">
+  <a class="side-brand" [routerLink]="link('products')">
+    <span class="blaze side-blaze" aria-hidden="true"></span>
+    <span class="side-label">Admin</span>
+  </a>
+
+  <nav class="side-nav" aria-label="Admin sections">
+    @for (group of nav; track group.label) {
+      @if (group.label) {
+        <p class="side-group side-label" [id]="'nav-' + group.label">{{ group.label }}</p>
+      }
+      <ul class="side-list" role="list" [attr.aria-labelledby]="group.label ? 'nav-' + group.label : null">
+        @for (item of group.items; track item.path) {
+          <li>
+            <a
+              class="side-link"
+              [routerLink]="link(item.path)"
+              routerLinkActive="is-active"
+              ariaCurrentWhenActive="page"
+              [attr.title]="rail() ? item.label : null"
+            >
+              <app-icon [name]="item.icon" [size]="20" />
+              <span class="side-label">{{ item.label }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    }
+  </nav>
+
+  <div class="side-foot">
+    <button
+      type="button"
+      class="side-link side-collapse"
+      (click)="toggleCollapsed()"
+      [attr.aria-expanded]="!collapsed()"
+      aria-controls="admin-nav"
+      [attr.aria-label]="collapsed() ? 'Expand sidebar' : 'Collapse sidebar'"
+    >
+      <app-icon name="panel" [size]="20" />
+      <span class="side-label">Collapse</span>
+    </button>
+    <p class="side-version side-label">{{ version }}</p>
+  </div>
+</aside>
+<div class="scrim" (click)="navOpen.set(false)" aria-hidden="true"></div>
+
+<div class="frame">
+  <header class="top">
+    <button
+      type="button"
+      class="icon-btn top-menu"
+      (click)="navOpen.set(!navOpen())"
+      [attr.aria-expanded]="navOpen()"
+      aria-controls="admin-nav"
+      aria-label="Menu"
+    >
+      <app-icon name="menu" />
+    </button>
+
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a [routerLink]="link('products')">Admin</a></li>
+        @for (crumb of crumbs(); track $index; let last = $last) {
+          <li [attr.aria-current]="last ? 'page' : null">
+            @if (crumb.link && !last) {
+              <a [routerLink]="crumb.link">{{ crumb.label }}</a>
+            } @else {
+              {{ crumb.label }}
+            }
+          </li>
+        }
+      </ol>
+    </nav>
+
+    <form class="top-search" role="search" (submit)="$event.preventDefault(); search(searchInput.value)">
+      <app-icon name="search" [size]="18" />
+      <label class="visually-hidden" for="admin-search">Search products</label>
+      <input #searchInput id="admin-search" type="search" placeholder="Search products…" autocomplete="off" />
+      <kbd aria-hidden="true">/</kbd>
+    </form>
+
+    <a class="top-link" [routerLink]="['/', lang()]">
+      <span class="top-link-label">View shop</span>
+      <app-icon name="external" [size]="18" />
+    </a>
+    <button
+      type="button"
+      class="icon-btn"
+      (click)="theme.toggleMode()"
+      [attr.aria-label]="theme.isDark() ? 'Switch to light mode' : 'Switch to dark mode'"
+    >
+      <app-icon [name]="theme.isDark() ? 'sun' : 'moon'" [size]="20" />
+    </button>
+    <button type="button" class="avatar" [matMenuTriggerFor]="userMenu" [attr.aria-label]="'Account: ' + (user()?.email ?? '')">
+      {{ (user()?.email ?? '?').charAt(0).toUpperCase() }}
+    </button>
+    <mat-menu #userMenu="matMenu" xPosition="before" class="header-menu">
+      <p class="menu-email">{{ user()?.email }}</p>
+      @for (code of languages; track code) {
+        <a mat-menu-item [routerLink]="langUrl(code)" [attr.aria-current]="code === lang() ? 'true' : null">
+          <app-icon name="globe" [size]="18" />
+          <span>Edit in {{ code.toUpperCase() }}</span>
+        </a>
+      }
+      <button mat-menu-item type="button" (click)="logout()">
+        <app-icon name="logout" [size]="18" />
+        <span>Log out</span>
+      </button>
+    </mat-menu>
+  </header>
+
+  <div class="content" id="admin-main" tabindex="-1">
+    <router-outlet />
+  </div>
+</div>
