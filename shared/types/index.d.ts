@@ -381,6 +381,41 @@ export type ShopConfig = {
 } & ByLanguage<{ shippingCost: ShippingCost }>;
 
 /** `GET /api/eshop/config`: base64 JSON of the public `FE_*` env values and active theme styles. */
+/** GET /api/admin/overview?days=1|7|30: the admin Overview page. Money is per currency (EUR and CZK can't be added). */
+export interface AdminOverview {
+  days: number;
+  /** ISO timestamps of the period and the one before it (same length) */
+  from: string;
+  previousFrom: string;
+  sales: AdminOverviewSales[];
+  /** Orders that need the admin: NEW (to confirm/ship) and PAID (to ship); all time */
+  toHandle: number;
+  /** One entry per day of the period (YYYY-MM-DD, shop time zone), per currency */
+  revenueByDay: { day: string; currency: string; revenue: number; orders: number }[];
+  topProducts: { titleUrl: string; title: string; qty: number; revenue: number; currency: string }[];
+  recentOrders: { orderId: string; date: string; customer: string; email: string; amount: number; currency: string; status: OrderStatus }[];
+  attention: {
+    /** Visible in a language but marked unavailable */
+    unavailableVisible: number;
+    /** Products without a title in a language, per language */
+    missingLanguage: { lang: LanguageCode; count: number }[];
+    /** Visible products without a meta description, per language */
+    missingSeo: { lang: LanguageCode; count: number }[];
+    /** UI text keys empty or missing in a language, per language */
+    untranslated: { lang: LanguageCode; count: number }[];
+  };
+  ai: { drafts: number; ok: number; failed: number; costUsd: number; lastModel?: string };
+}
+
+export interface AdminOverviewSales {
+  currency: string;
+  revenue: number;
+  orders: number;
+  averageOrder: number;
+  previousRevenue: number;
+  previousOrders: number;
+}
+
 /** GET /api/version: the running build ("dev" when not built with scripts/build-ssr.mjs) */
 export interface BuildInfo {
   version: string;

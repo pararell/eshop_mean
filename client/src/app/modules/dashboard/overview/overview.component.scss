@@ -1,0 +1,285 @@
+:host {
+  display: block;
+}
+
+.overview.is-loading {
+  opacity: 0.6;
+  transition: opacity var(--duration-base) var(--ease-out);
+}
+
+// Period switch (segmented control)
+.period {
+  display: inline-flex;
+  border: 1px solid var(--color-border-control);
+  border-radius: var(--radius-control);
+
+  button {
+    min-height: 44px;
+    padding: 0 var(--space-4);
+    border: 0;
+    background: transparent;
+    color: var(--color-text);
+    font: inherit;
+    cursor: pointer;
+
+    &[aria-pressed='true'] {
+      background: var(--color-primary);
+      color: var(--color-on-primary);
+      font-weight: var(--weight-semibold);
+    }
+
+    &:not([aria-pressed='true']):hover {
+      background: var(--color-surface-sunken);
+    }
+  }
+}
+
+// Figures
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.tile {
+  display: block;
+  margin: 0 !important;
+  padding: var(--space-4) var(--space-5);
+
+  p {
+    margin: 0;
+  }
+}
+
+.tile-link {
+  color: inherit;
+
+  &:hover {
+    border-color: var(--color-border-control);
+    text-decoration: none;
+  }
+}
+
+.tile-label,
+.tile-note {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.tile-value {
+  margin: var(--space-1) 0 !important;
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.tile-delta {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+
+  &.up {
+    color: var(--color-success);
+  }
+
+  &.down {
+    color: var(--color-danger);
+  }
+}
+
+// One chart per currency, then the lists two by two
+.charts,
+.row {
+  display: grid;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+
+  > .admin-card {
+    margin: 0;
+  }
+}
+
+.row {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @media (width <= 1000px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+// Revenue per day: thin bars on a recessive baseline; hover/focus shows the day
+.chart {
+  position: relative;
+  padding-top: var(--space-5);
+}
+
+.chart-max {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.chart-plot {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 180px;
+  border-top: 1px dashed var(--color-border);
+  border-bottom: 1px solid var(--color-border-control);
+}
+
+.chart-dense .chart-plot {
+  gap: 2px;
+}
+
+.chart-col {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  height: 100%;
+  border-radius: 2px;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--color-surface-sunken);
+  }
+
+  &:hover::after,
+  &:focus-visible::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    z-index: 2;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-md);
+    background: var(--color-text);
+    color: var(--color-bg);
+    font-size: var(--text-xs);
+    white-space: nowrap;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+}
+
+.chart-bar {
+  width: 100%;
+  border-radius: 2px 2px 0 0;
+  background: var(--color-text);
+
+  &.is-today {
+    background: var(--color-focus);
+  }
+}
+
+.chart-axis {
+  display: flex;
+  gap: 6px;
+  margin-top: var(--space-1);
+
+  // Labels may be wider than their bar (every 5th day on 30 days); they are centered under it
+  span {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    min-width: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    white-space: nowrap;
+  }
+}
+
+.chart-dense .chart-axis {
+  gap: 2px;
+}
+
+.chart-table {
+  margin-top: var(--space-3);
+  font-size: var(--text-sm);
+
+  summary {
+    color: var(--color-text-muted);
+    cursor: pointer;
+  }
+
+  table {
+    width: 100%;
+    margin-top: var(--space-2);
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: var(--space-1) var(--space-2);
+    border-top: 1px solid var(--color-border);
+    text-align: left;
+  }
+
+  .num {
+    text-align: right;
+  }
+}
+
+// Lists (top products, recent orders, attention)
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-3);
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--color-border);
+    font-size: var(--text-sm);
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  a {
+    color: var(--color-text);
+  }
+
+  .grow {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.muted {
+  color: var(--color-text-muted);
+}
+
+.small {
+  display: block;
+  font-size: var(--text-xs);
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.ai-rate {
+  margin-top: var(--space-3) !important;
+}
+
+.meter {
+  height: 6px;
+  margin-top: var(--space-1);
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--color-surface-sunken);
+
+  span {
+    display: block;
+    height: 100%;
+    background: var(--color-ai);
+  }
+}

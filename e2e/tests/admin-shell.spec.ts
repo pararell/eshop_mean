@@ -9,13 +9,15 @@ test.beforeEach(async ({ page }) => {
 
 test('the admin frame: sidebar sections, breadcrumbs, no shop header', async ({ page }) => {
   await page.goto('/en/dashboard');
-  // The old single-page dashboard URL opens the product list
-  await expect(page).toHaveURL('/en/dashboard/products');
-  await expect(page.getByRole('heading', { level: 1, name: 'Products' })).toBeVisible();
+  // The admin opens on the Overview
+  await expect(page.getByRole('heading', { level: 1, name: 'Overview' })).toBeVisible();
   await expect(page.locator('app-header')).toHaveCount(0);
 
   const nav = page.getByRole('navigation', { name: 'Admin sections' });
+  await expect(nav.getByRole('link', { name: 'Overview' })).toHaveAttribute('aria-current', 'page');
+  await nav.getByRole('link', { name: 'Products' }).click();
   await expect(nav.getByRole('link', { name: 'Products' })).toHaveAttribute('aria-current', 'page');
+  await expect(nav.getByRole('link', { name: 'Overview' })).not.toHaveAttribute('aria-current', 'page');
   await nav.getByRole('link', { name: 'Categories' }).click();
   await expect(page).toHaveURL('/en/dashboard/categories');
   await expect(page.getByRole('navigation', { name: 'Breadcrumb' })).toContainText('Catalog');

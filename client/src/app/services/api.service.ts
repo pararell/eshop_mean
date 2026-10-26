@@ -30,6 +30,7 @@ import type {
   SignUpRequest,
   Theme,
   Translation,
+  AdminOverview,
 } from '@eshop/shared';
 
 import { environment } from '../../environments/environment';
@@ -189,6 +190,12 @@ export class ApiService {
   removeProduct(name: string) {
     const removeProduct = this.apiUrl + '/api/products/' + name;
     return this.handle(this.http.delete<unknown>(removeProduct, this.requestOptions));
+  }
+
+  /** Admin Overview figures (`days`: 1 = today, 7 or 30) */
+  getAdminOverview(days: number) {
+    const overviewUrl = this.apiUrl + '/api/admin/overview?days=' + days;
+    return this.handle(this.http.get<AdminOverview>(overviewUrl, this.requestOptions));
   }
 
   getAllCategories() {

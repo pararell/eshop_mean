@@ -1,0 +1,200 @@
+<app-admin-page-header title="Overview">
+  <div class="period" role="group" aria-label="Period">
+    @for (period of periods; track period.days) {
+      <button type="button" [attr.aria-pressed]="days() === period.days" (click)="setDays(period.days)">{{ period.label }}</button>
+    }
+  </div>
+  <button type="button" class="btn btn-outline" (click)="load()" [disabled]="loading()">
+    <mat-icon aria-hidden="true">refresh</mat-icon> Refresh
+  </button>
+</app-admin-page-header>
+
+@if (error()) {
+  <section class="admin-card admin-state is-error" role="alert">
+    <strong>The overview could not be loaded</strong>
+    <span>{{ error() }}</span>
+    <button type="button" class="btn btn-outline btn-sm" (click)="load()">Try again</button>
+  </section>
+} @else if (!data()) {
+  <section class="admin-card admin-state" role="status"><strong>Loading…</strong></section>
+} @else {
+  <div class="overview" [class.is-loading]="loading()" [attr.aria-busy]="loading()">
+    <!-- Figures for the period, compared with the one before -->
+    <div class="tiles">
+      @for (sale of sales(); track sale.currency) {
+        <section class="admin-card tile" [attr.aria-label]="'Revenue ' + sale.currency">
+          <p class="tile-label">Revenue ({{ sale.currency }})</p>
+          <p class="tile-value">{{ money(sale.revenue, sale.currency) }}</p>
+          @if (delta(sale.revenue, sale.previousRevenue); as d) {
+            <p class="tile-delta" [class]="d.tone">
+              {{ d.text }} <span class="tile-note">vs {{ previousLabel() }}</span>
+            </p>
+          }
+          <p class="tile-note">Average order {{ money(sale.averageOrder, sale.currency) }}</p>
+        </section>
+      }
+      <section class="admin-card tile" aria-label="Orders">
+        <p class="tile-label">Orders</p>
+        <p class="tile-value">{{ orderCount() }}</p>
+        @if (delta(orderCount(), previousOrderCount()); as d) {
+          <p class="tile-delta" [class]="d.tone">
+            {{ d.text }} <span class="tile-note">vs {{ previousLabel() }}</span>
+          </p>
+        }
+      </section>
+      <a class="admin-card tile tile-link" [routerLink]="link('orders')">
+        <p class="tile-label">To handle</p>
+        <p class="tile-value">{{ data()!.toHandle }}</p>
+        <p class="tile-note">New and paid orders waiting to ship</p>
+      </a>
+    </div>
+
+    <div class="charts">
+      @for (chart of charts(); track chart.currency) {
+        <section class="admin-card" [attr.aria-labelledby]="'chart-' + chart.currency">
+          <div class="admin-card-head">
+            <h2 [id]="'chart-' + chart.currency">Revenue per day ({{ chart.currency }})</h2>
+            <span class="admin-hint">{{ money(chart.total, chart.currency) }} in {{ periodLabel() }}</span>
+          </div>
+          <div class="admin-card-body">
+            <div class="chart" [class.chart-dense]="chart.bars.length > 14">
+              <span class="chart-max" aria-hidden="true">{{ money(chart.max, chart.currency) }}</span>
+              <div class="chart-plot">
+                @for (bar of chart.bars; track bar.day; let last = $last) {
+                  <div class="chart-col" role="img" tabindex="0" [attr.aria-label]="bar.tip" [attr.data-tip]="bar.tip">
+                    <span class="chart-bar" [class.is-today]="last" [style.height.%]="bar.height"></span>
+                  </div>
+                }
+              </div>
+              <div class="chart-axis" aria-hidden="true">
+                @for (bar of chart.bars; track bar.day; let i = $index) {
+                  <span>{{ chart.bars.length <= 14 || i % 5 === 0 ? bar.label : '' }}</span>
+                }
+              </div>
+            </div>
+            <details class="chart-table">
+              <summary>Show as table</summary>
+              <table>
+                <caption class="visually-hidden">
+                  Revenue per day ({{
+                    chart.currency
+                  }})
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Day</th>
+                    <th scope="col" class="num">Orders</th>
+                    <th scope="col" class="num">Revenue</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (bar of chart.bars; track bar.day) {
+                    <tr>
+                      <th scope="row">{{ bar.day }}</th>
+                      <td class="num">{{ bar.orders }}</td>
+                      <td class="num">{{ money(bar.value, chart.currency) }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </details>
+          </div>
+        </section>
+      }
+    </div>
+
+    <div class="row">
+      <section class="admin-card" aria-labelledby="top-title">
+        <div class="admin-card-head"><h2 id="top-title">Top products</h2></div>
+        <div class="admin-card-body">
+          @if (data()!.topProducts.length) {
+            <ol class="list" role="list">
+              @for (product of data()!.topProducts; track product.titleUrl + product.currency) {
+                <li>
+                  <a class="grow" [routerLink]="link('products/' + product.titleUrl)">{{ product.title }}</a>
+                  <span class="muted">{{ product.qty }} ×</span>
+                  <strong>{{ money(product.revenue, product.currency) }}</strong>
+                </li>
+              }
+            </ol>
+          } @else {
+            <p class="admin-hint">No sales in {{ periodLabel() }}.</p>
+          }
+        </div>
+      </section>
+
+      <section class="admin-card" aria-labelledby="recent-title">
+        <div class="admin-card-head">
+          <h2 id="recent-title">Recent orders</h2>
+          <a class="admin-hint" [routerLink]="link('orders')">All orders</a>
+        </div>
+        <div class="admin-card-body">
+          @if (data()!.recentOrders.length) {
+            <ul class="list" role="list">
+              @for (order of data()!.recentOrders; track order.orderId) {
+                <li>
+                  <span class="grow">
+                    <a [routerLink]="link('orders/' + order.orderId)">{{ order.customer || order.email }}</a>
+                    <span class="muted small">{{ order.date | date: 'd.M. HH:mm' }}</span>
+                  </span>
+                  <span class="admin-pill" [class]="tone(order.status)">{{ order.status }}</span>
+                  <strong class="num">{{ money(order.amount, order.currency) }}</strong>
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="admin-hint">No orders yet.</p>
+          }
+        </div>
+      </section>
+    </div>
+
+    <div class="row">
+      <section class="admin-card" aria-labelledby="attention-title">
+        <div class="admin-card-head"><h2 id="attention-title">Needs attention</h2></div>
+        <div class="admin-card-body">
+          @if (attention().length) {
+            <ul class="list" role="list">
+              @for (item of attention(); track item.tag) {
+                <li>
+                  <span class="admin-pill" [class]="item.tone">{{ item.tag }}</span>
+                  <a class="grow" [routerLink]="item.link">{{ item.text }}</a>
+                  @if (item.detail) {
+                    <span class="muted small">{{ item.detail }}</span>
+                  }
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="admin-hint"><mat-icon aria-hidden="true" inline>check</mat-icon> Nothing to fix.</p>
+          }
+        </div>
+      </section>
+
+      <section class="admin-card" aria-labelledby="ai-title">
+        <div class="admin-card-head"><h2 id="ai-title">AI drafts</h2></div>
+        <div class="admin-card-body">
+          <p class="tile-value">
+            {{ data()!.ai.drafts }} <span class="tile-note">{{ plural(data()!.ai.drafts, 'request') }} in {{ periodLabel() }}</span>
+          </p>
+          <p class="tile-note">
+            ≈ {{ data()!.ai.costUsd | number: '1.2-4' }} USD estimated{{ data()!.ai.lastModel ? ' · ' + data()!.ai.lastModel : '' }}
+          </p>
+          @if (data()!.ai.drafts) {
+            <p class="tile-note ai-rate">{{ aiSuccess() }}% successful · {{ data()!.ai.failed }} failed</p>
+            <div
+              class="meter"
+              role="meter"
+              aria-label="Successful AI requests"
+              [attr.aria-valuenow]="aiSuccess()"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            >
+              <span [style.width.%]="aiSuccess()"></span>
+            </div>
+          }
+        </div>
+      </section>
+    </div>
+  </div>
+}

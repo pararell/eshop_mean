@@ -2,13 +2,13 @@
 
 <!-- Sidebar: a rail of icons when collapsed (desktop), off-canvas on narrow screens -->
 <aside class="side" id="admin-nav" aria-label="Admin">
-  <a class="side-brand" [routerLink]="link('products')">
+  <a class="side-brand" [routerLink]="link('')">
     <span class="blaze side-blaze" aria-hidden="true"></span>
     <span class="side-label">Admin</span>
   </a>
 
   <nav class="side-nav" aria-label="Admin sections">
-    @for (group of nav; track group.label) {
+    @for (group of nav; track $index) {
       @if (group.label) {
         <p class="side-group side-label" [id]="'nav-' + group.label">{{ group.label }}</p>
       }
@@ -19,6 +19,7 @@
               class="side-link"
               [routerLink]="link(item.path)"
               routerLinkActive="is-active"
+              [routerLinkActiveOptions]="{ exact: !item.path }"
               ariaCurrentWhenActive="page"
               [attr.title]="rail() ? item.label : null"
             >
@@ -63,7 +64,7 @@
 
     <nav class="crumbs" aria-label="Breadcrumb">
       <ol>
-        <li><a [routerLink]="link('products')">Admin</a></li>
+        <li><a [routerLink]="link('')">Admin</a></li>
         @for (crumb of crumbs(); track $index; let last = $last) {
           <li [attr.aria-current]="last ? 'page' : null">
             @if (crumb.link && !last) {

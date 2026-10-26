@@ -2,6 +2,7 @@ import { CanDeactivateFn, Routes } from '@angular/router';
 import { AdminShellComponent } from './admin-shell/admin-shell.component';
 import type { AdminRouteData } from './admin-shell/admin-nav';
 import { AdminProductsComponent } from './admin-products/admin-products.component';
+import { OverviewComponent } from './overview/overview.component';
 import { CategoriesEditComponent } from './categories-edit/categories-edit.component';
 import { ConfigEditComponent } from './config-edit/config-edit.component';
 import { OrdersEditComponent } from './orders-edit/orders-edit.component';
@@ -25,8 +26,7 @@ export const DASHBOARD_ROUTES: Routes = [
     path: '',
     component: AdminShellComponent,
     children: [
-      // The admin used to be one page with tabs; its URL opens the product list
-      { path: '', pathMatch: 'full', redirectTo: 'products' },
+      { path: '', pathMatch: 'full', component: OverviewComponent, title: 'Overview', data: page({ title: 'Overview' }) },
       { path: 'products', component: AdminProductsComponent, title: 'Products', data: page({ title: 'Products', group: 'Catalog' }) },
       {
         path: 'products/new',

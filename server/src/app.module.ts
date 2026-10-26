@@ -12,6 +12,7 @@ import { AiModule } from './ai/ai.module';
 import { RateLimitModule } from './shared/rate-limit/rate-limit';
 import { PaymentsModule } from './payments/payments.module';
 import { VersionModule } from './version/version.module';
+import { OverviewModule } from './overview/overview.module';
 // import { join } from 'path';
 // import { ServeStaticModule } from '@nestjs/serve-static';
 // import { existsSync } from 'fs';
@@ -36,6 +37,7 @@ import { VersionModule } from './version/version.module';
     RateLimitModule,
     PaymentsModule,
     VersionModule,
+    OverviewModule,
     // ServeStaticModule.forRoot({
     //   rootPath: staticFile,
     //   exclude: ['/api'],

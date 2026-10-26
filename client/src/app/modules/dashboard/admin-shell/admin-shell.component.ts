@@ -102,7 +102,7 @@ export class AdminShellComponent {
   }
 
   link(path: string): string[] {
-    return ['/', this.lang(), 'dashboard', ...path.split('/')];
+    return ['/', this.lang(), 'dashboard', ...path.split('/').filter(Boolean)];
   }
 
   langUrl(lang: string): string {

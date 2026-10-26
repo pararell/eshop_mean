@@ -1,10 +1,11 @@
 // Screenshots and the demo video for the README and docs/ai.md (`npm run docs:media`).
 // Runs the real admin UI against the e2e server, whose AI and Cloudinary are local stubs.
 import { expect, Page, test } from '@playwright/test';
-import { copyFileSync, mkdirSync } from 'node:fs';
+import { copyFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-import { E2E, isolateExternalServices, signIn, withDb } from '../tests/helpers';
+import { E2E, e2eState, isolateExternalServices, signIn, withDb } from '../tests/helpers';
+import { seedDemoShop } from './demo-shop';
 
 const images = resolve(__dirname, '../../docs/images');
 /** Full-size PNGs; optimize-images.mjs turns them into the WebP files the docs use */
@@ -12,6 +13,17 @@ const out = resolve(images, 'raw');
 mkdirSync(out, { recursive: true });
 
 test.use({ viewport: { width: 1280, height: 800 }, video: { mode: 'on', size: { width: 1280, height: 800 } } });
+test.describe.configure({ mode: 'serial' });
+
+test.beforeAll(async () => {
+  // Shop texts, the live demo's catalog and demo orders (see demo-shop.ts)
+  const seed = JSON.parse(readFileSync(resolve(__dirname, '../../server/seed/translations.json'), 'utf8')) as Record<string, Record<string, string>>;
+  await withDb(async (db) => {
+    for (const [lang, keys] of Object.entries(seed))
+      await db.query('UPDATE translations SET keys = keys || $2::jsonb WHERE lang = $1', [lang, JSON.stringify(keys)]);
+  });
+  await seedDemoShop();
+});
 
 /** A simple illustrated puffer jacket, rendered by the browser, used as the "product photo" */
 async function demoPhoto(page: Page): Promise<Buffer> {
@@ -40,19 +52,33 @@ test('README media: AI product draft', async ({ page }) => {
   const photo = await demoPhoto(page);
 
   await isolateExternalServices(page);
-  // The e2e database has no shop name; show one instead of the raw translation key
-  await withDb((db) => db.query(`UPDATE translations SET keys = keys || '{"ESHOP_TITLE": "Eshop"}'::jsonb WHERE lang = 'en'`));
+  // The local Cloudinary stub serves http://127.0.0.1 images, which the app's CSP (img-src https:)
+  // rightly blocks; show them under an https address served from the stub, and give the server
+  // the stub addresses back when it fetches them for the AI
+  const stub = e2eState().aiStubUrl;
+  const httpsStub = 'https://media.docs-media.test';
+  await page.route('**/api/admin/images/upload**', async (route) => {
+    const response = await route.fetch();
+    await route.fulfill({ response, body: (await response.text()).replaceAll(stub, httpsStub) });
+  });
+  await page.route(`${httpsStub}/**`, async (route) => {
+    await route.fulfill({ response: await route.fetch({ url: route.request().url().replace(httpsStub, stub) }) });
+  });
   // Make the (instant) stubbed AI take a moment, like the real one
   await page.route('**/api/admin/products/ai-draft', async (route) => {
     await new Promise((r) => setTimeout(r, 2500));
-    await route.continue();
+    const response = await route.fetch({ postData: (route.request().postData() ?? '').replaceAll(httpsStub, stub) });
+    // The stub's answer is named for tests ("E2E Down Jacket"); show a shop-like one
+    const body = (await response.text()).replaceAll('E2E ', '').replaceAll('e2e-ai-jacket', 'down-jacket').replaceAll(stub, httpsStub);
+    await route.fulfill({ response, body });
   });
   await signIn(page, E2E.admin.email, E2E.admin.password);
-  await expect(page.getByText('SIGNIN_SUCCESS')).toBeVisible();
+  await expect(page.getByText(/SIGNIN_SUCCESS|You are logged in/)).toBeVisible();
 
   // Product table
-  await page.goto('/en/dashboard');
-  await expect(page.locator('app-admin-products').getByRole('link', { name: E2E.car.title })).toBeVisible();
+  await page.goto('/en/dashboard/products');
+  await expect(page.locator('app-admin-products').getByRole('row')).not.toHaveCount(0);
+  await page.waitForTimeout(1500);
   await page.screenshot({ path: `${out}/admin-products.png` });
 
   // New product: photo + a few words
@@ -85,4 +111,33 @@ test('README media: AI product draft', async ({ page }) => {
 
   await page.close();
   copyFileSync(await page.video()!.path(), `${images}/ai-demo.webm`);
+});
+
+/** Overview and the admin in dark mode: a separate context, so the demo video stays light */
+test('README media: admin overview, light and dark', async ({ browser }) => {
+  test.setTimeout(120_000);
+  for (const colorScheme of ['light', 'dark'] as const) {
+    const suffix = colorScheme === 'dark' ? '-dark' : '';
+    const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, colorScheme });
+    const page = await context.newPage();
+    await isolateExternalServices(page);
+    await signIn(page, E2E.admin.email, E2E.admin.password);
+    await expect(page.getByText(/SIGNIN_SUCCESS|You are logged in/)).toBeVisible();
+
+    await page.goto('/en/dashboard');
+    await page.locator('html[data-app-ready]').waitFor({ state: 'attached' });
+    const loaded = page.waitForResponse((r) => r.url().includes('/api/admin/overview?days=30'));
+    await page.getByRole('button', { name: '30 days' }).click();
+    await loaded;
+    await page.waitForTimeout(800);
+    await page.screenshot({ path: `${out}/admin-overview${suffix}.png` });
+
+    if (colorScheme === 'dark') {
+      await page.goto('/en/dashboard/products');
+      await expect(page.locator('app-admin-products').getByRole('row')).not.toHaveCount(0);
+      await page.waitForTimeout(1500);
+      await page.screenshot({ path: `${out}/admin-products-dark.png` });
+    }
+    await context.close();
+  }
 });

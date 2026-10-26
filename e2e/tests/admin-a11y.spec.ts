@@ -20,6 +20,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
     };
 
     for (const [name, url] of [
+      ['overview', '/en/dashboard'],
       ['products', '/en/dashboard/products'],
       ['categories', '/en/dashboard/categories'],
       ['pages', '/en/dashboard/pages'],

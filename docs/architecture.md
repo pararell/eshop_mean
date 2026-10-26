@@ -150,6 +150,7 @@ Guard legend:
 | POST   | `/api/admin/images/upload`          | ADMIN            | –                    | Multipart upload → Cloudinary                                                                                           |
 | POST   | `/api/admin/images/remove`          | ADMIN            | –                    | Remove image from product or library                                                                                    |
 | GET    | `/api/admin/ai/status`              | ADMIN            | –                    | `{ enabled, provider?, model? }`                                                                                        |
+| GET    | `/api/admin/overview?days=`         | ADMIN            | –                    | Overview figures for 1, 7 or 30 days (sales per currency, revenue per day, top products, attention, AI usage)           |
 | POST   | `/api/admin/products/ai-draft`      | ADMIN            | yes (whitelist, 422) | AI product draft from Cloudinary image URLs and text; never saved ([ai.md](ai.md))                                      |
 | GET    | `/api/eshop/config`                 | –                | –                    | Base64 JSON of `FE_*` env + active theme styles. Stores the active config in the session.                               |
 | POST   | `/api/eshop/contact`                | –                | –                    | Contact form (reCAPTCHA) → emails                                                                                       |

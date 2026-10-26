@@ -13,7 +13,7 @@ test('admin creates a product that appears in the shop', async ({ page, request 
   const suffix = Date.now();
   const titleUrl = `e2e-scooter-${suffix}`;
   const title = `E2E Scooter ${suffix}`;
-  await page.goto('/en/dashboard');
+  await page.goto('/en/dashboard/products');
   await page.getByRole('link', { name: 'New product' }).click();
   await expect(page).toHaveURL('/en/dashboard/products/new');
 
@@ -36,7 +36,7 @@ test('admin creates a product that appears in the shop', async ({ page, request 
   await expect(page).toHaveURL(`/en/dashboard/products/${titleUrl}`);
 
   // The product list shows it
-  await page.goto('/en/dashboard');
+  await page.goto('/en/dashboard/products');
   await expect(page.locator('app-admin-products').getByRole('link', { name: title })).toBeVisible();
 
   await expect.poll(async () => (await request.get(`/api/products/${titleUrl}?lang=en`)).status()).toBe(200);
@@ -46,7 +46,7 @@ test('admin creates a product that appears in the shop', async ({ page, request 
 });
 
 test('admin edits a product price from the product list', async ({ page, request }) => {
-  await page.goto('/en/dashboard');
+  await page.goto('/en/dashboard/products');
   const list = page.locator('app-admin-products');
   await list.getByLabel('Search title or URL').fill('bike');
   await list.getByRole('link', { name: E2E.bike.title }).click();

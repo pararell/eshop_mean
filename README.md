@@ -40,12 +40,13 @@ complete product in every shop language.
 | Cart and checkout: card (Stripe) or cash on delivery       | Order and contact-form notifications by email (Resend)           |
 | Email or Google login, order history                       | Shipping costs and price limits per language                     |
 | Light and dark mode, themes from CSS variables             | Theme editor: colors, logo, home photo or video                  |
-| Contact form protected by reCAPTCHA                        | Admin-only routes (JWT + roles)                                  |
+| Contact form protected by reCAPTCHA                        | Overview: revenue, orders, top products, what needs attention    |
+|                                                            | Light and dark admin with sidebar, search and WCAG AA contrast   |
 
 ## AI in the admin
 
 <p align="center">
-  <img src="docs/images/ai-demo.gif" alt="Admin product editor: a jacket photo is uploaded, “men's winter jacket, black, down, L-XXL” is typed, Fill with AI fills the title, descriptions and SEO texts in English, Slovak and Czech" width="760">
+  <img src="docs/images/ai-demo.gif" alt="Admin product editor in the admin sidebar layout: a jacket photo is uploaded, “men's winter jacket, black, down, L-XXL” is typed, Fill with AI fills the title, descriptions and SEO texts in English, Slovak and Czech" width="760">
 </p>
 
 The admin drops a product photo and writes a short note. The AI fills the title, descriptions,
@@ -87,9 +88,19 @@ Shown in your GitHub theme (light or dark).
 
 <img src="docs/images/mobile-home.webp" alt="Home page on a phone: compact header with menu, search, language, account and cart icons over the hero photo" width="300">
 
+**Admin: overview**
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/admin-overview-dark.webp">
+  <img src="docs/images/admin-overview.webp" alt="Admin overview for the last 30 days: revenue per currency, order count and orders to handle, a bar chart of revenue per day, top products">
+</picture>
+
 **Admin: product table**
 
-<img src="docs/images/admin-products.webp" alt="Admin dashboard with tabs for products, categories, pages, theme, config and translations; a searchable product table">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/admin-products-dark.webp">
+  <img src="docs/images/admin-products.webp" alt="Admin product table with a grouped sidebar (catalog, sales, content, appearance, settings), search, category and status filters and product photos">
+</picture>
 
 **Admin: AI-filled fields, marked until reviewed**
 

@@ -13,11 +13,9 @@ export interface AdminNavGroup {
   items: AdminNavItem[];
 }
 
-/**
- * The admin sidebar. Overview, Customers and AI usage join here when their pages exist
- * (admin redesign steps 4 and 5).
- */
+/** The admin sidebar; `path: ''` is the Overview (/:lang/dashboard) */
 export const ADMIN_NAV: AdminNavGroup[] = [
+  { items: [{ label: 'Overview', path: '', icon: 'dashboard' }] },
   {
     label: 'Catalog',
     items: [
