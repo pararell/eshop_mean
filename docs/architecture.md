@@ -390,8 +390,11 @@ removed from products' `tags` (one `array_remove` update) when a category is del
   strings and email texts).
 - **`pages`** `(title_url unique)` + **`page_translations`** `(page_id, lang, title, content_html)`;
   API `en/sk/cs: { title, contentHTML }`.
-- **`themes`** `(title_url unique, active, styles jsonb)`: `styles` maps CSS variable values (colors,
-  logo, background URLs, …). At most one is active (partial unique index; saving an active one
+- **`themes`** `(title_url unique, active, styles jsonb)`: `styles` holds the theme settings typed as
+  `ThemeStyles` (`shared/types`): brand color, shop name, logo, home hero and promo banner, promo texts
+  per language. The server accepts only those keys with valid values (`server/src/eshop/theme-styles.ts`,
+  400 otherwise) and merges a save into the stored settings; the client applies them through
+  `ThemeService.applyStyles`. At most one is active (partial unique index; saving an active one
   deactivates the others, D8).
 - **`configs`** `(title_url unique, active)` + **`config_shipping`** `(config_id, lang, basic_cost,
 basic_limit, extended_cost, extended_limit)`; API `en/sk/cs: { shippingCost: { basic: {cost, limit},

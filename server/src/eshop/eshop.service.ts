@@ -1,8 +1,8 @@
-import { Inject, Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { and, eq, inArray, ne } from 'drizzle-orm';
 import { firstValueFrom } from 'rxjs';
-import type { PublicConfigResponse, SessionCart, ShopConfig, Theme as ThemeData } from '@eshop/shared';
+import type { PublicConfigResponse, SessionCart, ShopConfig, Theme as ThemeData, ThemeStyles } from '@eshop/shared';
 
 import { adminEmails, sendEmails } from '../shared/utils/email/mailer';
 import { loadEmailShop } from '../shared/utils/email/email-shop';
@@ -18,6 +18,7 @@ import { configShipping, configs, pages, pageTranslations, themes } from '../db/
 import { configShippingValues, pageTranslationValues, toConfigDoc, toPageDoc, toThemeDoc } from '../db/mappers';
 import { isLanguage } from '../db/catalog';
 import { languages } from '../shared/constans';
+import { assertThemeStyles } from './theme-styles';
 
 /** What MongoDB's updateOne() answered; the API returned it for edits (the client ignores it) */
 export interface UpdateResult {
@@ -34,6 +35,7 @@ export type UpsertResult<T> = T | UpdateResult | undefined;
 
 @Injectable()
 export class EshopService {
+  private logger = new Logger('EshopService');
   constructor(
     @Inject(DRIZZLE) private db: Database,
     private httpService: HttpService,
@@ -52,7 +54,9 @@ export class EshopService {
       return {
         config: Buffer.from(JSON.stringify({ ...configFomEnvToFE, ...themeStyles })).toString('base64'),
       };
-    } catch {
+    } catch (error) {
+      // The shop still renders (default look), but the failure must be visible
+      this.logger.error(`Public config failed: ${error instanceof Error ? error.message : String(error)}`);
       return { config: '' };
     }
   }
@@ -141,10 +145,11 @@ export class EshopService {
 
   async addOrEditTheme(themeDto: ThemeData): Promise<UpsertResult<Theme>> {
     const { titleUrl } = themeDto;
+    // Outside the try: invalid settings answer 400 with the reasons
+    const styles = themeDto.styles === undefined ? undefined : assertThemeStyles(themeDto.styles);
     try {
       return await this.db.transaction(async (tx) => {
-        const values = {
-          ...(themeDto.styles !== undefined ? { styles: themeDto.styles } : {}),
+        const values: { styles?: ThemeStyles; active?: boolean } = {
           ...(themeDto.active !== undefined ? { active: themeDto.active === true || String(themeDto.active) === 'true' } : {}),
         };
         // At most one active theme (decision D8): activating one deactivates the others
@@ -156,6 +161,8 @@ export class EshopService {
         }
 
         const [existing] = await tx.select().from(themes).where(eq(themes.titleUrl, titleUrl));
+        // A save merges into the stored settings, so keys the editor doesn't show are kept
+        if (styles) values.styles = { ...(existing?.styles ?? {}), ...styles };
         if (existing) {
           if (Object.keys(values).length) await tx.update(themes).set(values).where(eq(themes.id, existing.id));
           return UPDATED;

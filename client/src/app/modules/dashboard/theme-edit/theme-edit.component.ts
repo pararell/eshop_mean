@@ -1,7 +1,8 @@
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Component, ChangeDetectionStrategy, computed, inject, signal } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, ValidatorFn } from '@angular/forms';
+import { Component, ChangeDetectionStrategy, DestroyRef, computed, inject, signal } from '@angular/core';
+import type { ThemeStyles } from '@eshop/shared';
 import { MatDialog } from '@angular/material/dialog';
-import { MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
+import { MatError, MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
 import { MatSelect, MatOption } from '@angular/material/select';
 import { MatInput } from '@angular/material/input';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
@@ -15,18 +16,47 @@ import { AdminItemListComponent, AdminListItem } from '../admin-ui/admin-item-li
 import { confirmAction } from '../admin-ui/confirm-dialog.component';
 import { languages } from '../../../shared/constants';
 
-/** Theme settings that are text, not styles: shop name, hero tint and the promo banner (per language) */
-const CONTENT_FIELDS = [
+/** The theme settings this editor shows (the server keeps the other stored keys on save) */
+const STYLE_FIELDS = [
+  'primaryColor',
   'shopName',
+  'logo',
+  'promoSlideBackground',
+  'promoSlideVideo',
+  'promoSlideBackgroundPosition',
   'heroTint',
+  'promo',
   'promoImage',
   'promoLink',
-  ...languages.flatMap((lang) => [`promoTitle_${lang}`, `promoText_${lang}`]),
-];
+  ...languages.flatMap((lang) => [`promoTitle_${lang}`, `promoText_${lang}`] as const),
+] as const satisfies readonly (keyof ThemeStyles)[];
+
+const STYLE_DEFAULTS: ThemeStyles = { promoSlideBackgroundPosition: 'center', heroTint: 'none', promo: 'none' };
+/** Shown in the color picker while the default ink is used */
+const PICKER_START = '#15803d';
+
+// The same rules as the server (server/src/eshop/theme-styles.ts); empty is always allowed
+const httpsUrl = Validators.pattern(/^(https:\/\/\S+)?$/);
+const shopPathOrHttps = Validators.pattern(/^((\/(?!\/)\S*)|(https:\/\/\S+))?$/);
+const FIELD_VALIDATORS: Partial<Record<(typeof STYLE_FIELDS)[number], ValidatorFn[]>> = {
+  shopName: [Validators.maxLength(60)],
+  logo: [httpsUrl],
+  promoSlideBackground: [httpsUrl],
+  promoSlideVideo: [httpsUrl],
+  promoImage: [httpsUrl],
+  promoLink: [shopPathOrHttps],
+  ...Object.fromEntries(
+    languages.flatMap((lang) => [
+      [`promoTitle_${lang}`, [Validators.maxLength(120)]] as const,
+      [`promoText_${lang}`, [Validators.maxLength(300)]] as const,
+    ]),
+  ),
+};
 
 /**
- * Themes: list + editor. Changes preview live on the page (ThemeService CSS variables), as
- * before; only the active theme is used by the shop.
+ * Themes: list + editor. The open theme previews live on the page (ThemeService.applyStyles); the
+ * active theme is put back when another one is opened, the open one is closed or the editor is left.
+ * Only the active theme is used by the shop.
  */
 @Component({
   selector: 'app-theme-edit',
@@ -38,6 +68,7 @@ const CONTENT_FIELDS = [
     MatFormField,
     MatLabel,
     MatHint,
+    MatError,
     MatInput,
     MatSelect,
     MatOption,
@@ -73,28 +104,22 @@ export class ThemeEditComponent {
 
     this.themesEditForm = this.fb.group({
       titleUrl: ['', [Validators.required, Validators.pattern(/^[a-z0-9_-]+$/)]],
-      ...this.startFormValues(),
+      active: false,
+      useDefaultColor: true,
+      ...Object.fromEntries(STYLE_FIELDS.map((field) => [field, ['', FIELD_VALIDATORS[field] ?? []]])),
     });
 
-    this.themesEditForm.valueChanges.subscribe((values) => {
-      this.themeService.setCSSVariable(values.primaryColor, 'primary-color');
-      this.themeService.setCSSVariable(values.secondaryColor, 'secondary-color');
-      this.themeService.setCSSVariable(values.backgroundColor, 'background-color');
-      this.themeService.setThemeColor(values.primaryColor, 'theme-primary');
-      this.themeService.setThemeColor(values.secondaryColor, 'theme-secondary');
-      if (values.mainBackground) {
-        this.themeService.setCSSVariable(values.mainBackground, 'main-background');
-        this.themeService.setCSSVariable(`url(${values.mainBackground})`, 'main-background-url');
-      } else {
-        this.themeService.setCSSVariable(`url(/)`, 'main-background-url');
-      }
-      this.themeService.setCSSVariable(values.freeShippingPromo, 'free-shipping-promo');
-      this.themeService.setCSSVariable(`url(${values.promoSlideBackground})`, 'promo-slide-background');
-      this.themeService.setCSSVariable(`${values.promoSlideBackgroundPosition}`, 'promo-slide-background-position');
-      this.themeService.setVideo(values.promoSlideVideo);
-      this.themeService.setCSSVariable(values.promo, 'promo');
-      this.themeService.setCSSVariable(`url(${values.logo})`, 'logo');
+    this.themesEditForm.get('primaryColor')!.disable();
+    // The picker only counts when the default ink is off
+    this.themesEditForm.get('useDefaultColor')!.valueChanges.subscribe((useDefault: boolean) => {
+      const picker = this.themesEditForm.get('primaryColor')!;
+      if (useDefault) picker.disable({ emitEvent: false });
+      else picker.enable({ emitEvent: false });
     });
+    this.themesEditForm.valueChanges.subscribe(() => {
+      if (this.selected() !== null) this.themeService.applyStyles(this.stylesFromForm());
+    });
+    inject(DestroyRef).onDestroy(() => this.restoreActiveTheme());
   }
 
   /** Opens a theme (or a new one with defaults, id '') in the form */
@@ -112,26 +137,17 @@ export class ThemeEditComponent {
       return;
     }
     const found = this.themes().find((theme) => theme.titleUrl === titleUrl);
-    const styles = found?.styles;
-    const defaults = this.startFormValues();
+    const styles: ThemeStyles = found?.styles ?? {};
+    this.selected.set(titleUrl);
     this.themesEditForm.reset({
       titleUrl: found?.titleUrl ?? '',
-      active: found ? !!found.active : defaults.active,
-      freeShippingPromo: styles?.freeShippingPromo || defaults.freeShippingPromo,
-      promoSlideBackground: styles?.promoSlideBackground || '',
-      promoSlideVideo: styles?.promoSlideVideo || '',
-      promoSlideBackgroundPosition: styles?.promoSlideBackgroundPosition || defaults.promoSlideBackgroundPosition,
-      promo: styles?.promo || defaults.promo,
-      primaryColor: styles?.primaryColor || (found ? '' : defaults.primaryColor),
-      secondaryColor: styles?.secondaryColor || (found ? '' : defaults.secondaryColor),
-      backgroundColor: styles?.backgroundColor || (found ? '' : defaults.backgroundColor),
-      mainBackground: styles?.mainBackground || '',
-      logo: styles?.logo || '',
-      ...Object.fromEntries(CONTENT_FIELDS.map((field) => [field, styles?.[field] || defaults[field as keyof typeof defaults] || ''])),
+      active: found ? !!found.active : false,
+      useDefaultColor: !styles.primaryColor,
+      ...Object.fromEntries(STYLE_FIELDS.map((field) => [field, styles[field] || STYLE_DEFAULTS[field] || ''])),
+      primaryColor: styles.primaryColor || PICKER_START,
     });
     if (found) this.themesEditForm.get('titleUrl')!.disable();
     else this.themesEditForm.get('titleUrl')!.enable();
-    this.selected.set(titleUrl);
   }
 
   saveTheme(): void {
@@ -140,24 +156,7 @@ export class ThemeEditComponent {
       return;
     }
     const formValues = this.themesEditForm.getRawValue();
-    const request = {
-      titleUrl: formValues.titleUrl,
-      active: formValues.active,
-      styles: {
-        primaryColor: formValues.primaryColor,
-        promoSlideBackground: formValues.promoSlideBackground,
-        promoSlideVideo: formValues.promoSlideVideo || '',
-        promoSlideBackgroundPosition: formValues.promoSlideBackgroundPosition,
-        secondaryColor: formValues.secondaryColor,
-        backgroundColor: formValues.backgroundColor,
-        mainBackground: formValues.mainBackground,
-        freeShippingPromo: formValues.freeShippingPromo,
-        promo: formValues.promo,
-        logo: formValues.logo,
-        ...Object.fromEntries(CONTENT_FIELDS.map((field) => [field, (formValues[field] as string)?.trim() ?? ''])),
-      },
-    };
-    this.store.addOrEditTheme(request);
+    this.store.addOrEditTheme({ titleUrl: formValues.titleUrl, active: formValues.active, styles: this.stylesFromForm() });
     this.themesEditForm.markAsPristine();
     this.selected.set(formValues.titleUrl);
     this.themesEditForm.get('titleUrl')!.disable();
@@ -175,23 +174,19 @@ export class ThemeEditComponent {
     this.store.removeTheme(titleUrl);
     this.themesEditForm.markAsPristine();
     this.selected.set(null);
+    this.restoreActiveTheme();
   }
 
-  private startFormValues() {
-    return {
-      active: false,
-      freeShippingPromo: 'none',
-      promoSlideBackground: '',
-      promoSlideVideo: '',
-      promoSlideBackgroundPosition: 'center',
-      promo: 'none',
-      primaryColor: '#222222',
-      secondaryColor: '#cccccc',
-      backgroundColor: '#eeeeee',
-      mainBackground: '',
-      logo: '',
-      ...Object.fromEntries(CONTENT_FIELDS.map((field) => [field, ''])),
-      heroTint: 'none',
-    };
+  /** The settings in the form, as saved (trimmed; the default ink is an empty color) */
+  private stylesFromForm(): ThemeStyles {
+    const values = this.themesEditForm.getRawValue();
+    const styles = Object.fromEntries(STYLE_FIELDS.map((field) => [field, String(values[field] ?? '').trim()])) as ThemeStyles;
+    styles.primaryColor = values.useDefaultColor ? '' : styles.primaryColor;
+    return styles;
+  }
+
+  /** Back to what the shop shows: the active theme (or the default look without one) */
+  private restoreActiveTheme(): void {
+    this.themeService.applyStyles(this.themes().find((theme) => theme.active)?.styles ?? {});
   }
 }

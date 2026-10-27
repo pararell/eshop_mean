@@ -2,6 +2,7 @@ import { of, throwError } from 'rxjs';
 import { emailSpy, sentEmails } from '../utils/email';
 
 import { adminToken, createTestApp, eventually, httpMock, TestApp } from '../utils/test-app';
+import { loadEmailShop } from '../../src/shared/utils/email/email-shop';
 
 const decodeConfig = (config: string) => JSON.parse(Buffer.from(config, 'base64').toString());
 
@@ -58,6 +59,43 @@ describe('Eshop API (config, pages, contact)', () => {
         delete process.env.SAFE_TOKEN;
         delete process.env.MY_FE_SECRET;
       }
+    });
+  });
+
+  describe('themes', () => {
+    beforeEach(() => t.model('Theme').deleteMany({}));
+    afterEach(() => t.model('Theme').deleteMany({}));
+
+    it('merges a save into the stored settings, so keys the editor does not show are kept', async () => {
+      const token = await adminToken(t, 'themes-admin@test.dev');
+      await t.model('Theme').create({ titleUrl: 'forest', active: true, styles: { primaryColor: '#15803d', secondaryColor: '#cccccc' } });
+
+      await t.http
+        .post('/api/eshop/theme')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ titleUrl: 'forest', active: true, styles: { primaryColor: '', shopName: 'Trail Shop' } })
+        .expect(201);
+
+      const doc: any = await t.model('Theme').findOne({ titleUrl: 'forest' }).lean();
+      expect(doc.styles).toEqual({ primaryColor: '', secondaryColor: '#cccccc', shopName: 'Trail Shop' });
+    });
+
+    it('rejects invalid settings with the reasons, and stores nothing', async () => {
+      const token = await adminToken(t, 'themes-admin@test.dev');
+
+      const res = await t.http
+        .post('/api/eshop/theme')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ titleUrl: 'bad', active: false, styles: { logo: 'javascript:alert(1)', fontFamily: 'x' } })
+        .expect(400);
+
+      expect(res.body.message).toEqual(['logo must be an https URL', 'fontFamily is not a theme setting']);
+      expect(await t.model('Theme').countDocuments({ titleUrl: 'bad' })).toBe(0);
+    });
+
+    it("uses the theme's shop name in emails", async () => {
+      await t.model('Theme').create({ titleUrl: 'named', active: true, styles: { shopName: 'Trail Shop' } });
+      expect((await loadEmailShop(t.db, 'en')).name).toBe('Trail Shop');
     });
   });
 

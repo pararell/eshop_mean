@@ -30,6 +30,16 @@ All notable changes to this project are documented in this file. The format foll
 
 ### Changed
 
+- **Theme settings are typed and validated:** a theme accepts only known settings with valid values
+  (hex color, https image URLs, a shop path or https link, allowed options, text lengths); anything
+  else answers 400 with the reasons. A save is merged into the stored settings, so values the editor
+  doesn't show are kept.
+- **Theme editor:** a "Default color (ink)" switch (the primary color can be cleared again); the
+  secondary color, background color, main background and free-shipping banner fields are gone (they
+  had no effect; stored values are kept); the live preview no longer outlasts the editor: the active
+  theme comes back when another theme is opened, the open one is deleted or the editor is left.
+- Emails use the theme's shop name too (before: only the `ESHOP_TITLE` translation).
+- `GET /api/eshop/config` logs why it failed instead of silently returning an empty config.
 - **Brand accent:** the theme's primary color (contrast-checked light/dark variants) now also colors
   sale prices and SALE badges, the active menu item, links, focus rings and hover states, besides the
   primary buttons. Set it in Themes → Primary color (e.g. forest green `#15803d`).

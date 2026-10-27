@@ -340,28 +340,39 @@ export interface PageLangInfo {
 
 export type Page = { _id?: string; titleUrl: string; dateAdded?: DateValue } & ByLanguage<PageLangInfo>;
 
-export interface ThemeStyles {
+/** Per-language theme texts: promoTitle_en, promoText_sk, … */
+export type ThemeLangKey = `promoTitle_${LanguageCode}` | `promoText_${LanguageCode}`;
+
+/**
+ * The active theme's settings (`themes.styles`). The server accepts only these keys and merges a save
+ * into the stored ones (an empty string clears a value); see server/src/eshop/theme-styles.ts.
+ */
+export type ThemeStyles = {
+  /** The brand accent; empty = the default ink. Light/dark variants are contrast-checked by the client */
   primaryColor?: string;
-  secondaryColor?: string;
-  backgroundColor?: string;
-  mainBackground?: string;
-  freeShippingPromo?: string;
+  logo?: string;
+  /** Shown in the header, footer, page titles, structured data and emails; empty = the ESHOP_TITLE translation */
+  shopName?: string;
+  /** Home hero: photo, optional video (the photo is its poster) and the photo's vertical position */
   promoSlideBackground?: string;
   promoSlideVideo?: string;
-  promoSlideBackgroundPosition?: string;
-  /** 'block' shows the home promo banner (promoImage, promoLink, promoTitle_<lang>, promoText_<lang>); 'none' hides it */
-  promo?: string;
-  logo?: string;
-  /** Shown in the header, footer, page titles and structured data; empty = the ESHOP_TITLE translation */
-  shopName?: string;
+  promoSlideBackgroundPosition?: 'center' | 'top' | 'bottom' | '';
   /** Home hero photo: 'none' (its own colors) or 'warm' (a warm tint) */
-  heroTint?: string;
-  /** Home promo banner photo and target (a shop path like /en/product/category/tents, or a full URL) */
+  heroTint?: 'none' | 'warm' | '';
+  /** 'block' shows the home promo banner (promoImage, promoLink, promoTitle_<lang>, promoText_<lang>); 'none' hides it */
+  promo?: 'none' | 'block' | '';
   promoImage?: string;
+  /** A shop path like /en/product/category/tents, or an https URL */
   promoLink?: string;
-  /** Per language: promoTitle_en, promoText_en, promoTitle_sk, … */
-  [key: string]: string | undefined;
-}
+  /** @deprecated Not used by the shop or the editor; kept in stored themes */
+  secondaryColor?: string;
+  /** @deprecated */
+  backgroundColor?: string;
+  /** @deprecated */
+  mainBackground?: string;
+  /** @deprecated */
+  freeShippingPromo?: string;
+} & Partial<Record<ThemeLangKey, string>>;
 
 export interface Theme {
   _id?: string;

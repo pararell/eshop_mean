@@ -10,7 +10,8 @@ import { adminEmails } from './mailer';
 const DEFAULT_ACCENT = '#111111';
 
 /**
- * Shop name (`ESHOP_TITLE` translation), URL (`ORIGIN`), accent (the active theme's primary color)
+ * Shop name (the active theme's `shopName`, else the `ESHOP_TITLE` translation, as in the shop), URL
+ * (`ORIGIN`), accent (the active theme's primary color)
  * and contact address (the first of `ADMIN_EMAILS`). Never throws: falls back to defaults.
  */
 export async function loadEmailShop(db: Database, lang: LanguageCode): Promise<EmailShop> {
@@ -26,7 +27,7 @@ export async function loadEmailShop(db: Database, lang: LanguageCode): Promise<E
   const color = theme?.styles?.primaryColor;
   const accent = typeof color === 'string' && /^#[0-9a-f]{6}$/i.test(color) ? color : DEFAULT_ACCENT;
   return {
-    name: translation?.keys?.ESHOP_TITLE?.trim() || 'Eshop',
+    name: theme?.styles?.shopName?.trim() || translation?.keys?.ESHOP_TITLE?.trim() || 'Eshop',
     url: (process.env.ORIGIN || 'http://localhost:4000').replace(/\/$/, ''),
     accent,
     onAccent: readableOn(accent),

@@ -40,40 +40,34 @@
       </section>
 
       <section class="admin-card" aria-labelledby="theme-colors-title">
-        <div class="admin-card-head"><h2 id="theme-colors-title">Brand colors</h2></div>
+        <div class="admin-card-head"><h2 id="theme-colors-title">Brand color</h2></div>
         <div class="admin-card-body admin-fields">
+          <div class="theme-active">
+            <mat-slide-toggle formControlName="useDefaultColor">Default color (ink)</mat-slide-toggle>
+            <p class="admin-hint">Turn off to pick the shop's own accent.</p>
+          </div>
           <mat-form-field>
             <mat-label>Primary color</mat-label>
             <input matInput type="color" formControlName="primaryColor" />
             <mat-hint>The brand accent: buttons, sale prices, links, focus; adjusted for contrast</mat-hint>
           </mat-form-field>
-          <mat-form-field>
-            <mat-label>Secondary color</mat-label>
-            <input matInput type="color" formControlName="secondaryColor" />
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Background color</mat-label>
-            <input matInput type="color" formControlName="backgroundColor" />
-          </mat-form-field>
         </div>
       </section>
 
       <section class="admin-card" aria-labelledby="theme-images-title">
-        <div class="admin-card-head"><h2 id="theme-images-title">Shop name, logo and background</h2></div>
+        <div class="admin-card-head"><h2 id="theme-images-title">Shop name and logo</h2></div>
         <div class="admin-card-body admin-fields">
           <mat-form-field class="admin-field-wide">
             <mat-label>Shop name</mat-label>
             <input matInput formControlName="shopName" autocomplete="off" />
-            <mat-hint>Header, footer, page titles and search results; empty uses the ESHOP_TITLE translation</mat-hint>
+            <mat-hint>Header, footer, page titles, search results and emails; empty uses the ESHOP_TITLE translation</mat-hint>
+            <mat-error>At most 60 characters</mat-error>
           </mat-form-field>
           <mat-form-field class="admin-field-wide">
             <mat-label>Logo URL</mat-label>
             <input matInput type="url" formControlName="logo" />
             <mat-hint>Shown in the header instead of the trail sign</mat-hint>
-          </mat-form-field>
-          <mat-form-field class="admin-field-wide">
-            <mat-label>Main background URL</mat-label>
-            <input matInput type="url" formControlName="mainBackground" />
+            <mat-error>Use an https:// address</mat-error>
           </mat-form-field>
         </div>
       </section>
@@ -84,11 +78,13 @@
           <mat-form-field class="admin-field-wide">
             <mat-label>Photo URL</mat-label>
             <input matInput type="url" formControlName="promoSlideBackground" />
+            <mat-error>Use an https:// address</mat-error>
           </mat-form-field>
           <mat-form-field class="admin-field-wide">
             <mat-label>Video URL (MP4)</mat-label>
             <input matInput type="url" formControlName="promoSlideVideo" />
             <mat-hint>Plays muted instead of the photo; the photo is its poster</mat-hint>
+            <mat-error>Use an https:// address</mat-error>
           </mat-form-field>
           <mat-form-field>
             <mat-label>Photo position</mat-label>
@@ -103,13 +99,6 @@
             <mat-select formControlName="heroTint">
               <mat-option value="none">Original colors</mat-option>
               <mat-option value="warm">Warm tint</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Free shipping banner</mat-label>
-            <mat-select formControlName="freeShippingPromo">
-              <mat-option value="none">Hidden</mat-option>
-              <mat-option value="block">Shown</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
@@ -133,20 +122,24 @@
           <mat-form-field class="admin-field-wide">
             <mat-label>Photo URL</mat-label>
             <input matInput type="url" formControlName="promoImage" />
+            <mat-error>Use an https:// address</mat-error>
           </mat-form-field>
           <mat-form-field class="admin-field-wide">
             <mat-label>Link</mat-label>
             <input matInput formControlName="promoLink" autocomplete="off" />
             <mat-hint>A shop path such as /en/product/category/tents, or a full URL</mat-hint>
+            <mat-error>Use a shop path (/en/…) or an https:// address</mat-error>
           </mat-form-field>
           @for (lang of languages; track lang) {
             <mat-form-field>
               <mat-label>Title ({{ lang }})</mat-label>
               <input matInput [formControlName]="'promoTitle_' + lang" autocomplete="off" />
+              <mat-error>At most 120 characters</mat-error>
             </mat-form-field>
             <mat-form-field class="admin-field-wide">
               <mat-label>Text ({{ lang }})</mat-label>
               <input matInput [formControlName]="'promoText_' + lang" autocomplete="off" />
+              <mat-error>At most 300 characters</mat-error>
             </mat-form-field>
           }
         </div>

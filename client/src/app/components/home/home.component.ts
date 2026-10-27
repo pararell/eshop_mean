@@ -1,3 +1,4 @@
+import type { LanguageCode } from '@eshop/shared';
 import { AsyncPipe, NgOptimizedImage, isPlatformBrowser } from '@angular/common';
 import { map, distinctUntilChanged, filter, take, skip } from 'rxjs/operators';
 import {
@@ -83,12 +84,13 @@ export class HomeComponent implements OnDestroy {
   /** The theme's promo banner in the current language; shown when enabled and it has a title */
   readonly promoBanner = computed(() => {
     const styles = this.themeService.styles();
-    const title = styles[`promoTitle_${this.lang()}`]?.trim();
+    const lang = this.lang() as LanguageCode;
+    const title = styles[`promoTitle_${lang}`]?.trim();
     if (styles.promo !== 'block' || !title) return null;
     const link = styles.promoLink?.trim() ?? '';
     return {
       title,
-      text: styles[`promoText_${this.lang()}`]?.trim() ?? '',
+      text: styles[`promoText_${lang}`]?.trim() ?? '',
       image: styles.promoImage?.trim() ?? '',
       link,
       // Shop paths navigate in the app; anything else is an ordinary link

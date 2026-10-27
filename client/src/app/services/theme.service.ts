@@ -11,6 +11,8 @@ const LIGHT = { bg: '#ffffff', onPrimary: '#ffffff' };
 const DARK = { surface: '#0f0f0f', onPrimary: '#111111' };
 /** WCAG AA for normal text */
 const MIN_CONTRAST = 4.5;
+/** The CSS variables setBrandColor writes */
+const BRAND_VARIABLES = ['primary', 'primary-hover', 'on-primary', 'primary-soft'].flatMap((name) => [`brand-${name}-light`, `brand-${name}-dark`]);
 
 /**
  * Light/dark mode and the shop's brand color (docs/design-system.md).
@@ -28,14 +30,14 @@ export class ThemeService {
   private document = inject<Document>(DOCUMENT);
   private platformId = inject(PLATFORM_ID);
 
-  /** Home banner media from the active theme: a video (promoSlideVideo) wins over an image (promoSlideBackground) */
-  readonly video = signal('');
-  readonly heroImage = signal('');
-  readonly heroImagePosition = signal('center');
-  /** Logo URL of the active shop theme; empty = the built-in mark */
-  readonly logo = signal('');
-  /** Content settings of the active theme (shop name, hero tint, promo banner); the theme editor previews into it */
+  /** The active theme's settings (see applyStyles); the theme editor previews into it */
   readonly styles = signal<ThemeStyles>({});
+  /** Home banner media from the active theme: a video (promoSlideVideo) wins over an image (promoSlideBackground) */
+  readonly video = computed(() => this.styles().promoSlideVideo ?? '');
+  readonly heroImage = computed(() => this.styles().promoSlideBackground ?? '');
+  readonly heroImagePosition = computed(() => this.styles().promoSlideBackgroundPosition || 'center');
+  /** Logo URL of the active shop theme; empty = the built-in mark */
+  readonly logo = computed(() => this.styles().logo ?? '');
   /** The shop name from the theme; empty = the ESHOP_TITLE translation */
   readonly shopName = computed(() => this.styles().shopName?.trim() ?? '');
   /** 'warm': the hero photo gets a warm tint; otherwise it is shown in its own colors */
@@ -67,6 +69,16 @@ export class ThemeService {
     this.setMode(this.isDark() ? 'light' : 'dark');
   }
 
+  /**
+   * Applies a theme: its settings (read through the signals above) and its primary color as the brand
+   * accent, or the default ink when it has none. Applying another theme fully replaces the previous one.
+   */
+  applyStyles(styles: ThemeStyles): void {
+    this.styles.set(styles);
+    if (styles.primaryColor && tinycolor(styles.primaryColor).isValid()) this.setBrandColor(styles.primaryColor);
+    else this.clearBrandColor();
+  }
+
   /** Applies a theme's primary color as accessible light/dark brand variants */
   setBrandColor(color: string): void {
     const base = tinycolor(color);
@@ -96,17 +108,13 @@ export class ThemeService {
     this.setCSSVariable(tinycolor.mix(dark, DARK.surface, 82).toHexString(), 'brand-primary-soft-dark');
   }
 
-  setCSSVariable(value: string, name: string): void {
-    this.document.documentElement.style.setProperty(`--${name}`, value);
+  /** Back to the default ink (the token fallbacks in _tokens.scss) */
+  clearBrandColor(): void {
+    for (const name of BRAND_VARIABLES) this.document.documentElement.style.removeProperty(`--${name}`);
   }
 
-  /** Kept for the theme editor (M4 rewrites it): the primary color becomes the brand color */
-  setThemeColor = (themeColor: string, type: string): void => {
-    if (type === 'theme-primary') this.setBrandColor(themeColor);
-  };
-
-  setVideo(video: string): void {
-    this.video.set(video ?? '');
+  setCSSVariable(value: string, name: string): void {
+    this.document.documentElement.style.setProperty(`--${name}`, value);
   }
 
   private readMode(): ColorMode {
