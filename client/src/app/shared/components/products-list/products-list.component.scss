@@ -5,7 +5,7 @@
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
-  gap: var(--space-6);
+  gap: var(--space-4) var(--space-6);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -71,11 +71,18 @@
   font-size: var(--text-md);
   font-weight: var(--weight-semibold);
   line-height: 1.35;
+
+  a:hover {
+    color: var(--color-link);
+  }
 }
 
+// Pushed to the bottom: prices line up across a row, whatever the title length
 .product_card-price {
   justify-content: center;
-  font-size: var(--text-md);
+  margin-top: auto;
+  padding-top: var(--space-1);
+  font-size: var(--text-lg);
 }
 
 // "Add to cart": shown on hover with a pointer, always on touch screens and once in the cart

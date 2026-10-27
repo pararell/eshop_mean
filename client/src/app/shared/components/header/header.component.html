@@ -11,7 +11,7 @@
       } @else {
         <span class="blaze brand-blaze" aria-hidden="true"></span>
       }
-      <span class="brand-name">{{ 'ESHOP_TITLE' | translate | async }}</span>
+      <span class="brand-name">{{ shopName() || ('ESHOP_TITLE' | translate | async) }}</span>
     </a>
 
     <nav class="header-nav" aria-label="Main">

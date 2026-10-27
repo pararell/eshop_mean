@@ -349,8 +349,17 @@ export interface ThemeStyles {
   promoSlideBackground?: string;
   promoSlideVideo?: string;
   promoSlideBackgroundPosition?: string;
+  /** 'block' shows the home promo banner (promoImage, promoLink, promoTitle_<lang>, promoText_<lang>); 'none' hides it */
   promo?: string;
   logo?: string;
+  /** Shown in the header, footer, page titles and structured data; empty = the ESHOP_TITLE translation */
+  shopName?: string;
+  /** Home hero photo: 'none' (its own colors) or 'warm' (a warm tint) */
+  heroTint?: string;
+  /** Home promo banner photo and target (a shop path like /en/product/category/tents, or a full URL) */
+  promoImage?: string;
+  promoLink?: string;
+  /** Per language: promoTitle_en, promoText_en, promoTitle_sk, … */
   [key: string]: string | undefined;
 }
 

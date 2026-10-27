@@ -7,6 +7,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 
 import { TranslateService } from '../../../services/translate.service';
+import { ThemeService } from '../../../services/theme.service';
 import { sortOptions } from '../../../shared/constants';
 import { Product, Category } from '../../../shared/models';
 import { SignalStore } from '../../../store/signal.store';
@@ -50,6 +51,7 @@ export class ProductsComponent implements OnDestroy {
   private snackBar = inject(MatSnackBar);
   private meta = inject(Meta);
   private title = inject(Title);
+  private themeService = inject(ThemeService);
   private translate = inject(TranslateService);
 
   products: Signal<Product[] | null>;
@@ -93,7 +95,7 @@ export class ProductsComponent implements OnDestroy {
       return cart.items && cart.items.length ? cart.items.reduce((prev, curr) => ({ ...prev, [curr.id]: curr.qty }), {}) : {};
     });
 
-    this.title.setTitle('Eshop Mean');
+    this.title.setTitle(this.themeService.shopName() || 'Eshop Mean');
     this.meta.updateTag({ name: 'description', content: 'Angular - Node.js - Eshop application - MEAN Eshop with dashboard' });
 
     this.categories = this.selectors.categories;

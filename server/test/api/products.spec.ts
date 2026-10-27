@@ -177,11 +177,24 @@ describe('Products API', () => {
       await t.http
         .patch('/api/products/edit')
         .set('Authorization', `Bearer ${token}`)
-        .send({ ...productFixture('car'), en: { ...productFixture('car').en, salePrice: 99 } })
+        .send({ ...productFixture('car'), en: { ...productFixture('car').en, salePrice: 19 } })
         .expect(200);
 
       const doc: any = await t.model('Product').findOne({ titleUrl: 'car' }).lean();
-      expect(doc.en.salePrice).toBe(99);
+      expect(doc.en.salePrice).toBe(19);
+    });
+
+    it('rejects a sale price that is not below the regular price while on sale', async () => {
+      const token = await adminToken(t);
+      await t.model('Product').create(productFixture('car'));
+      const en = { ...productFixture('car').en, onSale: true, regularPrice: 30, salePrice: 30 };
+
+      await t.http.post('/api/products/add').set('Authorization', `Bearer ${token}`).send(productFixture('sale-car', { en })).expect(400);
+      await t.http.patch('/api/products/edit').set('Authorization', `Bearer ${token}`).send(productFixture('car', { en })).expect(400);
+
+      expect(await t.model('Product').countDocuments({ titleUrl: 'sale-car' })).toBe(0);
+      const doc: any = await t.model('Product').findOne({ titleUrl: 'car' }).lean();
+      expect(doc.en.salePrice).toBe(25);
     });
 
     it('creates a product through edit when the titleUrl is new, without a 404 (BUG-08 regression)', async () => {

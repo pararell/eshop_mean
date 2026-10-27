@@ -2,37 +2,86 @@
   display: block;
 }
 
+// Columns come from the component (--cols); five categories get one large tile and four small ones
 .category-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
-  gap: var(--space-5);
+  grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
+  gap: var(--space-4);
   margin: 0;
   padding: 0;
   list-style: none;
 
+  > li {
+    min-width: 0;
+    aspect-ratio: 1;
+  }
+
+  // One or two categories would be huge squares: wide tiles instead
+  &.category-grid-wide > li {
+    aspect-ratio: 16 / 9;
+  }
+
+  &.category-grid-feature {
+    grid-template-columns: 2fr repeat(2, minmax(0, 1fr));
+
+    > li:first-child {
+      grid-row: span 2;
+      aspect-ratio: auto;
+    }
+  }
+
+  // Phones: two columns; with an odd count the first tile takes a full row
   @media (width <= 680px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-3);
+    &,
+    &.category-grid-feature {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-3);
+    }
+
+    > li:first-child:nth-last-child(odd) {
+      grid-column: 1 / -1;
+      grid-row: auto;
+      aspect-ratio: 16 / 9;
+    }
   }
 }
 
+// The whole tile is the link: the photo fills it, the name sits on a dark gradient at the bottom
 .category_card-link {
   position: relative;
   display: block;
-  padding: var(--card-padding);
+  height: 100%;
+  overflow: hidden;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
-  background: var(--color-surface-raised);
+  background: var(--color-photo-bg);
+  color: #fff;
+  isolation: isolate;
   transition: transform var(--duration-base) var(--ease-out);
 
-  // Hover: the card lifts and the photo zooms gently inside its rounded frame
+  // Fixed-height stops: the name always sits on at least ~60% black (white text ≥ 4.5:1 on white photos)
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(to top, rgb(0 0 0 / 78%) 0, rgb(0 0 0 / 62%) 52px, rgb(0 0 0 / 0%) 108px);
+    pointer-events: none;
+  }
+
+  // Hover: the tile lifts, the photo zooms gently and an arrow follows the name
   &:hover,
   &:focus-visible {
     text-decoration: none;
     transform: translateY(-4px);
 
     img {
-      transform: scale(1.04);
+      transform: scale(1.05);
+    }
+
+    .category_card-arrow {
+      opacity: 1;
+      transform: none;
     }
   }
 
@@ -44,36 +93,66 @@
   }
 }
 
-// The photo as it is, inset in the card (global .photo-frame: rounded, cover, hairline ring)
+// The photo as it is (global .photo-frame), with room at the bottom for the name
 .category_card-media {
-  aspect-ratio: 3 / 4;
-}
-
-// The trail sign: the category name on a small white arrow board, over the photo
-.category_card-sign {
   position: absolute;
-  left: calc(var(--card-padding) + var(--space-3));
-  bottom: calc(var(--card-padding) + var(--space-3));
-  z-index: 1;
-  max-width: calc(100% - 2 * (var(--card-padding) + var(--space-3)));
-  box-shadow: var(--shadow-1);
+  inset: 0;
+  border-radius: 0;
+
+  img {
+    padding: 8% 10% 64px;
+  }
+
+  // The tile draws the border; no second hairline inside it
+  &::after {
+    display: none;
+  }
 }
 
 .category_card-title {
+  position: absolute;
+  right: var(--space-5);
+  bottom: var(--space-4);
+  left: var(--space-5);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  line-height: 1.2;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 40%);
+}
+
+.category_card-name {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.category_card-arrow {
+  flex: none;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition:
+    opacity var(--duration-base) var(--ease-out),
+    transform var(--duration-base) var(--ease-out);
+}
+
+.category-grid-feature > li:first-child .category_card-title {
+  font-size: var(--text-3xl);
+}
+
 @media (width <= 680px) {
-  .category_card-media img {
-    padding: var(--space-3) var(--space-3) var(--space-12);
+  .category_card-title,
+  .category-grid-feature > li:first-child .category_card-title {
+    right: var(--space-3);
+    bottom: var(--space-3);
+    left: var(--space-3);
+    font-size: var(--text-lg);
   }
 
-  .category_card-sign {
-    left: calc(var(--card-padding) + var(--space-2));
-    bottom: calc(var(--card-padding) + var(--space-2));
-    height: 32px;
-    font-size: var(--text-lg);
+  .category_card-media img {
+    padding: 6% 8% 48px;
   }
 }

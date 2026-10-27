@@ -13,6 +13,16 @@ import { SignalStore } from '../../../store/signal.store';
 import { AdminPageHeaderComponent } from '../admin-ui/admin-page-header.component';
 import { AdminItemListComponent, AdminListItem } from '../admin-ui/admin-item-list.component';
 import { confirmAction } from '../admin-ui/confirm-dialog.component';
+import { languages } from '../../../shared/constants';
+
+/** Theme settings that are text, not styles: shop name, hero tint and the promo banner (per language) */
+const CONTENT_FIELDS = [
+  'shopName',
+  'heroTint',
+  'promoImage',
+  'promoLink',
+  ...languages.flatMap((lang) => [`promoTitle_${lang}`, `promoText_${lang}`]),
+];
 
 /**
  * Themes: list + editor. Changes preview live on the page (ThemeService CSS variables), as
@@ -44,6 +54,7 @@ export class ThemeEditComponent {
   private themeService = inject(ThemeService);
 
   private dialog = inject(MatDialog);
+  readonly languages = languages;
   themesEditForm: FormGroup;
   readonly themes = computed(() => {
     const list = this.selectos.themes();
@@ -116,6 +127,7 @@ export class ThemeEditComponent {
       backgroundColor: styles?.backgroundColor || (found ? '' : defaults.backgroundColor),
       mainBackground: styles?.mainBackground || '',
       logo: styles?.logo || '',
+      ...Object.fromEntries(CONTENT_FIELDS.map((field) => [field, styles?.[field] || defaults[field as keyof typeof defaults] || ''])),
     });
     if (found) this.themesEditForm.get('titleUrl')!.disable();
     else this.themesEditForm.get('titleUrl')!.enable();
@@ -142,6 +154,7 @@ export class ThemeEditComponent {
         freeShippingPromo: formValues.freeShippingPromo,
         promo: formValues.promo,
         logo: formValues.logo,
+        ...Object.fromEntries(CONTENT_FIELDS.map((field) => [field, (formValues[field] as string)?.trim() ?? ''])),
       },
     };
     this.store.addOrEditTheme(request);
@@ -172,11 +185,13 @@ export class ThemeEditComponent {
       promoSlideVideo: '',
       promoSlideBackgroundPosition: 'center',
       promo: 'none',
-      primaryColor: '#222222',
+      primaryColor: '#15803d',
       secondaryColor: '#cccccc',
       backgroundColor: '#eeeeee',
       mainBackground: '',
       logo: '',
+      ...Object.fromEntries(CONTENT_FIELDS.map((field) => [field, ''])),
+      heroTint: 'none',
     };
   }
 }

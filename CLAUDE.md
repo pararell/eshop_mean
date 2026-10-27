@@ -238,7 +238,7 @@ Dependabot (`.github/dependabot.yml`) opens weekly grouped minor/patch updates; 
     `utils/language-url.ts`); only `/` falls back to the `eshop_lang` cookie. Link with the prefix;
   - translations use `{{ 'Key' | translate | async }}`;
   - guard browser-only APIs with `isPlatformBrowser` (SSR);
-  - styles use the design tokens in `client/src/styles/_tokens.scss` (minimal look with small trail-sign accents, light/dark),
+  - styles use the design tokens in `client/src/styles/_tokens.scss` (minimal look, a forest-green brand accent, small trail-sign accents, light/dark),
     never raw colors; product images use `ngSrc` (Cloudinary loader in `services/image-loader.ts`).
 
 ## Do not change without explicit approval

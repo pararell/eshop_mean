@@ -13,7 +13,9 @@
         <a [routerLink]="['/' + lang() + '/product/' + product.titleUrl]">{{ product.title }}</a>
       </h3>
       <span class="price product_card-price">
-        <span class="price-current">{{ product.salePrice | priceFormat }} {{ currency() }}</span>
+        <span class="price-current" [class.price-sale]="product.onSale && product.regularPrice"
+          >{{ product.salePrice | priceFormat }} {{ currency() }}</span
+        >
         @if (product.onSale && product.regularPrice) {
           <s class="price-before">{{ product.regularPrice | priceFormat }} {{ currency() }}</s>
         }

@@ -254,6 +254,8 @@
                     <mat-hint>What customers pay</mat-hint>
                     @if (form.controls.langs.controls[lang].controls.salePrice.hasError('requiredWhenVisible')) {
                       <mat-error>A visible product needs a price</mat-error>
+                    } @else if (form.controls.langs.controls[lang].controls.salePrice.hasError('saleNotBelowRegular')) {
+                      <mat-error>On sale, it must be lower than the regular price</mat-error>
                     } @else {
                       <mat-error>Use a number like 19.90</mat-error>
                     }

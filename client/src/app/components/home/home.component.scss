@@ -19,6 +19,11 @@
   object-fit: cover;
 }
 
+// Theme option: a warm, sunlit tint over the photo (otherwise it keeps its own colors)
+.hero-warm .hero-media {
+  filter: sepia(0.5) saturate(1.5) hue-rotate(-8deg);
+}
+
 // Readable text and header on any picture
 .hero-scrim {
   position: absolute;
@@ -56,6 +61,7 @@
   flex-wrap: wrap;
   gap: var(--space-3);
 
+  // The secondary action: outlined in white on the photo
   .btn-outline {
     color: #fff;
 
@@ -95,4 +101,107 @@
 .home-products-band {
   margin-top: var(--space-12);
   padding-bottom: var(--space-12);
+}
+
+// Benefits: shipping, cash on delivery, returns, secure payment, under the hero
+.benefits {
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.benefits-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-6);
+  margin: 0 auto;
+  padding-block: var(--space-5);
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-width: 0;
+    line-height: 1.3;
+  }
+
+  strong {
+    display: block;
+    font-weight: var(--weight-semibold);
+  }
+
+  @media (width <= 960px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+
+  @media (width <= 480px) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+}
+
+.benefits-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.benefits-text {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+// Promo banner from the active theme: photo, title, text and a link
+.promo-banner-wrap {
+  padding-block: 0 var(--space-16);
+}
+
+.promo-banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 320px;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  background: var(--color-footer);
+  color: #fff;
+  isolation: isolate;
+
+  // Readable copy on any photo
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(90deg, rgb(0 0 0 / 78%) 0%, rgb(0 0 0 / 55%) 45%, rgb(0 0 0 / 10%) 100%);
+  }
+}
+
+.promo-banner-media {
+  z-index: -2;
+  object-fit: cover;
+}
+
+.promo-banner-copy {
+  max-width: 34rem;
+  padding: var(--space-12) clamp(var(--space-6), 4vw, var(--space-12));
+}
+
+.promo-banner-title {
+  margin: 0 0 var(--space-3);
+  color: #fff;
+  font-size: var(--text-3xl);
+  line-height: var(--leading-tight);
+}
+
+.promo-banner-text {
+  margin: 0 0 var(--space-6);
+  color: rgb(255 255 255 / 88%);
+  font-size: var(--text-lg);
 }

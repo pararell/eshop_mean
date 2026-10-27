@@ -20,9 +20,25 @@ All notable changes to this project are documented in this file. The format foll
   `/config`, `/translations`, `/orders`).
 - Accessibility checks (axe, WCAG 2.1 AA) for every admin page and open editor in light and dark mode,
   run by the e2e suite.
+- **Home page:** a benefits strip under the hero (free shipping from the shop config's limit, cash on
+  delivery, 14-day returns, secure payment) and a promo banner (photo, title and text per language,
+  link) set up in the theme editor (Themes → Promo banner).
+- **Theme settings:** the shop name (header, footer, page titles, structured data; empty keeps the
+  `ESHOP_TITLE` translation) and the hero photo colors (original or a warm tint). Stored in the theme's
+  `styles`, no schema change.
+- Accessibility checks (axe, WCAG 2.1 AA) for the home page and product list in light and dark mode.
 
 ### Changed
 
+- **Brand accent:** forest green (`#15803d` light, `#4ade80` dark; WCAG AA) is the default brand color,
+  used for primary buttons, sale prices and SALE badges, the active menu item, links, focus rings and
+  hover states. A theme's primary color still overrides it.
+- **Category tiles:** the photo fills the tile with the name over a dark gradient; five categories are
+  laid out as one large and four small tiles, other counts in rows without a lone tile.
+- **Product grid:** tighter rows, larger bold prices aligned at the bottom of each card, sale prices in
+  the accent with the old price struck through in gray.
+- **Sale price validation:** a product on sale needs a sale price below its regular price, in the
+  product editor and in the API (`POST /api/products/add`, `PATCH /api/products/edit` answer 400).
 - **Admin pages redesigned** with shared patterns: page header with the main action, list + editor
   layout with search, sections and language tabs, sticky save bar with an unsaved-changes state,
   confirmation before deleting, success and error messages after saving (saves used to answer

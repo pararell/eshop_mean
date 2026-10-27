@@ -1,15 +1,27 @@
-<ul class="category-grid" [class.category-grid-scroll]="withSlider()" role="list">
+<ul
+  class="category-grid"
+  [class.category-grid-feature]="featureFirst()"
+  [class.category-grid-wide]="columns() <= 2"
+  [style.--cols]="columns()"
+  role="list"
+>
   @for (category of visibleCategories(); track category.titleUrl; let i = $index) {
     <li class="category_card" [class]="trailClass(i)">
       <a class="category_card-link" [routerLink]="['/' + lang() + '/product/category/' + category.titleUrl]">
         <span class="category_card-media photo-frame">
           @if (category.mainImage?.url) {
-            <img [ngSrc]="category.mainImage!.url" alt="" fill sizes="(max-width: 680px) 50vw, 25vw" />
+            <img
+              [ngSrc]="category.mainImage!.url"
+              alt=""
+              fill
+              [sizes]="i === 0 && featureFirst() ? '(max-width: 680px) 100vw, 50vw' : '(max-width: 680px) 50vw, 25vw'"
+            />
           }
         </span>
-        <span class="signpost category_card-sign">
+        <span class="category_card-title">
           <span class="blaze" aria-hidden="true"></span>
-          <span class="category_card-title">{{ category.title }}</span>
+          <span class="category_card-name">{{ category.title }}</span>
+          <span class="category_card-arrow" aria-hidden="true">→</span>
         </span>
       </a>
     </li>

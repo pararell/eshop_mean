@@ -282,6 +282,7 @@ a {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
+  color: var(--color-link);
   font-weight: var(--weight-medium);
   text-decoration: underline;
   text-underline-offset: 0.25em;
@@ -390,8 +391,9 @@ a {
 }
 
 .badge-sale {
-  background: var(--color-text);
-  color: var(--color-bg);
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
 }
 
 // Stock values are free text ('onStock' | 'onWaitings' | 'unavailable' | …)
@@ -431,11 +433,19 @@ a {
 }
 
 .price-current {
+  font-weight: var(--weight-bold);
   font-variant-numeric: tabular-nums;
+}
+
+// A sale: the new price in the accent, the old one struck through in muted gray
+.price-sale {
+  color: var(--color-accent);
 }
 
 .price-before {
   color: var(--color-text-muted);
+  font-size: 0.875em;
+  font-weight: var(--weight-regular);
 }
 
 // Trail-marking accents ------------------------------------------------------------------------------

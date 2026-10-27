@@ -7,6 +7,8 @@ import { shareReplay, map, filter, take } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { ThemeService } from './theme.service';
 
+const CONTENT_STYLES = /^(shopName|heroTint|promoImage|promoLink|promoTitle_|promoText_)/;
+
 export interface Config {
   FE_STRIPE_PUBLISHABLE_KEY?: string;
   FE_TINYMCE_API_KEY?: string;
@@ -34,8 +36,11 @@ export class EnvConfigurationService {
 
   setTheme(conf: Config) {
     if (conf.styles) {
+      this.themeService.styles.set(conf.styles);
       Object.keys(conf.styles).map((style) => {
         const styleValue = conf.styles![style];
+        // Content, not CSS: shop name, hero tint and the promo banner (read from ThemeService.styles)
+        if (CONTENT_STYLES.test(style)) return;
         if (styleValue) {
           const varName = style
             .split(/(?=[A-Z])/)

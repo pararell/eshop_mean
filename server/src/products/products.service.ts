@@ -12,6 +12,7 @@ import { languages, paginationLimit } from '../shared/constans';
 import { Database, DRIZZLE } from '../db/database.module';
 import { toProductDoc } from '../db/mappers';
 import { categories, categoryTranslations, products, productTranslations } from '../db/schema';
+import { assertSalePrices } from './sale-price';
 import {
   findProduct,
   insertCategoryIfMissing,
@@ -107,6 +108,7 @@ export class ProductsService {
     if (found) {
       throw new BadRequestException();
     }
+    assertSalePrices(productReq);
     const newProduct = Object.assign(productReq, {
       images: productReq.images || [],
     });
@@ -122,6 +124,7 @@ export class ProductsService {
 
   /** Updates the product, or creates it when the titleUrl is new (upsert); either way 200 (audit BUG-08) */
   async editProduct(productReq: ProductInput): Promise<void> {
+    assertSalePrices(productReq);
     await upsertProduct(this.db, productReq as unknown as Record<string, unknown>);
     void this.addCategory(productReq);
   }

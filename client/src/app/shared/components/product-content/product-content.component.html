@@ -18,7 +18,9 @@
 
   <div class="buy-box-price-row">
     <span class="price buy-box-price">
-      <span class="price-current">{{ product.salePrice | priceFormat }} {{ currency() }}</span>
+      <span class="price-current" [class.price-sale]="product.onSale && product.regularPrice"
+        >{{ product.salePrice | priceFormat }} {{ currency() }}</span
+      >
       @if (product.onSale && product.regularPrice) {
         <s class="price-before">{{ product.regularPrice | priceFormat }} {{ currency() }}</s>
         <span class="badge badge-sale">{{ 'Sale' | translate | async }}</span>

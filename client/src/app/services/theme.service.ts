@@ -1,5 +1,6 @@
 import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import type { ThemeStyles } from '@eshop/shared';
 import tinycolor from 'tinycolor2';
 
 export type ColorMode = 'system' | 'light' | 'dark';
@@ -33,6 +34,12 @@ export class ThemeService {
   readonly heroImagePosition = signal('center');
   /** Logo URL of the active shop theme; empty = the built-in mark */
   readonly logo = signal('');
+  /** Content settings of the active theme (shop name, hero tint, promo banner); the theme editor previews into it */
+  readonly styles = signal<ThemeStyles>({});
+  /** The shop name from the theme; empty = the ESHOP_TITLE translation */
+  readonly shopName = computed(() => this.styles().shopName?.trim() ?? '');
+  /** 'warm': the hero photo gets a warm tint; otherwise it is shown in its own colors */
+  readonly heroTint = computed(() => (this.styles().heroTint === 'warm' ? 'warm' : 'none'));
 
   readonly mode = signal<ColorMode>(this.readMode());
   private readonly systemDark = signal(this.prefersDark());

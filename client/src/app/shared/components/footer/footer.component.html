@@ -4,7 +4,7 @@
     <div class="footer-brand">
       <a class="footer-logo" routerLink="/">
         <span class="blaze footer-mark" aria-hidden="true"></span>
-        {{ 'ESHOP_TITLE' | translate | async }}
+        {{ shopName() || ('ESHOP_TITLE' | translate | async) }}
       </a>
       <p class="footer-description">{{ 'ESHOP_DESCRIPTION' | translate | async }}</p>
       <ul class="footer-perks">
@@ -50,7 +50,7 @@
 
   <div class="footer-bottom">
     <div class="footer-inner footer-inner-bottom">
-      <span>© {{ currentYear }} {{ 'ESHOP_TITLE' | translate | async }}</span>
+      <span>© {{ currentYear }} {{ shopName() || ('ESHOP_TITLE' | translate | async) }}</span>
       <a href="https://github.com/pararell/eshop_mean" rel="noopener">Source on GitHub</a>
     </div>
   </div>

@@ -29,6 +29,8 @@ const ICONS = {
   truck: '<path d="M3 6h11v10H3zM14 9h4l3 3v4h-7"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/>',
   shield: '<path d="M12 3 5 6v6c0 4.4 3 7.6 7 9 4-1.4 7-4.6 7-9V6Z"/><path d="m9 12 2 2 4-4"/>',
   returnBox: '<path d="M4 8 12 4l8 4v8l-8 4-8-4Z"/><path d="M4 8l8 4 8-4M12 12v8"/>',
+  cash: '<rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 9.5v5M18 9.5v5"/>',
+  lock: '<rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>',
   mountain: '<path d="m3 19 6.5-11 3.8 6.4L15.5 11 21 19Z"/><path d="m8 11.2 1.5 1.3 1.6-1.2"/>',
   filter: '<path d="M4 5h16l-6 7.5V19l-4 2v-8.5Z"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',

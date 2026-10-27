@@ -79,6 +79,22 @@ export class HomeComponent implements OnDestroy {
   readonly video = this.themeService.video;
   readonly heroImage = this.themeService.heroImage;
   readonly heroImagePosition = this.themeService.heroImagePosition;
+  readonly heroTint = this.themeService.heroTint;
+  /** The theme's promo banner in the current language; shown when enabled and it has a title */
+  readonly promoBanner = computed(() => {
+    const styles = this.themeService.styles();
+    const title = styles[`promoTitle_${this.lang()}`]?.trim();
+    if (styles.promo !== 'block' || !title) return null;
+    const link = styles.promoLink?.trim() ?? '';
+    return {
+      title,
+      text: styles[`promoText_${this.lang()}`]?.trim() ?? '',
+      image: styles.promoImage?.trim() ?? '',
+      link,
+      // Shop paths navigate in the app; anything else is an ordinary link
+      internal: link.startsWith('/') && !link.startsWith('//'),
+    };
+  });
   /** The hero image (no theme video): the newest product */
   readonly featured = computed(() => this.products()?.find((product) => product.mainImage?.url) ?? null);
   readonly videoPlaying = signal(false);
@@ -111,7 +127,7 @@ export class HomeComponent implements OnDestroy {
       return this.cart()!.items && this.cart()!.items.length ? this.cart()!.items.reduce((prev, curr) => ({ ...prev, [curr.id]: curr.qty }), {}) : {};
     });
 
-    this.title.setTitle('Eshop Mean');
+    this.title.setTitle(this.themeService.shopName() || 'Eshop Mean');
     this.meta.updateTag({ name: 'description', content: 'Angular - Node.js - Eshop application - MEAN Eshop with dashboard' });
 
     this.categories = this.selectors.categories;

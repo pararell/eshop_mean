@@ -2,12 +2,15 @@
 // Light is the default; dark applies with `data-theme="dark"` on <html>, or when the system prefers
 // dark and no explicit choice was made (`data-theme` absent). Set before first paint by index.html.
 //
-// The look is minimal (white, ink, hairlines, large photos). The Slovak/Czech trail markings
-// (white–color–white blazes, arrow signs) appear only as small accents: the logo blaze and the
-// category signs. Trail colors are never used for text or large areas.
+// The look is minimal (white, ink, hairlines, large photos) with one brand accent, forest green:
+// primary buttons, sale prices and badges, the active menu item, links, focus and hover states.
+// The Slovak/Czech trail markings (white–color–white blazes) appear only as small accents: the logo
+// and the category tiles. Trail colors are never used for text or large areas.
 //
-// Brand colors can be overridden by the active shop theme: ThemeService writes
+// The brand color can be overridden by the active shop theme: ThemeService writes
 // `--brand-primary-light`, `--brand-primary-dark`, … (contrast-checked variants of the theme color).
+// The defaults below meet WCAG AA: white text on #15803d 5.0:1, #111 text on #4ade80 10.8:1, and both
+// against their page background.
 
 :root {
   // Typography ---------------------------------------------------------------------------------
@@ -89,20 +92,16 @@
   --color-border-strong: #c9c9c6;
   /** Boundaries of form controls (inputs, radios): 3:1 against the page (WCAG 1.4.11) */
   --color-border-control: #858582;
-  --color-primary: var(--brand-primary-light, #111);
-  --color-primary-hover: var(--brand-primary-hover-light, #333);
+  --color-primary: var(--brand-primary-light, #15803d);
+  --color-primary-hover: var(--brand-primary-hover-light, #166534);
   --color-on-primary: var(--brand-on-primary-light, #fff);
-  --color-primary-soft: var(--brand-primary-soft-light, #f0f0ee);
-  --color-accent: #111;
-  --color-on-accent: #fff;
-  --color-accent-soft: #f0f0ee;
+  --color-primary-soft: var(--brand-primary-soft-light, #e8f5ec);
   --color-success: #1d6b3a;
   --color-success-soft: #e3f1e7;
   --color-warning: #7a5600;
   --color-warning-soft: #f8edcc;
   --color-danger: #b3261e;
   --color-danger-soft: #f9e3e1;
-  --color-focus: #1a73e8;
   --color-scrim: rgb(0 0 0 / 45%);
   /** The white bands of a trail blaze */
   --color-blaze: #fff;
@@ -146,20 +145,16 @@
   --color-border: #262626;
   --color-border-strong: #3d3d3d;
   --color-border-control: #737370;
-  --color-primary: var(--brand-primary-dark, #f2f2f0);
-  --color-primary-hover: var(--brand-primary-hover-dark, #fff);
+  --color-primary: var(--brand-primary-dark, #4ade80);
+  --color-primary-hover: var(--brand-primary-hover-dark, #86efac);
   --color-on-primary: var(--brand-on-primary-dark, #111);
-  --color-primary-soft: var(--brand-primary-soft-dark, #1f1f1f);
-  --color-accent: #f2f2f0;
-  --color-on-accent: #111;
-  --color-accent-soft: #1f1f1f;
+  --color-primary-soft: var(--brand-primary-soft-dark, #12261a);
   --color-success: #7dd3a0;
   --color-success-soft: #173326;
   --color-warning: #f2c46b;
   --color-warning-soft: #3a2e14;
   --color-danger: #f2b8b5;
   --color-danger-soft: #3d1d1b;
-  --color-focus: #8ab4ff;
   --color-scrim: rgb(0 0 0 / 60%);
   --color-blaze: #f2f2f0;
   --color-contour: rgb(255 255 255 / 7%);
@@ -194,6 +189,15 @@
 
 :root[data-theme='dark'] {
   @include dark-colors;
+}
+
+// The brand accent is the (theme-overridable) primary color; the focus ring and links follow it
+:root {
+  --color-accent: var(--color-primary);
+  --color-on-accent: var(--color-on-primary);
+  --color-accent-soft: var(--color-primary-soft);
+  --color-focus: var(--color-primary);
+  --color-link: var(--color-primary);
 }
 
 // Aliases for components not restyled yet (old variable names) --------------------------------------

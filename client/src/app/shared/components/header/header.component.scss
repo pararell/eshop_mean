@@ -84,6 +84,12 @@
     &.is-active::after {
       transform: scaleX(1);
     }
+
+    // The current section: a thicker underline in the brand accent
+    &.is-active::after {
+      height: 2px;
+      background: var(--color-accent);
+    }
   }
 }
 

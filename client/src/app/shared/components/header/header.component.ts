@@ -70,6 +70,7 @@ export class HeaderComponent implements OnInit {
   readonly productTitles$: Signal<string[]> = this.selectors.productsTitles;
   readonly userOrders$: Signal<Order[] | null> = this.selectors.userOrders;
   readonly logo = this.theme.logo;
+  readonly shopName = this.theme.shopName;
   readonly cartCount = computed(() => this.cart$()?.totalQty ?? 0);
   readonly cartLabel = computed(() => (this.cartCount() ? `Cart, ${this.cartCount()} items` : 'Cart'));
   /** Every category not hidden from the menu (admin setting) */

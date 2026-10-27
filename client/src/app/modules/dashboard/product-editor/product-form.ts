@@ -45,6 +45,18 @@ const price: ValidatorFn = (control) => {
   return !value || PRICE_PATTERN.test(value) ? null : { price: true };
 };
 
+/** '19,90' → 19.9; empty → null */
+const toPrice = (value: string): number | null => (value.trim() ? Number(value.trim().replace(',', '.')) : null);
+
+/** On sale: the price customers pay must be below the regular (crossed-out) price; the API checks the same */
+const saleBelowRegular: ValidatorFn = (control) => {
+  const group = control.parent;
+  if (group?.get('onSale')?.value !== true) return null;
+  const sale = toPrice(String(control.value ?? ''));
+  const regular = toPrice(String(group.get('regularPrice')?.value ?? ''));
+  return sale !== null && regular !== null && sale >= regular ? { saleNotBelowRegular: true } : null;
+};
+
 const text = (value = '', validators: ValidatorFn[] = []) => new FormControl(value, { nonNullable: true, validators });
 
 function createLangForm(): LangForm {
@@ -54,7 +66,7 @@ function createLangForm(): LangForm {
     descriptionFull: text(),
     seoTitle: text('', [Validators.maxLength(SEO_TITLE_MAX)]),
     metaDescription: text('', [Validators.maxLength(META_DESCRIPTION_MAX)]),
-    salePrice: text('', [requiredWhenVisible, price]),
+    salePrice: text('', [requiredWhenVisible, price, saleBelowRegular]),
     regularPrice: text('', [price]),
     onSale: new FormControl(false, { nonNullable: true }),
     stock: text('onStock'),
@@ -67,6 +79,13 @@ function createLangForm(): LangForm {
     group.controls.title.updateValueAndValidity();
     group.controls.salePrice.updateValueAndValidity();
   });
+  // The sale price is checked against the regular price while on sale
+  const checkSalePrice = () => {
+    group.controls.salePrice.updateValueAndValidity();
+    group.controls.salePrice.markAsTouched();
+  };
+  group.controls.onSale.valueChanges.subscribe(checkSalePrice);
+  group.controls.regularPrice.valueChanges.subscribe(checkSalePrice);
   return group;
 }
 
@@ -114,8 +133,6 @@ export function loadProduct(form: ProductForm, product: ProductRaw, languages: L
     ),
   });
 }
-
-const toPrice = (value: string): number | null => (value.trim() ? Number(value.trim().replace(',', '.')) : null);
 
 /** The body for `POST /api/products/add` and `PATCH /api/products/edit` */
 export function toProductInput(form: ProductForm, languages: LanguageCode[]): ProductInput {
