@@ -84,7 +84,12 @@
       <ul class="order-items" role="list">
         @for (cartItem of order.cart.items; track $index) {
           <li class="order-item">
-            <a class="order-item-image" [routerLink]="['/' + lang() + '/product/' + cartItem.item.titleUrl]" tabindex="-1" aria-hidden="true">
+            <a
+              class="order-item-image photo-frame photo-frame-sm"
+              [routerLink]="['/' + lang() + '/product/' + cartItem.item.titleUrl]"
+              tabindex="-1"
+              aria-hidden="true"
+            >
               @if (cartItem.item.mainImage.url) {
                 <img [src]="cartItem.item.mainImage.url" alt="" loading="lazy" />
               }

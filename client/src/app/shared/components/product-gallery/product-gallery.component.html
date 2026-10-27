@@ -3,7 +3,7 @@
     @if (current()) {
       <button
         type="button"
-        class="gallery-main"
+        class="gallery-main photo-frame"
         (pointerdown)="onPointerDown($event)"
         (pointerup)="onPointerUp($event)"
         (click)="onMainClick()"
@@ -29,7 +29,7 @@
       @for (image of images(); track image; let i = $index) {
         <button
           type="button"
-          class="gallery-thumb"
+          class="gallery-thumb photo-frame photo-frame-sm"
           [class.is-active]="i === index()"
           [attr.aria-current]="i === index()"
           [attr.aria-label]="'Image ' + (i + 1) + ' of ' + images().length"

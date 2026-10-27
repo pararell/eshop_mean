@@ -1,7 +1,7 @@
 <ul class="product-grid" role="list">
   @for (product of products(); track product._id) {
     <li class="product_card">
-      <a class="product_card-media" [routerLink]="['/' + lang() + '/product/' + product.titleUrl]" tabindex="-1" aria-hidden="true">
+      <a class="product_card-media photo-frame" [routerLink]="['/' + lang() + '/product/' + product.titleUrl]" tabindex="-1" aria-hidden="true">
         @if (product.mainImage.url) {
           <img [ngSrc]="product.mainImage.url" alt="" fill sizes="(max-width: 680px) 50vw, 33vw" />
         }

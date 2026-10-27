@@ -55,6 +55,12 @@
   --radius-xl: 2px;
   /** Buttons, inputs, chips */
   --radius-control: 2px;
+  /** Product and category cards, and the photo frame inside them (card radius minus its padding) */
+  --radius-card: 16px;
+  --card-padding: 8px;
+  --radius-photo: 10px;
+  /** Small photos: cart, order and admin thumbnails */
+  --radius-thumb: 6px;
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --duration-fast: 120ms;
   --duration-base: 220ms;
@@ -112,8 +118,10 @@
   --color-ai-soft: #f3e5f5;
   /** Scrim behind text on photos (image captions) */
   --color-overlay: rgb(0 0 0 / 70%);
-  /** Behind product photos: white in both themes (most product shots have a white background) */
-  --color-photo: #fff;
+  /** Hairline inside photo frames: defines the edge of white photos without changing them */
+  --color-photo-ring: rgb(0 0 0 / 8%);
+  /** Inside photo frames, around photos of another shape: white like most product shots */
+  --color-photo-bg: #fff;
   /** Footer: a dark band under the mountain ridge */
   --color-footer: #161616;
   // Trail colors: small accents only (blazes, sign markers)
@@ -161,7 +169,8 @@
   --color-on-ai: #111;
   --color-ai-soft: #2c1d35;
   --color-overlay: rgb(0 0 0 / 75%);
-  --color-photo: #fff;
+  --color-photo-ring: rgb(255 255 255 / 12%);
+  --color-photo-bg: #fff;
   --color-footer: #1c1c1c;
   --trail-red: #e5484d;
   --trail-blue: #3b8eea;

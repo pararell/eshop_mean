@@ -2,7 +2,7 @@
   @for (category of visibleCategories(); track category.titleUrl; let i = $index) {
     <li class="category_card" [class]="trailClass(i)">
       <a class="category_card-link" [routerLink]="['/' + lang() + '/product/category/' + category.titleUrl]">
-        <span class="category_card-media">
+        <span class="category_card-media photo-frame">
           @if (category.mainImage?.url) {
             <img [ngSrc]="category.mainImage!.url" alt="" fill sizes="(max-width: 680px) 50vw, 25vw" />
           }

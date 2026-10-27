@@ -5,14 +5,14 @@
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
-  gap: var(--space-12) var(--space-6);
+  gap: var(--space-6);
   margin: 0;
   padding: 0;
   list-style: none;
 
   @media (width <= 680px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-8) var(--space-3);
+    gap: var(--space-3);
   }
 }
 
@@ -22,35 +22,47 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-1);
+  padding: var(--card-padding) var(--card-padding) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-raised);
   text-align: center;
+  transition: transform var(--duration-base) var(--ease-out);
 
-  &:hover img {
-    transform: scale(1.03);
+  // Hover: the card lifts and the photo zooms gently inside its rounded frame
+  &:hover,
+  &:focus-within {
+    transform: translateY(-4px);
+
+    .product_card-media img {
+      transform: scale(1.04);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &:hover,
+    &:focus-within {
+      transform: none;
+    }
   }
 }
 
+// The photo as it is, inset in the card (global .photo-frame: rounded, cover, hairline ring)
 .product_card-media {
-  position: relative;
-  display: block;
   width: 100%;
-  overflow: hidden;
   aspect-ratio: 1;
   margin-bottom: var(--space-3);
-  border: 1px solid var(--color-border);
-  background: var(--color-photo);
+}
 
-  // The whole product is visible whatever the photo's shape
-  img {
-    padding: 6%;
-    object-fit: contain;
-    transition: transform var(--duration-slow) var(--ease-out);
-  }
+.product_card-title,
+.product_card-price {
+  padding: 0 var(--space-2);
 }
 
 .product_card-badge {
   position: absolute;
-  top: var(--space-3);
-  left: var(--space-3);
+  top: calc(var(--card-padding) + var(--space-3));
+  left: calc(var(--card-padding) + var(--space-3));
   z-index: 1;
 }
 

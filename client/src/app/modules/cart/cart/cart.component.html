@@ -27,7 +27,7 @@
               @for (cartItem of cart.items; track cartItem.id) {
                 <li class="cart-item">
                   <a
-                    class="cart-item-image"
+                    class="cart-item-image photo-frame photo-frame-sm"
                     [routerLink]="['/' + (lang$ | async) + '/product/' + cartItem.item.titleUrl]"
                     tabindex="-1"
                     aria-hidden="true"

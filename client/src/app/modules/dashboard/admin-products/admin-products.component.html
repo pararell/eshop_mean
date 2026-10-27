@@ -55,7 +55,7 @@
         <th mat-header-cell *matHeaderCellDef><span class="visually-hidden">Photo</span></th>
         <td mat-cell *matCellDef="let p">
           @if (p.mainImage?.url || p.images?.[0]) {
-            <img class="products-thumb" [src]="p.mainImage?.url || p.images[0]" alt="" loading="lazy" />
+            <span class="products-thumb photo-frame photo-frame-sm"><img [src]="p.mainImage?.url || p.images[0]" alt="" loading="lazy" /></span>
           } @else {
             <span class="products-thumb products-thumb-empty" aria-hidden="true"><mat-icon>image</mat-icon></span>
           }

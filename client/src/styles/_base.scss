@@ -876,13 +876,43 @@ a {
 .order-item-image {
   display: block;
   aspect-ratio: 1;
-  background: var(--color-surface-3);
 
   img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
   }
+}
+
+// Photos are shown whole and as they are, framed the same way everywhere: rounded, on white (the
+// background of most product shots, so the photo blends into its frame), and a hairline ring on top
+// that defines the edge of white photos without changing them.
+.photo-frame {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: var(--radius-photo);
+  background: var(--color-photo-bg);
+
+  // A small inset so products don't touch the rounded edge
+  img {
+    padding: 4%;
+    object-fit: contain;
+    transition: transform var(--duration-slow) var(--ease-out);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px var(--color-photo-ring);
+    pointer-events: none;
+  }
+}
+
+// Small photos: cart, order and admin thumbnails
+.photo-frame-sm {
+  border-radius: var(--radius-thumb);
 }
 
 .order-item-title {

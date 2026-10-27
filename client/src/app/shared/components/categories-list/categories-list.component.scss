@@ -19,38 +19,43 @@
 .category_card-link {
   position: relative;
   display: block;
-  overflow: hidden;
-  aspect-ratio: 3 / 4;
+  padding: var(--card-padding);
   border: 1px solid var(--color-border);
-  background: var(--color-photo);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-raised);
+  transition: transform var(--duration-base) var(--ease-out);
 
-  &:hover {
+  // Hover: the card lifts and the photo zooms gently inside its rounded frame
+  &:hover,
+  &:focus-visible {
     text-decoration: none;
+    transform: translateY(-4px);
 
     img {
-      transform: scale(1.03);
+      transform: scale(1.04);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &:hover,
+    &:focus-visible {
+      transform: none;
     }
   }
 }
 
+// The photo as it is, inset in the card (global .photo-frame: rounded, cover, hairline ring)
 .category_card-media {
-  position: absolute;
-  inset: 0;
-
-  // The whole image is visible whatever its shape; the bottom stays free for the trail sign
-  img {
-    padding: var(--space-6) var(--space-6) var(--space-16);
-    object-fit: contain;
-    transition: transform var(--duration-slow) var(--ease-out);
-  }
+  aspect-ratio: 3 / 4;
 }
 
-// The trail sign: the category name on a small white arrow board
+// The trail sign: the category name on a small white arrow board, over the photo
 .category_card-sign {
   position: absolute;
-  left: var(--space-4);
-  bottom: var(--space-4);
-  max-width: calc(100% - 2 * var(--space-4));
+  left: calc(var(--card-padding) + var(--space-3));
+  bottom: calc(var(--card-padding) + var(--space-3));
+  z-index: 1;
+  max-width: calc(100% - 2 * (var(--card-padding) + var(--space-3)));
   box-shadow: var(--shadow-1);
 }
 
@@ -66,8 +71,8 @@
   }
 
   .category_card-sign {
-    left: var(--space-2);
-    bottom: var(--space-2);
+    left: calc(var(--card-padding) + var(--space-2));
+    bottom: calc(var(--card-padding) + var(--space-2));
     height: 32px;
     font-size: var(--text-lg);
   }
