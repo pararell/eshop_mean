@@ -30,9 +30,9 @@ All notable changes to this project are documented in this file. The format foll
 
 ### Changed
 
-- **Brand accent:** forest green (`#15803d` light, `#4ade80` dark; WCAG AA) is the default brand color,
-  used for primary buttons, sale prices and SALE badges, the active menu item, links, focus rings and
-  hover states. A theme's primary color still overrides it.
+- **Brand accent:** the theme's primary color (contrast-checked light/dark variants) now also colors
+  sale prices and SALE badges, the active menu item, links, focus rings and hover states, besides the
+  primary buttons. Set it in Themes → Primary color (e.g. forest green `#15803d`).
 - **Category tiles:** the photo fills the tile with the name over a dark gradient; five categories are
   laid out as one large and four small tiles, other counts in rows without a lone tile.
 - **Product grid:** tighter rows, larger bold prices aligned at the bottom of each card, sale prices in

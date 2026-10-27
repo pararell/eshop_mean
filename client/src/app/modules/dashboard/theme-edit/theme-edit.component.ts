@@ -185,7 +185,7 @@ export class ThemeEditComponent {
       promoSlideVideo: '',
       promoSlideBackgroundPosition: 'center',
       promo: 'none',
-      primaryColor: '#15803d',
+      primaryColor: '#222222',
       secondaryColor: '#cccccc',
       backgroundColor: '#eeeeee',
       mainBackground: '',
