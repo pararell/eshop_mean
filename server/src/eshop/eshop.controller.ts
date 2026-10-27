@@ -18,8 +18,8 @@ export class EshopController {
   constructor(private eshopService: EshopService) {}
 
   @Get('/config')
-  getConfig(@Session() session: ShopSession): Promise<PublicConfigResponse> {
-    return this.eshopService.getConfig(session);
+  getConfig(): Promise<PublicConfigResponse> {
+    return this.eshopService.getConfig();
   }
 
   @RateLimited()

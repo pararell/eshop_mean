@@ -13,7 +13,6 @@ import { Cart } from '../cart/utils/cart';
 import { Page } from './models/page.model';
 import { Theme } from './models/theme.model';
 import { Config } from './models/config.model';
-import { ShopSession } from '../shared/types/session';
 import { Database, DRIZZLE } from '../db/database.module';
 import { configShipping, configs, pages, pageTranslations, themes } from '../db/schema';
 import { configShippingValues, pageTranslationValues, toConfigDoc, toPageDoc, toThemeDoc } from '../db/mappers';
@@ -40,17 +39,13 @@ export class EshopService {
     private httpService: HttpService,
   ) {}
 
-  async getConfig(session: ShopSession): Promise<PublicConfigResponse> {
-    const activeConfig = await this.findConfig({ active: true });
-
-    if (activeConfig) {
-      session.config = activeConfig as unknown as ShopConfig;
-    }
+  async getConfig(): Promise<PublicConfigResponse> {
     try {
       const [themeRow] = await this.db.select().from(themes).where(eq(themes.active, true)).limit(1);
       const theme = themeRow ? toThemeDoc(themeRow) : null;
+      // Only names that start with FE_ are public (not e.g. SAFE_TOKEN, which merely contains it)
       const configFomEnvToFE = Object.keys(process.env)
-        .filter((key) => key.includes('FE_'))
+        .filter((key) => key.startsWith('FE_'))
         .reduce((prev, curr) => ({ ...prev, [curr]: process.env[curr] }), {});
       const themeStyles = theme && Object.keys(theme.styles).length ? { styles: theme.styles } : {};
 
@@ -284,9 +279,5 @@ export class EshopService {
         shippingRows.filter((s) => s.configId === row.id),
       ),
     );
-  }
-
-  private async findConfig(where: { active: boolean }): Promise<Config | null> {
-    return (await this.loadConfigs(where))[0] ?? null;
   }
 }

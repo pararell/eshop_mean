@@ -15,11 +15,13 @@ import { categories, categoryTranslations, products, productTranslations } from 
 import { assertSalePrices } from './sale-price';
 import {
   findProduct,
+  hasCategoryTag,
   insertCategoryIfMissing,
   insertProduct,
   isLanguage,
   likePattern,
   removeTagFromProducts,
+  tagSlug,
   toCategoryDocs,
   toProductDocs,
   upsertCategory,
@@ -40,7 +42,7 @@ export class ProductsService {
 
     const conditions: SQL[] = [eq(productTranslations.lang, lang), eq(productTranslations.visibility, true)];
     if (search) conditions.push(ilike(products.titleUrl, likePattern(search)));
-    if (category) conditions.push(sql`exists (select 1 from unnest(${products.tags}) as tag where tag ilike ${likePattern(category)})`);
+    if (category) conditions.push(hasCategoryTag(category));
     if (maxPrice) conditions.push(lte(productTranslations.salePrice, Number(maxPrice)));
 
     const rows = await this.db
@@ -199,7 +201,7 @@ export class ProductsService {
   private addCategory = async (product: Pick<ProductRaw, 'tags' | 'mainImage'>): Promise<void> => {
     const tags = (product.tags ?? []).filter((cat, i, arr) => arr.indexOf(cat) === i);
     for (const category of tags) {
-      const titleUrl = category.replace(/ /g, '_').toLowerCase();
+      const titleUrl = tagSlug(category);
       await insertCategoryIfMissing(this.db, {
         titleUrl,
         mainImage: { url: product.mainImage?.url, name: product.mainImage?.name },
@@ -216,7 +218,10 @@ export class ProductsService {
 
   private prepareAllCategories = (docs: Category[], productRows: { titleUrl: string; tags: string[] }[]): CategoryWithProducts[] => {
     return docs.map((category) => {
-      const productsWithCategory = productRows.filter((product) => product.tags.includes(category.titleUrl)).map((product) => product.titleUrl);
+      const slug = tagSlug(category.titleUrl);
+      const productsWithCategory = productRows
+        .filter((product) => product.tags.some((tag) => tagSlug(tag) === slug))
+        .map((product) => product.titleUrl);
       return { category, productsWithCategory };
     });
   };

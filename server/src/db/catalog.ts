@@ -1,5 +1,5 @@
 // Catalog data access shared by ProductsService, CartService and AdminService.
-import { and, eq, inArray, sql } from 'drizzle-orm';
+import { and, eq, inArray, SQL, sql } from 'drizzle-orm';
 import type { LanguageCode } from '@eshop/shared';
 
 import type { Database } from './database.module';
@@ -18,6 +18,19 @@ import { categories, categoryTranslations, products, productTranslations } from 
 import { languages } from '../shared/constans';
 
 export const isLanguage = (lang: unknown): lang is LanguageCode => typeof lang === 'string' && (languages as string[]).includes(lang);
+
+/**
+ * Categories are product tags: a tag belongs to the category whose titleUrl is the tag with spaces as
+ * underscores, lowercased ("Day hike" → day_hike), the same rule that creates categories from tags.
+ */
+export const tagSlug = (tag: string): string => tag.replace(/ /g, '_').toLowerCase();
+
+/** SQL twin of tagSlug, for a tag column or value */
+const tagSlugSql = (tag: SQL) => sql`lower(replace(${tag}, ' ', '_'))`;
+
+/** Products with a tag of this category (exact slug match, not a substring) */
+export const hasCategoryTag = (category: string): SQL =>
+  sql`exists (select 1 from unnest(${products.tags}) as tag where ${tagSlugSql(sql`tag`)} = ${tagSlug(category)})`;
 
 /** Escapes % and _ so user input is matched literally by ILIKE (audit SEC-10) */
 export const likePattern = (text: string) => `%${text.replace(/[\\%_]/g, (c) => '\\' + c)}%`;
@@ -170,11 +183,12 @@ export async function upsertCategory(db: Database, input: Record<string, unknown
 }
 
 /** Removes a category tag from every product that has it (one statement; audit PERF-01). */
-export async function removeTagFromProducts(db: Database, tag: string): Promise<void> {
+/** Removes every tag of the category (by tagSlug, so "Day hike" goes with day_hike) */
+export async function removeTagFromProducts(db: Database, category: string): Promise<void> {
   await db
     .update(products)
-    .set({ tags: sql`array_remove(${products.tags}, ${tag})` })
-    .where(sql`${tag} = ANY(${products.tags})`);
+    .set({ tags: sql`array(select tag from unnest(${products.tags}) as tag where ${tagSlugSql(sql`tag`)} <> ${tagSlug(category)})` })
+    .where(hasCategoryTag(category));
 }
 
 /** Adds or removes an image URL on a product (Mongo $push / $pull). Returns the updated product or null. */

@@ -97,7 +97,6 @@ order endpoints are rate limited per IP (`@RateLimited()`, `@nestjs/throttler`, 
 **Session** (express-session + connect-pg-simple, table `session`, 30-day cookie) holds:
 
 - `session.cart = { items: [{ id, qty, item: <full Product document snapshot> }] }`;
-- `session.config`: a copy of the active `Config` document, set by `GET /api/eshop/config`;
 - `session.images`: the admin's image library.
 
 ### Endpoints
@@ -152,7 +151,7 @@ Guard legend:
 | GET    | `/api/admin/ai/status`              | ADMIN            | –                    | `{ enabled, provider?, model? }`                                                                                        |
 | GET    | `/api/admin/overview?days=`         | ADMIN            | –                    | Overview figures for 1, 7 or 30 days (sales per currency, revenue per day, top products, attention, AI usage)           |
 | POST   | `/api/admin/products/ai-draft`      | ADMIN            | yes (whitelist, 422) | AI product draft from Cloudinary image URLs and text; never saved ([ai.md](ai.md))                                      |
-| GET    | `/api/eshop/config`                 | –                | –                    | Base64 JSON of `FE_*` env + active theme styles. Stores the active config in the session.                               |
+| GET    | `/api/eshop/config`                 | –                | –                    | Base64 JSON of the env vars starting with `FE_` + active theme styles. Does not touch the session.                      |
 | POST   | `/api/eshop/contact`                | –                | –                    | Contact form (reCAPTCHA) → emails                                                                                       |
 | GET    | `/api/eshop/page/all?titles=`       | –                | –                    | CMS pages                                                                                                               |
 | POST   | `/api/eshop/page`                   | ADMIN            | –                    | Upsert page                                                                                                             |
@@ -242,12 +241,13 @@ assistant), which saves nothing until the admin presses Save.
 
 - `GET /api/cart/add?id=` loads the product and pushes a full snapshot into
   `session.cart` (`server/src/cart/utils/cart.ts`).
-- `prepareCart(cart, lang, session.config)` (`server/src/shared/utils/prepareUtils.ts`)
+- `prepareCart(cart, lang, config)` (`server/src/shared/utils/prepareUtils.ts`), with the active
+  shop config read by `activeShopConfig()` (`server/src/db/shop-config.ts`) each time a cart is priced
   builds the localized cart:
   - it drops items that are invisible or have no price;
   - `totalPrice = Σ salePrice × qty`;
   - shipping is `extended` if any item has `shipping: 'extended'`, otherwise `basic`;
-  - shipping cost comes from `session.config[lang].shippingCost[type]`, falling back to
+  - shipping cost comes from `config[lang].shippingCost[type]`, falling back to
     the hardcoded defaults in `server/src/shared/constans.ts`;
   - shipping is free when the total ≥ `limit`;
   - the returned `totalPrice` **includes** shipping.
@@ -395,7 +395,7 @@ removed from products' `tags` (one `array_remove` update) when a category is del
   deactivates the others, D8).
 - **`configs`** `(title_url unique, active)` + **`config_shipping`** `(config_id, lang, basic_cost,
 basic_limit, extended_cost, extended_limit)`; API `en/sk/cs: { shippingCost: { basic: {cost, limit},
-extended: {cost, limit} } }`. At most one is active (D8); it is copied into `session.config`.
+extended: {cost, limit} } }`. At most one is active (D8); carts are priced with it on every request (`activeShopConfig()`).
 
 ### ai_usage
 

@@ -32,6 +32,33 @@ describe('Eshop API (config, pages, contact)', () => {
       // server-side secrets are never exposed
       expect(Object.keys(config)).not.toEqual(expect.arrayContaining(['STRIPE_SECRETKEY', 'JWT_SECRET', 'COOKIE_KEY', 'DATABASE_URL']));
     });
+
+    it('does not start a session (shipping is read from the active config when a cart is priced)', async () => {
+      await t
+        .model('Config')
+        .create({ titleUrl: 'default', active: true, en: { shippingCost: { basic: { cost: 3, limit: 40 }, extended: { cost: 7, limit: 300 } } } });
+      try {
+        const res = await t.http.get('/api/eshop/config').expect(200);
+        expect(res.headers['set-cookie']).toBeUndefined();
+      } finally {
+        await t.model('Config').deleteMany({});
+      }
+    });
+
+    it('exposes only variables that start with FE_, not ones that merely contain it', async () => {
+      process.env.SAFE_TOKEN = 'secret';
+      process.env.MY_FE_SECRET = 'secret';
+      try {
+        const res = await t.http.get('/api/eshop/config').expect(200);
+        const keys = Object.keys(decodeConfig(res.body.config));
+        expect(keys).toContain('FE_STRIPE_PUBLISHABLE_KEY');
+        expect(keys).not.toContain('SAFE_TOKEN');
+        expect(keys).not.toContain('MY_FE_SECRET');
+      } finally {
+        delete process.env.SAFE_TOKEN;
+        delete process.env.MY_FE_SECRET;
+      }
+    });
   });
 
   describe('pages', () => {

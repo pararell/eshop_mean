@@ -8,7 +8,6 @@ import { OrderDto } from './dto/order.dto';
 import { Order } from './models/order.model';
 import { RolesGuard } from '../auth/roles.guard';
 import { Cart } from '../cart/utils/cart';
-import { prepareCart } from '../shared/utils/prepareUtils';
 import type { Order as OrderData } from '@eshop/shared';
 import { CartModel } from '../cart/models/cart.model';
 import { ShopSession } from '../shared/types/session';
@@ -38,7 +37,7 @@ export class OrdersController {
       } else {
         return {
           ...successResult,
-          cart: prepareCart(session.cart!, lang, session.config),
+          cart: await this.ordersService.priceCart(session.cart!, lang),
         };
       }
     } catch (e) {

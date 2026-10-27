@@ -10,12 +10,13 @@ import { OrderEmailData, renderOrderEmail } from '../shared/utils/email/order-em
 import { prepareCart } from '../shared/utils/prepareUtils';
 import { currencyForLang, languages } from '../shared/constans';
 import { CartModel } from '../cart/models/cart.model';
-import type { Order as OrderData, OrderRequest } from '@eshop/shared';
+import type { Order as OrderData, OrderRequest, SessionCart } from '@eshop/shared';
 import { ShopSession } from '../shared/types/session';
 import { Database, DRIZZLE } from '../db/database.module';
 import { orderValues, toOrderDoc } from '../db/mappers';
 import { orders } from '../db/schema';
 import { isLanguage } from '../db/catalog';
+import { activeShopConfig } from '../db/shop-config';
 
 export interface OrderOutcome {
   error: string;
@@ -38,15 +39,19 @@ export class OrdersService {
     return toOrderDoc(row);
   }
 
+  /** The session cart in the visitor's language, priced with the active shop config */
+  async priceCart(cart: SessionCart, lang: string): Promise<CartModel> {
+    return prepareCart(cart, lang, await activeShopConfig(this.db));
+  }
+
   async getOrders(user: User): Promise<Order[]> {
     const rows = await this.db.select().from(orders).where(eq(orders.userId, user._id)).orderBy(desc(orders.createdAt));
     return rows.map(toOrderDoc);
   }
 
   async addOrder(orderDto: OrderDto, session: ShopSession, lang: string): Promise<OrderOutcome> {
-    const { cart, config } = session;
     // Throws without a cart; callers turn that into 422 (current behavior)
-    const cartForLang = prepareCart(cart!, lang, config);
+    const cartForLang = await this.priceCart(session.cart!, lang);
     const newOrder = await this.insertOrder(this.createOrder(orderDto, cartForLang, 'PAYMENT_ON_DELIVERY', currencyForLang(lang)));
     await this.notifyOrder(newOrder, cartForLang, lang);
 

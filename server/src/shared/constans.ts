@@ -17,7 +17,7 @@ export const currencyByLang: Record<LanguageCode, string> = { en: 'EUR', sk: 'EU
 /** Server-side currency for a request; never taken from the client (audit SEC-03). */
 export const currencyForLang = (lang: string): string => currencyByLang[lang as LanguageCode] ?? 'EUR';
 
-/** Fallback shipping costs when no active shop config is in the session. */
+/** Fallback shipping costs when no shop config is active. */
 export const shippingCost: Record<LanguageCode, ShippingCost> = {
   en: { basic: { cost: 5, limit: 100 }, extended: { cost: 10, limit: 200 } },
   sk: { basic: { cost: 5, limit: 100 }, extended: { cost: 10, limit: 200 } },

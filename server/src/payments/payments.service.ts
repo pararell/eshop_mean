@@ -24,6 +24,7 @@ import { currencyForLang, languages } from '../shared/constans';
 import { ShopSession } from '../shared/types/session';
 import { PaymentIntentDto } from './dto/payment.dto';
 import { fromMinor, STRIPE, toMinor } from './stripe.client';
+import { activeShopConfig } from '../db/shop-config';
 
 /** Order states in which the customer can (still) pay */
 const PAYABLE = ['PENDING_PAYMENT', 'PAYMENT_FAILED'] as const;
@@ -75,7 +76,7 @@ export class PaymentsService {
 
   async createIntent(dto: PaymentIntentDto, session: ShopSession, lang: string, userId: string | null): Promise<PaymentIntentResponse> {
     const stripe = this.client();
-    const cart = session.cart?.items?.length ? prepareCart(session.cart, lang, session.config) : null;
+    const cart = session.cart?.items?.length ? prepareCart(session.cart, lang, await activeShopConfig(this.db)) : null;
     if (!cart || !cart.items.length || cart.totalPrice <= 0) {
       throw new UnprocessableEntityException('Your cart is empty.');
     }
@@ -164,7 +165,7 @@ export class PaymentsService {
       delete session.payment;
       cart = session.cart;
     } else {
-      cart = session.cart?.items?.length ? prepareCart(session.cart, lang, session.config) : emptyCart();
+      cart = session.cart?.items?.length ? prepareCart(session.cart, lang, await activeShopConfig(this.db)) : emptyCart();
     }
     return { order: latest, paymentStatus: intent.status, cart };
   }

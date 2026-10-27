@@ -53,6 +53,16 @@ All notable changes to this project are documented in this file. The format foll
 
 ### Fixed
 
+- **Shipping costs follow the shop config at once:** carts, card payments and orders are priced with
+  the active shop config read from the database each time, not with a copy stored in the session by
+  `GET /api/eshop/config`. Before, an admin change reached a visitor only after their next page load,
+  and a session that never loaded the config was priced with the built-in defaults. The config
+  endpoint no longer creates a session for every visit.
+- **Category filter matches tags exactly:** a product belongs to a category when one of its tags,
+  with spaces as underscores and lowercased, equals the category's slug (the rule that creates
+  categories from tags). Before, `tent` also listed products tagged `tents`, and a category made from
+  a tag with spaces (`Day hike` → `day_hike`) listed nothing. The admin product counts and category
+  deletion use the same rule. (The live catalog's categories are unaffected.)
 - Admin "View shop" and sign-out went to `/en` (no such route), which redirected to the 404 page; they
   now open the home page `/` in the current language.
 - **BUG-08:** creating a product or category through its edit endpoint (an upsert) answered 404
@@ -62,6 +72,11 @@ All notable changes to this project are documented in this file. The format foll
 - A late answer of the shop's page-title request could replace the admin's full page list, so
   saving a page could have erased its content.
 - The axe checks of the checkout skipped content in the app's scroll container; they now see it.
+
+### Security
+
+- `GET /api/eshop/config` sends only env vars whose name **starts with** `FE_` to the browser; before,
+  any name containing `FE_` (e.g. `SAFE_TOKEN`) was exposed.
 
 ## [1.0.1](https://github.com/pararell/eshop_mean/compare/v1.0.0...v1.0.1) (2026-10-25)
 

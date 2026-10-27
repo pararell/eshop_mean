@@ -77,6 +77,20 @@ describe('Products API', () => {
       expect(byPrice.body.all.map((p: any) => p.titleUrl)).toEqual(['car']);
     });
 
+    it('matches a category by tag slug, not by substring (tent is not tents; "Day hike" is day_hike)', async () => {
+      await t
+        .model('Product')
+        .create([
+          productFixture('tent', { tags: ['tent'] }),
+          productFixture('tents', { tags: ['tents'] }),
+          productFixture('boots', { tags: ['Day hike'] }),
+        ]);
+
+      const titles = async (category: string) => (await list({ category }).expect(200)).body.all.map((p: any) => p.titleUrl);
+      expect(await titles('tent')).toEqual(['tent']);
+      expect(await titles('day_hike')).toEqual(['boots']);
+    });
+
     it('rejects an unknown sort option', async () => {
       await list({ sort: 'random' }).expect(400);
     });
@@ -220,6 +234,29 @@ describe('Products API', () => {
       const res = await t.http.get('/api/products/categories/all').set('Authorization', `Bearer ${token}`).expect(200);
       const tents = res.body.find((c: { category: { titleUrl: string } }) => c.category.titleUrl === 'tents');
       expect(tents.category.en.title).toBe('Tents and shelters');
+    });
+
+    it('counts and removes category tags by slug', async () => {
+      const token = await adminToken(t);
+      await t.model('Product').create(productFixture('boots', { tags: ['Day hike', 'gps'] }));
+      await t.http
+        .patch('/api/products/categories/edit')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          titleUrl: 'day_hike',
+          mainImage: { url: '', name: 'day_hike', type: false },
+          subCategories: [],
+          en: { title: 'Day hike', description: '', position: 1, visibility: true, menuHidden: false },
+        })
+        .expect(200);
+
+      const res = await t.http.get('/api/products/categories/all').set('Authorization', `Bearer ${token}`).expect(200);
+      const dayHike = res.body.find((c: { category: { titleUrl: string } }) => c.category.titleUrl === 'day_hike');
+      expect(dayHike.productsWithCategory).toEqual(['boots']);
+
+      await t.http.delete('/api/products/categories/day_hike').set('Authorization', `Bearer ${token}`).expect(200);
+      const doc: any = await t.model('Product').findOne({ titleUrl: 'boots' }).lean();
+      expect(doc.tags).toEqual(['gps']);
     });
 
     it('deletes a product', async () => {

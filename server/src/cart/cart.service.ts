@@ -8,6 +8,7 @@ import { findProduct } from '../db/catalog';
 import { CartModel } from './models/cart.model';
 import { prepareCart } from '../shared/utils/prepareUtils';
 import { ShopSession } from '../shared/types/session';
+import { activeShopConfig } from '../db/shop-config';
 
 export interface CartChange {
   newCart: Cart;
@@ -19,14 +20,16 @@ export class CartService {
   constructor(@Inject(DRIZZLE) private db: Database) {}
 
   async getCart(session: ShopSession, lang: string): Promise<CartModel> {
-    const { cart, config } = session;
+    const { cart } = session;
+    const config = await activeShopConfig(this.db);
     const savedCart = cart || new Cart({ items: [] });
 
     return prepareCart(savedCart, lang, config);
   }
 
   async addToCart(session: ShopSession, getCartChangeDto: GetCartChangeDto, lang: string): Promise<CartChange> {
-    const { cart, config } = session;
+    const { cart } = session;
+    const config = await activeShopConfig(this.db);
     const { id } = getCartChangeDto;
     const newCart: Cart = new Cart(cart || {});
 
@@ -41,7 +44,8 @@ export class CartService {
   }
 
   async removeFromCart(session: ShopSession, getCartChangeDto: GetCartChangeDto, lang: string): Promise<CartChange> {
-    const { cart, config } = session;
+    const { cart } = session;
+    const config = await activeShopConfig(this.db);
     const { id } = getCartChangeDto;
     const newCart = new Cart(cart || { items: [] });
 

@@ -50,14 +50,14 @@ describe('Cart API (session based)', () => {
     expect(res.body.totalPrice).toBe(25 + 60 + 10);
   });
 
-  it('uses the active shop config for shipping once it is loaded into the session', async () => {
-    await t.model('Config').create({
+  it('prices with the active shop config, without loading it first, and follows admin changes at once', async () => {
+    const config = (cost: number, limit: number) => ({
       titleUrl: 'default',
       active: true,
-      en: { shippingCost: { basic: { cost: 3, limit: 40 }, extended: { cost: 7, limit: 300 } } },
+      en: { shippingCost: { basic: { cost, limit }, extended: { cost: 7, limit: 300 } } },
     });
-    const agent = shopper();
-    await agent.get('/api/eshop/config').expect(200); // stores the active config in the session
+    await t.model('Config').create(config(3, 40));
+    const agent = shopper(); // never calls GET /api/eshop/config
 
     const res = await agent.get('/api/cart/add').query({ id: carId }).set('lang', 'en').expect(200);
     expect(res.body.shippingCost).toBe(3);
@@ -65,6 +65,13 @@ describe('Cart API (session based)', () => {
     const free = await agent.get('/api/cart/add').query({ id: carId }).set('lang', 'en').expect(200);
     expect(free.body.shippingType).toBe('free'); // 50 >= limit 40
     expect(free.body.totalPrice).toBe(50);
+
+    // The admin raises the free-shipping limit: the same session's cart is repriced on its next read
+    await t.model('Config').deleteMany({});
+    await t.model('Config').create(config(4, 100));
+    const repriced = await agent.get('/api/cart').set('lang', 'en').expect(200);
+    expect(repriced.body.shippingCost).toBe(4);
+    expect(repriced.body.totalPrice).toBe(54);
 
     await t.model('Config').deleteMany({});
   });
