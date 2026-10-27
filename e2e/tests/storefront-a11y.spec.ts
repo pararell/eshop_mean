@@ -2,6 +2,9 @@ import { expect, test } from '@playwright/test';
 import { axeViolations, isolateExternalServices } from './helpers';
 
 test.beforeEach(({ page }) => isolateExternalServices(page));
+// Earlier specs give products http:// stub images (Cloudinary stub) that the shop's CSP blocks, which
+// breaks axe's style injection; production images are https. The CSP itself is tested in security.spec.ts
+test.use({ bypassCSP: true });
 
 /** WCAG 2.1 AA (axe) on the storefront: brand accent buttons, sale prices and badges, category tiles */
 for (const colorScheme of ['light', 'dark'] as const) {

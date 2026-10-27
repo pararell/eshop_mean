@@ -63,6 +63,10 @@ All notable changes to this project are documented in this file. The format foll
 
 ### Fixed
 
+- **Empty cart after a page load:** the client attached the `lang` header and the access token to API
+  calls only after an async subscription first ran, so a request sent earlier (the cart on a fresh
+  page load) went without them and the server answered with an empty cart. The headers are now built
+  for every request.
 - **Shipping costs follow the shop config at once:** carts, card payments and orders are priced with
   the active shop config read from the database each time, not with a copy stored in the session by
   `GET /api/eshop/config`. Before, an admin change reached a visitor only after their next page load,

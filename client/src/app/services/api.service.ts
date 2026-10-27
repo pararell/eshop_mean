@@ -4,7 +4,7 @@ import { catchError, map } from 'rxjs/operators';
 import { Injectable, PLATFORM_ID, inject, InjectionToken } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { isPlatformBrowser, isPlatformServer } from '@angular/common';
-import { combineLatest, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import type {
   AiDraftRequest,
   AiDraftResponse,
@@ -83,11 +83,22 @@ export class ApiService {
   private platformId = inject(PLATFORM_ID);
 
   apiUrl = environment.apiUrl;
-  requestOptions = {};
+  private selectors = inject(SignalStoreSelectors);
+
+  /**
+   * Headers for every API call, built when the request is made: the `lang` header (the server reads
+   * the language from it) and the access token. Before, they were set by an async subscription, so a
+   * request sent before it first ran (e.g. the cart on a fresh page load) went without them.
+   */
+  get requestOptions() {
+    const accessToken = isPlatformBrowser(this.platformId) ? localStorage.getItem(accessTokenKey) : '';
+    const headers = new HttpHeaders().set('Authorization', 'Bearer ' + accessToken).set('lang', this.selectors.appLang());
+    return { headers, withCredentials: true };
+  }
   ranNumber = 0;
 
   constructor() {
-    this.setHeaders();
+    this.storeAccessToken();
 
     if (environment.production) {
       if (isPlatformServer(this.platformId)) {
@@ -400,16 +411,12 @@ export class ApiService {
     return this.handle(this.http.delete<unknown>(configUrl, this.requestOptions));
   }
 
-  setHeaders() {
-    const selectors = inject(SignalStoreSelectors);
-    combineLatest([toObservable(selectors.appLang), toObservable(selectors.user)]).subscribe(([lang, user]) => {
+  /** Keeps the signed-in user's token in localStorage, where requestOptions reads it */
+  private storeAccessToken() {
+    toObservable(this.selectors.user).subscribe((user) => {
       if (user && user.accessToken && isPlatformBrowser(this.platformId)) {
         localStorage.setItem(accessTokenKey, user.accessToken);
       }
-      const accessToken = isPlatformBrowser(this.platformId) ? localStorage.getItem(accessTokenKey) : '';
-      let headers = new HttpHeaders();
-      headers = headers.set('Authorization', 'Bearer ' + accessToken).set('lang', lang);
-      this.requestOptions = { headers, withCredentials: true };
     });
   }
 }
