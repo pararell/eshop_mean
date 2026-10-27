@@ -128,7 +128,8 @@ export class AdminShellComponent {
   logout(): void {
     if (this.browser) localStorage.removeItem(accessTokenKey);
     this.store.storeUser(null);
-    void this.router.navigateByUrl(`/${this.lang()}`);
+    // The home page lives at `/` only (there is no /:lang home route); the app keeps the language
+    void this.router.navigateByUrl('/');
   }
 
   /** `/` focuses the search (outside text fields); Escape closes the off-canvas menu */

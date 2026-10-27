@@ -53,6 +53,8 @@ All notable changes to this project are documented in this file. The format foll
 
 ### Fixed
 
+- Admin "View shop" and sign-out went to `/en` (no such route), which redirected to the 404 page; they
+  now open the home page `/` in the current language.
 - **BUG-08:** creating a product or category through its edit endpoint (an upsert) answered 404
   although it was saved; it now answers 200.
 - Admin text that was unreadable in dark mode (light text on hard-coded white panels).

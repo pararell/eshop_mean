@@ -73,3 +73,10 @@ test('phones get an off-canvas menu that closes with Escape', async ({ page }) =
   await expect(page).toHaveURL('/en/dashboard/pages');
   await expect(nav).toBeHidden();
 });
+
+test('"View shop" opens the shop home page, not a 404', async ({ page }) => {
+  await page.goto('/en/dashboard');
+  await page.getByRole('link', { name: 'View shop' }).click();
+  await expect(page).toHaveURL('/');
+  await expect(page.locator('#hero-title')).toBeVisible();
+});
