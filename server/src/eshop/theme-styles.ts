@@ -43,10 +43,68 @@ const RULES: Record<string, Rule> = {
   freeShippingPromo: oneOf('none', 'block'),
 };
 
+const isObject = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === 'object' && !Array.isArray(value);
+
+const SECTION_TYPES = ['hero', 'benefits', 'categories', 'products', 'band'];
+/** Fields each section type may have, besides id, type and enabled */
+const SECTION_FIELDS: Record<string, string[]> = { band: ['image', 'link', 'text'] };
+/** Types that may appear only once (one list of products and categories on the page) */
+const SINGLE_TYPES = ['hero', 'benefits', 'categories', 'products'];
+const MAX_SECTIONS = 20;
+
+/** Problems with the home layout (`styles.home`), as readable lines */
+function homeErrors(home: unknown): string[] {
+  if (!Array.isArray(home)) return ['home must be a list of sections'];
+  if (home.length > MAX_SECTIONS) return [`home has at most ${MAX_SECTIONS} sections`];
+  const errors: string[] = [];
+  const ids = new Set<string>();
+  home.forEach((section: unknown, index) => {
+    const at = `home[${index}]`;
+    if (!isObject(section)) return errors.push(`${at} must be an object`);
+    const { id, type, enabled, ...rest } = section;
+    if (typeof id !== 'string' || !/^[a-z0-9-]{1,40}$/.test(id)) errors.push(`${at}.id must be 1-40 lowercase letters, digits or -`);
+    else if (ids.has(id)) errors.push(`${at}.id ${id} is used twice`);
+    else ids.add(id);
+    if (typeof type !== 'string' || !SECTION_TYPES.includes(type)) return errors.push(`${at}.type must be one of ${SECTION_TYPES.join(', ')}`);
+    if (typeof enabled !== 'boolean') errors.push(`${at}.enabled must be true or false`);
+    if (type === 'hero' && index !== 0) errors.push(`${at}: the hero can only be the first section`);
+    if (SINGLE_TYPES.includes(type) && home.findIndex((other: unknown) => isObject(other) && other.type === type) !== index) {
+      errors.push(`${at}: only one ${type} section`);
+    }
+    for (const [field, value] of Object.entries(rest)) {
+      if (!(SECTION_FIELDS[type] ?? []).includes(field)) errors.push(`${at}.${field} is not a ${type} setting`);
+      else if (field === 'text') errors.push(...bandTextErrors(value, `${at}.text`));
+      else {
+        const rule = field === 'image' ? httpsUrl : shopPathOrHttps;
+        if (typeof value !== 'string') errors.push(`${at}.${field} must be text`);
+        else if (value !== '' && !rule.test(value)) errors.push(`${at}.${field} must be ${rule.expected}`);
+      }
+    }
+    if (type === 'band' && !('text' in rest)) errors.push(`${at}.text is required`);
+  });
+  return errors;
+}
+
+/** A band's texts: { en: { title, text? }, … } */
+function bandTextErrors(text: unknown, at: string): string[] {
+  if (!isObject(text)) return [`${at} must be an object`];
+  return Object.entries(text).flatMap(([lang, value]) => {
+    if (!(languages as string[]).includes(lang)) return [`${at}.${lang} is not a language`];
+    if (!isObject(value)) return [`${at}.${lang} must be an object`];
+    return Object.entries(value).flatMap(([field, fieldValue]) => {
+      const max = { title: 120, text: 300 }[field];
+      if (!max) return [`${at}.${lang}.${field} is not a text field`];
+      if (typeof fieldValue !== 'string') return [`${at}.${lang}.${field} must be text`];
+      return fieldValue.length > max ? [`${at}.${lang}.${field} must be at most ${max} characters`] : [];
+    });
+  });
+}
+
 /** What is wrong with a theme's styles, as readable lines; [] when valid */
 export function themeStylesErrors(styles: unknown): string[] {
-  if (styles === null || typeof styles !== 'object' || Array.isArray(styles)) return ['styles must be an object'];
+  if (!isObject(styles)) return ['styles must be an object'];
   return Object.entries(styles).flatMap(([key, value]) => {
+    if (key === 'home') return homeErrors(value);
     const rule = RULES[key];
     if (!rule) return [`${key} is not a theme setting`];
     if (typeof value !== 'string') return [`${key} must be text`];

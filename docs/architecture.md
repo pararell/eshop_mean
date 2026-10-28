@@ -392,7 +392,9 @@ removed from products' `tags` (one `array_remove` update) when a category is del
   API `en/sk/cs: { title, contentHTML }`.
 - **`themes`** `(title_url unique, active, styles jsonb)`: `styles` holds the theme settings typed as
   `ThemeStyles` (`shared/types`): brand color, shop name, logo, home hero and promo banner, promo texts
-  per language. The server accepts only those keys with valid values (`server/src/eshop/theme-styles.ts`,
+  per language, and `home`: the home page sections in order (hero, benefits, categories, products,
+  bands with texts per language; each can be turned off). Without `home` the client builds the default
+  layout from the other settings (`client/src/app/shared/home-layout.ts`). The server accepts only those keys with valid values (`server/src/eshop/theme-styles.ts`,
   400 otherwise) and merges a save into the stored settings; the client applies them through
   `ThemeService.applyStyles`. At most one is active (partial unique index; saving an active one
   deactivates the others, D8).

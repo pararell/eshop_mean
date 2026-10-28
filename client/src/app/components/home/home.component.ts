@@ -31,6 +31,7 @@ import { IconComponent } from '../../shared/components/icon/icon.component';
 import { SignalStore } from '../../store/signal.store';
 import { PaginationState, SignalStoreSelectors } from '../../store/signal.store.selectors';
 import { ThemeService } from '../../services/theme.service';
+import { bandView } from '../../shared/home-layout';
 
 @Component({
   selector: 'app-home',
@@ -81,22 +82,14 @@ export class HomeComponent implements OnDestroy {
   readonly heroImage = this.themeService.heroImage;
   readonly heroImagePosition = this.themeService.heroImagePosition;
   readonly heroTint = this.themeService.heroTint;
-  /** The theme's promo banner in the current language; shown when enabled and it has a title */
-  readonly promoBanner = computed(() => {
-    const styles = this.themeService.styles();
+  /** The sections of the page in order (ThemeStyles.home), bands resolved for the current language */
+  readonly sections = computed(() => {
     const lang = this.lang() as LanguageCode;
-    const title = styles[`promoTitle_${lang}`]?.trim();
-    if (styles.promo !== 'block' || !title) return null;
-    const link = styles.promoLink?.trim() ?? '';
-    return {
-      title,
-      text: styles[`promoText_${lang}`]?.trim() ?? '',
-      image: styles.promoImage?.trim() ?? '',
-      link,
-      // Shop paths navigate in the app; anything else is an ordinary link
-      internal: link.startsWith('/') && !link.startsWith('//'),
-    };
+    return this.themeService.homeSections().map((section) => ({ section, band: section.type === 'band' ? bandView(section, lang) : null }));
   });
+  /** Without the hero the page still needs its h1 */
+  readonly heroOnHome = this.themeService.heroOnHome;
+  readonly shopName = this.themeService.shopName;
   /** The hero image (no theme video): the newest product */
   readonly featured = computed(() => this.products()?.find((product) => product.mainImage?.url) ?? null);
   readonly videoPlaying = signal(false);

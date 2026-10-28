@@ -3,6 +3,8 @@ import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import type { ThemeStyles } from '@eshop/shared';
 import tinycolor from 'tinycolor2';
 
+import { visibleHomeSections } from '../shared/home-layout';
+
 export type ColorMode = 'system' | 'light' | 'dark';
 
 const MODE_COOKIE = 'eshop_theme';
@@ -40,6 +42,10 @@ export class ThemeService {
   readonly logo = computed(() => this.styles().logo ?? '');
   /** The shop name from the theme; empty = the ESHOP_TITLE translation */
   readonly shopName = computed(() => this.styles().shopName?.trim() ?? '');
+  /** The home page sections to show, in order (the default layout when the theme has none) */
+  readonly homeSections = computed(() => visibleHomeSections(this.styles()));
+  /** The home page opens with the full-screen hero (the header lies transparent over it) */
+  readonly heroOnHome = computed(() => this.homeSections()[0]?.type === 'hero');
   /** 'warm': the hero photo gets a warm tint; otherwise it is shown in its own colors */
   readonly heroTint = computed(() => (this.styles().heroTint === 'warm' ? 'warm' : 'none'));
 

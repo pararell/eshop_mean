@@ -1,139 +1,152 @@
 <div class="main">
-  <section class="hero" [class.hero-warm]="heroTint() === 'warm'" aria-labelledby="hero-title">
-    @if (video()) {
-      <video
-        #videoRef
-        class="hero-media"
-        muted
-        playsinline
-        loop
-        preload="metadata"
-        aria-hidden="true"
-        [attr.poster]="heroImage() || null"
-        (play)="videoPlaying.set(true)"
-        (pause)="videoPlaying.set(false)"
-      >
-        <source [src]="video()" type="video/mp4" />
-      </video>
-    } @else if (heroImage()) {
-      <img class="hero-media" [ngSrc]="heroImage()" [style.object-position]="heroImagePosition()" alt="" fill priority sizes="100vw" />
-    } @else if (featured(); as featured) {
-      <img class="hero-media" [ngSrc]="featured.mainImage.url" alt="" fill priority sizes="100vw" />
-    }
-    <div class="hero-scrim"></div>
-
-    <div class="hero-copy">
-      <h1 class="hero-title" id="hero-title">{{ 'Hero_title' | translate | async }}</h1>
-      <p class="hero-text">{{ 'Hero_text' | translate | async }}</p>
-      <div class="hero-actions">
-        <a class="btn btn-primary hero-cta" [routerLink]="['/' + lang() + '/product/all']">{{ 'Shop_now' | translate | async }}</a>
-        @if ('Home_promo_text_link' | translate | async; as promoText) {
-          <a class="btn btn-outline" [href]="'Home_promo_link' | translate | async">{{ promoText }}</a>
-        }
-      </div>
-    </div>
-
-    @if (video()) {
-      <button
-        type="button"
-        class="hero-video-toggle"
-        (click)="toggleVideo()"
-        [attr.aria-label]="(videoPlaying() ? 'Pause_video' : 'Play_video') | translate | async"
-      >
-        <app-icon [name]="videoPlaying() ? 'pause' : 'play'" [size]="16" />
-      </button>
-    }
-  </section>
-
-  <section class="benefits">
-    <ul class="container benefits-list" role="list">
-      <li>
-        <span class="benefits-icon"><app-icon name="truck" [size]="22" /></span>
-        <span>
-          <strong>{{ 'Benefit_shipping' | translate | async }}</strong>
-          @if (cart()?.shippingLimit; as limit) {
-            <span class="benefits-text">{{ 'Benefit_shipping_text' | translate | async }} {{ limit }} {{ currency() }}</span>
-          }
-        </span>
-      </li>
-      <li>
-        <span class="benefits-icon"><app-icon name="cash" [size]="22" /></span>
-        <span>
-          <strong>{{ 'Benefit_cod' | translate | async }}</strong>
-          <span class="benefits-text">{{ 'Benefit_cod_text' | translate | async }}</span>
-        </span>
-      </li>
-      <li>
-        <span class="benefits-icon"><app-icon name="returnBox" [size]="22" /></span>
-        <span>
-          <strong>{{ 'Benefit_returns' | translate | async }}</strong>
-          <span class="benefits-text">{{ 'Benefit_returns_text' | translate | async }}</span>
-        </span>
-      </li>
-      <li>
-        <span class="benefits-icon"><app-icon name="lock" [size]="22" /></span>
-        <span>
-          <strong>{{ 'Benefit_secure' | translate | async }}</strong>
-          <span class="benefits-text">{{ 'Benefit_secure_text' | translate | async }}</span>
-        </span>
-      </li>
-    </ul>
-  </section>
-
-  @if (categories().length) {
-    <section class="container section" aria-labelledby="categories-title">
-      <div class="section-header">
-        <h2 id="categories-title">{{ 'Categories' | translate | async }}</h2>
-      </div>
-      <app-categories-list [categories]="categories()" [lang]="lang()!" />
-    </section>
+  @if (!heroOnHome()) {
+    <h1 class="visually-hidden">{{ shopName() || ('ESHOP_TITLE' | translate | async) }}</h1>
   }
+  @for (entry of sections(); track entry.section.id) {
+    @switch (entry.section.type) {
+      @case ('hero') {
+        <section class="hero" [class.hero-warm]="heroTint() === 'warm'" aria-labelledby="hero-title">
+          @if (video()) {
+            <video
+              #videoRef
+              class="hero-media"
+              muted
+              playsinline
+              loop
+              preload="metadata"
+              aria-hidden="true"
+              [attr.poster]="heroImage() || null"
+              (play)="videoPlaying.set(true)"
+              (pause)="videoPlaying.set(false)"
+            >
+              <source [src]="video()" type="video/mp4" />
+            </video>
+          } @else if (heroImage()) {
+            <img class="hero-media" [ngSrc]="heroImage()" [style.object-position]="heroImagePosition()" alt="" fill priority sizes="100vw" />
+          } @else if (featured(); as featured) {
+            <img class="hero-media" [ngSrc]="featured.mainImage.url" alt="" fill priority sizes="100vw" />
+          }
+          <div class="hero-scrim"></div>
 
-  <div class="contour-bg home-products-band">
-    <section class="container section home-products" aria-labelledby="products-title">
-      <div class="section-header">
-        <h2 id="products-title">{{ 'New_arrivals' | translate | async }}</h2>
-      </div>
-      @if (loadingProducts() && !products()) {
-        <mat-progress-bar mode="indeterminate" />
-      }
-      @if (products(); as products) {
-        <app-products-list
-          [class.disabled]="loadingProducts()"
-          [products]="products"
-          [cartIds]="cartIds()"
-          [currency]="currency()"
-          [lang]="lang()!"
-          (addProduct)="addToCart($event)"
-          (removeProduct)="removeFromCart($event)"
-        />
-        <div class="home-more">
-          <a class="btn btn-primary" [routerLink]="['/' + lang() + '/product/all']">{{ 'View_all' | translate | async }}</a>
-        </div>
-      }
-    </section>
-  </div>
+          <div class="hero-copy">
+            <h1 class="hero-title" id="hero-title">{{ 'Hero_title' | translate | async }}</h1>
+            <p class="hero-text">{{ 'Hero_text' | translate | async }}</p>
+            <div class="hero-actions">
+              <a class="btn btn-primary hero-cta" [routerLink]="['/' + lang() + '/product/all']">{{ 'Shop_now' | translate | async }}</a>
+              @if ('Home_promo_text_link' | translate | async; as promoText) {
+                <a class="btn btn-outline" [href]="'Home_promo_link' | translate | async">{{ promoText }}</a>
+              }
+            </div>
+          </div>
 
-  @if (promoBanner(); as promo) {
-    <section class="container section promo-banner-wrap" aria-labelledby="promo-title">
-      <div class="promo-banner">
-        @if (promo.image) {
-          <img class="promo-banner-media" [ngSrc]="promo.image" alt="" fill sizes="(max-width: 1340px) 100vw, 1340px" />
+          @if (video()) {
+            <button
+              type="button"
+              class="hero-video-toggle"
+              (click)="toggleVideo()"
+              [attr.aria-label]="(videoPlaying() ? 'Pause_video' : 'Play_video') | translate | async"
+            >
+              <app-icon [name]="videoPlaying() ? 'pause' : 'play'" [size]="16" />
+            </button>
+          }
+        </section>
+      }
+      @case ('benefits') {
+        <section class="benefits">
+          <ul class="container benefits-list" role="list">
+            <li>
+              <span class="benefits-icon"><app-icon name="truck" [size]="22" /></span>
+              <span>
+                <strong>{{ 'Benefit_shipping' | translate | async }}</strong>
+                @if (cart()?.shippingLimit; as limit) {
+                  <span class="benefits-text">{{ 'Benefit_shipping_text' | translate | async }} {{ limit }} {{ currency() }}</span>
+                }
+              </span>
+            </li>
+            <li>
+              <span class="benefits-icon"><app-icon name="cash" [size]="22" /></span>
+              <span>
+                <strong>{{ 'Benefit_cod' | translate | async }}</strong>
+                <span class="benefits-text">{{ 'Benefit_cod_text' | translate | async }}</span>
+              </span>
+            </li>
+            <li>
+              <span class="benefits-icon"><app-icon name="returnBox" [size]="22" /></span>
+              <span>
+                <strong>{{ 'Benefit_returns' | translate | async }}</strong>
+                <span class="benefits-text">{{ 'Benefit_returns_text' | translate | async }}</span>
+              </span>
+            </li>
+            <li>
+              <span class="benefits-icon"><app-icon name="lock" [size]="22" /></span>
+              <span>
+                <strong>{{ 'Benefit_secure' | translate | async }}</strong>
+                <span class="benefits-text">{{ 'Benefit_secure_text' | translate | async }}</span>
+              </span>
+            </li>
+          </ul>
+        </section>
+      }
+      @case ('categories') {
+        @if (categories().length) {
+          <section class="container section" aria-labelledby="categories-title">
+            <div class="section-header">
+              <h2 id="categories-title">{{ 'Categories' | translate | async }}</h2>
+            </div>
+            <app-categories-list [categories]="categories()" [lang]="lang()!" />
+          </section>
         }
-        <div class="promo-banner-copy">
-          <h2 class="promo-banner-title" id="promo-title">{{ promo.title }}</h2>
-          @if (promo.text) {
-            <p class="promo-banner-text">{{ promo.text }}</p>
-          }
-          @if (promo.link) {
-            @if (promo.internal) {
-              <a class="btn btn-primary" [routerLink]="promo.link">{{ 'Shop_now' | translate | async }}</a>
-            } @else {
-              <a class="btn btn-primary" [href]="promo.link">{{ 'Shop_now' | translate | async }}</a>
+      }
+      @case ('products') {
+        <div class="contour-bg home-products-band">
+          <section class="container section home-products" aria-labelledby="products-title">
+            <div class="section-header">
+              <h2 id="products-title">{{ 'New_arrivals' | translate | async }}</h2>
+            </div>
+            @if (loadingProducts() && !products()) {
+              <mat-progress-bar mode="indeterminate" />
             }
-          }
+            @if (products(); as products) {
+              <app-products-list
+                [class.disabled]="loadingProducts()"
+                [products]="products"
+                [cartIds]="cartIds()"
+                [currency]="currency()"
+                [lang]="lang()!"
+                (addProduct)="addToCart($event)"
+                (removeProduct)="removeFromCart($event)"
+              />
+              <div class="home-more">
+                <a class="btn btn-primary" [routerLink]="['/' + lang() + '/product/all']">{{ 'View_all' | translate | async }}</a>
+              </div>
+            }
+          </section>
         </div>
-      </div>
-    </section>
+      }
+      @case ('band') {
+        @if (entry.band; as band) {
+          <section class="container section promo-banner-wrap" [attr.aria-labelledby]="'band-title-' + entry.section.id">
+            <div class="promo-banner">
+              @if (band.image) {
+                <img class="promo-banner-media" [ngSrc]="band.image" alt="" fill sizes="(max-width: 1340px) 100vw, 1340px" />
+              }
+              <div class="promo-banner-copy">
+                <h2 class="promo-banner-title" [id]="'band-title-' + entry.section.id">{{ band.title }}</h2>
+                @if (band.text) {
+                  <p class="promo-banner-text">{{ band.text }}</p>
+                }
+                @if (band.link) {
+                  @if (band.internal) {
+                    <a class="btn btn-primary" [routerLink]="band.link">{{ 'Shop_now' | translate | async }}</a>
+                  } @else {
+                    <a class="btn btn-primary" [href]="band.link">{{ 'Shop_now' | translate | async }}</a>
+                  }
+                }
+              </div>
+            </div>
+          </section>
+        }
+      }
+    }
   }
 </div>

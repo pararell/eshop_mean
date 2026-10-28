@@ -40,4 +40,49 @@ describe('theme styles', () => {
     ]);
     expect(() => assertThemeStyles([])).toThrow(BadRequestException);
   });
+
+  describe('home layout', () => {
+    const band = {
+      id: 'autumn',
+      type: 'band',
+      enabled: true,
+      image: 'https://res.cloudinary.com/x/a.jpg',
+      link: '/en/product/all',
+      text: { en: { title: 'Sale' } },
+    };
+
+    it('accepts the sections in any order, the hero first, bands repeated', () => {
+      const home = [
+        { id: 'hero', type: 'hero', enabled: true },
+        band,
+        { id: 'products', type: 'products', enabled: true },
+        { ...band, id: 'winter', enabled: false },
+        { id: 'categories', type: 'categories', enabled: true },
+        { id: 'benefits', type: 'benefits', enabled: false },
+      ];
+      expect(themeStylesErrors({ home })).toEqual([]);
+    });
+
+    it('rejects a misplaced hero, repeated single sections, duplicate ids and bad fields', () => {
+      const home = [
+        { id: 'products', type: 'products', enabled: true },
+        { id: 'hero', type: 'hero', enabled: true },
+        { id: 'products', type: 'products', enabled: 'yes' },
+        { id: 'x', type: 'carousel', enabled: true },
+        { id: 'band', type: 'band', enabled: true, image: 'http://x/a.jpg', color: 'red', text: { de: { title: 'x' }, en: { title: 1 } } },
+      ];
+      expect(themeStylesErrors({ home })).toEqual([
+        'home[1]: the hero can only be the first section',
+        'home[2].id products is used twice',
+        'home[2].enabled must be true or false',
+        'home[2]: only one products section',
+        'home[3].type must be one of hero, benefits, categories, products, band',
+        'home[4].image must be an https URL',
+        'home[4].color is not a band setting',
+        'home[4].text.de is not a language',
+        'home[4].text.en.title must be text',
+      ]);
+      expect(themeStylesErrors({ home: 'hero' })).toEqual(['home must be a list of sections']);
+    });
+  });
 });

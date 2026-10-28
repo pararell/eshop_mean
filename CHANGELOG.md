@@ -8,6 +8,12 @@ All notable changes to this project are documented in this file. The format foll
 
 ### Added
 
+- **Home page sections:** the home page is built from the active theme's `home` setting, an ordered
+  list of sections (hero, benefits, categories, products, and any number of photo bands with a title,
+  text and link per language), each of which can be turned off. A theme without it shows the page as
+  before. The server checks the layout (known types, the hero first, one products, categories and
+  benefits section, band texts and links). Without the hero the header is a plain bar and the page
+  keeps a hidden h1. The admin editor for it comes next.
 - **Admin Overview** (`/:lang/dashboard`): revenue and orders for today, 7 or 30 days per currency,
   compared with the previous period; average order; orders to handle; revenue per day (one bar chart
   per currency, with a table view); top products; recent orders; what needs attention (visible but

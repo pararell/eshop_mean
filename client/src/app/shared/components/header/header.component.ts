@@ -33,7 +33,7 @@ import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 import { IconComponent } from '../icon/icon.component';
 
 /**
- * Minimal header. On the home page it lies transparent over the full-screen photo/video (white text,
+ * Minimal header. On the home page, when it opens with the hero, it lies transparent over the full-screen photo/video (white text,
  * menu always visible); after scrolling past the top, and on every other page, it is a plain white bar.
  */
 @Component({
@@ -91,7 +91,7 @@ export class HeaderComponent implements OnInit {
     { initialValue: isHomeUrl(this.router.url) },
   );
   /** Transparent over the home page's photo */
-  readonly overlay = computed(() => this.isHome() && !this.scrolled() && !this.searchOpen());
+  readonly overlay = computed(() => this.isHome() && this.theme.heroOnHome() && !this.scrolled() && !this.searchOpen());
 
   private readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
 

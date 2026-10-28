@@ -340,6 +340,21 @@ export interface PageLangInfo {
 
 export type Page = { _id?: string; titleUrl: string; dateAdded?: DateValue } & ByLanguage<PageLangInfo>;
 
+/**
+ * One section of the home page (`ThemeStyles.home`, in display order). Without `home` the client uses
+ * the default layout, built from the theme's other settings (client/src/app/shared/home-layout.ts).
+ */
+export type HomeSection = { id: string; enabled: boolean } & (
+  | /** The hero: media from promoSlideBackground / promoSlideVideo, texts from the Hero_* translations. First when present */
+    { type: 'hero' } /** Shipping, cash on delivery, returns, secure payment */
+  | { type: 'benefits' } /** The visible categories as tiles */
+  | { type: 'categories' } /** The newest products */
+  | { type: 'products' } /** A photo with a title, text and a button (the button label is the Shop_now translation) */
+  | { type: 'band'; image?: string; link?: string; text: ByLanguage<{ title: string; text?: string }> }
+);
+
+export type HomeSectionType = HomeSection['type'];
+
 /** Per-language theme texts: promoTitle_en, promoText_sk, … */
 export type ThemeLangKey = `promoTitle_${LanguageCode}` | `promoText_${LanguageCode}`;
 
@@ -364,6 +379,8 @@ export type ThemeStyles = {
   promoImage?: string;
   /** A shop path like /en/product/category/tents, or an https URL */
   promoLink?: string;
+  /** The home page sections in order; absent = the default layout */
+  home?: HomeSection[];
   /** @deprecated Not used by the shop or the editor; kept in stored themes */
   secondaryColor?: string;
   /** @deprecated */
