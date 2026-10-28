@@ -14,9 +14,14 @@ import { SignalStore } from '../../../store/signal.store';
 import { AdminPageHeaderComponent } from '../admin-ui/admin-page-header.component';
 import { AdminItemListComponent, AdminListItem } from '../admin-ui/admin-item-list.component';
 import { confirmAction } from '../admin-ui/confirm-dialog.component';
-import { languages } from '../../../shared/constants';
+import { editableHomeSections } from '../../../shared/home-layout';
+import { HomeSectionsEditorComponent } from './home-sections-editor/home-sections-editor.component';
+import { httpsUrl, sectionsArray, SectionsArray, sectionsFromArray } from './home-sections-form';
 
-/** The theme settings this editor shows (the server keeps the other stored keys on save) */
+/**
+ * The text settings this editor shows, besides the home sections (`home`). The server keeps the other
+ * stored keys on save, such as the old promo banner settings (promo*), which `home` replaces.
+ */
 const STYLE_FIELDS = [
   'primaryColor',
   'shopName',
@@ -25,32 +30,18 @@ const STYLE_FIELDS = [
   'promoSlideVideo',
   'promoSlideBackgroundPosition',
   'heroTint',
-  'promo',
-  'promoImage',
-  'promoLink',
-  ...languages.flatMap((lang) => [`promoTitle_${lang}`, `promoText_${lang}`] as const),
 ] as const satisfies readonly (keyof ThemeStyles)[];
 
-const STYLE_DEFAULTS: ThemeStyles = { promoSlideBackgroundPosition: 'center', heroTint: 'none', promo: 'none' };
+const STYLE_DEFAULTS: ThemeStyles = { promoSlideBackgroundPosition: 'center', heroTint: 'none' };
 /** Shown in the color picker while the default ink is used */
 const PICKER_START = '#15803d';
 
 // The same rules as the server (server/src/eshop/theme-styles.ts); empty is always allowed
-const httpsUrl = Validators.pattern(/^(https:\/\/\S+)?$/);
-const shopPathOrHttps = Validators.pattern(/^((\/(?!\/)\S*)|(https:\/\/\S+))?$/);
 const FIELD_VALIDATORS: Partial<Record<(typeof STYLE_FIELDS)[number], ValidatorFn[]>> = {
   shopName: [Validators.maxLength(60)],
   logo: [httpsUrl],
   promoSlideBackground: [httpsUrl],
   promoSlideVideo: [httpsUrl],
-  promoImage: [httpsUrl],
-  promoLink: [shopPathOrHttps],
-  ...Object.fromEntries(
-    languages.flatMap((lang) => [
-      [`promoTitle_${lang}`, [Validators.maxLength(120)]] as const,
-      [`promoText_${lang}`, [Validators.maxLength(300)]] as const,
-    ]),
-  ),
 };
 
 /**
@@ -76,6 +67,7 @@ const FIELD_VALIDATORS: Partial<Record<(typeof STYLE_FIELDS)[number], ValidatorF
     MatIcon,
     AdminPageHeaderComponent,
     AdminItemListComponent,
+    HomeSectionsEditorComponent,
   ],
 })
 export class ThemeEditComponent {
@@ -85,7 +77,6 @@ export class ThemeEditComponent {
   private themeService = inject(ThemeService);
 
   private dialog = inject(MatDialog);
-  readonly languages = languages;
   themesEditForm: FormGroup;
   readonly themes = computed(() => {
     const list = this.selectos.themes();
@@ -107,6 +98,7 @@ export class ThemeEditComponent {
       active: false,
       useDefaultColor: true,
       ...Object.fromEntries(STYLE_FIELDS.map((field) => [field, ['', FIELD_VALIDATORS[field] ?? []]])),
+      home: sectionsArray([]),
     });
 
     this.themesEditForm.get('primaryColor')!.disable();
@@ -146,6 +138,8 @@ export class ThemeEditComponent {
       ...Object.fromEntries(STYLE_FIELDS.map((field) => [field, styles[field] || STYLE_DEFAULTS[field] || ''])),
       primaryColor: styles.primaryColor || PICKER_START,
     });
+    // A new array (not a reset): the number of sections differs per theme
+    this.themesEditForm.setControl('home', sectionsArray(editableHomeSections(styles)));
     if (found) this.themesEditForm.get('titleUrl')!.disable();
     else this.themesEditForm.get('titleUrl')!.enable();
   }
@@ -182,7 +176,13 @@ export class ThemeEditComponent {
     const values = this.themesEditForm.getRawValue();
     const styles = Object.fromEntries(STYLE_FIELDS.map((field) => [field, String(values[field] ?? '').trim()])) as ThemeStyles;
     styles.primaryColor = values.useDefaultColor ? '' : styles.primaryColor;
+    styles.home = sectionsFromArray(this.homeSections);
     return styles;
+  }
+
+  /** The `home` FormArray (replaced when a theme is opened) */
+  get homeSections(): SectionsArray {
+    return this.themesEditForm.get('home') as SectionsArray;
   }
 
   /** Back to what the shop shows: the active theme (or the default look without one) */

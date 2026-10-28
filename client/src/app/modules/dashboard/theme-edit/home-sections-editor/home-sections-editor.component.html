@@ -1,0 +1,119 @@
+<section class="admin-card" aria-labelledby="home-sections-title">
+  <div class="admin-card-head">
+    <h2 id="home-sections-title">Home page sections</h2>
+    <p class="admin-hint">The order of the home page. Drag a section or use the arrows; switched-off sections are not shown.</p>
+  </div>
+  <div class="admin-card-body">
+    <ol class="layout-list" cdkDropList [cdkDropListSortPredicate]="canSortTo" (cdkDropListDropped)="dropped($event)" aria-label="Home page sections">
+      @for (group of sections().controls; track group; let i = $index; let last = $last) {
+        @let isBand = group.controls.type.value === 'band';
+        @let isHero = group.controls.type.value === 'hero';
+        @let open = isBand && expanded() === group.controls.id.value;
+        <li class="layout-item" cdkDrag [cdkDragDisabled]="isHero" [class.layout-off]="!group.controls.enabled.value">
+          <div class="layout-row">
+            <span class="layout-handle" [class.layout-handle-fixed]="isHero" cdkDragHandle [cdkDragHandleDisabled]="isHero" aria-hidden="true">
+              <mat-icon>{{ isHero ? 'lock' : 'drag_handle' }}</mat-icon>
+            </span>
+            <div class="layout-name">
+              <strong>{{ label(group) }}</strong>
+              @if (isBand) {
+                <span class="admin-hint">Shown in the languages that have a title</span>
+              } @else {
+                <span class="admin-hint">{{ info(group).hint }}</span>
+              }
+              @if (group.invalid && group.touched) {
+                <span class="admin-pill layout-error">Check the settings</span>
+              }
+            </div>
+            <div class="layout-controls">
+              <mat-slide-toggle [formControl]="group.controls.enabled" [aria-label]="'Show ' + label(group)" />
+              @if (!isHero) {
+                <button mat-icon-button type="button" [attr.aria-label]="'Move ' + label(group) + ' up'" [disabled]="i <= 1" (click)="move(i, -1)">
+                  <mat-icon>arrow_upward</mat-icon>
+                </button>
+                <button mat-icon-button type="button" [attr.aria-label]="'Move ' + label(group) + ' down'" [disabled]="last" (click)="move(i, 1)">
+                  <mat-icon>arrow_downward</mat-icon>
+                </button>
+              }
+              @if (isBand) {
+                <button
+                  mat-icon-button
+                  type="button"
+                  [attr.aria-label]="(open ? 'Close ' : 'Edit ') + label(group)"
+                  [attr.aria-expanded]="open"
+                  (click)="toggleBand(group)"
+                >
+                  <mat-icon>{{ open ? 'expand_less' : 'edit' }}</mat-icon>
+                </button>
+                <button mat-icon-button type="button" [attr.aria-label]="'Remove ' + label(group)" (click)="removeBand(i)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              }
+            </div>
+          </div>
+
+          @if (open) {
+            <div class="band admin-fields">
+              <div class="band-photo admin-field-wide">
+                @if (group.controls.image.valid && group.controls.image.value) {
+                  <img class="band-preview" [src]="group.controls.image.value" alt="" />
+                }
+                <mat-form-field class="band-photo-url" subscriptSizing="dynamic">
+                  <mat-label>Photo URL</mat-label>
+                  <input matInput type="url" [formControl]="group.controls.image" />
+                  <mat-hint>Upload a photo or paste an https:// address</mat-hint>
+                  <mat-error>Use an https:// address</mat-error>
+                </mat-form-field>
+                <input #fileInput type="file" hidden accept="image/jpeg,image/png,image/webp,image/gif" (change)="upload(group, $event)" />
+                <button type="button" class="btn btn-outline" [disabled]="uploading()" (click)="fileInput.click()">
+                  <mat-icon aria-hidden="true">file_upload</mat-icon>
+                  {{ uploading() ? 'Uploading…' : 'Upload photo' }}
+                </button>
+                @if (uploadError()) {
+                  <p class="band-upload-error" role="alert">{{ uploadError() }}</p>
+                }
+              </div>
+              <mat-form-field class="admin-field-wide" subscriptSizing="dynamic">
+                <mat-label>Link</mat-label>
+                <input matInput [formControl]="group.controls.link" autocomplete="off" />
+                <mat-hint>A shop path such as /en/product/category/tents, or a full URL; empty shows no button</mat-hint>
+                <mat-error>Use a shop path (/en/…) or an https:// address</mat-error>
+              </mat-form-field>
+              <mat-tab-group class="admin-field-wide" animationDuration="0ms" [attr.aria-label]="'Texts of ' + label(group)">
+                @for (lang of languages; track lang) {
+                  @let langGroup = group.controls.text.controls[lang];
+                  <mat-tab>
+                    <ng-template mat-tab-label>
+                      {{ lang | uppercase }}
+                      @if (langGroup.invalid) {
+                        <mat-icon class="tab-error" aria-label="has errors">error</mat-icon>
+                      }
+                    </ng-template>
+                    <div class="band-texts">
+                      <mat-form-field subscriptSizing="dynamic">
+                        <mat-label>Title ({{ lang }})</mat-label>
+                        <input matInput [formControl]="langGroup.controls.title" autocomplete="off" />
+                        <mat-hint>Without a title the band is hidden in this language</mat-hint>
+                        <mat-error>At most 120 characters</mat-error>
+                      </mat-form-field>
+                      <mat-form-field subscriptSizing="dynamic">
+                        <mat-label>Text ({{ lang }})</mat-label>
+                        <textarea matInput rows="2" [formControl]="langGroup.controls.text"></textarea>
+                        <mat-error>At most 300 characters</mat-error>
+                      </mat-form-field>
+                    </div>
+                  </mat-tab>
+                }
+              </mat-tab-group>
+            </div>
+          }
+        </li>
+      }
+    </ol>
+    <button type="button" class="btn btn-outline" [disabled]="sections().length >= maxSections" (click)="addBand()">
+      <mat-icon aria-hidden="true">add</mat-icon>
+      Add photo band
+    </button>
+    <p class="visually-hidden" aria-live="polite">{{ status() }}</p>
+  </div>
+</section>

@@ -10,8 +10,8 @@ import { firstValueFrom } from 'rxjs';
 
 import { ApiService } from '../../../../services/api.service';
 
-const MAX_FILE_BYTES = 10 * 1024 * 1024;
-const ACCEPTED = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+export const MAX_FILE_BYTES = 10 * 1024 * 1024;
+export const ACCEPTED = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
 interface Upload {
   id: number;

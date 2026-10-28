@@ -105,6 +105,40 @@ test('themes: a new theme is saved inactive', async ({ page }) => {
   await toast(page, 'Theme deleted');
 });
 
+test('themes: the home page sections are reordered, switched off and a photo band added', async ({ page }) => {
+  const slug = `e2e-home-sections-${Date.now()}`;
+  await open(page, 'themes');
+  await page.getByRole('button', { name: 'New theme' }).click();
+  await page.getByLabel('Name (slug)').fill(slug);
+
+  const sections = page.getByRole('list', { name: 'Home page sections' });
+  await expect(sections.getByRole('listitem')).toHaveCount(5);
+  await page.getByRole('button', { name: 'Move Products up' }).click();
+  await page.getByRole('switch', { name: 'Show Benefits' }).click();
+  await page.getByRole('button', { name: 'Add photo band' }).click();
+  await page.getByLabel('Title (en)').fill('Autumn sale');
+  await page.getByLabel('Link').fill('//evil.example');
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(page.getByText('Use a shop path (/en/…) or an https:// address')).toBeVisible();
+  await page.getByLabel('Link').fill('/en/product/all');
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await toast(page, 'Theme saved');
+
+  const [row] = await withDb(async (db) => (await db.query('SELECT styles FROM themes WHERE title_url = $1', [slug])).rows);
+  expect(row.styles.home.map((s: { id: string; enabled: boolean }) => [s.id, s.enabled])).toEqual([
+    ['hero', true],
+    ['benefits', false],
+    ['products', true],
+    ['categories', true],
+    ['promo', false],
+    ['band', true],
+  ]);
+  expect(row.styles.home[5]).toMatchObject({ link: '/en/product/all', text: { en: { title: 'Autumn sale', text: '' } } });
+
+  await confirmDelete(page, 'Delete theme');
+  await toast(page, 'Theme deleted');
+});
+
 test('translations: add a key, fill it, save', async ({ page }) => {
   const key = `E2E_key_${Date.now()}`;
   await open(page, 'translations');

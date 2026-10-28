@@ -1,6 +1,6 @@
 // The home page as an ordered list of sections (ThemeStyles.home). Pure functions: no Angular, so
 // they are tested with the server's Jest (server/test/client/home-layout.spec.ts).
-import type { HomeSection, LanguageCode, ThemeStyles } from '@eshop/shared';
+import type { HomeSection, HomeSectionType, LanguageCode, ThemeStyles } from '@eshop/shared';
 
 import { languages } from './constants';
 
@@ -55,5 +55,44 @@ export function bandView(section: BandSection, lang: LanguageCode): BandView | n
     image: section.image?.trim() ?? '',
     link,
     internal: link.startsWith('/') && !link.startsWith('//'),
+  };
+}
+
+/** The sections that appear at most once; the editor always lists them (switched off when unused) */
+export const SINGLE_SECTION_TYPES = ['hero', 'benefits', 'categories', 'products'] as const satisfies readonly HomeSectionType[];
+/** The same limit as the server (server/src/eshop/theme-styles.ts) */
+export const MAX_HOME_SECTIONS = 20;
+
+/** `base`, or `base-2`, `base-3`… when the id is taken */
+export function freeSectionId(base: string, sections: readonly HomeSection[]): string {
+  const taken = new Set(sections.map((section) => section.id));
+  if (!taken.has(base)) return base;
+  let n = 2;
+  while (taken.has(`${base}-${n}`)) n++;
+  return `${base}-${n}`;
+}
+
+/**
+ * The layout as the editor shows it: the theme's sections (or the default layout), the hero first and
+ * every single section once; the missing ones are added at the end, switched off.
+ */
+export function editableHomeSections(styles: ThemeStyles): HomeSection[] {
+  const sections = [...(styles.home ?? defaultHomeSections(styles))];
+  for (const type of SINGLE_SECTION_TYPES) {
+    if (!sections.some((section) => section.type === type)) sections.push({ id: freeSectionId(type, sections), type, enabled: false });
+  }
+  const hero = sections.find((section) => section.type === 'hero')!;
+  return [hero, ...sections.filter((section) => section !== hero)];
+}
+
+/** A new, empty band (shown once it has a title) */
+export function newBand(sections: readonly HomeSection[]): HomeSection {
+  return {
+    id: freeSectionId('band', sections),
+    type: 'band',
+    enabled: true,
+    image: '',
+    link: '',
+    text: Object.fromEntries(languages.map((lang) => [lang, { title: '', text: '' }])),
   };
 }

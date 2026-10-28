@@ -13,7 +13,11 @@ All notable changes to this project are documented in this file. The format foll
   text and link per language), each of which can be turned off. A theme without it shows the page as
   before. The server checks the layout (known types, the hero first, one products, categories and
   benefits section, band texts and links). Without the hero the header is a plain bar and the page
-  keeps a hidden h1. The admin editor for it comes next.
+  keeps a hidden h1.
+- **Home page editor** (Themes → Home page sections): reorder the sections by drag or with the arrow
+  buttons (the hero stays first), switch each one on or off, and add, edit or remove photo bands
+  (photo upload or URL, link, title and text per language on tabs). Changes preview live and are saved
+  with the theme. It replaces the Promo banner card: an existing promo banner opens as the first band.
 - **Admin Overview** (`/:lang/dashboard`): revenue and orders for today, 7 or 30 days per currency,
   compared with the previous period; average order; orders to handle; revenue per day (one bar chart
   per currency, with a table view); top products; recent orders; what needs attention (visible but
