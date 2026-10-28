@@ -5,6 +5,15 @@ import type { HomeSection, HomeSectionType, LanguageCode, ThemeStyles } from '@e
 import { languages } from './constants';
 
 type BandSection = Extract<HomeSection, { type: 'band' }>;
+type TripsSection = Extract<HomeSection, { type: 'trips' }>;
+
+/** What the trips section needs of a category (the storefront's localized categories) */
+export interface TripCategory {
+  titleUrl: string;
+  title: string;
+  description?: string;
+  mainImage?: { url?: string };
+}
 
 /** What a band shows in one language */
 export interface BandView {
@@ -14,6 +23,16 @@ export interface BandView {
   link: string;
   /** Shop paths navigate in the app; anything else is an ordinary link */
   internal: boolean;
+  /** The button label; empty = the Shop_now translation */
+  button: string;
+  /** Edge to edge with a parallax photo; otherwise a rounded banner */
+  full: boolean;
+}
+
+/** The trips section in one language: its title and the cards of the categories that exist */
+export interface TripsView {
+  title: string;
+  cards: { titleUrl: string; title: string; description: string; image: string }[];
 }
 
 /**
@@ -55,7 +74,20 @@ export function bandView(section: BandSection, lang: LanguageCode): BandView | n
     image: section.image?.trim() ?? '',
     link,
     internal: link.startsWith('/') && !link.startsWith('//'),
+    button: section.text[lang]?.button?.trim() ?? '',
+    full: section.width === 'full',
   };
+}
+
+/** Trip cards in the chosen order; categories that are gone or hidden are left out; null when none is left */
+export function tripsView(section: TripsSection, categories: readonly TripCategory[], lang: LanguageCode): TripsView | null {
+  const cards = section.categories.flatMap((slug) => {
+    const category = categories.find((c) => c.titleUrl === slug);
+    return category
+      ? [{ titleUrl: category.titleUrl, title: category.title, description: category.description ?? '', image: category.mainImage?.url ?? '' }]
+      : [];
+  });
+  return cards.length ? { title: section.text?.[lang]?.title?.trim() ?? '', cards } : null;
 }
 
 /** The sections that appear at most once; the editor always lists them (switched off when unused) */
@@ -85,7 +117,7 @@ export function editableHomeSections(styles: ThemeStyles): HomeSection[] {
   return [hero, ...sections.filter((section) => section !== hero)];
 }
 
-/** A new, empty band (shown once it has a title) */
+/** A new, empty full-width band (shown once it has a title) */
 export function newBand(sections: readonly HomeSection[]): HomeSection {
   return {
     id: freeSectionId('band', sections),
@@ -93,6 +125,26 @@ export function newBand(sections: readonly HomeSection[]): HomeSection {
     enabled: true,
     image: '',
     link: '',
-    text: Object.fromEntries(languages.map((lang) => [lang, { title: '', text: '' }])),
+    width: 'full',
+    text: Object.fromEntries(languages.map((lang) => [lang, { title: '', text: '', button: '' }])),
   };
+}
+
+/** Default "shop by trip" titles; the admin edits them */
+const TRIPS_TITLES: Record<LanguageCode, string> = { en: 'Shop by trip', sk: 'Nakupujte podľa túry', cs: 'Nakupujte podle túry' };
+
+/** A new trips section; its categories are chosen in the editor */
+export function newTrips(sections: readonly HomeSection[]): HomeSection {
+  return {
+    id: freeSectionId('trips', sections),
+    type: 'trips',
+    enabled: true,
+    categories: [],
+    text: Object.fromEntries(languages.map((lang) => [lang, { title: TRIPS_TITLES[lang] }])),
+  };
+}
+
+/** A new row of products on sale (no own title: the Sale translation) */
+export function newProductRow(sections: readonly HomeSection[]): HomeSection {
+  return { id: freeSectionId('row', sections), type: 'productRow', enabled: true, source: 'sale' };
 }

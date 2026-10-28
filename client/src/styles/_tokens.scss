@@ -70,6 +70,8 @@
   // Layout
   --container-max: 1340px;
   --container-narrow: 760px;
+  /** Layered ridges between home sections (app-ridge) */
+  --ridge-height: clamp(40px, 6vw, 80px);
   --header-height: 72px;
   --gutter: clamp(1rem, 0.4rem + 2.4vw, 3rem);
   --z-header: 50;

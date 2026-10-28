@@ -1,7 +1,14 @@
 // The client has no unit-test runner; pure client functions are tested here with the server's Jest
 import type { HomeSection } from '@eshop/shared';
 
-import { bandView, defaultHomeSections, editableHomeSections, newBand, visibleHomeSections } from '../../../client/src/app/shared/home-layout';
+import {
+  bandView,
+  defaultHomeSections,
+  editableHomeSections,
+  newBand,
+  tripsView,
+  visibleHomeSections,
+} from '../../../client/src/app/shared/home-layout';
 
 describe('home layout', () => {
   it('without `home`, keeps the page as before: hero, benefits, categories, products, promo banner', () => {
@@ -33,8 +40,32 @@ describe('home layout', () => {
       image: '',
       link: '//evil.example',
       internal: false,
+      button: '',
+      full: false,
     });
     expect(bandView({ ...band, text: { ...band.text } }, 'sk')).toBeNull();
+  });
+
+  it('shows the trip cards in the chosen order, without the categories that are gone', () => {
+    const categories = [
+      { titleUrl: 'day_hike', title: 'Day hike', description: 'Light', mainImage: { url: 'https://x/d.jpg' } },
+      { titleUrl: 'winter', title: 'Winter' },
+    ];
+    const trips = {
+      id: 't',
+      type: 'trips',
+      enabled: true,
+      categories: ['winter', 'deleted', 'day_hike'],
+      text: { en: { title: 'By trip' } },
+    } as const;
+    expect(tripsView({ ...trips, categories: [...trips.categories] }, categories, 'en')).toEqual({
+      title: 'By trip',
+      cards: [
+        { titleUrl: 'winter', title: 'Winter', description: '', image: '' },
+        { titleUrl: 'day_hike', title: 'Day hike', description: 'Light', image: 'https://x/d.jpg' },
+      ],
+    });
+    expect(tripsView({ ...trips, categories: ['deleted'] }, categories, 'sk')).toBeNull();
   });
 
   describe('editor', () => {
@@ -57,7 +88,7 @@ describe('home layout', () => {
       expect(editableHomeSections({ promo: 'none' }).map((s) => s.id)).toEqual(['hero', 'benefits', 'categories', 'products', 'promo']);
     });
 
-    it('gives a new band a free id and empty texts in every language', () => {
+    it('gives a new band a free id, full width and empty texts in every language', () => {
       const band = newBand([...editableHomeSections({}), { id: 'band', type: 'band', enabled: true, text: {} }]);
       expect(band).toEqual({
         id: 'band-2',
@@ -65,7 +96,8 @@ describe('home layout', () => {
         enabled: true,
         image: '',
         link: '',
-        text: { en: { title: '', text: '' }, sk: { title: '', text: '' }, cs: { title: '', text: '' } },
+        width: 'full',
+        text: { en: { title: '', text: '', button: '' }, sk: { title: '', text: '', button: '' }, cs: { title: '', text: '', button: '' } },
       });
     });
   });

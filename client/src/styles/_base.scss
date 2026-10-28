@@ -252,6 +252,26 @@ a {
   }
 }
 
+// Fades and slides a block in as it scrolls into view. Only transform and opacity change, and the hidden
+// start exists only inside the animation: without scroll timelines, or with reduced motion, it is simply
+// shown. view() follows the nearest scroll container (#main-content), with no JavaScript.
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: reveal linear both;
+      animation-range: entry 0% entry 60%;
+      animation-timeline: view();
+    }
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+}
+
 // Centered small-caps section title (as on the reference shops)
 .section-header {
   display: flex;

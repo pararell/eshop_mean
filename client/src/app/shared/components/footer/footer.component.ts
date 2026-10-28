@@ -9,13 +9,14 @@ import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '../../../pipes/translate.pipe';
 import { RouterLink } from '@angular/router';
+import { RidgeComponent } from '../ridge/ridge.component';
 
 @Component({
   selector: 'app-footer',
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, TranslatePipe, RouterLink],
+  imports: [CommonModule, TranslatePipe, RouterLink, RidgeComponent],
 })
 export class FooterComponent implements OnDestroy {
   private selectors = inject(SignalStoreSelectors);

@@ -60,6 +60,8 @@ export interface ProductsQuery {
   sort: string;
   category?: string;
   maxPrice?: number;
+  /** Only products on sale */
+  onSale?: boolean;
 }
 
 /** Admin image library, or the updated product when an image was attached to one. */
@@ -145,11 +147,12 @@ export class ApiService {
   }
 
   getProducts(req: ProductsQuery): Observable<ApiResponse<ProductsResult>> {
-    const { lang, page, sort, category, maxPrice } = req;
+    const { lang, page, sort, category, maxPrice, onSale } = req;
     const addCategory = category ? { category } : {};
     const categoryQuery = category ? '&category=' + category : '';
     const priceQuery = maxPrice ? '&maxPrice=' + maxPrice : '';
-    const productsUrl = this.apiUrl + '/api/products?lang=' + lang + '&page=' + page + '&sort=' + sort + categoryQuery + priceQuery;
+    const saleQuery = onSale ? '&onSale=true' : '';
+    const productsUrl = this.apiUrl + '/api/products?lang=' + lang + '&page=' + page + '&sort=' + sort + categoryQuery + priceQuery + saleQuery;
     return this.http
       .get<{ all: Product[]; pagination: Pagination; maxPrice: number | null; minPrice: number | null }>(productsUrl, this.requestOptions)
       .pipe(

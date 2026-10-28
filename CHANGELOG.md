@@ -18,6 +18,19 @@ All notable changes to this project are documented in this file. The format foll
   buttons (the hero stays first), switch each one on or off, and add, edit or remove photo bands
   (photo upload or URL, link, title and text per language on tabs). Changes preview live and are saved
   with the theme. It replaces the Promo banner card: an existing promo banner opens as the first band.
+- **More home sections:**
+  - full-width photo bands with a light parallax and their own button label per language (existing bands
+    stay boxed);
+  - "Shop by trip": up to three large cards from chosen categories, menu-hidden ones included;
+  - product rows: four products, newest, on sale or from one category, each loading its own list;
+  - layered mountain ridges under any section (they rise over the photo of a hero or full-width band),
+    tinted with the theme's primary color; the footer ridge is layered the same way;
+  - sections fade in as they scroll into view, and the hero and full-width bands get a light parallax.
+    Pure CSS (scroll-driven animations): only transform and opacity, nothing for visitors who prefer
+    reduced motion or browsers without support.
+
+  All are edited in Themes → Home page sections.
+- `GET /api/products` accepts `onSale=true` (only products on sale; optional, add-only).
 - **Admin Overview** (`/:lang/dashboard`): revenue and orders for today, 7 or 30 days per currency,
   compared with the previous period; average order; orders to handle; revenue per day (one bar chart
   per currency, with a table view); top products; recent orders; what needs attention (visible but
@@ -73,6 +86,8 @@ All notable changes to this project are documented in this file. The format foll
 
 ### Fixed
 
+- **Category tiles honour "Fill the tile (cover)":** the photo fills the tile; before, every tile showed
+  the whole image with padding, as with "Whole image (contain)".
 - **Empty cart after a page load:** the client attached the `lang` header and the access token to API
   calls only after an async subscription first ran, so a request sent earlier (the cart on a fresh
   page load) went without them and the server answered with an empty cart. The headers are now built

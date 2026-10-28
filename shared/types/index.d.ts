@@ -343,15 +343,38 @@ export type Page = { _id?: string; titleUrl: string; dateAdded?: DateValue } & B
 /**
  * One section of the home page (`ThemeStyles.home`, in display order). Without `home` the client uses
  * the default layout, built from the theme's other settings (client/src/app/shared/home-layout.ts).
+ *
+ * Types: hero (photo or video, Hero_* translations; first when present), benefits (shipping, cash on
+ * delivery, returns, secure payment), categories (the menu categories as tiles), products (the newest
+ * products with paging), band (a photo with a title, text and a button), trips ("shop by trip": 1–3
+ * large cards, usually menu-hidden categories), productRow (one row of products: newest, on sale or
+ * from one category).
  */
-export type HomeSection = { id: string; enabled: boolean } & (
-  | /** The hero: media from promoSlideBackground / promoSlideVideo, texts from the Hero_* translations. First when present */
-    { type: 'hero' } /** Shipping, cash on delivery, returns, secure payment */
-  | { type: 'benefits' } /** The visible categories as tiles */
-  | { type: 'categories' } /** The newest products */
-  | { type: 'products' } /** A photo with a title, text and a button (the button label is the Shop_now translation) */
-  | { type: 'band'; image?: string; link?: string; text: ByLanguage<{ title: string; text?: string }> }
+export type HomeSection = {
+  id: string;
+  enabled: boolean;
+  /** 'ridge': layered mountain ridges under the section */
+  divider?: 'none' | 'ridge';
+} & (
+  | { type: 'hero' }
+  | { type: 'benefits' }
+  | { type: 'categories' }
+  | { type: 'products' }
+  | {
+      type: 'band';
+      image?: string;
+      link?: string;
+      /** 'full': edge to edge with a light parallax; otherwise a rounded banner in the page width */
+      width?: 'boxed' | 'full';
+      /** `button` empty = the Shop_now translation */
+      text: ByLanguage<{ title: string; text?: string; button?: string }>;
+    }
+  | { type: 'trips'; categories: string[]; text?: ByLanguage<{ title: string }> }
+  | { type: 'productRow'; source: ProductRowSource; category?: string; text?: ByLanguage<{ title: string }> }
 );
+
+/** Where a product row takes its products from */
+export type ProductRowSource = 'newest' | 'sale' | 'category';
 
 export type HomeSectionType = HomeSection['type'];
 

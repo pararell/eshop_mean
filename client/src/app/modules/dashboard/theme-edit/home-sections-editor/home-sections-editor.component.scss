@@ -91,6 +91,7 @@
   background: var(--color-surface-sunken);
 }
 
+// Upload errors and the trips and product row messages
 .band-upload-error {
   flex-basis: 100%;
   margin: 0;
@@ -132,4 +133,19 @@
   .layout-list.cdk-drop-list-dragging .layout-item:not(.cdk-drag-placeholder) {
     transition: none;
   }
+}
+
+// The ridge toggle: muted when off, the accent when on
+.layout-ridge {
+  color: var(--color-text-muted);
+
+  &-on {
+    color: var(--color-primary);
+  }
+}
+
+.layout-add {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
 }

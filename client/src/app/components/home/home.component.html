@@ -89,7 +89,7 @@
       }
       @case ('categories') {
         @if (categories().length) {
-          <section class="container section" aria-labelledby="categories-title">
+          <section class="container section reveal" aria-labelledby="categories-title">
             <div class="section-header">
               <h2 id="categories-title">{{ 'Categories' | translate | async }}</h2>
             </div>
@@ -99,7 +99,7 @@
       }
       @case ('products') {
         <div class="contour-bg home-products-band">
-          <section class="container section home-products" aria-labelledby="products-title">
+          <section class="container section home-products reveal" aria-labelledby="products-title">
             <div class="section-header">
               <h2 id="products-title">{{ 'New_arrivals' | translate | async }}</h2>
             </div>
@@ -125,28 +125,102 @@
       }
       @case ('band') {
         @if (entry.band; as band) {
-          <section class="container section promo-banner-wrap" [attr.aria-labelledby]="'band-title-' + entry.section.id">
-            <div class="promo-banner">
+          @if (band.full) {
+            <section class="band-full" [attr.aria-labelledby]="'band-title-' + entry.section.id">
               @if (band.image) {
-                <img class="promo-banner-media" [ngSrc]="band.image" alt="" fill sizes="(max-width: 1340px) 100vw, 1340px" />
+                <div class="band-full-media-frame">
+                  <img class="band-full-media" [ngSrc]="band.image" alt="" fill sizes="100vw" />
+                </div>
               }
-              <div class="promo-banner-copy">
-                <h2 class="promo-banner-title" [id]="'band-title-' + entry.section.id">{{ band.title }}</h2>
+              <div class="container band-full-copy reveal">
+                <h2 class="band-full-title" [id]="'band-title-' + entry.section.id">{{ band.title }}</h2>
                 @if (band.text) {
-                  <p class="promo-banner-text">{{ band.text }}</p>
+                  <p class="band-full-text">{{ band.text }}</p>
                 }
                 @if (band.link) {
                   @if (band.internal) {
-                    <a class="btn btn-primary" [routerLink]="band.link">{{ 'Shop_now' | translate | async }}</a>
+                    <a class="btn btn-primary" [routerLink]="band.link">{{ band.button || ('Shop_now' | translate | async) }}</a>
                   } @else {
-                    <a class="btn btn-primary" [href]="band.link">{{ 'Shop_now' | translate | async }}</a>
+                    <a class="btn btn-primary" [href]="band.link">{{ band.button || ('Shop_now' | translate | async) }}</a>
                   }
                 }
               </div>
-            </div>
+            </section>
+          } @else {
+            <section class="container section promo-banner-wrap reveal" [attr.aria-labelledby]="'band-title-' + entry.section.id">
+              <div class="promo-banner">
+                @if (band.image) {
+                  <img class="promo-banner-media" [ngSrc]="band.image" alt="" fill sizes="(max-width: 1340px) 100vw, 1340px" />
+                }
+                <div class="promo-banner-copy">
+                  <h2 class="promo-banner-title" [id]="'band-title-' + entry.section.id">{{ band.title }}</h2>
+                  @if (band.text) {
+                    <p class="promo-banner-text">{{ band.text }}</p>
+                  }
+                  @if (band.link) {
+                    @if (band.internal) {
+                      <a class="btn btn-primary" [routerLink]="band.link">{{ band.button || ('Shop_now' | translate | async) }}</a>
+                    } @else {
+                      <a class="btn btn-primary" [href]="band.link">{{ band.button || ('Shop_now' | translate | async) }}</a>
+                    }
+                  }
+                </div>
+              </div>
+            </section>
+          }
+        }
+      }
+      @case ('trips') {
+        @if (entry.trips; as trips) {
+          <section
+            class="container section trips"
+            [attr.aria-labelledby]="trips.title ? 'trips-title-' + entry.section.id : null"
+            [attr.aria-label]="trips.title ? null : ('Categories' | translate | async)"
+          >
+            @if (trips.title) {
+              <div class="section-header">
+                <h2 [id]="'trips-title-' + entry.section.id">{{ trips.title }}</h2>
+              </div>
+            }
+            <ul class="trips-grid" role="list">
+              @for (card of trips.cards; track card.titleUrl) {
+                <li class="reveal">
+                  <a class="trip-card" [routerLink]="['/' + lang() + '/product/category/' + card.titleUrl]">
+                    @if (card.image) {
+                      <img class="trip-card-media" [ngSrc]="card.image" alt="" fill sizes="(max-width: 680px) 100vw, 33vw" />
+                    }
+                    <span class="trip-card-copy">
+                      <span class="trip-card-title">{{ card.title }}</span>
+                      @if (card.description) {
+                        <span class="trip-card-text">{{ card.description }}</span>
+                      }
+                    </span>
+                  </a>
+                </li>
+              }
+            </ul>
           </section>
         }
       }
+      @case ('productRow') {
+        @if (entry.row; as row) {
+          <app-home-product-row
+            [sectionId]="entry.section.id"
+            [source]="row.source"
+            [category]="row.category"
+            [title]="row.title"
+            [categoryTitle]="row.categoryTitle"
+            [lang]="lang()!"
+            [currency]="currency()"
+            [cartIds]="cartIds()"
+            (addProduct)="addToCart($event)"
+            (removeProduct)="removeFromCart($event)"
+          />
+        }
+      }
+    }
+    @if (entry.section.divider === 'ridge') {
+      <app-ridge />
     }
   }
 </div>

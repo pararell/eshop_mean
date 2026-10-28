@@ -109,6 +109,12 @@
   }
 }
 
+// Category option "Fill the tile (cover)": a lifestyle photo fills the whole tile, cropped
+.category_card-media.category_card-cover img {
+  padding: 0;
+  object-fit: cover;
+}
+
 .category_card-title {
   position: absolute;
   right: var(--space-5);
@@ -152,7 +158,7 @@
     font-size: var(--text-lg);
   }
 
-  .category_card-media img {
+  .category_card-media:not(.category_card-cover) img {
     padding: 6% 8% 48px;
   }
 }

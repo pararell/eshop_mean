@@ -1,0 +1,32 @@
+:host {
+  // The front layer is the page itself, so the ridge runs into the next section
+  --ridge-base: var(--color-bg);
+  --ridge-tint: var(--color-primary);
+  display: block;
+  height: var(--ridge-height);
+  pointer-events: none;
+}
+
+:host(.ridge-footer) {
+  --ridge-base: var(--color-footer);
+  height: clamp(44px, 5vw, 64px);
+}
+
+// 1px taller: no hairline of the section above shows through at the scaled bottom edge
+svg {
+  display: block;
+  width: 100%;
+  height: calc(100% + 1px);
+}
+
+.ridge-far {
+  fill: color-mix(in srgb, var(--ridge-base) 70%, var(--ridge-tint));
+}
+
+.ridge-mid {
+  fill: color-mix(in srgb, var(--ridge-base) 84%, var(--ridge-tint));
+}
+
+.ridge-front {
+  fill: var(--ridge-base);
+}

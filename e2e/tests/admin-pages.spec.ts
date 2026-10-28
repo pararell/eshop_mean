@@ -133,7 +133,42 @@ test('themes: the home page sections are reordered, switched off and a photo ban
     ['promo', false],
     ['band', true],
   ]);
-  expect(row.styles.home[5]).toMatchObject({ link: '/en/product/all', text: { en: { title: 'Autumn sale', text: '' } } });
+  expect(row.styles.home[5]).toMatchObject({ link: '/en/product/all', width: 'full', text: { en: { title: 'Autumn sale', text: '', button: '' } } });
+
+  await confirmDelete(page, 'Delete theme');
+  await toast(page, 'Theme deleted');
+});
+
+test('themes: shop by trip, a product row and ridges are set up in the home sections', async ({ page }) => {
+  const slug = `e2e-home-trips-${Date.now()}`;
+  await open(page, 'themes');
+  await page.getByRole('button', { name: 'New theme' }).click();
+  await page.getByLabel('Name (slug)').fill(slug);
+
+  await page.getByRole('button', { name: 'Ridges under Products' }).click();
+  await expect(page.getByRole('button', { name: 'Ridges under Products' })).toHaveAttribute('aria-pressed', 'true');
+
+  await page.getByRole('button', { name: 'Add shop by trip' }).click();
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(page.getByText('Choose at least one category.')).toBeVisible();
+  await page.getByRole('combobox', { name: 'Card 1' }).click();
+  await page.getByRole('option', { name: 'Cars' }).click();
+
+  await page.getByRole('button', { name: 'Add product row' }).click();
+  await page.getByRole('combobox', { name: 'Products' }).click();
+  await page.getByRole('option', { name: 'From a category' }).click();
+  await page.getByRole('combobox', { name: 'Category' }).click();
+  await page.getByRole('option', { name: 'Bikes' }).click();
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await toast(page, 'Theme saved');
+
+  const [row] = await withDb(async (db) => (await db.query('SELECT styles FROM themes WHERE title_url = $1', [slug])).rows);
+  expect(row.styles.home.find((s: { id: string }) => s.id === 'products')).toMatchObject({ divider: 'ridge' });
+  expect(row.styles.home.find((s: { id: string }) => s.id === 'trips')).toMatchObject({
+    categories: ['cars'],
+    text: { en: { title: 'Shop by trip' }, sk: { title: 'Nakupujte podľa túry' } },
+  });
+  expect(row.styles.home.find((s: { id: string }) => s.id === 'row')).toMatchObject({ type: 'productRow', source: 'category', category: 'bikes' });
 
   await confirmDelete(page, 'Delete theme');
   await toast(page, 'Theme deleted');

@@ -33,7 +33,7 @@ export class ProductsService {
   constructor(@Inject(DRIZZLE) private db: Database) {}
 
   async getProducts(getProductsDto: GetProductsDto, lang: string): Promise<ProductsPage> {
-    const { page, sort, category, search, maxPrice } = getProductsDto;
+    const { page, sort, category, search, maxPrice, onSale } = getProductsDto;
     const pageNumber = parseFloat(page);
     // Unknown language: MongoDB matched nothing, so return an empty page rather than a SQL error
     if (!isLanguage(lang)) {
@@ -44,6 +44,7 @@ export class ProductsService {
     if (search) conditions.push(ilike(products.titleUrl, likePattern(search)));
     if (category) conditions.push(hasCategoryTag(category));
     if (maxPrice) conditions.push(lte(productTranslations.salePrice, Number(maxPrice)));
+    if (onSale === 'true') conditions.push(eq(productTranslations.onSale, true));
 
     const rows = await this.db
       .select({ product: products, translation: productTranslations, total: sql<number>`count(*) over ()`.mapWith(Number) })

@@ -1,34 +1,49 @@
-import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { UpperCasePipe } from '@angular/common';
 import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList } from '@angular/cdk/drag-drop';
 import { ReactiveFormsModule } from '@angular/forms';
-import type { HomeSectionType } from '@eshop/shared';
+import type { HomeSection, HomeSectionType } from '@eshop/shared';
 import { MatIconButton } from '@angular/material/button';
 import { MatError, MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
+import { MatOption, MatSelect } from '@angular/material/select';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { MatTab, MatTabGroup, MatTabLabel } from '@angular/material/tabs';
 import { firstValueFrom } from 'rxjs';
 
 import { ApiService } from '../../../../services/api.service';
 import { languages } from '../../../../shared/constants';
-import { MAX_HOME_SECTIONS, newBand } from '../../../../shared/home-layout';
+import { MAX_HOME_SECTIONS, newBand, newProductRow, newTrips } from '../../../../shared/home-layout';
+import { SignalStore } from '../../../../store/signal.store';
+import { SignalStoreSelectors } from '../../../../store/signal.store.selectors';
 import { ACCEPTED, MAX_FILE_BYTES } from '../../product-editor/image-gallery/image-gallery.component';
-import { moveSection, sectionGroup, SectionGroup, SectionsArray, sectionsFromArray } from '../home-sections-form';
+import { moveSection, sectionGroup, SectionGroup, SectionsArray, sectionsFromArray, TRIP_SLOTS } from '../home-sections-form';
 
 const SECTION_INFO: Record<HomeSectionType, { label: string; hint: string }> = {
   hero: { label: 'Hero', hint: 'The full-screen photo or video (settings above); always first' },
   benefits: { label: 'Benefits', hint: 'Shipping, returns and payment notes' },
   categories: { label: 'Categories', hint: 'The category tiles' },
   products: { label: 'Products', hint: 'The product list' },
-  band: { label: 'Photo band', hint: '' },
+  band: { label: 'Photo band', hint: 'Shown in the languages that have a title' },
+  trips: { label: 'Shop by trip', hint: 'Up to three large category cards' },
+  productRow: { label: 'Product row', hint: 'Four products: the newest, on sale or from a category' },
+};
+
+/** Types with their own settings (the others only move, switch and get ridges) */
+const EDITABLE: HomeSectionType[] = ['band', 'trips', 'productRow'];
+/** The texts each editable type has per language */
+const TEXT_FIELDS: Partial<Record<HomeSectionType, ('title' | 'text' | 'button')[]>> = {
+  band: ['title', 'text', 'button'],
+  trips: ['title'],
+  productRow: ['title'],
 };
 
 /**
  * The home page sections of a theme: order (drag or the arrow buttons; the hero stays first), on/off,
- * and photo bands (add, edit per language, remove). Works on the theme form's `home` FormArray, so
- * changes preview live and are saved with the theme.
+ * ridges under a section, and the repeatable sections (photo bands, shop by trip, product rows: add,
+ * edit per language, remove). Works on the theme form's `home` FormArray, so changes preview live and
+ * are saved with the theme.
  */
 @Component({
   selector: 'app-home-sections-editor',
@@ -49,6 +64,8 @@ const SECTION_INFO: Record<HomeSectionType, { label: string; hint: string }> = {
     MatError,
     MatInput,
     MatSlideToggle,
+    MatSelect,
+    MatOption,
     MatTabGroup,
     MatTab,
     MatTabLabel,
@@ -56,12 +73,26 @@ const SECTION_INFO: Record<HomeSectionType, { label: string; hint: string }> = {
 })
 export class HomeSectionsEditorComponent {
   private api = inject(ApiService);
+  private store = inject(SignalStore);
+  private selectors = inject(SignalStoreSelectors);
 
   readonly sections = input.required<SectionsArray>();
 
   readonly languages = languages;
   readonly maxSections = MAX_HOME_SECTIONS;
-  /** id of the band whose settings are open */
+  readonly tripSlots = Array.from({ length: TRIP_SLOTS }, (_, i) => i);
+  /** Every category, menu-hidden ones included (trips are usually menu-hidden categories) */
+  readonly categoryOptions = computed(() =>
+    this.selectors
+      .allCategories()
+      .map(({ category }) => ({
+        slug: category.titleUrl,
+        label: category.en?.title || category.titleUrl,
+        hidden: !!category.en?.menuHidden,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label)),
+  );
+  /** id of the section whose settings are open */
   readonly expanded = signal<string | null>(null);
   readonly uploading = signal(false);
   readonly uploadError = signal('');
@@ -70,15 +101,29 @@ export class HomeSectionsEditorComponent {
   /** Nothing can be dropped above the hero */
   readonly canSortTo = (index: number) => index > 0;
 
+  constructor() {
+    if (!this.selectors.allCategories().length) this.store.getAllCategories();
+  }
+
   info(group: SectionGroup): { label: string; hint: string } {
     return SECTION_INFO[group.controls.type.value];
   }
 
-  /** A band is named by its first title */
+  editable(group: SectionGroup): boolean {
+    return EDITABLE.includes(group.controls.type.value);
+  }
+
+  textFields(group: SectionGroup): ('title' | 'text' | 'button')[] {
+    return TEXT_FIELDS[group.controls.type.value] ?? [];
+  }
+
+  /** A repeatable section is named by its first title */
   label(group: SectionGroup): string {
-    if (group.controls.type.value !== 'band') return this.info(group).label;
+    const name = this.info(group).label;
+    if (!this.editable(group)) return name;
     const title = languages.map((lang) => group.controls.text.controls[lang].controls.title.value.trim()).find(Boolean);
-    return title ? `Photo band: ${title}` : 'Photo band (no title yet)';
+    if (title) return `${name}: ${title}`;
+    return group.controls.type.value === 'band' ? `${name} (no title yet)` : name;
   }
 
   move(index: number, delta: number): void {
@@ -92,27 +137,36 @@ export class HomeSectionsEditorComponent {
     moveSection(this.sections(), event.previousIndex, Math.max(1, event.currentIndex));
   }
 
-  toggleBand(group: SectionGroup): void {
+  toggleRidge(group: SectionGroup): void {
+    const ridge = group.controls.ridge;
+    ridge.setValue(!ridge.value);
+    ridge.markAsDirty();
+    this.status.set(`Ridges under ${this.label(group)} ${ridge.value ? 'on' : 'off'}.`);
+  }
+
+  toggleSettings(group: SectionGroup): void {
     const id = group.controls.id.value;
     this.expanded.set(this.expanded() === id ? null : id);
     this.uploadError.set('');
   }
 
-  addBand(): void {
+  add(type: 'band' | 'trips' | 'productRow'): void {
     const array = this.sections();
     if (array.length >= MAX_HOME_SECTIONS) return;
-    const band = newBand(sectionsFromArray(array));
-    array.push(sectionGroup(band));
+    const existing = sectionsFromArray(array);
+    const section: HomeSection = type === 'band' ? newBand(existing) : type === 'trips' ? newTrips(existing) : newProductRow(existing);
+    array.push(sectionGroup(section));
     array.markAsDirty();
-    this.expanded.set(band.id);
-    this.status.set('Photo band added at the end.');
+    this.expanded.set(section.id);
+    this.status.set(`${SECTION_INFO[type].label} added at the end.`);
   }
 
-  removeBand(index: number): void {
+  remove(index: number): void {
     const array = this.sections();
+    const label = this.label(array.at(index));
     array.removeAt(index);
     array.markAsDirty();
-    this.status.set('Photo band removed.');
+    this.status.set(`${label} removed.`);
   }
 
   /** Uploads the band photo to Cloudinary; the upload endpoint answers with the image library, newest last */

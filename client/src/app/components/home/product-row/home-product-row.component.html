@@ -1,0 +1,20 @@
+@if (products().length) {
+  <section class="container section home-row reveal" [attr.aria-labelledby]="'row-title-' + sectionId()">
+    <div class="section-header">
+      <h2 [id]="'row-title-' + sectionId()">
+        {{ title() || (source() === 'category' && categoryTitle() ? categoryTitle() : (titleKey() | translate | async)) }}
+      </h2>
+      @if (moreLink(); as link) {
+        <a class="home-row-more" [routerLink]="link">{{ 'View_all' | translate | async }} →</a>
+      }
+    </div>
+    <app-products-list
+      [products]="products()"
+      [cartIds]="cartIds()"
+      [currency]="currency()"
+      [lang]="lang()"
+      (addProduct)="addProduct.emit($event)"
+      (removeProduct)="removeProduct.emit($event)"
+    />
+  </section>
+}

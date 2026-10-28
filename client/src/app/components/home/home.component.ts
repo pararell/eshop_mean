@@ -31,7 +31,9 @@ import { IconComponent } from '../../shared/components/icon/icon.component';
 import { SignalStore } from '../../store/signal.store';
 import { PaginationState, SignalStoreSelectors } from '../../store/signal.store.selectors';
 import { ThemeService } from '../../services/theme.service';
-import { bandView } from '../../shared/home-layout';
+import { bandView, tripsView } from '../../shared/home-layout';
+import { RidgeComponent } from '../../shared/components/ridge/ridge.component';
+import { HomeProductRowComponent } from './product-row/home-product-row.component';
 
 @Component({
   selector: 'app-home',
@@ -43,6 +45,8 @@ import { bandView } from '../../shared/home-layout';
     CategoriesListComponent,
     ProductsListComponent,
     IconComponent,
+    RidgeComponent,
+    HomeProductRowComponent,
     RouterLink,
     MatProgressBarModule,
     TranslatePipe,
@@ -82,10 +86,24 @@ export class HomeComponent implements OnDestroy {
   readonly heroImage = this.themeService.heroImage;
   readonly heroImagePosition = this.themeService.heroImagePosition;
   readonly heroTint = this.themeService.heroTint;
-  /** The sections of the page in order (ThemeStyles.home), bands resolved for the current language */
+  /** The sections of the page in order (ThemeStyles.home), resolved for the current language */
   readonly sections = computed(() => {
     const lang = this.lang() as LanguageCode;
-    return this.themeService.homeSections().map((section) => ({ section, band: section.type === 'band' ? bandView(section, lang) : null }));
+    const categories = this.categories();
+    return this.themeService.homeSections().map((section) => ({
+      section,
+      band: section.type === 'band' ? bandView(section, lang) : null,
+      trips: section.type === 'trips' ? tripsView(section, categories, lang) : null,
+      row:
+        section.type === 'productRow'
+          ? {
+              source: section.source,
+              category: section.category ?? '',
+              title: section.text?.[lang]?.title?.trim() ?? '',
+              categoryTitle: categories.find((category) => category.titleUrl === section.category)?.title ?? '',
+            }
+          : null,
+    }));
   });
   /** Without the hero the page still needs its h1 */
   readonly heroOnHome = this.themeService.heroOnHome;

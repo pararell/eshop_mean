@@ -45,12 +45,25 @@ const RULES: Record<string, Rule> = {
 
 const isObject = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === 'object' && !Array.isArray(value);
 
-const SECTION_TYPES = ['hero', 'benefits', 'categories', 'products', 'band'];
-/** Fields each section type may have, besides id, type and enabled */
-const SECTION_FIELDS: Record<string, string[]> = { band: ['image', 'link', 'text'] };
+const SECTION_TYPES = ['hero', 'benefits', 'categories', 'products', 'band', 'trips', 'productRow'];
 /** Types that may appear only once (one list of products and categories on the page) */
 const SINGLE_TYPES = ['hero', 'benefits', 'categories', 'products'];
 const MAX_SECTIONS = 20;
+const MAX_TRIPS = 3;
+/** A category's titleUrl (tag slug) */
+const categorySlug: Rule = { test: (v) => /^[^\s/?#]{1,100}$/u.test(v), expected: 'a category URL name' };
+/** Settings each section type may have, besides id, type and enabled (every type may have `divider`) */
+const SECTION_FIELDS: Record<string, Record<string, Rule>> = {
+  band: { image: httpsUrl, link: shopPathOrHttps, width: oneOf('boxed', 'full') },
+  trips: {},
+  productRow: { source: oneOf('newest', 'sale', 'category'), category: categorySlug },
+};
+/** The texts per language each type may have, with their maximum length */
+const SECTION_TEXTS: Record<string, Record<string, number>> = {
+  band: { title: 120, text: 300, button: 40 },
+  trips: { title: 120 },
+  productRow: { title: 120 },
+};
 
 /** Problems with the home layout (`styles.home`), as readable lines */
 function homeErrors(home: unknown): string[] {
@@ -71,33 +84,43 @@ function homeErrors(home: unknown): string[] {
     if (SINGLE_TYPES.includes(type) && home.findIndex((other: unknown) => isObject(other) && other.type === type) !== index) {
       errors.push(`${at}: only one ${type} section`);
     }
+    const rules: Record<string, Rule> = { divider: oneOf('none', 'ridge'), ...SECTION_FIELDS[type] };
     for (const [field, value] of Object.entries(rest)) {
-      if (!(SECTION_FIELDS[type] ?? []).includes(field)) errors.push(`${at}.${field} is not a ${type} setting`);
-      else if (field === 'text') errors.push(...bandTextErrors(value, `${at}.text`));
-      else {
-        const rule = field === 'image' ? httpsUrl : shopPathOrHttps;
-        if (typeof value !== 'string') errors.push(`${at}.${field} must be text`);
-        else if (value !== '' && !rule.test(value)) errors.push(`${at}.${field} must be ${rule.expected}`);
-      }
+      if (field === 'text' && SECTION_TEXTS[type]) errors.push(...sectionTextErrors(value, SECTION_TEXTS[type], `${at}.text`));
+      else if (field === 'categories' && type === 'trips') errors.push(...tripCategoriesErrors(value, `${at}.categories`));
+      else if (!rules[field]) errors.push(`${at}.${field} is not a ${type} setting`);
+      else if (typeof value !== 'string') errors.push(`${at}.${field} must be text`);
+      else if (value !== '' && !rules[field].test(value)) errors.push(`${at}.${field} must be ${rules[field].expected}`);
     }
     if (type === 'band' && !('text' in rest)) errors.push(`${at}.text is required`);
+    if (type === 'trips' && !('categories' in rest)) errors.push(`${at}.categories is required`);
+    if (type === 'productRow' && !rest['source']) errors.push(`${at}.source is required`);
+    if (type === 'productRow' && rest['source'] === 'category' && !rest['category'])
+      errors.push(`${at}.category is required for the category source`);
   });
   return errors;
 }
 
-/** A band's texts: { en: { title, text? }, … } */
-function bandTextErrors(text: unknown, at: string): string[] {
+/** A section's texts: { en: { title, … }, … } */
+function sectionTextErrors(text: unknown, fields: Record<string, number>, at: string): string[] {
   if (!isObject(text)) return [`${at} must be an object`];
   return Object.entries(text).flatMap(([lang, value]) => {
     if (!(languages as string[]).includes(lang)) return [`${at}.${lang} is not a language`];
     if (!isObject(value)) return [`${at}.${lang} must be an object`];
     return Object.entries(value).flatMap(([field, fieldValue]) => {
-      const max = { title: 120, text: 300 }[field];
+      const max = fields[field];
       if (!max) return [`${at}.${lang}.${field} is not a text field`];
       if (typeof fieldValue !== 'string') return [`${at}.${lang}.${field} must be text`];
       return fieldValue.length > max ? [`${at}.${lang}.${field} must be at most ${max} characters`] : [];
     });
   });
+}
+
+/** The categories of a trips section: 1 to 3 different category URL names */
+function tripCategoriesErrors(value: unknown, at: string): string[] {
+  if (!Array.isArray(value) || value.length < 1 || value.length > MAX_TRIPS) return [`${at} must be a list of 1 to ${MAX_TRIPS} categories`];
+  if (!value.every((slug) => typeof slug === 'string' && categorySlug.test(slug))) return [`${at} must hold category URL names`];
+  return new Set(value).size === value.length ? [] : [`${at} has a category twice`];
 }
 
 /** What is wrong with a theme's styles, as readable lines; [] when valid */

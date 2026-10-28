@@ -76,13 +76,49 @@ describe('theme styles', () => {
         'home[2].id products is used twice',
         'home[2].enabled must be true or false',
         'home[2]: only one products section',
-        'home[3].type must be one of hero, benefits, categories, products, band',
+        'home[3].type must be one of hero, benefits, categories, products, band, trips, productRow',
         'home[4].image must be an https URL',
         'home[4].color is not a band setting',
         'home[4].text.de is not a language',
         'home[4].text.en.title must be text',
       ]);
       expect(themeStylesErrors({ home: 'hero' })).toEqual(['home must be a list of sections']);
+    });
+
+    it('accepts full-width bands with a button, trips, product rows and ridge dividers', () => {
+      const home = [
+        { ...band, width: 'full', divider: 'ridge', text: { en: { title: 'Sale', button: 'See the tents' } } },
+        { id: 'trips', type: 'trips', enabled: true, categories: ['day_hike', 'túry'], text: { sk: { title: 'Podľa túry' } } },
+        { id: 'sale', type: 'productRow', enabled: true, source: 'sale', divider: 'none' },
+        { id: 'tents', type: 'productRow', enabled: true, source: 'category', category: 'tents', text: { en: { title: 'Tents' } } },
+      ];
+      expect(themeStylesErrors({ home })).toEqual([]);
+    });
+
+    it('rejects bad trips and product rows', () => {
+      const home = [
+        { id: 'trips', type: 'trips', enabled: true, categories: ['a', 'b', 'c', 'd'] },
+        { id: 'trips-2', type: 'trips', enabled: true, categories: ['a', 'a'], text: { en: { title: 'x', text: 'no' } } },
+        { id: 'trips-3', type: 'trips', enabled: true },
+        { id: 'row', type: 'productRow', enabled: true, source: 'category' },
+        { id: 'row-2', type: 'productRow', enabled: true, source: 'random', category: 'a/b', image: 'https://x/a.jpg' },
+        { id: 'row-3', type: 'productRow', enabled: true, divider: 'wave' },
+        { ...band, id: 'b', width: 'wide', text: { en: { title: 'x', button: 'x'.repeat(41) } } },
+      ];
+      expect(themeStylesErrors({ home })).toEqual([
+        'home[0].categories must be a list of 1 to 3 categories',
+        'home[1].categories has a category twice',
+        'home[1].text.en.text is not a text field',
+        'home[2].categories is required',
+        'home[3].category is required for the category source',
+        'home[4].source must be one of newest, sale, category',
+        'home[4].category must be a category URL name',
+        'home[4].image is not a productRow setting',
+        'home[5].divider must be one of none, ridge',
+        'home[5].source is required',
+        'home[6].text.en.button must be at most 40 characters',
+        'home[6].width must be one of boxed, full',
+      ]);
     });
   });
 });

@@ -6,9 +6,9 @@
   <div class="admin-card-body">
     <ol class="layout-list" cdkDropList [cdkDropListSortPredicate]="canSortTo" (cdkDropListDropped)="dropped($event)" aria-label="Home page sections">
       @for (group of sections().controls; track group; let i = $index; let last = $last) {
-        @let isBand = group.controls.type.value === 'band';
-        @let isHero = group.controls.type.value === 'hero';
-        @let open = isBand && expanded() === group.controls.id.value;
+        @let type = group.controls.type.value;
+        @let isHero = type === 'hero';
+        @let open = editable(group) && expanded() === group.controls.id.value;
         <li class="layout-item" cdkDrag [cdkDragDisabled]="isHero" [class.layout-off]="!group.controls.enabled.value">
           <div class="layout-row">
             <span class="layout-handle" [class.layout-handle-fixed]="isHero" cdkDragHandle [cdkDragHandleDisabled]="isHero" aria-hidden="true">
@@ -16,17 +16,24 @@
             </span>
             <div class="layout-name">
               <strong>{{ label(group) }}</strong>
-              @if (isBand) {
-                <span class="admin-hint">Shown in the languages that have a title</span>
-              } @else {
-                <span class="admin-hint">{{ info(group).hint }}</span>
-              }
+              <span class="admin-hint">{{ info(group).hint }}</span>
               @if (group.invalid && group.touched) {
                 <span class="admin-pill layout-error">Check the settings</span>
               }
             </div>
             <div class="layout-controls">
               <mat-slide-toggle [formControl]="group.controls.enabled" [aria-label]="'Show ' + label(group)" />
+              <button
+                mat-icon-button
+                type="button"
+                class="layout-ridge"
+                [class.layout-ridge-on]="group.controls.ridge.value"
+                [attr.aria-label]="'Ridges under ' + label(group)"
+                [attr.aria-pressed]="group.controls.ridge.value"
+                (click)="toggleRidge(group)"
+              >
+                <mat-icon>terrain</mat-icon>
+              </button>
               @if (!isHero) {
                 <button mat-icon-button type="button" [attr.aria-label]="'Move ' + label(group) + ' up'" [disabled]="i <= 1" (click)="move(i, -1)">
                   <mat-icon>arrow_upward</mat-icon>
@@ -35,17 +42,17 @@
                   <mat-icon>arrow_downward</mat-icon>
                 </button>
               }
-              @if (isBand) {
+              @if (editable(group)) {
                 <button
                   mat-icon-button
                   type="button"
                   [attr.aria-label]="(open ? 'Close ' : 'Edit ') + label(group)"
                   [attr.aria-expanded]="open"
-                  (click)="toggleBand(group)"
+                  (click)="toggleSettings(group)"
                 >
                   <mat-icon>{{ open ? 'expand_less' : 'edit' }}</mat-icon>
                 </button>
-                <button mat-icon-button type="button" [attr.aria-label]="'Remove ' + label(group)" (click)="removeBand(i)">
+                <button mat-icon-button type="button" [attr.aria-label]="'Remove ' + label(group)" (click)="remove(i)">
                   <mat-icon>delete</mat-icon>
                 </button>
               }
@@ -54,31 +61,90 @@
 
           @if (open) {
             <div class="band admin-fields">
-              <div class="band-photo admin-field-wide">
-                @if (group.controls.image.valid && group.controls.image.value) {
-                  <img class="band-preview" [src]="group.controls.image.value" alt="" />
+              @switch (type) {
+                @case ('band') {
+                  <div class="band-photo admin-field-wide">
+                    @if (group.controls.image.valid && group.controls.image.value) {
+                      <img class="band-preview" [src]="group.controls.image.value" alt="" />
+                    }
+                    <mat-form-field class="band-photo-url" subscriptSizing="dynamic">
+                      <mat-label>Photo URL</mat-label>
+                      <input matInput type="url" [formControl]="group.controls.image" />
+                      <mat-hint>Upload a photo or paste an https:// address</mat-hint>
+                      <mat-error>Use an https:// address</mat-error>
+                    </mat-form-field>
+                    <input #fileInput type="file" hidden accept="image/jpeg,image/png,image/webp,image/gif" (change)="upload(group, $event)" />
+                    <button type="button" class="btn btn-outline" [disabled]="uploading()" (click)="fileInput.click()">
+                      <mat-icon aria-hidden="true">file_upload</mat-icon>
+                      {{ uploading() ? 'Uploading…' : 'Upload photo' }}
+                    </button>
+                    @if (uploadError()) {
+                      <p class="band-upload-error" role="alert">{{ uploadError() }}</p>
+                    }
+                  </div>
+                  <mat-form-field subscriptSizing="dynamic">
+                    <mat-label>Layout</mat-label>
+                    <mat-select [formControl]="group.controls.width">
+                      <mat-option value="full">Full width, photo moves on scroll</mat-option>
+                      <mat-option value="boxed">Banner in the page width</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <mat-form-field class="admin-field-wide" subscriptSizing="dynamic">
+                    <mat-label>Link</mat-label>
+                    <input matInput [formControl]="group.controls.link" autocomplete="off" />
+                    <mat-hint>A shop path such as /en/product/category/tents, or a full URL; empty shows no button</mat-hint>
+                    <mat-error>Use a shop path (/en/…) or an https:// address</mat-error>
+                  </mat-form-field>
                 }
-                <mat-form-field class="band-photo-url" subscriptSizing="dynamic">
-                  <mat-label>Photo URL</mat-label>
-                  <input matInput type="url" [formControl]="group.controls.image" />
-                  <mat-hint>Upload a photo or paste an https:// address</mat-hint>
-                  <mat-error>Use an https:// address</mat-error>
-                </mat-form-field>
-                <input #fileInput type="file" hidden accept="image/jpeg,image/png,image/webp,image/gif" (change)="upload(group, $event)" />
-                <button type="button" class="btn btn-outline" [disabled]="uploading()" (click)="fileInput.click()">
-                  <mat-icon aria-hidden="true">file_upload</mat-icon>
-                  {{ uploading() ? 'Uploading…' : 'Upload photo' }}
-                </button>
-                @if (uploadError()) {
-                  <p class="band-upload-error" role="alert">{{ uploadError() }}</p>
+                @case ('trips') {
+                  <p class="admin-hint admin-field-wide">
+                    One large card per category, with its photo, name and description. Menu-hidden categories work well as trips.
+                  </p>
+                  @for (slot of tripSlots; track slot) {
+                    <mat-form-field subscriptSizing="dynamic">
+                      <mat-label>Card {{ slot + 1 }}</mat-label>
+                      <mat-select [formControl]="group.controls.categories.at(slot)">
+                        <mat-option value="">None</mat-option>
+                        @for (option of categoryOptions(); track option.slug) {
+                          <mat-option [value]="option.slug">{{ option.label }}{{ option.hidden ? ' (menu-hidden)' : '' }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  }
+                  @if (group.hasError('tripsEmpty') && group.touched) {
+                    <p class="band-upload-error admin-field-wide" role="alert">Choose at least one category.</p>
+                  }
+                  @if (group.hasError('tripsTwice')) {
+                    <p class="band-upload-error admin-field-wide" role="alert">Each category can be on one card only.</p>
+                  }
                 }
-              </div>
-              <mat-form-field class="admin-field-wide" subscriptSizing="dynamic">
-                <mat-label>Link</mat-label>
-                <input matInput [formControl]="group.controls.link" autocomplete="off" />
-                <mat-hint>A shop path such as /en/product/category/tents, or a full URL; empty shows no button</mat-hint>
-                <mat-error>Use a shop path (/en/…) or an https:// address</mat-error>
-              </mat-form-field>
+                @case ('productRow') {
+                  <mat-form-field subscriptSizing="dynamic">
+                    <mat-label>Products</mat-label>
+                    <mat-select [formControl]="group.controls.source">
+                      <mat-option value="newest">Newest</mat-option>
+                      <mat-option value="sale">On sale</mat-option>
+                      <mat-option value="category">From a category</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  @if (group.controls.source.value === 'category') {
+                    <mat-form-field subscriptSizing="dynamic">
+                      <mat-label>Category</mat-label>
+                      <mat-select [formControl]="group.controls.category">
+                        @for (option of categoryOptions(); track option.slug) {
+                          <mat-option [value]="option.slug">{{ option.label }}{{ option.hidden ? ' (menu-hidden)' : '' }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                    @if (group.hasError('categoryMissing') && group.touched) {
+                      <p class="band-upload-error admin-field-wide" role="alert">Choose a category.</p>
+                    }
+                  }
+                  <p class="admin-hint admin-field-wide">
+                    Hidden when there are no such products. Without a title: New arrivals, Sale or the category name.
+                  </p>
+                }
+              }
               <mat-tab-group class="admin-field-wide" animationDuration="0ms" [attr.aria-label]="'Texts of ' + label(group)">
                 @for (lang of languages; track lang) {
                   @let langGroup = group.controls.text.controls[lang];
@@ -90,17 +156,35 @@
                       }
                     </ng-template>
                     <div class="band-texts">
-                      <mat-form-field subscriptSizing="dynamic">
-                        <mat-label>Title ({{ lang }})</mat-label>
-                        <input matInput [formControl]="langGroup.controls.title" autocomplete="off" />
-                        <mat-hint>Without a title the band is hidden in this language</mat-hint>
-                        <mat-error>At most 120 characters</mat-error>
-                      </mat-form-field>
-                      <mat-form-field subscriptSizing="dynamic">
-                        <mat-label>Text ({{ lang }})</mat-label>
-                        <textarea matInput rows="2" [formControl]="langGroup.controls.text"></textarea>
-                        <mat-error>At most 300 characters</mat-error>
-                      </mat-form-field>
+                      @for (field of textFields(group); track field) {
+                        @switch (field) {
+                          @case ('title') {
+                            <mat-form-field subscriptSizing="dynamic">
+                              <mat-label>Title ({{ lang }})</mat-label>
+                              <input matInput [formControl]="langGroup.controls.title" autocomplete="off" />
+                              @if (type === 'band') {
+                                <mat-hint>Without a title the band is hidden in this language</mat-hint>
+                              }
+                              <mat-error>At most 120 characters</mat-error>
+                            </mat-form-field>
+                          }
+                          @case ('text') {
+                            <mat-form-field subscriptSizing="dynamic">
+                              <mat-label>Text ({{ lang }})</mat-label>
+                              <textarea matInput rows="2" [formControl]="langGroup.controls.text"></textarea>
+                              <mat-error>At most 300 characters</mat-error>
+                            </mat-form-field>
+                          }
+                          @case ('button') {
+                            <mat-form-field subscriptSizing="dynamic">
+                              <mat-label>Button ({{ lang }})</mat-label>
+                              <input matInput [formControl]="langGroup.controls.button" autocomplete="off" />
+                              <mat-hint>Empty: the "Shop now" translation</mat-hint>
+                              <mat-error>At most 40 characters</mat-error>
+                            </mat-form-field>
+                          }
+                        }
+                      }
                     </div>
                   </mat-tab>
                 }
@@ -110,10 +194,20 @@
         </li>
       }
     </ol>
-    <button type="button" class="btn btn-outline" [disabled]="sections().length >= maxSections" (click)="addBand()">
-      <mat-icon aria-hidden="true">add</mat-icon>
-      Add photo band
-    </button>
+    <div class="layout-add">
+      <button type="button" class="btn btn-outline" [disabled]="sections().length >= maxSections" (click)="add('band')">
+        <mat-icon aria-hidden="true">add</mat-icon>
+        Add photo band
+      </button>
+      <button type="button" class="btn btn-outline" [disabled]="sections().length >= maxSections" (click)="add('trips')">
+        <mat-icon aria-hidden="true">add</mat-icon>
+        Add shop by trip
+      </button>
+      <button type="button" class="btn btn-outline" [disabled]="sections().length >= maxSections" (click)="add('productRow')">
+        <mat-icon aria-hidden="true">add</mat-icon>
+        Add product row
+      </button>
+    </div>
     <p class="visually-hidden" aria-live="polite">{{ status() }}</p>
   </div>
 </section>

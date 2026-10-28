@@ -91,6 +91,15 @@ describe('Products API', () => {
       expect(await titles('day_hike')).toEqual(['boots']);
     });
 
+    it('lists only products on sale with onSale=true', async () => {
+      const fullPrice = productFixture('full-price', { en: { ...productFixture('full-price').en, onSale: false, salePrice: 30 } });
+      await t.model('Product').create([fullPrice, productFixture('discounted')]);
+
+      expect((await list({ onSale: 'true' }).expect(200)).body.all.map((p: any) => p.titleUrl)).toEqual(['discounted']);
+      expect((await list({ onSale: 'false' }).expect(200)).body.all).toHaveLength(2);
+      await list({ onSale: 'yes' }).expect(400);
+    });
+
     it('rejects an unknown sort option', async () => {
       await list({ sort: 'random' }).expect(400);
     });

@@ -393,7 +393,8 @@ removed from products' `tags` (one `array_remove` update) when a category is del
 - **`themes`** `(title_url unique, active, styles jsonb)`: `styles` holds the theme settings typed as
   `ThemeStyles` (`shared/types`): brand color, shop name, logo, home hero and promo banner, promo texts
   per language, and `home`: the home page sections in order (hero, benefits, categories, products,
-  bands with texts per language; each can be turned off). Without `home` the client builds the default
+  photo bands, shop by trip, product rows with their own product list; texts per language, ridges under
+  any section; each can be turned off). Without `home` the client builds the default
   layout from the other settings (`client/src/app/shared/home-layout.ts`); the theme editor edits it
   (`theme-edit/home-sections-editor/`) and always saves `home`. The server accepts only those keys with valid values (`server/src/eshop/theme-styles.ts`,
   400 otherwise) and merges a save into the stored settings; the client applies them through
