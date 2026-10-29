@@ -1,12 +1,14 @@
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, ValidatorFn } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators, ReactiveFormsModule, ValidatorFn } from '@angular/forms';
 import { Component, ChangeDetectionStrategy, DestroyRef, computed, inject, signal } from '@angular/core';
-import type { ThemeStyles } from '@eshop/shared';
+import type { AiThemeDraft, ThemeStyles } from '@eshop/shared';
+import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatError, MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
 import { MatSelect, MatOption } from '@angular/material/select';
 import { MatInput } from '@angular/material/input';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { MatIcon } from '@angular/material/icon';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 import { ThemeService } from '../../../services/theme.service';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
@@ -14,9 +16,12 @@ import { SignalStore } from '../../../store/signal.store';
 import { AdminPageHeaderComponent } from '../admin-ui/admin-page-header.component';
 import { AdminItemListComponent, AdminListItem } from '../admin-ui/admin-item-list.component';
 import { confirmAction } from '../admin-ui/confirm-dialog.component';
-import { editableHomeSections } from '../../../shared/home-layout';
+import { editableHomeSections, newBand } from '../../../shared/home-layout';
+import { ApiService } from '../../../services/api.service';
+import { errorMessage } from '../admin-ui/error-message';
+import { THEME_PRESETS, ThemePreset } from './theme-presets';
 import { HomeSectionsEditorComponent } from './home-sections-editor/home-sections-editor.component';
-import { httpsUrl, sectionsArray, SectionsArray, sectionsFromArray } from './home-sections-form';
+import { httpsUrl, sectionGroup, sectionsArray, SectionsArray, sectionsFromArray } from './home-sections-form';
 
 /**
  * The text settings this editor shows, besides the home sections (`home`). The server keeps the other
@@ -65,6 +70,7 @@ const FIELD_VALIDATORS: Partial<Record<(typeof STYLE_FIELDS)[number], ValidatorF
     MatOption,
     MatSlideToggle,
     MatIcon,
+    MatProgressSpinner,
     AdminPageHeaderComponent,
     AdminItemListComponent,
     HomeSectionsEditorComponent,
@@ -75,6 +81,7 @@ export class ThemeEditComponent {
   private selectos = inject(SignalStoreSelectors);
   private fb = inject(FormBuilder);
   private themeService = inject(ThemeService);
+  private api = inject(ApiService);
 
   private dialog = inject(MatDialog);
   themesEditForm: FormGroup;
@@ -82,6 +89,15 @@ export class ThemeEditComponent {
     const list = this.selectos.themes();
     return Array.isArray(list) ? list : [];
   });
+  readonly presets = THEME_PRESETS;
+  /** AI theme drafts are available (an AI provider is configured) */
+  readonly aiEnabled = signal(false);
+  readonly aiBusy = signal(false);
+  readonly aiError = signal('');
+  /** What the last draft changed, for the admin to review */
+  readonly aiResult = signal('');
+  readonly aiBrief = new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.maxLength(500)] });
+  private aiRequest?: Subscription;
   /** titleUrl of the open theme; '' for a new one; null when nothing is open */
   readonly selected = signal<string | null>(null);
   readonly listItems = computed<AdminListItem[]>(() =>
@@ -111,7 +127,64 @@ export class ThemeEditComponent {
     this.themesEditForm.valueChanges.subscribe(() => {
       if (this.selected() !== null) this.themeService.applyStyles(this.stylesFromForm());
     });
-    inject(DestroyRef).onDestroy(() => this.restoreActiveTheme());
+    inject(DestroyRef).onDestroy(() => {
+      this.aiRequest?.unsubscribe();
+      this.restoreActiveTheme();
+    });
+    this.api.getAiStatus().subscribe((status) => this.aiEnabled.set(!status.error && status.enabled));
+  }
+
+  /** Sets the look of a preset (accent color and hero tint); everything else stays */
+  applyPreset(preset: ThemePreset): void {
+    this.themesEditForm.patchValue({
+      useDefaultColor: !preset.primaryColor,
+      ...(preset.primaryColor ? { primaryColor: preset.primaryColor } : {}),
+      heroTint: preset.heroTint,
+    });
+    this.themesEditForm.markAsDirty();
+  }
+
+  /** Asks the AI for a look and a photo band; the result fills the form, nothing is saved */
+  draftWithAi(): void {
+    if (this.aiBrief.invalid || this.aiBusy()) {
+      this.aiBrief.markAsTouched();
+      return;
+    }
+    this.aiError.set('');
+    this.aiResult.set('');
+    this.aiBusy.set(true);
+    this.aiRequest = this.api.createAiThemeDraft({ brief: this.aiBrief.value.trim() }).subscribe((response) => {
+      this.aiBusy.set(false);
+      if (response.error) {
+        this.aiError.set(errorMessage(response.error, 'The AI request failed. Try again.'));
+        return;
+      }
+      this.aiResult.set(this.applyAiDraft(response.draft));
+    });
+  }
+
+  cancelAi(): void {
+    this.aiRequest?.unsubscribe();
+    this.aiBusy.set(false);
+  }
+
+  /** Fills the form from an AI draft: color, tint, the shop name when empty, and a new photo band */
+  private applyAiDraft(draft: AiThemeDraft): string {
+    const changed = ['the brand color', 'the photo colors'];
+    this.themesEditForm.patchValue({ useDefaultColor: false, primaryColor: draft.primaryColor, heroTint: draft.heroTint });
+    if (draft.shopName && !String(this.themesEditForm.get('shopName')!.value ?? '').trim()) {
+      this.themesEditForm.patchValue({ shopName: draft.shopName });
+      changed.push('the shop name');
+    }
+    const band = newBand(sectionsFromArray(this.homeSections));
+    if (band.type === 'band') {
+      band.text = draft.band;
+      // A new array, so the sections editor (OnPush) shows the band
+      this.themesEditForm.setControl('home', new FormArray([...this.homeSections.controls, sectionGroup(band)]));
+      changed.push('a photo band at the end of the home sections (add its photo)');
+    }
+    this.themesEditForm.markAsDirty();
+    return `Filled ${changed.join(', ')}. Review the preview and save.`;
   }
 
   /** Opens a theme (or a new one with defaults, id '') in the form */

@@ -7,6 +7,7 @@ export const E2E = {
   translations: { sk: { Back: 'Späť' } },
   order: { orderId: 'order-e2e-seed', amount: 30, customer: 'Seed Customer' },
   // What the stubbed AI answers (support/ai-stub.mjs)
+  aiTheme: { color: '#b45309', shopName: 'E2E Ridge Gear', bandTitle: 'E2E autumn band' },
   ai: {
     titleUrl: 'e2e-ai-jacket',
     titles: { en: 'E2E Down Jacket', sk: 'E2E Páperová bunda', cs: 'E2E Péřová bunda' },

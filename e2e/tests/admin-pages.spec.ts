@@ -174,6 +174,38 @@ test('themes: shop by trip, a product row and ridges are set up in the home sect
   await toast(page, 'Theme deleted');
 });
 
+test('themes: a preset sets the look, and the AI drafts a theme into the form', async ({ page }) => {
+  const slug = `e2e-theme-ai-${Date.now()}`;
+  await open(page, 'themes');
+  await page.getByRole('button', { name: 'New theme' }).click();
+  await page.getByLabel('Name (slug)').fill(slug);
+
+  await page.getByRole('button', { name: 'Ember' }).click();
+  await expect(page.getByRole('switch', { name: 'Default color (ink)' })).not.toBeChecked();
+  await expect(page.getByLabel('Primary color')).toHaveValue('#c2410c');
+  await expect(page.getByRole('combobox', { name: 'Photo colors' })).toContainText('Warm tint');
+
+  await page.getByLabel('Describe the shop and the look').fill('Calm autumn hiking shop');
+  await page.getByRole('button', { name: 'Draft with AI' }).click();
+  await expect(page.getByText(/Filled the brand color/)).toBeVisible();
+  await expect(page.getByLabel('Primary color')).toHaveValue(E2E.aiTheme.color);
+  await expect(page.getByLabel('Shop name', { exact: true })).toHaveValue(E2E.aiTheme.shopName);
+  await expect(page.getByRole('list', { name: 'Home page sections' })).toContainText(`Photo band: ${E2E.aiTheme.bandTitle} en`);
+
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await toast(page, 'Theme saved');
+  const [row] = await withDb(async (db) => (await db.query('SELECT styles FROM themes WHERE title_url = $1', [slug])).rows);
+  expect(row.styles).toMatchObject({ primaryColor: E2E.aiTheme.color, heroTint: 'warm', shopName: E2E.aiTheme.shopName });
+  expect(row.styles.home.at(-1)).toMatchObject({
+    type: 'band',
+    width: 'full',
+    text: { sk: { title: `${E2E.aiTheme.bandTitle} sk`, button: 'Explore' } },
+  });
+
+  await confirmDelete(page, 'Delete theme');
+  await toast(page, 'Theme deleted');
+});
+
 test('translations: add a key, fill it, save', async ({ page }) => {
   const key = `E2E_key_${Date.now()}`;
   await open(page, 'translations');

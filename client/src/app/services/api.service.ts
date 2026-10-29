@@ -9,6 +9,8 @@ import type {
   AiDraftRequest,
   AiDraftResponse,
   AiStatus,
+  AiThemeDraftRequest,
+  AiThemeDraftResponse,
   CategoryInput,
   ContactRequest,
   CurrentUser,
@@ -356,6 +358,11 @@ export class ApiService {
   /** AI product draft; unsubscribing cancels the request. Errors come back as `{ error }` (HttpErrorResponse). */
   createAiDraft(req: AiDraftRequest) {
     return this.handle(this.http.post<AiDraftResponse>(this.apiUrl + '/api/admin/products/ai-draft', req, this.requestOptions));
+  }
+
+  /** AI theme proposal (admin); unsubscribing cancels the request */
+  createAiThemeDraft(req: AiThemeDraftRequest) {
+    return this.handle(this.http.post<AiThemeDraftResponse>(this.apiUrl + '/api/admin/themes/ai-draft', req, this.requestOptions));
   }
 
   sendContact(req: ContactRequest) {

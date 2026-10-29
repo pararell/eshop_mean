@@ -34,6 +34,16 @@ const draftAnswer = (call) => ({
   ),
 });
 
+/** The model's theme proposal (the theme editor's "Draft with AI") */
+const themeAnswer = () => ({
+  primaryColor: E2E.aiTheme.color,
+  heroTint: 'warm',
+  shopName: E2E.aiTheme.shopName,
+  band: Object.fromEntries(
+    ['en', 'sk', 'cs'].map((lang) => [lang, { title: `${E2E.aiTheme.bandTitle} ${lang}`, text: 'Warm layers.', button: 'Explore' }]),
+  ),
+});
+
 /** The `file` part of a multipart upload (what Cloudinary would store), or undefined */
 const uploadedImage = (raw, contentType) => {
   const boundary = /boundary=(?:"([^"]+)"|([^;]+))/.exec(contentType ?? '');
@@ -97,8 +107,9 @@ export async function startAiStub({ cloudName }) {
         const prompt = JSON.stringify(json?.messages ?? '');
         if (prompt.includes(E2E.ai.failWord)) return send(500, { error: { message: 'stub failure' } });
         aiCalls += 1;
+        const tool = json?.tool_choice?.name ?? 'save_product_draft';
         return send(200, {
-          content: [{ type: 'tool_use', name: 'save_product_draft', input: draftAnswer(aiCalls) }],
+          content: [{ type: 'tool_use', name: tool, input: tool === 'save_theme_draft' ? themeAnswer() : draftAnswer(aiCalls) }],
           stop_reason: 'tool_use',
           usage: { input_tokens: 1500, output_tokens: 1000 },
         });

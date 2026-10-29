@@ -30,6 +30,13 @@ All notable changes to this project are documented in this file. The format foll
     reduced motion or browsers without support.
 
   All are edited in Themes → Home page sections.
+- **Theme presets** in the theme editor (Ink, Forest, Ember, Glacier, Heather): one click sets the
+  brand color and the photo tint; the shop name, logo, hero media and home sections stay.
+- **Draft a theme with AI** (Themes → Draft with AI, when an AI provider is configured): from a few
+  words the AI proposes the brand color, the photo tint, a shop name (only when empty) and a
+  full-width photo band in every language. It fills the form and the preview; nothing is saved until
+  Save. New admin endpoint `POST /api/admin/themes/ai-draft` (docs/ai.md § 9); usage is logged like
+  product drafts.
 - `GET /api/products` accepts `onSale=true` (only products on sale; optional, add-only).
 - **Admin Overview** (`/:lang/dashboard`): revenue and orders for today, 7 or 30 days per currency,
   compared with the previous period; average order; orders to handle; revenue per day (one bar chart

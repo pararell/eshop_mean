@@ -1,12 +1,12 @@
 import { Body, Controller, Get, Headers, HttpCode, HttpStatus, Post, UseGuards, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import type { AiDraftResponse, AiStatus } from '@eshop/shared';
+import type { AiDraftResponse, AiStatus, AiThemeDraftResponse } from '@eshop/shared';
 
 import { RolesGuard } from '../auth/roles.guard';
 import { GetUser } from '../auth/utils/get-user.decorator';
 import { User } from '../auth/models/user.model';
 import { AiService } from './ai.service';
-import { AiDraftRequestDto } from './dto/ai-draft.dto';
+import { AiDraftRequestDto, AiThemeDraftRequestDto } from './dto/ai-draft.dto';
 
 @Controller('api/admin')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -29,5 +29,17 @@ export class AiController {
     @Headers('lang') lang?: string,
   ): Promise<AiDraftResponse> {
     return this.aiService.createDraft(user._id, body, lang);
+  }
+
+  /** Proposes a theme look and home band texts from a short brief. Nothing is saved except a usage log row. */
+  @Post('/themes/ai-draft')
+  @HttpCode(HttpStatus.OK)
+  createThemeDraft(
+    @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }))
+    body: AiThemeDraftRequestDto,
+    @GetUser() user: User,
+    @Headers('lang') lang?: string,
+  ): Promise<AiThemeDraftResponse> {
+    return this.aiService.createThemeDraft(user._id, body.brief, lang);
   }
 }

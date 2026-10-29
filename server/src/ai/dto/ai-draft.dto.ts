@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { ArrayMaxSize, IsArray, IsOptional, IsString, IsUrl, MaxLength, ValidateNested } from 'class-validator';
+import { ArrayMaxSize, IsArray, IsNotEmpty, IsOptional, IsString, IsUrl, MaxLength, ValidateNested } from 'class-validator';
 
 import { LIMITS } from '../draft-schema';
 
@@ -23,6 +23,15 @@ export class AiDraftRequestDto {
   @IsString()
   @MaxLength(4000)
   supplierText?: string;
+}
+
+/** Request body of POST /api/admin/themes/ai-draft */
+export class AiThemeDraftRequestDto {
+  /** A few words about the shop and the look, e.g. "alpine hiking shop, calm, autumn colors" */
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(500)
+  brief!: string;
 }
 
 // The model's answer. Limits are generous (the normalizer trims SEO texts to their exact limits);

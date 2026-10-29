@@ -39,9 +39,59 @@
         </div>
       </section>
 
+      @if (aiEnabled()) {
+        <section class="admin-card" aria-labelledby="theme-ai-title">
+          <div class="admin-card-head">
+            <h2 id="theme-ai-title">Draft with AI</h2>
+            <p class="admin-hint">
+              Describe the shop and the look. The AI suggests the brand color, the photo colors, a shop name (only when it is empty) and a photo band
+              in every language. Nothing is saved until you save.
+            </p>
+          </div>
+          <div class="admin-card-body admin-fields">
+            <mat-form-field class="admin-field-wide" subscriptSizing="dynamic">
+              <mat-label>Describe the shop and the look</mat-label>
+              <textarea matInput rows="2" [formControl]="aiBrief" placeholder="Alpine hiking shop, calm, autumn colors"></textarea>
+              <mat-error>Write a few words, at most 500 characters</mat-error>
+            </mat-form-field>
+            <div class="theme-ai-actions admin-field-wide">
+              <button type="button" class="btn btn-primary" [disabled]="aiBusy()" (click)="draftWithAi()">
+                <mat-icon aria-hidden="true">flash_on</mat-icon>
+                Draft with AI
+              </button>
+              @if (aiBusy()) {
+                <mat-progress-spinner mode="indeterminate" diameter="20" aria-hidden="true" />
+                <button type="button" class="btn btn-outline" (click)="cancelAi()">Cancel</button>
+              }
+              <p class="theme-ai-status" aria-live="polite">
+                @if (aiBusy()) {
+                  The AI is drafting the theme…
+                } @else if (aiResult()) {
+                  {{ aiResult() }}
+                }
+              </p>
+            </div>
+            @if (aiError()) {
+              <p class="theme-ai-error admin-field-wide" role="alert">{{ aiError() }}</p>
+            }
+          </div>
+        </section>
+      }
+
       <section class="admin-card" aria-labelledby="theme-colors-title">
         <div class="admin-card-head"><h2 id="theme-colors-title">Brand color</h2></div>
         <div class="admin-card-body admin-fields">
+          <div class="theme-presets admin-field-wide" role="group" aria-labelledby="theme-presets-label">
+            <span id="theme-presets-label" class="admin-hint">Presets: the color and photo tint only</span>
+            <div class="theme-presets-list">
+              @for (preset of presets; track preset.id) {
+                <button type="button" class="theme-preset" (click)="applyPreset(preset)">
+                  <span class="theme-preset-swatch" [style.background]="preset.primaryColor || 'var(--color-text)'" aria-hidden="true"></span>
+                  {{ preset.label }}
+                </button>
+              }
+            </div>
+          </div>
           <div class="theme-active">
             <mat-slide-toggle formControlName="useDefaultColor">Default color (ink)</mat-slide-toggle>
             <p class="admin-hint">Turn off to pick the shop's own accent.</p>

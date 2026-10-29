@@ -1,12 +1,10 @@
-import { fetchWithTimeout, httpError, LlmError, LlmProvider, LlmRequest, LlmResponse } from './llm-provider';
+import { fetchWithTimeout, httpError, LlmError, LlmProvider, LlmRequest, LlmResponse, PRODUCT_DRAFT_TOOL } from './llm-provider';
 
 interface AnthropicResponse {
   content?: { type: string; name?: string; input?: unknown }[];
   stop_reason?: string;
   usage?: { input_tokens?: number; output_tokens?: number };
 }
-
-const TOOL_NAME = 'save_product_draft';
 
 /**
  * Anthropic Messages API: the JSON schema is the input schema of a forced tool call. Also used for
@@ -28,7 +26,7 @@ export class AnthropicProvider implements LlmProvider {
     return {};
   }
 
-  async generate({ system, prompt, images, schema, timeoutMs, maxOutputTokens }: LlmRequest): Promise<LlmResponse> {
+  async generate({ system, prompt, images, schema, timeoutMs, maxOutputTokens, tool = PRODUCT_DRAFT_TOOL }: LlmRequest): Promise<LlmResponse> {
     const response = await fetchWithTimeout(
       `${this.baseUrl}/v1/messages`,
       {
@@ -48,8 +46,8 @@ export class AnthropicProvider implements LlmProvider {
               ],
             },
           ],
-          tools: [{ name: TOOL_NAME, description: 'Save the product draft for the shop admin to review.', input_schema: schema }],
-          tool_choice: { type: 'tool', name: TOOL_NAME },
+          tools: [{ name: tool.name, description: tool.description, input_schema: schema }],
+          tool_choice: { type: 'tool', name: tool.name },
           ...this.extraBody(),
         }),
       },
@@ -69,9 +67,13 @@ export class AnthropicProvider implements LlmProvider {
     if (body.stop_reason === 'max_tokens') {
       throw new LlmError('invalid_output', `${this.label} ran out of output tokens`, usage);
     }
-    const toolUse = body.content?.find((block) => block.type === 'tool_use' && block.name === TOOL_NAME);
+    const toolUse = body.content?.find((block) => block.type === 'tool_use' && block.name === tool.name);
     if (!toolUse || typeof toolUse.input !== 'object' || toolUse.input === null) {
-      throw new LlmError('invalid_output', `${this.label} did not return the product draft`, usage);
+      throw new LlmError(
+        'invalid_output',
+        `${this.label} did not return the ${tool.name === PRODUCT_DRAFT_TOOL.name ? 'product draft' : 'answer'}`,
+        usage,
+      );
     }
     return { json: toolUse.input, usage };
   }

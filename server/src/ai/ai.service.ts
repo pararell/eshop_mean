@@ -11,7 +11,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { eq, like, or } from 'drizzle-orm';
-import type { AiDraftRequest, AiDraftResponse, AiStatus } from '@eshop/shared';
+import type { AiDraftRequest, AiDraftResponse, AiStatus, AiThemeDraftResponse, AiUsageSummary } from '@eshop/shared';
 
 import { Database, DRIZZLE } from '../db/database.module';
 import { aiUsage, categories, products } from '../db/schema';
@@ -19,8 +19,9 @@ import { languages } from '../shared/constans';
 import { AiConfig, estimateCostUsd } from './ai.config';
 import { fetchImage, ImageInputError, resizedImageUrl } from './ai-images';
 import { buildDraftSchema, buildSystemPrompt, buildUserPrompt } from './draft-schema';
-import { mapDraft, MappedDraft } from './draft-mapper';
-import { LLM_PROVIDER, LlmError, LlmProvider, LlmResponse, LlmUsage } from './providers/llm-provider';
+import { mapDraft } from './draft-mapper';
+import { buildThemeSchema, buildThemeSystemPrompt, buildThemeUserPrompt, mapThemeDraft, THEME_DRAFT_TOOL } from './theme-draft';
+import { LLM_PROVIDER, LlmError, LlmProvider, LlmRequest, LlmResponse, LlmUsage } from './providers/llm-provider';
 
 export const AI_CONFIG = Symbol('AI_CONFIG');
 
@@ -68,11 +69,7 @@ export class AiService {
       throw new UnprocessableEntityException('Add at least one photo or a few words about the product.');
     }
 
-    if (this.inFlight.has(userId)) {
-      throw new HttpException('An AI draft is already being created. Wait for it to finish.', HttpStatus.TOO_MANY_REQUESTS);
-    }
-    this.inFlight.add(userId);
-    try {
+    return this.oneAtATime(userId, async () => {
       const images = await this.loadImages(imageUrls);
       const categoryNames = (await this.db.select({ titleUrl: categories.titleUrl }).from(categories)).map((c) => c.titleUrl).sort();
 
@@ -87,41 +84,98 @@ export class AiService {
         maxOutputTokens: this.config.maxOutputTokens,
       };
 
-      const total = { inputTokens: 0, outputTokens: 0, costUsd: 0, durationMs: 0 };
-      let invalidAttempts = 0;
-      let busyAttempts = 0;
-      for (let attempt = 1; ; attempt++) {
-        const started = Date.now();
-        let response: LlmResponse | undefined;
-        let mapped: MappedDraft;
-        try {
-          response = await provider.generate(llmRequest);
-          mapped = mapDraft(response.json, { languages, categories: categoryNames, imageUrls });
-        } catch (error) {
-          const llmError = error instanceof LlmError ? error : new LlmError('upstream', (error as Error).message);
-          const usage = response?.usage ?? llmError.usage ?? { inputTokens: 0, outputTokens: 0 };
-          const status = llmError.kind === 'invalid_output' ? 'invalid_output' : llmError.kind === 'timeout' ? 'timeout' : 'error';
-          const cost = await this.logUsage(userId, provider, images.length, usage, Date.now() - started, status, llmError.kind);
-          this.add(total, usage, cost, Date.now() - started);
-          this.logger.warn(`AI draft attempt ${attempt} failed (${llmError.kind}): ${llmError.message}`);
-          if (llmError.kind === 'invalid_output' && ++invalidAttempts < MAX_INVALID_ATTEMPTS) continue;
-          if (llmError.kind === 'unavailable' && ++busyAttempts < MAX_BUSY_ATTEMPTS) {
-            // Exponential backoff (1 s, 2 s, …) unless the provider said how long to wait
-            const wait = Math.min(llmError.retryAfterMs ?? this.config.retryDelayMs * 2 ** (busyAttempts - 1), MAX_RETRY_WAIT_MS);
-            await new Promise((resolve) => setTimeout(resolve, wait));
-            continue;
-          }
-          throw this.toHttpError(llmError);
-        }
+      const { result: mapped, usage } = await this.generate(userId, provider, llmRequest, (json) =>
+        mapDraft(json, { languages, categories: categoryNames, imageUrls }),
+      );
+      mapped.draft.titleUrl = await this.uniqueTitleUrl(mapped.draft.titleUrl);
+      mapped.draft.mainImage.name = mapped.draft.titleUrl;
+      return { ...mapped, usage };
+    });
+  }
 
-        const cost = await this.logUsage(userId, provider, images.length, response.usage, Date.now() - started, 'ok');
-        this.add(total, response.usage, cost, Date.now() - started);
-        mapped.draft.titleUrl = await this.uniqueTitleUrl(mapped.draft.titleUrl);
-        mapped.draft.mainImage.name = mapped.draft.titleUrl;
-        return { ...mapped, usage: { provider: provider.name, model: provider.model, ...total } };
-      }
+  /**
+   * A theme proposal from a short brief: accent color, hero tint, shop name and the texts of a photo
+   * band in every language (theme-draft.ts). Nothing is saved except a usage log row.
+   */
+  async createThemeDraft(userId: string, brief: string, primaryLang?: string): Promise<AiThemeDraftResponse> {
+    const provider = this.provider;
+    if (!provider) {
+      throw new NotFoundException('AI drafts are not enabled on this shop.');
+    }
+    const text = brief.trim();
+    if (!text) {
+      throw new UnprocessableEntityException('Describe the shop and the look in a few words.');
+    }
+    return this.oneAtATime(userId, async () => {
+      const ordered = primaryFirst(languages, primaryLang);
+      const llmRequest: LlmRequest = {
+        system: buildThemeSystemPrompt(ordered),
+        prompt: buildThemeUserPrompt(text),
+        images: [],
+        schema: buildThemeSchema(ordered),
+        timeoutMs: this.config.timeoutMs,
+        maxOutputTokens: this.config.maxOutputTokens,
+        tool: THEME_DRAFT_TOOL,
+      };
+      const { result: draft, usage } = await this.generate(userId, provider, llmRequest, (json) => mapThemeDraft(json, [...languages]));
+      return { draft, usage };
+    });
+  }
+
+  /** One AI request at a time per admin */
+  private async oneAtATime<T>(userId: string, run: () => Promise<T>): Promise<T> {
+    if (this.inFlight.has(userId)) {
+      throw new HttpException('An AI draft is already being created. Wait for it to finish.', HttpStatus.TOO_MANY_REQUESTS);
+    }
+    this.inFlight.add(userId);
+    try {
+      return await run();
     } finally {
       this.inFlight.delete(userId);
+    }
+  }
+
+  /**
+   * Calls the provider and maps (validates) its answer. An unusable answer is retried once and a busy
+   * provider up to three times with growing waits; every attempt is logged in ai_usage.
+   */
+  private async generate<T>(
+    userId: string,
+    provider: LlmProvider,
+    llmRequest: LlmRequest,
+    map: (json: unknown) => T,
+  ): Promise<{ result: T; usage: AiUsageSummary }> {
+    const imageCount = llmRequest.images.length;
+    const total = { inputTokens: 0, outputTokens: 0, costUsd: 0, durationMs: 0 };
+    let invalidAttempts = 0;
+    let busyAttempts = 0;
+    for (let attempt = 1; ; attempt++) {
+      const started = Date.now();
+      let response: LlmResponse | undefined;
+      let result: T;
+      try {
+        response = await provider.generate(llmRequest);
+        result = map(response.json);
+      } catch (error) {
+        const llmError = error instanceof LlmError ? error : new LlmError('upstream', (error as Error).message);
+        const usage = response?.usage ?? llmError.usage ?? { inputTokens: 0, outputTokens: 0 };
+        const status = llmError.kind === 'invalid_output' ? 'invalid_output' : llmError.kind === 'timeout' ? 'timeout' : 'error';
+        const cost = await this.logUsage(userId, provider, imageCount, usage, Date.now() - started, status, llmError.kind);
+        this.add(total, usage, cost, Date.now() - started);
+        this.logger.warn(`AI draft attempt ${attempt} failed (${llmError.kind}): ${llmError.message}`);
+        if (llmError.kind === 'invalid_output' && ++invalidAttempts < MAX_INVALID_ATTEMPTS) continue;
+        if (llmError.kind === 'unavailable' && ++busyAttempts < MAX_BUSY_ATTEMPTS) {
+          // Exponential backoff (1 s, 2 s, …) unless the provider said how long to wait
+          const wait = Math.min(llmError.retryAfterMs ?? this.config.retryDelayMs * 2 ** (busyAttempts - 1), MAX_RETRY_WAIT_MS);
+          await new Promise((resolve) => setTimeout(resolve, wait));
+          continue;
+        }
+        throw this.toHttpError(llmError);
+      }
+
+      const cost = await this.logUsage(userId, provider, imageCount, response.usage, Date.now() - started, 'ok');
+      this.add(total, response.usage, cost, Date.now() - started);
+      return { result, usage: { provider: provider.name, model: provider.model, ...total } };
     }
   }
 

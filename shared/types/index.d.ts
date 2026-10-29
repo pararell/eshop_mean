@@ -106,7 +106,37 @@ export interface AiDraftResponse {
   /** New category names the admin may add; never applied automatically */
   suggestedCategories: string[];
   warnings: string[];
-  usage: { provider: string; model: string; inputTokens: number; outputTokens: number; costUsd: number; durationMs: number };
+  usage: AiUsageSummary;
+}
+
+/** What a draft cost (all attempts together) */
+export interface AiUsageSummary {
+  provider: string;
+  model: string;
+  inputTokens: number;
+  outputTokens: number;
+  costUsd: number;
+  durationMs: number;
+}
+
+/** `POST /api/admin/themes/ai-draft` (admin): a few words about the shop's look */
+export interface AiThemeDraftRequest {
+  brief: string;
+}
+
+/** An AI theme proposal for the theme editor; never saved by the server */
+export interface AiThemeDraft {
+  primaryColor: string;
+  heroTint: 'none' | 'warm';
+  /** May be empty */
+  shopName: string;
+  /** Texts of a new full-width photo band */
+  band: ByLanguage<{ title: string; text: string; button: string }>;
+}
+
+export interface AiThemeDraftResponse {
+  draft: AiThemeDraft;
+  usage: AiUsageSummary;
 }
 
 /** Product flattened for one language (`GET /api/products`, `/:name?lang=`). */

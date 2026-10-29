@@ -15,7 +15,11 @@ export interface LlmRequest {
   timeoutMs: number;
   /** Upper bound for the answer (all languages); too low cuts the JSON off */
   maxOutputTokens: number;
+  /** What the answer is, for providers that return it as a tool call; default: the product draft */
+  tool?: { name: string; description: string };
 }
+
+export const PRODUCT_DRAFT_TOOL = { name: 'save_product_draft', description: 'Save the product draft for the shop admin to review.' };
 
 export interface LlmUsage {
   inputTokens: number;

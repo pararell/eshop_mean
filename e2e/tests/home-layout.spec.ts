@@ -91,10 +91,10 @@ test('a category set to "Fill the tile (cover)" fills its tile with the photo', 
   await setCover(true);
   try {
     await page.goto('/');
-    const media = page.locator('.category_card-media');
-    await expect(media).toHaveCount(2);
-    await expect(page.locator('.category_card-cover')).toHaveCount(1);
-    await expect(page.locator('.category_card-cover img')).toHaveCSS('object-fit', 'cover');
+    // Only the cars tile (other tests may add categories meanwhile)
+    const tile = (slug: string) => page.locator('.category_card').filter({ has: page.locator(`a[href$="/category/${slug}"]`) });
+    await expect(tile('cars').locator('.category_card-cover img')).toHaveCSS('object-fit', 'cover');
+    await expect(tile('bikes').locator('.category_card-media')).not.toHaveClass(/category_card-cover/);
   } finally {
     await setCover(false);
   }

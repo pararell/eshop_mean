@@ -44,17 +44,12 @@ import {
 const AI_MAX_IMAGES = 3;
 const LANGUAGE_LABELS: Record<string, string> = { en: 'English', sk: 'Slovak', cs: 'Czech' };
 
-const errorMessage = (error: unknown, fallback: string): string => {
-  const body = (error as HttpErrorResponse)?.error as { message?: string | string[] } | undefined;
-  const message = Array.isArray(body?.message) ? body.message.join('. ') : body?.message;
-  return message || fallback;
-};
-
 /**
  * Admin product editor (`/:lang/dashboard/products/new` and `/products/:titleUrl`). Nothing is saved
  * until the admin presses Save; AI-filled fields stay marked until they are edited or accepted.
  */
 import { AdminPageHeaderComponent } from '../admin-ui/admin-page-header.component';
+import { errorMessage } from '../admin-ui/error-message';
 
 @Component({
   selector: 'app-product-editor',

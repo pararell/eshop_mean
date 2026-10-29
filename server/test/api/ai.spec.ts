@@ -21,6 +21,7 @@ describe('AI product drafts API', () => {
 
       expect((await t.http.get('/api/admin/ai/status').set(auth).expect(200)).body).toEqual({ enabled: false });
       await t.http.post('/api/admin/products/ai-draft').set(auth).send({ text: 'jacket' }).expect(404);
+      await t.http.post('/api/admin/themes/ai-draft').set(auth).send({ brief: 'hiking shop' }).expect(404);
     });
 
     it('keeps the status admin only', async () => {
@@ -241,6 +242,33 @@ describe('AI product drafts API', () => {
       expect(call.headers['x-api-key']).toBe('test-anthropic-key');
       expect(call.body.tool_choice).toEqual({ type: 'tool', name: 'save_product_draft' });
       expect(call.body.messages[0].content[0]).toMatchObject({ type: 'image', source: { type: 'base64', media_type: 'image/png' } });
+    });
+
+    it('drafts a theme through its own tool, admin only, and validates the brief', async () => {
+      const auth = { Authorization: `Bearer ${await adminToken(t)}` };
+      const texts = { title: 'Autumn', text: 'Warm layers.', button: 'Shop' };
+      stub.reset();
+      stub.replies = [
+        anthropicReply(
+          { primaryColor: '#15803d', heroTint: 'none', shopName: 'Trail', band: { en: texts, sk: texts, cs: texts } },
+          undefined,
+          'save_theme_draft',
+        ),
+      ];
+
+      const res = await t.http.post('/api/admin/themes/ai-draft').set(auth).send({ brief: 'calm hiking shop' }).expect(200);
+
+      expect(res.body.draft).toEqual({ primaryColor: '#15803d', heroTint: 'none', shopName: 'Trail', band: { en: texts, sk: texts, cs: texts } });
+      expect(stub.providerCalls()[0].body.tool_choice).toEqual({ type: 'tool', name: 'save_theme_draft' });
+      await t.http.post('/api/admin/themes/ai-draft').set(auth).send({}).expect(422);
+      await t.http
+        .post('/api/admin/themes/ai-draft')
+        .set(auth)
+        .send({ brief: 'x'.repeat(501) })
+        .expect(422);
+      await t.http.post('/api/admin/themes/ai-draft').set(auth).send({ brief: 'shop', styles: {} }).expect(422);
+      await t.http.post('/api/admin/themes/ai-draft').send({ brief: 'shop' }).expect(401);
+      expect(stub.providerCalls()).toHaveLength(1);
     });
   });
 

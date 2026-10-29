@@ -228,4 +228,51 @@ describe('AiService', () => {
     expect((await status(disabled.createDraft(userId, { text: 'x' }))).status).toBe(404);
     expect(service.status()).toEqual({ enabled: true, provider: 'gemini', model: 'fake-flash' });
   });
+
+  describe('theme drafts', () => {
+    const band = (title: string) => ({ title, text: 'Gear for the ridge.', button: 'Explore' });
+    const themeAnswer = (overrides: Record<string, unknown> = {}): LlmResponse => ({
+      json: {
+        primaryColor: '#B45309',
+        heroTint: 'warm',
+        shopName: 'Ridge Gear',
+        band: { en: band('Autumn'), sk: band('Jeseň'), cs: band('Podzim') },
+        ...overrides,
+      },
+      usage: { inputTokens: 1000, outputTokens: 500 },
+    });
+
+    it('returns the proposal, asks with its own tool and logs usage', async () => {
+      provider.steps = [themeAnswer()];
+
+      const result = await service.createThemeDraft(userId, ' calm autumn hiking shop ', 'sk');
+
+      expect(result.draft).toEqual({
+        primaryColor: '#b45309',
+        heroTint: 'warm',
+        shopName: 'Ridge Gear',
+        band: { en: band('Autumn'), sk: band('Jeseň'), cs: band('Podzim') },
+      });
+      expect(result.usage).toMatchObject({ provider: 'gemini', inputTokens: 1000, outputTokens: 500 });
+      const [call] = provider.calls;
+      expect(call.tool?.name).toBe('save_theme_draft');
+      expect(call.prompt).toContain('calm autumn hiking shop');
+      expect(Object.keys((call.schema as { properties: { band: { properties: object } } }).properties.band.properties)).toEqual(['sk', 'en', 'cs']);
+      expect(await db.select().from(aiUsage)).toHaveLength(1);
+    });
+
+    it('retries an invalid color once, then gives up with 502', async () => {
+      provider.steps = [themeAnswer({ primaryColor: 'green' }), themeAnswer({ heroTint: 'cold' })];
+
+      expect((await status(service.createThemeDraft(userId, 'shop'))).status).toBe(502);
+      expect(await db.select().from(aiUsage)).toHaveLength(2);
+    });
+
+    it('needs a brief and a provider', async () => {
+      expect((await status(service.createThemeDraft(userId, '   '))).status).toBe(422);
+      const disabled = new AiService(db, config, null);
+      expect((await status(disabled.createThemeDraft(userId, 'shop'))).status).toBe(404);
+      expect(provider.calls).toHaveLength(0);
+    });
+  });
 });

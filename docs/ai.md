@@ -288,7 +288,35 @@ No test calls a real AI API or Cloudinary. The test environment blanks every AI 
 `CLOUDINARY_*`) in your local `.env`, run `npm run start:dev` and `npm run start:client`, open
 `/en/dashboard/products/new`. Check the server log line for tokens and cost.
 
-## 9. Deploying
+## 9. Theme drafts
+
+The theme editor (Themes) has a **Draft with AI** card when the feature is on. The admin describes the
+shop and the look in a few words; the AI proposes:
+
+- the brand color (`#rrggbb`) and the hero photo tint (`none` / `warm`);
+- a shop name, used only when the field is empty;
+- the texts of a new full-width photo band (title, text, button) in every language, added at the end of
+  the home sections without a photo.
+
+It fills the form and the live preview; nothing is saved until the admin saves the theme. Contrast is
+still enforced by the client for any color (`ThemeService.setBrandColor`).
+
+`POST /api/admin/themes/ai-draft` (admin) `{ "brief": "alpine hiking shop, calm, autumn colors" }`
+(1 to 500 characters, unknown fields rejected) → `200 { draft: AiThemeDraft, usage }`. Status codes
+as in § 3. Code: [server/src/ai/theme-draft.ts](../server/src/ai/theme-draft.ts) (schema, prompt,
+validation), `AiService.createThemeDraft`.
+
+- Providers that answer through a forced tool call get the tool `save_theme_draft` (product drafts
+  keep `save_product_draft`).
+- The answer is untrusted: an invalid color or tint, or a language without a title, rejects it (one
+  retry, like product drafts); texts are made plain (tags removed) and cut to the theme limits.
+- Every call is logged in `ai_usage` like a product draft (`image_count` 0). The table has no column
+  that tells the two kinds apart, so the Overview's AI usage includes theme drafts.
+
+Theme **presets** (Ink, Forest, Ember, Glacier, Heather) need no AI: they set only the brand color
+and the photo tint ([theme-presets.ts](../client/src/app/modules/dashboard/theme-edit/theme-presets.ts)).
+
+## 10. Deploying
 
 1. `npm run db:migrate` against the server database **before** starting the new image: migration
    `0001_ai_product_draft` adds `ai_usage` and the `seo_title` / `meta_description` columns
