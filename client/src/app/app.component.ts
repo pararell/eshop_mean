@@ -1,12 +1,12 @@
 import { Component, ElementRef, Renderer2, PLATFORM_ID, ChangeDetectionStrategy, afterNextRender, inject } from '@angular/core';
-import { isPlatformBrowser, isPlatformServer, PlatformLocation } from '@angular/common';
+import { isPlatformBrowser, PlatformLocation } from '@angular/common';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { filter, take, delay, map, skip } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterOutlet } from '@angular/router';
 
 import { TranslateService } from './services/translate.service';
-import { JsonLDService } from './services/jsonLD.service';
+import { SeoService } from './services/seo.service';
 import { currencyLang } from './shared/constants';
 import { SignalStore } from './store/signal.store';
 import { SignalStoreSelectors } from './store/signal.store.selectors';
@@ -27,7 +27,6 @@ export class AppComponent {
   private renderer = inject(Renderer2);
   private router = inject(Router);
   private translate = inject(TranslateService);
-  private jsonLDService = inject(JsonLDService);
   private platformId = inject(PLATFORM_ID);
   private signalStore = inject(SignalStore);
   private selectors = inject(SignalStoreSelectors);
@@ -96,18 +95,8 @@ export class AppComponent {
         if (!this.admin()) this.signalStore.getPages({ lang, titles: true });
       });
 
-    if (isPlatformServer(this.platformId)) {
-      this.jsonLDService.insertSchema(this.jsonLDService.websiteSchema);
-      this.jsonLDService.insertSchema(this.jsonLDService.orgSchema, 'structured-data-org');
-    }
-
-    this.router.events.pipe(
-      filter((event) => event instanceof NavigationStart),
-      map((_checkRoute: NavigationStart) => {
-        this.jsonLDService.insertSchema(this.jsonLDService.websiteSchema);
-        this.jsonLDService.insertSchema(this.jsonLDService.orgSchema, 'structured-data-org');
-      }),
-    );
+    // Titles, descriptions and the shop's structured data for every page (SSR included)
+    inject(SeoService);
   }
 
   onScrolling(event: Event): void {

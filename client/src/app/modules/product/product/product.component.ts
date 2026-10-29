@@ -1,12 +1,12 @@
 import { toObservable } from '@angular/core/rxjs-interop';
 import { JsonLDService } from './../../../services/jsonLD.service';
+import { SeoService } from '../../../services/seo.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { filter, map, take, distinctUntilChanged, skip, withLatestFrom } from 'rxjs/operators';
 import { Component, OnDestroy, Signal, ChangeDetectionStrategy, computed, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Observable, combineLatest, Subscription } from 'rxjs';
 import { Location, AsyncPipe } from '@angular/common';
-import { Meta, Title } from '@angular/platform-browser';
 
 import { Cart, Product, Category } from '../../../shared/models';
 import { ProductGalleryComponent } from '../../../shared/components/product-gallery/product-gallery.component';
@@ -30,8 +30,7 @@ export class ProductComponent implements OnDestroy {
   private store = inject(SignalStore);
   private selectors = inject(SignalStoreSelectors);
   private location = inject(Location);
-  private meta = inject(Meta);
-  private title = inject(Title);
+  private seo = inject(SeoService);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
   private translate = inject(TranslateService);
@@ -134,8 +133,12 @@ export class ProductComponent implements OnDestroy {
       )
       .subscribe(([product, currency]) => {
         // SEO fields from the admin editor; empty ones fall back to the title / short description
-        this.title.setTitle(product.seoTitle || product.title);
-        this.meta.updateTag({ name: 'description', content: product.metaDescription || product.description });
+        this.seo.setPage({
+          title: product.seoTitle || product.title,
+          exactTitle: !!product.seoTitle,
+          description: product.metaDescription || product.description,
+          image: product.mainImage?.url,
+        });
         const productSchema = {
           '@context': 'https://schema.org/',
           '@type': 'Product',
@@ -144,7 +147,8 @@ export class ProductComponent implements OnDestroy {
           offers: {
             '@type': 'Offer',
             priceCurrency: currency,
-            price: product.regularPrice,
+            // What the customer pays (the regular price is only the struck-through one while on sale)
+            price: product.salePrice,
             availability: product.stock === 'onStock' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
           },
           description: product.description,

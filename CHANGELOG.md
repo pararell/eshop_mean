@@ -97,6 +97,16 @@ All notable changes to this project are documented in this file. The format foll
 
 ### Fixed
 
+- **SEO and structured data describe the shop, not the developer:**
+  - the Organization data held a personal name, email and `smrtic.eu`; it is now the shop's name,
+    address and theme logo (no email), and the WebSite data lost its hardcoded tech keywords;
+  - the home page and product list had the English "Angular - Node.js - Eshop application…"
+    description in every language; they now use the `ESHOP_DESCRIPTION` translation, and a category
+    page its category's name and description;
+  - titles are `<page> | <shop name>` (the shop name from the theme or `ESHOP_TITLE`; a product's own
+    SEO title as it is); every page gets Open Graph tags (title, description, site name, URL, image)
+    and a canonical URL, also in the server-rendered HTML;
+  - the product's structured data gave the regular (struck-through) price instead of the price paid.
 - **Trail colors match between the category tiles and the menu:** the menu counted menu-hidden
   categories when picking colors by position, the tiles did not, so a category could get two colors.
 - **Category tiles honour "Fill the tile (cover)":** the photo fills the tile; before, every tile showed

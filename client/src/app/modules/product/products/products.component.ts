@@ -1,13 +1,12 @@
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { map, distinctUntilChanged, filter, take, skip } from 'rxjs/operators';
-import { Component, ChangeDetectionStrategy, OnDestroy, Signal, computed, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnDestroy, Signal, computed, effect, inject } from '@angular/core';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { combineLatest, Subscription } from 'rxjs';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Meta, Title } from '@angular/platform-browser';
 
 import { TranslateService } from '../../../services/translate.service';
-import { ThemeService } from '../../../services/theme.service';
+import { SeoService } from '../../../services/seo.service';
 import { sortOptions } from '../../../shared/constants';
 import { Product, Category } from '../../../shared/models';
 import { SignalStore } from '../../../store/signal.store';
@@ -49,9 +48,6 @@ export class ProductsComponent implements OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
-  private meta = inject(Meta);
-  private title = inject(Title);
-  private themeService = inject(ThemeService);
   private translate = inject(TranslateService);
 
   products: Signal<Product[] | null>;
@@ -95,13 +91,16 @@ export class ProductsComponent implements OnDestroy {
       return cart.items && cart.items.length ? cart.items.reduce((prev, curr) => ({ ...prev, [curr.id]: curr.qty }), {}) : {};
     });
 
-    this.title.setTitle(this.themeService.shopName() || 'Eshop Mean');
-    this.meta.updateTag({ name: 'description', content: 'Angular - Node.js - Eshop application - MEAN Eshop with dashboard' });
-
     this.categories = this.selectors.categories;
     this.pagination = this.selectors.pagination;
     this.currency = this.selectors.currency;
     this.categoryInfo = computed(() => this.categories().find((cat) => cat.titleUrl === this.category()));
+    // A category page is titled and described by its category; the full list by the shop
+    const seo = inject(SeoService);
+    effect(() => {
+      const category = this.categoryInfo();
+      seo.setPage(category ? { title: category.title, description: category.description } : {});
+    });
     this.subCategories = computed(() =>
       this.categories().filter((cat) => (this.categoryInfo() ? this.categoryInfo()!.subCategories!.includes(cat.titleUrl) : false)),
     );

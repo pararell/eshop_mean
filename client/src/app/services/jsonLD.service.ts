@@ -1,45 +1,14 @@
 import { DOCUMENT } from '@angular/common';
 import { Injectable, inject } from '@angular/core';
 
-import { ThemeService } from './theme.service';
-
-const WEBSITE_SCHEMA = {
-  '@context': 'http://schema.org',
-  '@type': 'WebSite',
-  url: 'https://smrtic.eu',
-  name: 'Eshop MEAN',
-  description: 'Angular - Node.js - Eshop application - MEAN Eshop with dashboard',
-  image: 'https://res.cloudinary.com/dnpgh1vhi/image/upload/v1615640124/logo1_gvrmpd.svg',
-  keywords: 'MEAN, Angular, Node, MongoDB, Express, Nest.js, Cart, Google login, Dashboard',
-};
-
+/** Writes JSON-LD structured data into <head> (the shop's own: SeoService; products: the product page) */
 @Injectable({
   providedIn: 'root',
 })
 export class JsonLDService {
   private _document = inject<Document>(DOCUMENT);
-  private theme = inject(ThemeService);
 
   scriptType = 'application/ld+json';
-  /** The shop name comes from the active theme */
-  get websiteSchema() {
-    return { ...WEBSITE_SCHEMA, name: this.theme.shopName() || WEBSITE_SCHEMA.name };
-  }
-
-  orgSchema = {
-    '@context': 'https://schema.org/',
-    '@type': 'Organization',
-    name: 'Miroslav Smrtic',
-    url: 'https://smrtic.eu',
-    logo: 'https://res.cloudinary.com/dnpgh1vhi/image/upload/v1615640124/logo1_gvrmpd.svg',
-    email: 'miro218@gmail.com',
-    description: 'Developer',
-    contactPoint: {
-      contactType: 'PR',
-      '@type': 'ContactPoint',
-      email: 'miro218@gmail.com',
-    },
-  };
 
   removeStructuredData(className?: string): void {
     const els: Element[] = [];

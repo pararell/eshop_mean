@@ -17,7 +17,6 @@ import {
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { combineLatest, Subscription } from 'rxjs';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Meta, Title } from '@angular/platform-browser';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -31,6 +30,7 @@ import { IconComponent } from '../../shared/components/icon/icon.component';
 import { SignalStore } from '../../store/signal.store';
 import { PaginationState, SignalStoreSelectors } from '../../store/signal.store.selectors';
 import { ThemeService } from '../../services/theme.service';
+import { SeoService } from '../../services/seo.service';
 import { bandView, tripsView } from '../../shared/home-layout';
 import { RidgeComponent } from '../../shared/components/ridge/ridge.component';
 import { HomeProductRowComponent } from './product-row/home-product-row.component';
@@ -56,8 +56,6 @@ import { HomeProductRowComponent } from './product-row/home-product-row.componen
 export class HomeComponent implements OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private meta = inject(Meta);
-  private title = inject(Title);
   private translate = inject(TranslateService);
   private snackBar = inject(MatSnackBar);
   private store = inject(SignalStore);
@@ -140,8 +138,8 @@ export class HomeComponent implements OnDestroy {
       return this.cart()!.items && this.cart()!.items.length ? this.cart()!.items.reduce((prev, curr) => ({ ...prev, [curr.id]: curr.qty }), {}) : {};
     });
 
-    this.title.setTitle(this.themeService.shopName() || 'Eshop Mean');
-    this.meta.updateTag({ name: 'description', content: 'Angular - Node.js - Eshop application - MEAN Eshop with dashboard' });
+    // The shop's own name and description (SeoService)
+    inject(SeoService).setPage({});
 
     this.categories = this.selectors.categories;
     this.pagination = this.selectors.pagination;
