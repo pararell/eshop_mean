@@ -1,0 +1,1 @@
+ALTER TABLE "categories" ADD COLUMN "header_image_url" text;

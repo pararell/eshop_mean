@@ -357,6 +357,7 @@ Index `product_translations_listing (lang, visibility, sale_price)` serves the s
 | `title_url`                                             | text, unique | Matches entries of `products.tags`                                                 |
 | `main_image_url`, `main_image_name`, `main_image_cover` |              | API `mainImage { url, name, type }`; `type: true` renders with `object-fit: cover` |
 | `trail_color`                                           | enum, null   | `red`, `blue`, `green`, `yellow`; API `trailColor` (absent = by position)          |
+| `header_image_url`                                      | text, null   | Category page header photo; API `headerImage` (absent = the main image)            |
 | `sub_categories`                                        | text[]       |                                                                                    |
 | `created_by`                                            | uuid → users | API `_user`                                                                        |
 
@@ -397,7 +398,10 @@ removed from products' `tags` (one `array_remove` update) when a category is del
   photo bands, shop by trip, product rows with their own product list; texts per language, ridges under
   any section; each can be turned off). Without `home` the client builds the default
   layout from the other settings (`client/src/app/shared/home-layout.ts`); the theme editor edits it
-  (`theme-edit/home-sections-editor/`) and always saves `home`. The server accepts only those keys with valid values (`server/src/eshop/theme-styles.ts`,
+  (`theme-edit/home-sections-editor/`) and always saves `home`. `listing` holds the product listing
+  pages: the All products header (photo, texts per language), editorial photo tiles in the grid (photo,
+  texts, link, pages; one after every `tileEvery` products) and a featured product per page (chosen, or
+  the page's newest on sale); see `client/src/app/shared/listing.ts` and `theme-edit/listing-editor/`. The server accepts only those keys with valid values (`server/src/eshop/theme-styles.ts`,
   400 otherwise) and merges a save into the stored settings; the client applies them through
   `ThemeService.applyStyles`. At most one is active (partial unique index; saving an active one
   deactivates the others, D8).

@@ -267,6 +267,29 @@ describe('Products API', () => {
       await edit(category('purple')).expect(400);
     });
 
+    it('stores a header image per category, clears it and rejects non-https URLs', async () => {
+      const token = await adminToken(t);
+      const category = (headerImage?: string | null) => ({
+        titleUrl: 'tents',
+        mainImage: { url: '', name: 'tents', type: false },
+        subCategories: [],
+        ...(headerImage !== undefined ? { headerImage } : {}),
+        en: { title: 'Tents', description: '', position: 1, visibility: true, menuHidden: false },
+      });
+      const edit = (body: object) => t.http.patch('/api/products/categories/edit').set('Authorization', `Bearer ${token}`).send(body);
+      const listed = async () => (await t.http.get('/api/products/categories').set('lang', 'en').expect(200)).body[0];
+
+      await edit(category('https://res.cloudinary.com/x/tents-wide.jpg')).expect(200);
+      expect(await listed()).toMatchObject({ titleUrl: 'tents', headerImage: 'https://res.cloudinary.com/x/tents-wide.jpg' });
+      // Saving without the field keeps it; an empty value clears it
+      await edit(category()).expect(200);
+      expect((await listed()).headerImage).toBe('https://res.cloudinary.com/x/tents-wide.jpg');
+      await edit(category('')).expect(200);
+      expect(await listed()).not.toHaveProperty('headerImage');
+      await edit(category('http://example.com/a.jpg')).expect(400);
+      await edit(category('javascript:alert(1)')).expect(400);
+    });
+
     it('counts and removes category tags by slug', async () => {
       const token = await adminToken(t);
       await t.model('Product').create(productFixture('boots', { tags: ['Day hike', 'gps'] }));

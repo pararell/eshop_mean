@@ -1,0 +1,150 @@
+:host {
+  display: block;
+}
+
+.listing {
+  display: grid;
+  gap: var(--space-8);
+}
+
+.listing-group {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+
+  legend {
+    margin-bottom: var(--space-2);
+    padding: 0;
+    font-weight: var(--weight-semibold);
+  }
+
+  .admin-hint {
+    margin: 0;
+  }
+}
+
+.listing-photo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.listing-photo-url {
+  flex: 1 1 260px;
+}
+
+.listing-preview,
+.listing-thumb {
+  flex: none;
+  border-radius: var(--radius-thumb);
+  object-fit: cover;
+  background: var(--color-surface-sunken);
+}
+
+.listing-preview {
+  width: 120px;
+  height: 64px;
+}
+
+.listing-thumb {
+  display: block;
+  width: 64px;
+  height: 40px;
+}
+
+.listing-texts {
+  display: grid;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+}
+
+.listing-every {
+  max-width: 16rem;
+}
+
+.listing-tile {
+  padding: var(--space-2) var(--space-4) var(--space-4);
+}
+
+.listing-featured {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)) auto;
+  align-items: start;
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.listing-featured-remove {
+  margin-top: var(--space-2);
+}
+
+.listing-error {
+  margin: 0;
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+}
+
+// The tile list, as in the home sections editor
+.layout-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.layout-item {
+  background: var(--color-surface);
+
+  & + & {
+    border-top: 1px solid var(--color-border);
+  }
+}
+
+.layout-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+}
+
+.layout-name {
+  display: flex;
+  flex: 1 1 12rem;
+  flex-direction: column;
+  min-width: 0;
+
+  strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.layout-error {
+  align-self: flex-start;
+  margin-top: var(--space-1);
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.layout-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-left: auto;
+}
+
+.tab-error {
+  width: 16px;
+  height: 16px;
+  margin-left: var(--space-1);
+  color: var(--color-danger);
+  font-size: 16px;
+}

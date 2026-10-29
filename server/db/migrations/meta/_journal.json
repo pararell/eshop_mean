@@ -29,6 +29,13 @@
       "when": 1793262862107,
       "tag": "0003_category_trail_color",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793289363448,
+      "tag": "0004_category_header_image",
+      "breakpoints": true
     }
   ]
 }

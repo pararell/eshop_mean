@@ -160,6 +160,10 @@ export class ProductsService {
     if (trailColor !== undefined && trailColor !== null && (trailColor as string) !== '' && !TRAIL_COLORS.includes(trailColor)) {
       throw new BadRequestException(`trailColor must be one of ${TRAIL_COLORS.join(', ')}, or empty`);
     }
+    const { headerImage } = categoryReq;
+    if (headerImage && (typeof headerImage !== 'string' || !/^https:\/\/[^\s]+$/.test(headerImage))) {
+      throw new BadRequestException('headerImage must be an https URL, or empty');
+    }
     await upsertCategory(this.db, categoryReq as unknown as Record<string, unknown>);
   }
 
@@ -198,6 +202,7 @@ export class ProductsService {
         dateAdded: category.dateAdded,
         subCategories: category.subCategories,
         ...(category.trailColor ? { trailColor: category.trailColor } : {}),
+        ...(category.headerImage ? { headerImage: category.headerImage } : {}),
         title: langInfo ? langInfo.title : category.titleUrl,
         description: langInfo ? langInfo.description : '',
         visibility: langInfo ? langInfo.visibility : false,

@@ -22,9 +22,11 @@ import { errorMessage } from '../admin-ui/error-message';
 import { THEME_PRESETS, ThemePreset } from './theme-presets';
 import { HomeSectionsEditorComponent } from './home-sections-editor/home-sections-editor.component';
 import { httpsUrl, sectionGroup, sectionsArray, SectionsArray, sectionsFromArray } from './home-sections-form';
+import { ListingEditorComponent } from './listing-editor/listing-editor.component';
+import { ListingGroup, listingFromGroup, listingGroup } from './listing-form';
 
 /**
- * The text settings this editor shows, besides the home sections (`home`). The server keeps the other
+ * The text settings this editor shows, besides the home sections (`home`) and the product pages (`listing`). The server keeps the other
  * stored keys on save, such as the old promo banner settings (promo*), which `home` replaces.
  */
 const STYLE_FIELDS = [
@@ -74,6 +76,7 @@ const FIELD_VALIDATORS: Partial<Record<(typeof STYLE_FIELDS)[number], ValidatorF
     AdminPageHeaderComponent,
     AdminItemListComponent,
     HomeSectionsEditorComponent,
+    ListingEditorComponent,
   ],
 })
 export class ThemeEditComponent {
@@ -115,6 +118,7 @@ export class ThemeEditComponent {
       useDefaultColor: true,
       ...Object.fromEntries(STYLE_FIELDS.map((field) => [field, ['', FIELD_VALIDATORS[field] ?? []]])),
       home: sectionsArray([]),
+      listing: listingGroup(undefined),
     });
 
     this.themesEditForm.get('primaryColor')!.disable();
@@ -213,6 +217,7 @@ export class ThemeEditComponent {
     });
     // A new array (not a reset): the number of sections differs per theme
     this.themesEditForm.setControl('home', sectionsArray(editableHomeSections(styles)));
+    this.themesEditForm.setControl('listing', listingGroup(styles.listing));
     if (found) this.themesEditForm.get('titleUrl')!.disable();
     else this.themesEditForm.get('titleUrl')!.enable();
   }
@@ -250,12 +255,18 @@ export class ThemeEditComponent {
     const styles = Object.fromEntries(STYLE_FIELDS.map((field) => [field, String(values[field] ?? '').trim()])) as ThemeStyles;
     styles.primaryColor = values.useDefaultColor ? '' : styles.primaryColor;
     styles.home = sectionsFromArray(this.homeSections);
+    styles.listing = listingFromGroup(this.listing);
     return styles;
   }
 
   /** The `home` FormArray (replaced when a theme is opened) */
   get homeSections(): SectionsArray {
     return this.themesEditForm.get('home') as SectionsArray;
+  }
+
+  /** The `listing` group (replaced when a theme is opened) */
+  get listing(): ListingGroup {
+    return this.themesEditForm.get('listing') as ListingGroup;
   }
 
   /** Back to what the shop shows: the active theme (or the default look without one) */

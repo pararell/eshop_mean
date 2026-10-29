@@ -1,37 +1,78 @@
 <ul class="product-grid" role="list">
-  @for (product of products(); track product._id) {
-    <li class="product_card">
-      <a class="product_card-media photo-frame" [routerLink]="['/' + lang() + '/product/' + product.titleUrl]" tabindex="-1" aria-hidden="true">
-        @if (product.mainImage.url) {
-          <img [ngSrc]="product.mainImage.url" alt="" fill sizes="(max-width: 680px) 50vw, 33vw" />
+  @for (item of items(); track item.kind === 'tile' ? 'tile-' + item.tile.id : item.product._id) {
+    @if (item.kind === 'tile') {
+      <li class="listing_tile">
+        @if (item.tile.internal) {
+          <a class="listing_tile-link" [routerLink]="item.tile.link">
+            <ng-container *ngTemplateOutlet="tileBody; context: { $implicit: item.tile }" />
+          </a>
+        } @else {
+          <a class="listing_tile-link" [href]="item.tile.link" rel="noopener">
+            <ng-container *ngTemplateOutlet="tileBody; context: { $implicit: item.tile }" />
+          </a>
         }
-      </a>
-      @if (product.onSale && product.regularPrice) {
-        <span class="badge badge-sale product_card-badge">{{ 'Sale' | translate | async }}</span>
-      }
-      <h3 class="product_card-title">
-        <a [routerLink]="['/' + lang() + '/product/' + product.titleUrl]">{{ product.title }}</a>
-      </h3>
-      <span class="price product_card-price">
-        <span class="price-current" [class.price-sale]="product.onSale && product.regularPrice"
-          >{{ product.salePrice | priceFormat }} {{ currency() }}</span
-        >
-        @if (product.onSale && product.regularPrice) {
-          <s class="price-before">{{ product.regularPrice | priceFormat }} {{ currency() }}</s>
+      </li>
+    } @else {
+      @let product = item.product;
+      @let featured = item.kind === 'featured';
+      <li class="product_card" [class.product_card--featured]="featured">
+        <a class="product_card-media photo-frame" [routerLink]="['/' + lang() + '/product/' + product.titleUrl]" tabindex="-1" aria-hidden="true">
+          @if (product.mainImage.url) {
+            <img
+              [ngSrc]="product.mainImage.url"
+              alt=""
+              fill
+              [sizes]="featured ? '(max-width: 680px) 100vw, 60vw' : '(max-width: 680px) 50vw, 33vw'"
+              [priority]="featured"
+            />
+          }
+        </a>
+        @if (featured) {
+          <span class="badge product_card-badge product_card-badge--featured">{{ 'Featured' | translate | async }}</span>
+        } @else if (product.onSale && product.regularPrice) {
+          <span class="badge badge-sale product_card-badge">{{ 'Sale' | translate | async }}</span>
         }
-      </span>
-      @if (cartIds) {
-        <app-cart-show
-          class="product_card-cart"
-          [class.is-in-cart]="!!cartIds[product._id]"
-          [items]="cartIds[product._id]"
-          (add)="onAddProduct(product._id)"
-          (remove)="onRemoveProduct(product._id)"
-        />
-      }
-      @if (showEdit()) {
-        <button type="button" class="btn btn-outline btn-sm" (click)="onEditProduct(product.titleUrl)">{{ 'Edit' | translate | async }}</button>
-      }
-    </li>
+        <h3 class="product_card-title">
+          <a [routerLink]="['/' + lang() + '/product/' + product.titleUrl]">{{ product.title }}</a>
+        </h3>
+        @if (featured && product.description) {
+          <p class="product_card-description">{{ product.description }}</p>
+        }
+        <span class="price product_card-price">
+          <span class="price-current" [class.price-sale]="product.onSale && product.regularPrice"
+            >{{ product.salePrice | priceFormat }} {{ currency() }}</span
+          >
+          @if (product.onSale && product.regularPrice) {
+            <s class="price-before">{{ product.regularPrice | priceFormat }} {{ currency() }}</s>
+          }
+        </span>
+        @if (cartIds) {
+          <app-cart-show
+            class="product_card-cart"
+            [class.is-in-cart]="!!cartIds[product._id]"
+            [items]="cartIds[product._id]"
+            (add)="onAddProduct(product._id)"
+            (remove)="onRemoveProduct(product._id)"
+          />
+        }
+        @if (showEdit()) {
+          <button type="button" class="btn btn-outline btn-sm" (click)="onEditProduct(product.titleUrl)">{{ 'Edit' | translate | async }}</button>
+        }
+      </li>
+    }
   }
 </ul>
+
+<ng-template #tileBody let-tile>
+  <img class="listing_tile-media" [ngSrc]="tile.image" alt="" fill sizes="(max-width: 680px) 100vw, 60vw" />
+  <span class="listing_tile-copy">
+    <span class="listing_tile-title">{{ tile.title }}</span>
+    @if (tile.text) {
+      <span class="listing_tile-text">{{ tile.text }}</span>
+    }
+    <span class="listing_tile-button">
+      {{ tile.button || ('Shop_now' | translate | async) }}
+      <span aria-hidden="true">→</span>
+    </span>
+  </span>
+</ng-template>

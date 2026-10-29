@@ -41,6 +41,21 @@ All notable changes to this project are documented in this file. The format foll
   category tile and in the product list menu; "Automatic" keeps the color by position. Migration
   `0003_category_trail_color` adds the nullable `categories.trail_color` (add-only); API field
   `trailColor` on categories.
+- **Product listing pages** (All products and every category):
+  - a photo header with the title and a short text; a readable gradient in the page color runs over the
+    photo, so it works in light and dark mode. A category uses its new header photo (Categories →
+    Header image URL, else its image) with its title and description; All products has its own photo
+    and texts per language (Themes → Product pages). Migration `0004_category_header_image` adds the
+    nullable `categories.header_image_url` (add-only); API field `headerImage` on categories;
+  - editorial photo tiles in the product grid: two columns wide (full width on phones), with a
+    headline, text and link per language, on chosen pages, one after every N products (Themes →
+    Product pages);
+  - a featured product per page: a large card two columns wide and two rows tall on page 1, a chosen
+    product or the page's newest on sale, not repeated in the grid. New `Featured` translation (seed);
+  - the sidebar categories are rounded pills with their trail blaze, tinted in the trail color on hover
+    and for the current category.
+
+  Stored in the theme's `styles.listing`, validated by the server like the home sections.
 - `GET /api/products` accepts `onSale=true` (only products on sale; optional, add-only).
 - **Admin Overview** (`/:lang/dashboard`): revenue and orders for today, 7 or 30 days per currency,
   compared with the previous period; average order; orders to handle; revenue per day (one bar chart

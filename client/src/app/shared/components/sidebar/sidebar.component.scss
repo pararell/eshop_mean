@@ -18,35 +18,51 @@
 
 .sidebar-nav {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
+  flex-wrap: wrap;
+  gap: var(--space-2);
 }
 
-// Plain links; the current category in bold with its trail marker
+// Rounded pills, each with its trail blaze; hover tints a pill with its trail color, and the current
+// category is outlined and tinted in it (a tint, not a fill, so yellow stays readable)
 .sidebar-item {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-3);
-  padding-block: var(--space-1);
+  gap: var(--space-2);
+  min-height: 36px;
+  padding: var(--space-1) var(--space-4) var(--space-1) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface-raised);
   color: var(--color-text-muted);
-
-  .blaze {
-    visibility: hidden;
-  }
+  font-size: var(--text-sm);
+  line-height: 1.2;
+  transition:
+    background-color var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out),
+    color var(--duration-base) var(--ease-out);
 
   &:hover {
+    border-color: color-mix(in oklab, var(--blaze, var(--color-text)) 45%, var(--color-border));
+    background: color-mix(in oklab, var(--blaze, var(--color-text)) 10%, var(--color-surface-raised));
     color: var(--color-text);
     text-decoration: none;
   }
 
   &.active {
+    border-color: var(--blaze, var(--color-text));
+    background: color-mix(in oklab, var(--blaze, var(--color-text)) 18%, var(--color-surface-raised));
     color: var(--color-text);
     font-weight: var(--weight-semibold);
-
-    .blaze {
-      visibility: visible;
-    }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+// "All products": the ink color for the pill and its blaze
+.sidebar-item:has(.sidebar-blaze-all) {
+  --blaze: var(--color-text);
 }
 
 .sidebar-select {

@@ -1,0 +1,266 @@
+<section class="admin-card" aria-labelledby="listing-title">
+  <div class="admin-card-head">
+    <h2 id="listing-title">Product pages</h2>
+    <p class="admin-hint">
+      All products and the category pages: the header, photo tiles in the product grid and a featured product. A category's header photo, title and
+      description are set in Categories.
+    </p>
+  </div>
+  <div class="admin-card-body listing">
+    <!-- All products header -->
+    <fieldset class="listing-group">
+      <legend>All products header</legend>
+      <ng-container
+        *ngTemplateOutlet="
+          photo;
+          context: {
+            target: 'header',
+            label: 'Header photo URL',
+            control: listing().controls.headerImage,
+            hint: 'A wide photo, about 2400 × 800 px; empty = a plain header',
+          }
+        "
+      />
+      <mat-tab-group animationDuration="0ms" aria-label="Texts of the All products header">
+        @for (lang of languages; track lang) {
+          @let langGroup = listing().controls.headerText.controls[lang];
+          <mat-tab>
+            <ng-template mat-tab-label>{{ lang | uppercase }}</ng-template>
+            <div class="listing-texts">
+              <mat-form-field subscriptSizing="dynamic">
+                <mat-label>Header title ({{ lang }})</mat-label>
+                <input matInput [formControl]="langGroup.controls.title" autocomplete="off" />
+                <mat-hint>Empty: the "Products" translation</mat-hint>
+                <mat-error>At most 120 characters</mat-error>
+              </mat-form-field>
+              <mat-form-field subscriptSizing="dynamic">
+                <mat-label>Header text ({{ lang }})</mat-label>
+                <textarea matInput rows="2" [formControl]="langGroup.controls.text"></textarea>
+                <mat-error>At most 300 characters</mat-error>
+              </mat-form-field>
+            </div>
+          </mat-tab>
+        }
+      </mat-tab-group>
+    </fieldset>
+
+    <!-- Tiles -->
+    <fieldset class="listing-group">
+      <legend>Photo tiles</legend>
+      <p class="admin-hint">Two columns wide in the product grid (full width on phones), in this order; each page continues with the next tiles.</p>
+      <mat-form-field class="listing-every" subscriptSizing="dynamic">
+        <mat-label>A tile after every</mat-label>
+        <input matInput type="number" [min]="tileEveryRange.min" [max]="tileEveryRange.max" step="1" [formControl]="listing().controls.tileEvery" />
+        <span matTextSuffix>&nbsp;products</span>
+        <mat-error>A whole number from {{ tileEveryRange.min }} to {{ tileEveryRange.max }}</mat-error>
+      </mat-form-field>
+
+      @if (tiles.length) {
+        <ol class="layout-list" aria-label="Photo tiles">
+          @for (group of tiles.controls; track group; let i = $index; let first = $first; let last = $last) {
+            @let open = expanded() === group.controls.id.value;
+            <li class="layout-item">
+              <div class="layout-row">
+                @if (group.controls.image.valid && group.controls.image.value) {
+                  <img class="listing-thumb" [src]="group.controls.image.value" alt="" />
+                } @else {
+                  <span class="listing-thumb" aria-hidden="true"></span>
+                }
+                <div class="layout-name">
+                  <strong>{{ tileLabel(group) }}</strong>
+                  <span class="admin-hint">{{ tilePages(group) }}</span>
+                  @if (group.invalid && group.touched) {
+                    <span class="admin-pill layout-error">Check the settings</span>
+                  }
+                </div>
+                <div class="layout-controls">
+                  <button
+                    mat-icon-button
+                    type="button"
+                    [attr.aria-label]="'Move ' + tileLabel(group) + ' up'"
+                    [disabled]="first"
+                    (click)="moveTile(i, -1)"
+                  >
+                    <mat-icon>arrow_upward</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    type="button"
+                    [attr.aria-label]="'Move ' + tileLabel(group) + ' down'"
+                    [disabled]="last"
+                    (click)="moveTile(i, 1)"
+                  >
+                    <mat-icon>arrow_downward</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    type="button"
+                    [attr.aria-label]="(open ? 'Close ' : 'Edit ') + tileLabel(group)"
+                    [attr.aria-expanded]="open"
+                    (click)="toggleTile(group)"
+                  >
+                    <mat-icon>{{ open ? 'expand_less' : 'edit' }}</mat-icon>
+                  </button>
+                  <button mat-icon-button type="button" [attr.aria-label]="'Remove ' + tileLabel(group)" (click)="removeTile(i)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+              @if (open) {
+                <div class="listing-tile admin-fields">
+                  <div class="admin-field-wide">
+                    <ng-container
+                      *ngTemplateOutlet="
+                        photo;
+                        context: {
+                          target: group.controls.id.value,
+                          label: 'Tile photo URL',
+                          control: group.controls.image,
+                          hint: 'A lifestyle photo, landscape',
+                        }
+                      "
+                    />
+                  </div>
+                  <mat-form-field subscriptSizing="dynamic">
+                    <mat-label>Tile link</mat-label>
+                    <input matInput [formControl]="group.controls.link" autocomplete="off" />
+                    <mat-hint>A shop path such as /en/product/category/tents, or a full URL</mat-hint>
+                    <mat-error>Use a shop path (/en/…) or an https:// address</mat-error>
+                  </mat-form-field>
+                  <mat-form-field subscriptSizing="dynamic">
+                    <mat-label>Shown on</mat-label>
+                    <mat-select multiple [formControl]="group.controls.pages" placeholder="Every product page">
+                      @for (option of pageOptions(); track option.key) {
+                        <mat-option [value]="option.key">{{ option.label }}</mat-option>
+                      }
+                    </mat-select>
+                    <mat-hint>None chosen: every product page</mat-hint>
+                  </mat-form-field>
+                  <mat-tab-group class="admin-field-wide" animationDuration="0ms" [attr.aria-label]="'Texts of ' + tileLabel(group)">
+                    @for (lang of languages; track lang) {
+                      @let langGroup = group.controls.text.controls[lang];
+                      <mat-tab>
+                        <ng-template mat-tab-label>
+                          {{ lang | uppercase }}
+                          @if (langGroup.invalid) {
+                            <mat-icon class="tab-error" aria-label="has errors">error</mat-icon>
+                          }
+                        </ng-template>
+                        <div class="listing-texts">
+                          <mat-form-field subscriptSizing="dynamic">
+                            <mat-label>Headline ({{ lang }})</mat-label>
+                            <input matInput [formControl]="langGroup.controls.title" autocomplete="off" />
+                            <mat-hint>Without a headline the tile is hidden in this language</mat-hint>
+                            <mat-error>At most 120 characters</mat-error>
+                          </mat-form-field>
+                          <mat-form-field subscriptSizing="dynamic">
+                            <mat-label>Tile text ({{ lang }})</mat-label>
+                            <textarea matInput rows="2" [formControl]="langGroup.controls.text"></textarea>
+                            <mat-error>At most 300 characters</mat-error>
+                          </mat-form-field>
+                          <mat-form-field subscriptSizing="dynamic">
+                            <mat-label>Link text ({{ lang }})</mat-label>
+                            <input matInput [formControl]="langGroup.controls.button" autocomplete="off" />
+                            <mat-hint>Empty: the "Shop now" translation</mat-hint>
+                            <mat-error>At most 40 characters</mat-error>
+                          </mat-form-field>
+                        </div>
+                      </mat-tab>
+                    }
+                  </mat-tab-group>
+                </div>
+              }
+            </li>
+          }
+        </ol>
+      }
+      <div>
+        <button type="button" class="btn btn-outline" [disabled]="tiles.length >= maxTiles" (click)="addTile()">
+          <mat-icon aria-hidden="true">add</mat-icon>
+          Add photo tile
+        </button>
+      </div>
+    </fieldset>
+
+    <!-- Featured products -->
+    <fieldset class="listing-group">
+      <legend>Featured product</legend>
+      <p class="admin-hint">A large first card on page 1 of a product page, not repeated in the grid below.</p>
+      @for (group of listing().controls.featured.controls; track group; let i = $index) {
+        <div class="listing-featured">
+          <mat-form-field subscriptSizing="dynamic">
+            <mat-label>Page</mat-label>
+            <mat-select [formControl]="group.controls.page">
+              @for (option of pageOptions(); track option.key) {
+                <mat-option [value]="option.key">{{ option.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field subscriptSizing="dynamic">
+            <mat-label>Product</mat-label>
+            <mat-select [formControl]="group.controls.source">
+              <mat-option value="sale">The newest on sale on this page</mat-option>
+              <mat-option value="product">A chosen product</mat-option>
+            </mat-select>
+          </mat-form-field>
+          @if (group.controls.source.value === 'product') {
+            <mat-form-field subscriptSizing="dynamic">
+              <mat-label>Chosen product</mat-label>
+              <mat-select [formControl]="group.controls.product">
+                @for (option of productOptions(); track option.key) {
+                  <mat-option [value]="option.key">{{ option.label }}</mat-option>
+                }
+              </mat-select>
+              @if (group.hasError('productMissing')) {
+                <mat-hint class="listing-error">Choose a product</mat-hint>
+              }
+            </mat-form-field>
+          }
+          <button
+            mat-icon-button
+            type="button"
+            class="listing-featured-remove"
+            [attr.aria-label]="'Remove the featured product of ' + pageLabel(group.controls.page.value)"
+            (click)="removeFeatured(i)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      }
+      @if (listing().hasError('featuredTwice')) {
+        <p class="listing-error" role="alert">Each page can have one featured product.</p>
+      }
+      <div>
+        <button type="button" class="btn btn-outline" [disabled]="listing().controls.featured.length >= pageOptions().length" (click)="addFeatured()">
+          <mat-icon aria-hidden="true">add</mat-icon>
+          Add featured product
+        </button>
+      </div>
+    </fieldset>
+    <p class="visually-hidden" aria-live="polite">{{ status() }}</p>
+  </div>
+</section>
+
+<ng-template #photo let-target="target" let-control="control" let-hint="hint" let-label="label">
+  <div class="listing-photo">
+    @if (control.valid && control.value) {
+      <img class="listing-preview" [src]="control.value" alt="" />
+    }
+    <mat-form-field class="listing-photo-url" subscriptSizing="dynamic">
+      <mat-label>{{ label }}</mat-label>
+      <input matInput type="url" [formControl]="control" />
+      <mat-hint>{{ hint }}</mat-hint>
+      <mat-error>Use an https:// address</mat-error>
+    </mat-form-field>
+    <input #fileInput type="file" hidden accept="image/jpeg,image/png,image/webp,image/gif" (change)="upload(target, control, $event)" />
+    <button type="button" class="btn btn-outline" [disabled]="uploading() !== null" (click)="fileInput.click()">
+      <mat-icon aria-hidden="true">file_upload</mat-icon>
+      {{ uploading() === target ? 'Uploading…' : 'Upload photo' }}
+    </button>
+    @if (uploadError(); as error) {
+      @if (error.target === target) {
+        <p class="listing-error" role="alert">{{ error.message }}</p>
+      }
+    }
+  </div>
+</ng-template>

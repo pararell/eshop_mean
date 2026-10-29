@@ -1,11 +1,15 @@
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { map, distinctUntilChanged, filter, take, skip } from 'rxjs/operators';
 import { Component, ChangeDetectionStrategy, OnDestroy, Signal, computed, effect, inject } from '@angular/core';
-import { toSignal, toObservable } from '@angular/core/rxjs-interop';
+import { toSignal, toObservable, rxResource } from '@angular/core/rxjs-interop';
 import { combineLatest, Subscription } from 'rxjs';
+import type { LanguageCode } from '@eshop/shared';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
+import { ApiService } from '../../../services/api.service';
+import { ThemeService } from '../../../services/theme.service';
 import { TranslateService } from '../../../services/translate.service';
+import { ALL_PRODUCTS_PAGE, listingFeatured, listingHeader, listingTiles } from '../../../shared/listing';
 import { SeoService } from '../../../services/seo.service';
 import { sortOptions } from '../../../shared/constants';
 import { Product, Category } from '../../../shared/models';
@@ -17,7 +21,7 @@ import { MatProgressBar } from '@angular/material/progress-bar';
 import { CategoriesListComponent } from '../../../shared/components/categories-list/categories-list.component';
 import { ProductsListComponent } from '../../../shared/components/products-list/products-list.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
-import { AsyncPipe, NgTemplateOutlet } from '@angular/common';
+import { AsyncPipe, NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
 import { IconComponent } from '../../../shared/components/icon/icon.component';
 import { TranslatePipe } from '../../../pipes/translate.pipe';
 
@@ -36,6 +40,7 @@ import { TranslatePipe } from '../../../pipes/translate.pipe';
     ProductsListComponent,
     PaginationComponent,
     AsyncPipe,
+    NgOptimizedImage,
     NgTemplateOutlet,
     RouterLink,
     IconComponent,
@@ -49,6 +54,9 @@ export class ProductsComponent implements OnDestroy {
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
   private translate = inject(TranslateService);
+  private api = inject(ApiService);
+  private theme = inject(ThemeService);
+  private listing = computed(() => this.theme.styles().listing);
 
   products: Signal<Product[] | null>;
   cartIds: Signal<{ [productID: string]: number }>;
@@ -71,6 +79,29 @@ export class ProductsComponent implements OnDestroy {
   sidebarOpened = false;
 
   readonly component = 'productsComponent';
+
+  /** The listing settings key of this page: '*' (All products) or the category */
+  private readonly pageKey = computed(() => this.category() || ALL_PRODUCTS_PAGE);
+  /** Photo, title and text of the header; an empty title = the Products translation */
+  readonly header = computed(() => listingHeader(this.listing(), this.categoryInfo(), this.lang() as LanguageCode, ''));
+  readonly tiles = computed(() => listingTiles(this.listing(), this.pageKey(), this.lang() as LanguageCode));
+  readonly tileEvery = computed(() => this.listing()?.tileEvery);
+
+  /** The large first card, on page 1 only: the chosen product, or the newest one on sale on this page */
+  private readonly featuredProduct = rxResource({
+    params: () => {
+      const setting = listingFeatured(this.listing(), this.pageKey());
+      const lang = this.lang();
+      return setting && lang && (this.page() || 1) === 1 ? { setting, lang, category: this.category() } : undefined;
+    },
+    stream: ({ params: { setting, lang, category } }) =>
+      setting.source === 'product'
+        ? this.api.getProduct(`${setting.product}?lang=${lang}`).pipe(map((product) => (product.error || !product.visibility ? null : product)))
+        : this.api
+            .getProducts({ lang, page: 1, sort: 'newest', category, onSale: true })
+            .pipe(map((result) => (result.error ? null : (result.products[0] ?? null)))),
+  });
+  readonly featured = computed(() => (this.featuredProduct.hasValue() && (this.page() || 1) === 1 ? this.featuredProduct.value() : null));
 
   constructor() {
     this.category = toSignal(this.route.params.pipe(map((params) => params['category'])));

@@ -18,6 +18,64 @@
   padding: var(--space-10) var(--gutter) var(--space-8);
 }
 
+// With a photo: the photo fills the header and a gradient in the page's own background color runs over
+// it from the text side, so the title keeps the normal text color in light and dark mode
+.products-header--photo {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: clamp(260px, 30vw, 400px);
+  overflow: hidden;
+  isolation: isolate;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+      to right,
+      var(--color-bg) 0%,
+      color-mix(in oklab, var(--color-bg) 88%, transparent) 30%,
+      color-mix(in oklab, var(--color-bg) 35%, transparent) 62%,
+      transparent 85%
+    );
+  }
+
+  .products-header-inner {
+    width: 100%;
+  }
+
+  .products-title,
+  .products-description {
+    max-width: 36rem;
+  }
+
+  .products-description {
+    color: var(--color-text);
+  }
+
+  // Phones: the text sits under the photo's lower part, so the gradient rises from the bottom
+  @media (width <= 680px) {
+    min-height: 320px;
+
+    &::before {
+      background: linear-gradient(
+        to top,
+        var(--color-bg) 0%,
+        color-mix(in oklab, var(--color-bg) 92%, transparent) 50%,
+        color-mix(in oklab, var(--color-bg) 55%, transparent) 85%,
+        color-mix(in oklab, var(--color-bg) 30%, transparent) 100%
+      );
+    }
+  }
+}
+
+.products-header-media {
+  z-index: -2;
+  object-fit: cover;
+}
+
 .products-header nav {
   margin-bottom: var(--space-5);
 }

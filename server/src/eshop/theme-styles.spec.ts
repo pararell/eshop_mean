@@ -121,4 +121,60 @@ describe('theme styles', () => {
       ]);
     });
   });
+  describe('listing', () => {
+    const tile = {
+      id: 'tile-1',
+      image: 'https://res.cloudinary.com/x/hike.jpg',
+      link: '/en/product/category/tents',
+      pages: [],
+      text: { en: { title: 'Into the hills' } },
+    };
+
+    it('accepts a header, tiles, the tile interval and featured products', () => {
+      const listing = {
+        header: { image: 'https://res.cloudinary.com/x/all.jpg', text: { en: { title: 'All gear', text: 'For every trail' }, sk: { title: '' } } },
+        tileEvery: 6,
+        tiles: [tile, { ...tile, id: 'tile-2', pages: ['*', 'cars'], text: { sk: { title: 'Do hôr', text: 'x', button: 'Pozri' } } }],
+        featured: [
+          { page: '*', source: 'sale' },
+          { page: 'cars', source: 'product', product: 'red-car' },
+        ],
+      };
+      expect(themeStylesErrors({ listing })).toEqual([]);
+      expect(themeStylesErrors({ listing: { header: { image: '' } } })).toEqual([]);
+    });
+
+    it('rejects bad headers, tiles and featured products', () => {
+      const listing = {
+        header: { image: 'http://x/a.jpg', video: 'x', text: { en: { title: 'x'.repeat(121) } } },
+        tileEvery: 1,
+        tiles: [
+          { ...tile, link: '//evil.example', pages: ['a/b'], color: 'red' },
+          { ...tile, image: '' },
+        ],
+        featured: [
+          { page: 'cars', source: 'product' },
+          { page: 'cars', source: 'newest', product: 'a b' },
+        ],
+        sort: 'newest',
+      };
+      expect(themeStylesErrors({ listing })).toEqual([
+        'listing.header.image must be an https URL',
+        'listing.header.video is not a header setting',
+        'listing.header.text.en.title must be at most 120 characters',
+        'listing.tileEvery must be a whole number from 2 to 24',
+        'listing.tiles[0].link must be a shop path (/en/…) or an https URL',
+        "listing.tiles[0].pages must be a list of '*' or category URL names",
+        'listing.tiles[0].color is not a tile setting',
+        'listing.tiles[1].id tile-1 is used twice',
+        'listing.tiles[1].image must be an https URL',
+        'listing.featured[0].product is required for the product source',
+        'listing.featured[1]: page cars has a featured product twice',
+        'listing.featured[1].source must be one of product, sale',
+        'listing.featured[1].product must be a product URL name',
+        'listing.sort is not a listing setting',
+      ]);
+      expect(themeStylesErrors({ listing: [] })).toEqual(['listing must be an object']);
+    });
+  });
 });

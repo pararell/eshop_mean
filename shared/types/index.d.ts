@@ -159,6 +159,8 @@ export interface CategoryBase {
   mainImage?: Image & { type?: boolean };
   /** Absent = by position in the category list; on save, null or '' sets it back to that */
   trailColor?: TrailColor | null;
+  /** Wide photo for the category page header (https); absent = the main image. On save, null or '' clears it */
+  headerImage?: string | null;
   subCategories?: string[];
   _user?: string;
   dateAdded?: DateValue;
@@ -413,6 +415,40 @@ export type ProductRowSource = 'newest' | 'sale' | 'category';
 
 export type HomeSectionType = HomeSection['type'];
 
+/** `ListingStyles` page key of the All products page; any other key is a category's titleUrl */
+export type ListingAllPage = '*';
+
+/** An editorial tile in the product grid: a lifestyle photo two columns wide with a headline and a link */
+export interface ListingTile {
+  id: string;
+  image: string;
+  /** A shop path like /en/product/category/tents, or an https URL */
+  link: string;
+  /** The listing pages it appears on ('*' = All products, or category titleUrls); empty = every listing page */
+  pages: string[];
+  /** `button` empty = the Shop_now translation */
+  text: ByLanguage<{ title: string; text?: string; button?: string }>;
+}
+
+/** The large first card of a listing page (page 1 only): a chosen product, or the page's newest sale item */
+export interface ListingFeatured {
+  /** '*' = All products, or a category's titleUrl */
+  page: string;
+  source: 'product' | 'sale';
+  /** The product's titleUrl, for the product source */
+  product?: string;
+}
+
+/** Product listing pages (All products and categories); see client/src/app/shared/listing.ts */
+export interface ListingStyles {
+  /** The All products page header (a category page uses the category's header image, title and description) */
+  header?: { image?: string; text?: ByLanguage<{ title?: string; text?: string }> };
+  /** A tile after every N products (2–24); absent = 6 */
+  tileEvery?: number;
+  tiles?: ListingTile[];
+  featured?: ListingFeatured[];
+}
+
 /** Per-language theme texts: promoTitle_en, promoText_sk, … */
 export type ThemeLangKey = `promoTitle_${LanguageCode}` | `promoText_${LanguageCode}`;
 
@@ -439,6 +475,8 @@ export type ThemeStyles = {
   promoLink?: string;
   /** The home page sections in order; absent = the default layout */
   home?: HomeSection[];
+  /** Headers, editorial tiles and featured products of the product listing pages */
+  listing?: ListingStyles;
   /** @deprecated Not used by the shop or the editor; kept in stored themes */
   secondaryColor?: string;
   /** @deprecated */

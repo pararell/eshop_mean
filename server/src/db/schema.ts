@@ -88,6 +88,8 @@ export const categories = pgTable('categories', {
   mainImageName: text('main_image_name'),
   /** Mongoose: mainImage.type (render the image with object-fit: cover) */
   mainImageCover: boolean('main_image_cover').notNull().default(false),
+  /** Wide photo for the category page header; null = the main image */
+  headerImageUrl: text('header_image_url'),
   /** Null = by position in the category list (red, blue, green, yellow, …) */
   trailColor: trailColor('trail_color'),
   subCategories: textArray('sub_categories'),

@@ -1,9 +1,13 @@
 :host {
   display: block;
+  // The wide cards span two columns only when the grid has two (see the container query below)
+  container-type: inline-size;
 }
 
 .product-grid {
   display: grid;
+  // Products fill the gaps that a wide card leaves at the end of a row
+  grid-auto-flow: dense;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
   gap: var(--space-4) var(--space-6);
   margin: 0;
@@ -99,5 +103,143 @@
   .product_card:hover .product_card-cart,
   .product_card:focus-within .product_card-cart {
     opacity: 1;
+  }
+}
+
+// Listing pages ----------------------------------------------------------------------------------
+// The featured product: two columns and two rows, a larger photo and title, and its short description.
+// Tiles: a lifestyle photo two columns wide with a headline. With a single column (narrow content) both
+// simply take the full width; on phones the grid has two columns, so they are full width too.
+.product_card--featured,
+.listing_tile {
+  grid-column: span 2;
+
+  @container (width < 524px) {
+    grid-column: 1 / -1;
+  }
+}
+
+.product_card--featured {
+  @container (width >= 524px) {
+    grid-row: span 2;
+  }
+
+  .product_card-media {
+    flex: 1 1 0;
+    min-height: 280px;
+    aspect-ratio: auto;
+  }
+
+  .product_card-title {
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-bold);
+  }
+
+  .product_card-price {
+    margin-top: var(--space-1);
+    font-size: var(--text-xl);
+  }
+}
+
+.product_card-description {
+  display: -webkit-box;
+  max-width: 48ch;
+  margin: 0;
+  padding: 0 var(--space-2);
+  overflow: hidden;
+  color: var(--color-text-muted);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.product_card-badge--featured {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.listing_tile {
+  display: flex;
+  min-height: 300px;
+}
+
+.listing_tile-link {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  background: var(--color-footer);
+  color: #fff;
+  isolation: isolate;
+
+  // Readable on any photo, in light and dark mode: a dark gradient from the bottom left
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(to top, rgb(0 0 0 / 72%) 0%, rgb(0 0 0 / 30%) 45%, rgb(0 0 0 / 0%) 75%),
+      linear-gradient(to right, rgb(0 0 0 / 25%), rgb(0 0 0 / 0%) 60%);
+  }
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: none;
+
+    .listing_tile-media {
+      transform: scale(1.04);
+    }
+
+    .listing_tile-button span {
+      transform: translateX(3px);
+    }
+  }
+}
+
+.listing_tile-media {
+  z-index: -2;
+  object-fit: cover;
+  transition: transform var(--duration-slow) var(--ease-out);
+}
+
+.listing_tile-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  max-width: 34rem;
+  padding: var(--space-6);
+}
+
+.listing_tile-title {
+  font-size: clamp(var(--text-xl), 3cqi, var(--text-3xl));
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+}
+
+.listing_tile-text {
+  color: rgb(255 255 255 / 88%);
+}
+
+.listing_tile-button {
+  display: inline-flex;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  padding-bottom: 2px;
+  border-bottom: 2px solid currentcolor;
+  font-weight: var(--weight-semibold);
+
+  span {
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .listing_tile-media,
+  .listing_tile-button span {
+    transition: none;
   }
 }

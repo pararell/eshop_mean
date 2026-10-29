@@ -155,6 +155,7 @@ export interface CategoryDoc {
   titleUrl: string;
   mainImage: Image & { type?: boolean };
   trailColor?: TrailColor;
+  headerImage?: string;
   subCategories: string[];
   _user?: string;
   dateAdded: Date;
@@ -169,6 +170,7 @@ export function toCategoryDoc(row: CategoryRow, langRows: CategoryTranslationRow
     titleUrl: row.titleUrl,
     mainImage: { url: row.mainImageUrl ?? undefined, name: row.mainImageName ?? undefined, type: row.mainImageCover } as Image & { type: boolean },
     ...(row.trailColor ? { trailColor: row.trailColor } : {}),
+    ...(row.headerImageUrl ? { headerImage: row.headerImageUrl } : {}),
     subCategories: row.subCategories,
     _user: row.createdBy ?? undefined,
     dateAdded: row.createdAt,
@@ -197,6 +199,8 @@ export function categoryValues(input: Record<string, unknown>) {
   if (input.subCategories !== undefined) values.subCategories = toStringArray(input.subCategories);
   // Validated by the service (assertTrailColor); empty = by position
   if (input.trailColor !== undefined) values.trailColor = (input.trailColor || null) as CategoryRow['trailColor'];
+  // Validated by the service (https URL); empty = the main image
+  if (input.headerImage !== undefined) values.headerImageUrl = input.headerImage ? String(input.headerImage) : null;
   return values;
 }
 

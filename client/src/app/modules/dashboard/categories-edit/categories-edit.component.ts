@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { TitleCasePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
+import { MatError, MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatAutocomplete, MatAutocompleteTrigger, MatOption } from '@angular/material/autocomplete';
 import { MatChipRemove, MatChipRow, MatChipGrid, MatChipInput, MatChipInputEvent } from '@angular/material/chips';
@@ -41,6 +41,7 @@ import { AdminItemListComponent, AdminListItem } from '../admin-ui/admin-item-li
     MatFormField,
     MatLabel,
     MatHint,
+    MatError,
     MatInput,
     MatAutocomplete,
     MatAutocompleteTrigger,
@@ -79,6 +80,8 @@ export class CategoriesEditComponent {
     titleUrl: ['', [Validators.required, Validators.pattern(/^[a-z0-9_-]+$/)]],
     mainImage: '',
     mainImageCover: false,
+    /** Wide photo for the category page header; '' = the image above */
+    headerImage: ['', Validators.pattern(/^https:\/\/\S+$/)],
     /** '' = by position */
     trailColor: '',
     subCategories: [[] as string[]],
@@ -125,6 +128,7 @@ export class CategoriesEditComponent {
       titleUrl: found?.titleUrl ?? '',
       mainImage: found?.mainImage?.url ?? '',
       mainImageCover: !!found?.mainImage?.type,
+      headerImage: found?.headerImage ?? '',
       trailColor: found?.trailColor ?? '',
       subCategories: found?.subCategories ?? [],
       ...Object.fromEntries(

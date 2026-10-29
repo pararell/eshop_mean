@@ -28,7 +28,10 @@
   </mat-drawer>
   <mat-drawer-content>
     <div class="main">
-      <header class="products-header">
+      <header class="products-header" [class.products-header--photo]="header().image">
+        @if (header().image) {
+          <img class="products-header-media" [ngSrc]="header().image" alt="" fill priority sizes="100vw" />
+        }
         <div class="products-header-inner">
           <nav aria-label="Breadcrumb">
             <ol class="waypoints">
@@ -43,9 +46,9 @@
               <li aria-current="page">{{ categoryInfo()?.title || ('Products' | translate | async) }}</li>
             </ol>
           </nav>
-          <h1 class="products-title">{{ categoryInfo()?.title || ('Products' | translate | async) }}</h1>
-          @if (categoryInfo()?.description) {
-            <p class="products-description">{{ categoryInfo()!.description }}</p>
+          <h1 class="products-title">{{ header().title || ('Products' | translate | async) }}</h1>
+          @if (header().text) {
+            <p class="products-description">{{ header().text }}</p>
           }
         </div>
       </header>
@@ -86,6 +89,11 @@
                     [cartIds]="cartIds()"
                     [currency]="currency()"
                     [lang]="lang()!"
+                    [featured]="featured()"
+                    [tiles]="tiles()"
+                    [tileEvery]="tileEvery()"
+                    [page]="pagination().page || 1"
+                    [perPage]="pagination().limit || 12"
                     (addProduct)="addToCart($event)"
                     (removeProduct)="removeFromCart($event)"
                   />

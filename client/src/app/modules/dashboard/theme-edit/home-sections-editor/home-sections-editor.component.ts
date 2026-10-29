@@ -10,14 +10,13 @@ import { MatInput } from '@angular/material/input';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { MatTab, MatTabGroup, MatTabLabel } from '@angular/material/tabs';
-import { firstValueFrom } from 'rxjs';
 
 import { ApiService } from '../../../../services/api.service';
 import { languages } from '../../../../shared/constants';
 import { MAX_HOME_SECTIONS, newBand, newProductRow, newTrips } from '../../../../shared/home-layout';
 import { SignalStore } from '../../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../../store/signal.store.selectors';
-import { ACCEPTED, MAX_FILE_BYTES } from '../../product-editor/image-gallery/image-gallery.component';
+import { uploadPhoto } from '../upload-photo';
 import { moveSection, sectionGroup, SectionGroup, SectionsArray, sectionsFromArray, TRIP_SLOTS } from '../home-sections-form';
 
 const SECTION_INFO: Record<HomeSectionType, { label: string; hint: string }> = {
@@ -169,29 +168,24 @@ export class HomeSectionsEditorComponent {
     this.status.set(`${label} removed.`);
   }
 
-  /** Uploads the band photo to Cloudinary; the upload endpoint answers with the image library, newest last */
+  /** Uploads the band photo to the image library */
   async upload(group: SectionGroup, event: Event): Promise<void> {
     const fileInput = event.target as HTMLInputElement;
     const file = fileInput.files?.[0];
     fileInput.value = '';
     if (!file) return;
-    if (!ACCEPTED.includes(file.type)) return this.uploadError.set('Only JPEG, PNG, WebP or GIF images.');
-    if (file.size > MAX_FILE_BYTES) return this.uploadError.set('The photo is larger than 10 MB.');
 
     this.uploadError.set('');
     this.uploading.set(true);
     this.status.set('Uploading the photo…');
-    const request = this.api.uploadImage({ fileToUpload: file });
-    const result = request ? await firstValueFrom(request) : undefined;
-    const all = (result as { all?: string[] } | undefined)?.all;
-    const url = all?.[all.length - 1];
+    const result = await uploadPhoto(this.api, file);
     this.uploading.set(false);
-    if (!result || result.error || !url) {
-      this.uploadError.set('Upload failed. Try again.');
+    if ('error' in result) {
+      this.uploadError.set(result.error);
       this.status.set('');
       return;
     }
-    group.controls.image.setValue(url);
+    group.controls.image.setValue(result.url);
     group.controls.image.markAsDirty();
     this.status.set('Photo uploaded.');
   }

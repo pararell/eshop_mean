@@ -121,7 +121,7 @@ test('themes: the home page sections are reordered, switched off and a photo ban
   await page.getByRole('button', { name: 'Move Products up' }).click();
   await page.getByRole('switch', { name: 'Show Benefits' }).click();
   await page.getByRole('button', { name: 'Add photo band' }).click();
-  await page.getByLabel('Title (en)').fill('Autumn sale');
+  await page.getByLabel('Title (en)', { exact: true }).fill('Autumn sale');
   await page.getByLabel('Link').fill('//evil.example');
   await page.getByRole('button', { name: 'Save', exact: true }).click();
   await expect(page.getByText('Use a shop path (/en/…) or an https:// address')).toBeVisible();
@@ -234,4 +234,34 @@ test('translations: add a key, fill it, save', async ({ page }) => {
       { lang: 'sk', text: 'Ahoj' },
     ]),
   );
+});
+
+test('themes: the product pages get a header, a photo tile and a featured product', async ({ page }) => {
+  const slug = `e2e-listing-${Date.now()}`;
+  await open(page, 'themes');
+  await page.getByRole('button', { name: 'New theme' }).click();
+  await page.getByLabel('Name (slug)').fill(slug);
+
+  const card = page.getByRole('region', { name: 'Product pages' });
+  await card.getByLabel('Header photo URL').fill('https://res.cloudinary.com/e2e/image/upload/all.jpg');
+  await card.getByLabel('Header title (en)').fill('All the gear');
+  await card.getByLabel('A tile after every').fill('3');
+  await card.getByRole('button', { name: 'Add photo tile' }).click();
+  await card.getByLabel('Tile photo URL').fill('https://res.cloudinary.com/e2e/image/upload/hike.jpg');
+  await card.getByLabel('Tile link').fill('/en/product/category/bikes');
+  await card.getByLabel('Headline (en)').fill('Into the hills');
+  await card.getByRole('button', { name: 'Add featured product' }).click();
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await toast(page, 'Theme saved');
+
+  const [row] = await withDb(async (db) => (await db.query('SELECT styles FROM themes WHERE title_url = $1', [slug])).rows);
+  expect(row.styles.listing).toMatchObject({
+    header: { image: 'https://res.cloudinary.com/e2e/image/upload/all.jpg', text: { en: { title: 'All the gear', text: '' } } },
+    tileEvery: 3,
+    tiles: [{ id: 'tile-1', link: '/en/product/category/bikes', pages: [], text: { en: { title: 'Into the hills' } } }],
+    featured: [{ page: '*', source: 'sale' }],
+  });
+
+  await confirmDelete(page, 'Delete theme');
+  await toast(page, 'Theme deleted');
 });

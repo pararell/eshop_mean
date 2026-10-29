@@ -123,11 +123,87 @@ function tripCategoriesErrors(value: unknown, at: string): string[] {
   return new Set(value).size === value.length ? [] : [`${at} has a category twice`];
 }
 
+const MAX_TILES = 12;
+const TILE_EVERY = { min: 2, max: 24 };
+/** A listing page: '*' (All products) or a category URL name */
+const listingPage: Rule = { test: (v) => v === '*' || categorySlug.test(v), expected: "'*' or a category URL name" };
+const TILE_TEXTS = { title: 120, text: 300, button: 40 };
+const HEADER_TEXTS = { title: 120, text: 300 };
+
+/** Problems with the product listing settings (`styles.listing`) */
+function listingErrors(listing: unknown): string[] {
+  if (!isObject(listing)) return ['listing must be an object'];
+  const errors: string[] = [];
+  for (const [key, value] of Object.entries(listing)) {
+    if (key === 'header') errors.push(...listingHeaderErrors(value));
+    else if (key === 'tileEvery') {
+      if (!Number.isInteger(value) || (value as number) < TILE_EVERY.min || (value as number) > TILE_EVERY.max)
+        errors.push(`listing.tileEvery must be a whole number from ${TILE_EVERY.min} to ${TILE_EVERY.max}`);
+    } else if (key === 'tiles') errors.push(...listingTilesErrors(value));
+    else if (key === 'featured') errors.push(...listingFeaturedErrors(value));
+    else errors.push(`listing.${key} is not a listing setting`);
+  }
+  return errors;
+}
+
+function listingHeaderErrors(header: unknown): string[] {
+  const at = 'listing.header';
+  if (!isObject(header)) return [`${at} must be an object`];
+  return Object.entries(header).flatMap(([field, value]) => {
+    if (field === 'text') return sectionTextErrors(value, HEADER_TEXTS, `${at}.text`);
+    if (field !== 'image') return [`${at}.${field} is not a header setting`];
+    return typeof value === 'string' && (value === '' || httpsUrl.test(value)) ? [] : [`${at}.image must be ${httpsUrl.expected}`];
+  });
+}
+
+function listingTilesErrors(tiles: unknown): string[] {
+  if (!Array.isArray(tiles)) return ['listing.tiles must be a list'];
+  if (tiles.length > MAX_TILES) return [`listing.tiles has at most ${MAX_TILES} tiles`];
+  const ids = new Set<string>();
+  return tiles.flatMap((tile: unknown, index) => {
+    const at = `listing.tiles[${index}]`;
+    if (!isObject(tile)) return [`${at} must be an object`];
+    const errors: string[] = [];
+    const { id, image, link, pages, text, ...rest } = tile;
+    if (typeof id !== 'string' || !/^[a-z0-9-]{1,40}$/.test(id)) errors.push(`${at}.id must be 1-40 lowercase letters, digits or -`);
+    else if (ids.has(id)) errors.push(`${at}.id ${id} is used twice`);
+    else ids.add(id);
+    if (typeof image !== 'string' || !httpsUrl.test(image)) errors.push(`${at}.image must be ${httpsUrl.expected}`);
+    if (typeof link !== 'string' || !shopPathOrHttps.test(link)) errors.push(`${at}.link must be ${shopPathOrHttps.expected}`);
+    if (!Array.isArray(pages) || !pages.every((page) => typeof page === 'string' && listingPage.test(page)))
+      errors.push(`${at}.pages must be a list of '*' or category URL names`);
+    errors.push(...sectionTextErrors(text, TILE_TEXTS, `${at}.text`));
+    errors.push(...Object.keys(rest).map((field) => `${at}.${field} is not a tile setting`));
+    return errors;
+  });
+}
+
+function listingFeaturedErrors(featured: unknown): string[] {
+  if (!Array.isArray(featured)) return ['listing.featured must be a list'];
+  const pages = new Set<string>();
+  return featured.flatMap((entry: unknown, index) => {
+    const at = `listing.featured[${index}]`;
+    if (!isObject(entry)) return [`${at} must be an object`];
+    const errors: string[] = [];
+    const { page, source, product, ...rest } = entry;
+    if (typeof page !== 'string' || !listingPage.test(page)) errors.push(`${at}.page must be ${listingPage.expected}`);
+    else if (pages.has(page)) errors.push(`${at}: page ${page} has a featured product twice`);
+    else pages.add(page);
+    if (source !== 'product' && source !== 'sale') errors.push(`${at}.source must be one of product, sale`);
+    if (product !== undefined && (typeof product !== 'string' || (product !== '' && !categorySlug.test(product))))
+      errors.push(`${at}.product must be a product URL name`);
+    if (source === 'product' && !product) errors.push(`${at}.product is required for the product source`);
+    errors.push(...Object.keys(rest).map((field) => `${at}.${field} is not a featured setting`));
+    return errors;
+  });
+}
+
 /** What is wrong with a theme's styles, as readable lines; [] when valid */
 export function themeStylesErrors(styles: unknown): string[] {
   if (!isObject(styles)) return ['styles must be an object'];
   return Object.entries(styles).flatMap(([key, value]) => {
     if (key === 'home') return homeErrors(value);
+    if (key === 'listing') return listingErrors(value);
     const rule = RULES[key];
     if (!rule) return [`${key} is not a theme setting`];
     if (typeof value !== 'string') return [`${key} must be text`];
