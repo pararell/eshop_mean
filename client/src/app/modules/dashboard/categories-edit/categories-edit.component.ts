@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { TitleCasePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
@@ -8,12 +9,14 @@ import { MatInput } from '@angular/material/input';
 import { MatAutocomplete, MatAutocompleteTrigger, MatOption } from '@angular/material/autocomplete';
 import { MatChipRemove, MatChipRow, MatChipGrid, MatChipInput, MatChipInputEvent } from '@angular/material/chips';
 import { MatRadioButton, MatRadioGroup } from '@angular/material/radio';
+import { MatSelect } from '@angular/material/select';
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { MatTab, MatTabGroup } from '@angular/material/tabs';
 import { MatIcon } from '@angular/material/icon';
 
 import type { CategoryInput, LanguageCode } from '@eshop/shared';
 import { languages } from '../../../shared/constants';
+import { TRAIL_COLORS } from '../../../shared/trail';
 import { CategoryRaw } from '../../../shared/models';
 import { SignalStore } from '../../../store/signal.store';
 import { SignalStoreSelectors } from '../../../store/signal.store.selectors';
@@ -42,6 +45,8 @@ import { AdminItemListComponent, AdminListItem } from '../admin-ui/admin-item-li
     MatAutocomplete,
     MatAutocompleteTrigger,
     MatOption,
+    MatSelect,
+    TitleCasePipe,
     MatChipGrid,
     MatChipRow,
     MatChipRemove,
@@ -63,6 +68,7 @@ export class CategoriesEditComponent {
   private dialog = inject(MatDialog);
 
   readonly languages = languages;
+  readonly trailColors = TRAIL_COLORS;
   readonly lang = this.selectors.appLang;
   readonly categories = this.selectors.allCategories;
   /** titleUrl of the category in the form; '' for a new one; null when nothing is open */
@@ -73,6 +79,8 @@ export class CategoriesEditComponent {
     titleUrl: ['', [Validators.required, Validators.pattern(/^[a-z0-9_-]+$/)]],
     mainImage: '',
     mainImageCover: false,
+    /** '' = by position */
+    trailColor: '',
     subCategories: [[] as string[]],
     ...Object.fromEntries(
       languages.map((lang) => [lang, this.fb.group({ title: '', description: '', position: 0, visibility: false, menuHidden: false })]),
@@ -117,6 +125,7 @@ export class CategoriesEditComponent {
       titleUrl: found?.titleUrl ?? '',
       mainImage: found?.mainImage?.url ?? '',
       mainImageCover: !!found?.mainImage?.type,
+      trailColor: found?.trailColor ?? '',
       subCategories: found?.subCategories ?? [],
       ...Object.fromEntries(
         languages.map((lang) => {

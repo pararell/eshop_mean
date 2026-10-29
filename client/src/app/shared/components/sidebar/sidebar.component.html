@@ -11,20 +11,18 @@
         <span class="blaze sidebar-blaze-all" aria-hidden="true"></span>
         {{ 'All' | translate | async }} {{ 'products' | translate | async }}
       </a>
-      @for (category of categories(); track category.titleUrl; let i = $index) {
-        @if (!category.menuHidden) {
-          <a
-            class="sidebar-item"
-            [class]="trails[i % trails.length]"
-            (click)="changeCategory.emit(category.titleUrl)"
-            [routerLink]="['/' + lang() + '/product/category/' + category.titleUrl]"
-            [class.active]="activeCategory() == category.titleUrl"
-            [attr.aria-current]="activeCategory() == category.titleUrl ? 'page' : null"
-          >
-            <span class="blaze" aria-hidden="true"></span>
-            {{ category.title }}
-          </a>
-        }
+      @for (category of menuCategories(); track category.titleUrl; let i = $index) {
+        <a
+          class="sidebar-item"
+          [class]="trailClass(category.trailColor, i)"
+          (click)="changeCategory.emit(category.titleUrl)"
+          [routerLink]="['/' + lang() + '/product/category/' + category.titleUrl]"
+          [class.active]="activeCategory() == category.titleUrl"
+          [attr.aria-current]="activeCategory() == category.titleUrl ? 'page' : null"
+        >
+          <span class="blaze" aria-hidden="true"></span>
+          {{ category.title }}
+        </a>
       }
     </nav>
   </section>

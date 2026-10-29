@@ -13,6 +13,7 @@ import type {
   ProductLangInfo,
   ShippingCost,
   ThemeStyles,
+  TrailColor,
 } from '@eshop/shared';
 
 import { languages } from '../shared/constans';
@@ -153,6 +154,7 @@ export interface CategoryDoc {
   _id: string;
   titleUrl: string;
   mainImage: Image & { type?: boolean };
+  trailColor?: TrailColor;
   subCategories: string[];
   _user?: string;
   dateAdded: Date;
@@ -166,6 +168,7 @@ export function toCategoryDoc(row: CategoryRow, langRows: CategoryTranslationRow
     _id: row.id,
     titleUrl: row.titleUrl,
     mainImage: { url: row.mainImageUrl ?? undefined, name: row.mainImageName ?? undefined, type: row.mainImageCover } as Image & { type: boolean },
+    ...(row.trailColor ? { trailColor: row.trailColor } : {}),
     subCategories: row.subCategories,
     _user: row.createdBy ?? undefined,
     dateAdded: row.createdAt,
@@ -192,6 +195,8 @@ export function categoryValues(input: Record<string, unknown>) {
     values.mainImageCover = toBool(image.type);
   }
   if (input.subCategories !== undefined) values.subCategories = toStringArray(input.subCategories);
+  // Validated by the service (assertTrailColor); empty = by position
+  if (input.trailColor !== undefined) values.trailColor = (input.trailColor || null) as CategoryRow['trailColor'];
   return values;
 }
 

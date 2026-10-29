@@ -78,6 +78,9 @@ export const users = pgTable(
 
 // Catalog -------------------------------------------------------------------------------------
 
+/** The marked-trail colors a category can follow (tile and menu markers) */
+export const trailColor = pgEnum('trail_color', ['red', 'blue', 'green', 'yellow']);
+
 export const categories = pgTable('categories', {
   id: id(),
   titleUrl: text('title_url').notNull().unique(),
@@ -85,6 +88,8 @@ export const categories = pgTable('categories', {
   mainImageName: text('main_image_name'),
   /** Mongoose: mainImage.type (render the image with object-fit: cover) */
   mainImageCover: boolean('main_image_cover').notNull().default(false),
+  /** Null = by position in the category list (red, blue, green, yellow, …) */
+  trailColor: trailColor('trail_color'),
   subCategories: textArray('sub_categories'),
   createdBy: uuid('created_by').references(() => users.id, { onDelete: 'set null' }),
   createdAt: createdAt(),

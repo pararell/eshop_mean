@@ -99,3 +99,19 @@ test('a category set to "Fill the tile (cover)" fills its tile with the photo', 
     await setCover(false);
   }
 });
+
+test("a category's own trail color shows on its tile and in the product list menu", async ({ page }) => {
+  const setColor = (color: string | null) => withDb((db) => db.query(`UPDATE categories SET trail_color = $1 WHERE title_url = 'cars'`, [color]));
+  await setColor('yellow');
+  try {
+    await page.goto('/');
+    await expect(page.locator('.category_card').filter({ has: page.locator('a[href$="/category/cars"]') })).toHaveClass(/trail-yellow/);
+    await page.goto('/en/product/all');
+    // The menu is rendered twice (sidebar and phone drawer)
+    const menuItems = page.locator('a.sidebar-item[href$="/category/cars"]');
+    await expect(menuItems.first()).toHaveClass(/trail-yellow/);
+    await expect(menuItems.last()).toHaveClass(/trail-yellow/);
+  } finally {
+    await setColor(null);
+  }
+});

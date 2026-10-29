@@ -1,10 +1,11 @@
-import { Component, Input, ChangeDetectionStrategy, OnChanges, input, output } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, OnChanges, computed, input, output } from '@angular/core';
 import { of } from 'rxjs';
 import { take, delay } from 'rxjs/operators';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatSelectModule } from '@angular/material/select';
 
 import { Category } from '../../models';
+import { trailClass } from '../../trail';
 import { AsyncPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '../../../pipes/translate.pipe';
@@ -38,8 +39,10 @@ export class SidebarComponent implements OnChanges {
   readonly changeSort = output<string>();
   readonly changeCategory = output<string>();
 
-  /** Category markers follow the trail colors in order (as on the category cards) */
-  readonly trails = ['trail-red', 'trail-blue', 'trail-green', 'trail-yellow'];
+  /** The categories in the menu (menu-hidden ones are reached through links only) */
+  readonly menuCategories = computed(() => this.categories().filter((category) => !category.menuHidden));
+  /** The same trail color as on the category's tile */
+  readonly trailClass = trailClass;
   productsUrl!: string;
   categoryUrl!: string;
   priceValue = 0;

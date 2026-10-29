@@ -150,10 +150,15 @@ export interface CategoryLangInfo {
   menuHidden?: boolean;
 }
 
+/** A marked-trail color (category tiles and menu markers) */
+export type TrailColor = 'red' | 'blue' | 'green' | 'yellow';
+
 export interface CategoryBase {
   _id?: string;
   titleUrl: string;
   mainImage?: Image & { type?: boolean };
+  /** Absent = by position in the category list; on save, null or '' sets it back to that */
+  trailColor?: TrailColor | null;
   subCategories?: string[];
   _user?: string;
   dateAdded?: DateValue;

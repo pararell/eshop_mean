@@ -6,7 +6,7 @@
   role="list"
 >
   @for (category of visibleCategories(); track category.titleUrl; let i = $index) {
-    <li class="category_card" [class]="trailClass(i)">
+    <li class="category_card" [class]="trailClass(category, i)">
       <a class="category_card-link" [routerLink]="['/' + lang() + '/product/category/' + category.titleUrl]">
         <span class="category_card-media photo-frame" [class.category_card-cover]="category.mainImage?.type">
           @if (category.mainImage?.url) {

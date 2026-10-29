@@ -3,8 +3,7 @@ import { NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 import { Category } from '../../models';
-
-const TRAILS = ['trail-red', 'trail-blue', 'trail-green', 'trail-yellow'];
+import { trailClass } from '../../trail';
 
 @Component({
   selector: 'app-categories-list',
@@ -29,8 +28,8 @@ export class CategoriesListComponent {
     return count % 4 === 0 ? 4 : count % 3 === 0 ? 3 : 4;
   });
 
-  /** Each category follows one trail color, in the order of the marked-trail system */
-  trailClass(index: number): string {
-    return TRAILS[index % TRAILS.length];
+  /** Each category follows its trail color (chosen in the admin, otherwise by position) */
+  trailClass(category: Category, index: number): string {
+    return trailClass(category.trailColor, index);
   }
 }

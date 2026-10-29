@@ -37,6 +37,10 @@ All notable changes to this project are documented in this file. The format foll
   full-width photo band in every language. It fills the form and the preview; nothing is saved until
   Save. New admin endpoint `POST /api/admin/themes/ai-draft` (docs/ai.md § 9); usage is logged like
   product drafts.
+- **Trail color per category** (Categories → Trail color): red, blue, green or yellow, shown on the
+  category tile and in the product list menu; "Automatic" keeps the color by position. Migration
+  `0003_category_trail_color` adds the nullable `categories.trail_color` (add-only); API field
+  `trailColor` on categories.
 - `GET /api/products` accepts `onSale=true` (only products on sale; optional, add-only).
 - **Admin Overview** (`/:lang/dashboard`): revenue and orders for today, 7 or 30 days per currency,
   compared with the previous period; average order; orders to handle; revenue per day (one bar chart
@@ -93,6 +97,8 @@ All notable changes to this project are documented in this file. The format foll
 
 ### Fixed
 
+- **Trail colors match between the category tiles and the menu:** the menu counted menu-hidden
+  categories when picking colors by position, the tiles did not, so a category could get two colors.
 - **Category tiles honour "Fill the tile (cover)":** the photo fills the tile; before, every tile showed
   the whole image with padding, as with "Whole image (contain)".
 - **Empty cart after a page load:** the client attached the `lang` header and the access token to API

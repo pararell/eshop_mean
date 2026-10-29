@@ -33,3 +33,9 @@
     }
   }
 }
+
+// The trail marker in front of each color in the select
+.trail-option {
+  margin-right: var(--space-2);
+  vertical-align: middle;
+}

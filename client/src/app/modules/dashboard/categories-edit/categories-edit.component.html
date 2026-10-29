@@ -45,6 +45,18 @@
               <mat-radio-button [value]="true">Fill the tile (cover)</mat-radio-button>
             </mat-radio-group>
           </fieldset>
+          <mat-form-field subscriptSizing="dynamic">
+            <mat-label>Trail color</mat-label>
+            <mat-select formControlName="trailColor">
+              <mat-option value="">Automatic (by position)</mat-option>
+              @for (color of trailColors; track color) {
+                <mat-option [value]="color"
+                  ><span class="blaze trail-option" [class]="'trail-' + color" aria-hidden="true"></span>{{ color | titlecase }}</mat-option
+                >
+              }
+            </mat-select>
+            <mat-hint>The marker on the category tile and in the menu</mat-hint>
+          </mat-form-field>
           <mat-form-field class="admin-field-wide">
             <mat-label>Subcategories</mat-label>
             <mat-chip-grid #subGrid aria-label="Subcategories">

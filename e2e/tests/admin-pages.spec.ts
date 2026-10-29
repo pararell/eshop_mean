@@ -29,9 +29,13 @@ test('categories: create, edit per language, delete', async ({ page }) => {
   await page.getByLabel('URL (slug)').fill(slug);
   await page.getByLabel('Title (EN)').fill('E2E Tents');
   await page.getByRole('switch', { name: 'Visible in the shop (EN)' }).click();
+  await page.getByRole('combobox', { name: 'Trail color' }).click();
+  await page.getByRole('option', { name: 'Green' }).click();
   await page.getByRole('button', { name: 'Save', exact: true }).click();
   await toast(page, 'Category saved');
   await expect(list(page, 'All categories').getByRole('button', { name: /E2E Tents/ })).toBeVisible();
+  const [saved] = await withDb(async (db) => (await db.query('SELECT trail_color FROM categories WHERE title_url = $1', [slug])).rows);
+  expect(saved).toEqual({ trail_color: 'green' });
   await expect(page.getByLabel('URL (slug)')).toBeDisabled();
 
   // Back to an existing one: its values load
@@ -42,6 +46,7 @@ test('categories: create, edit per language, delete', async ({ page }) => {
     .getByRole('button', { name: /E2E Tents/ })
     .click();
   await expect(page.getByLabel('Title (EN)')).toHaveValue('E2E Tents');
+  await expect(page.getByRole('combobox', { name: 'Trail color' })).toContainText('Green');
   await confirmDelete(page, 'Delete category');
   await toast(page, 'Category deleted');
   await expect(list(page, 'All categories').getByRole('button', { name: /E2E Tents/ })).toHaveCount(0);

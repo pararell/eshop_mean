@@ -11,7 +11,7 @@ import { prepareProduct } from '../shared/utils/prepareUtils';
 import { languages, paginationLimit } from '../shared/constans';
 import { Database, DRIZZLE } from '../db/database.module';
 import { toProductDoc } from '../db/mappers';
-import { categories, categoryTranslations, products, productTranslations } from '../db/schema';
+import { categories, categoryTranslations, products, productTranslations, trailColor as trailColorEnum } from '../db/schema';
 import { assertSalePrices } from './sale-price';
 import {
   findProduct,
@@ -27,6 +27,8 @@ import {
   upsertCategory,
   upsertProduct,
 } from '../db/catalog';
+
+const TRAIL_COLORS: readonly string[] = trailColorEnum.enumValues;
 
 @Injectable()
 export class ProductsService {
@@ -154,6 +156,10 @@ export class ProductsService {
 
   /** Updates the category, or creates it when the titleUrl is new (upsert); either way 200 (audit BUG-08) */
   async editCategory(categoryReq: CategoryInput): Promise<void> {
+    const { trailColor } = categoryReq;
+    if (trailColor !== undefined && trailColor !== null && (trailColor as string) !== '' && !TRAIL_COLORS.includes(trailColor)) {
+      throw new BadRequestException(`trailColor must be one of ${TRAIL_COLORS.join(', ')}, or empty`);
+    }
     await upsertCategory(this.db, categoryReq as unknown as Record<string, unknown>);
   }
 
@@ -191,6 +197,7 @@ export class ProductsService {
         mainImage: category.mainImage,
         dateAdded: category.dateAdded,
         subCategories: category.subCategories,
+        ...(category.trailColor ? { trailColor: category.trailColor } : {}),
         title: langInfo ? langInfo.title : category.titleUrl,
         description: langInfo ? langInfo.description : '',
         visibility: langInfo ? langInfo.visibility : false,

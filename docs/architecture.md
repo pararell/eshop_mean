@@ -356,6 +356,7 @@ Index `product_translations_listing (lang, visibility, sale_price)` serves the s
 | ------------------------------------------------------- | ------------ | ---------------------------------------------------------------------------------- |
 | `title_url`                                             | text, unique | Matches entries of `products.tags`                                                 |
 | `main_image_url`, `main_image_name`, `main_image_cover` |              | API `mainImage { url, name, type }`; `type: true` renders with `object-fit: cover` |
+| `trail_color`                                           | enum, null   | `red`, `blue`, `green`, `yellow`; API `trailColor` (absent = by position)          |
 | `sub_categories`                                        | text[]       |                                                                                    |
 | `created_by`                                            | uuid → users | API `_user`                                                                        |
 

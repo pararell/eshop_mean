@@ -245,6 +245,28 @@ describe('Products API', () => {
       expect(tents.category.en.title).toBe('Tents and shelters');
     });
 
+    it('stores a trail color per category, clears it and rejects unknown colors', async () => {
+      const token = await adminToken(t);
+      const category = (trailColor?: string | null) => ({
+        titleUrl: 'tents',
+        mainImage: { url: '', name: 'tents', type: false },
+        subCategories: [],
+        ...(trailColor !== undefined ? { trailColor } : {}),
+        en: { title: 'Tents', description: '', position: 1, visibility: true, menuHidden: false },
+      });
+      const edit = (body: object) => t.http.patch('/api/products/categories/edit').set('Authorization', `Bearer ${token}`).send(body);
+      const listed = async () => (await t.http.get('/api/products/categories').set('lang', 'en').expect(200)).body[0];
+
+      await edit(category('green')).expect(200);
+      expect(await listed()).toMatchObject({ titleUrl: 'tents', trailColor: 'green' });
+      // Saving without the field keeps it; an empty value goes back to the color by position
+      await edit(category()).expect(200);
+      expect((await listed()).trailColor).toBe('green');
+      await edit(category('')).expect(200);
+      expect(await listed()).not.toHaveProperty('trailColor');
+      await edit(category('purple')).expect(400);
+    });
+
     it('counts and removes category tags by slug', async () => {
       const token = await adminToken(t);
       await t.model('Product').create(productFixture('boots', { tags: ['Day hike', 'gps'] }));
