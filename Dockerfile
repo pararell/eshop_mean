@@ -1,5 +1,5 @@
 # Build: compiles the Angular client, SSR and the bundled Nest API into dist/
-FROM node:24.21-alpine3.24 AS build
+FROM node:24.22-alpine3.24 AS build
 WORKDIR /usr/src/app
 # No git hooks inside the image build (the `prepare` script installs husky)
 ENV HUSKY=0
@@ -18,12 +18,12 @@ RUN node -e "const p = require('./package-lock.json').packages; \
   dependencies: { pg: p['node_modules/pg'].version } }))"
 
 # Runtime dependencies only (no Angular/Nest sources, no dev tooling)
-FROM node:24.21-alpine3.24 AS runtime-deps
+FROM node:24.22-alpine3.24 AS runtime-deps
 WORKDIR /usr/src/app
 COPY --from=build /usr/src/app/runtime-package.json ./package.json
 RUN npm install --omit=dev --no-audit --no-fund && npm cache clean --force
 
-FROM node:24.21-alpine3.24
+FROM node:24.22-alpine3.24
 ARG GIT_SHA=dev
 ARG BUILD_DATE=
 LABEL org.opencontainers.image.title="eshop_mean" \
