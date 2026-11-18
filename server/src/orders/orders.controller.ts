@@ -12,6 +12,7 @@ import type { Order as OrderData } from '@eshop/shared';
 import { CartModel } from '../cart/models/cart.model';
 import { ShopSession } from '../shared/types/session';
 import { RateLimited } from '../shared/rate-limit/rate-limit';
+import { OptionalJwtGuard } from '../auth/optional-jwt.guard';
 
 type OrderResponse = { error: string; result: Order | null; cart: CartModel | Cart };
 
@@ -26,10 +27,16 @@ export class OrdersController {
   }
 
   @RateLimited()
+  @UseGuards(OptionalJwtGuard)
   @Post('/add')
-  async addOrder(@Body() orderDto: OrderDto, @Session() session: ShopSession, @Headers('lang') lang: string): Promise<OrderResponse> {
+  async addOrder(
+    @Body() orderDto: OrderDto,
+    @Session() session: ShopSession,
+    @Headers('lang') lang: string,
+    @GetUser() user: User | null,
+  ): Promise<OrderResponse> {
     try {
-      const successResult = await this.ordersService.addOrder(orderDto, session, lang);
+      const successResult = await this.ordersService.addOrder(orderDto, session, lang, user?._id ?? null);
       if (successResult && !successResult.error) {
         const emptyCart = new Cart({ items: [] });
         session.cart = emptyCart;

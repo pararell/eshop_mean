@@ -49,10 +49,10 @@ export class OrdersService {
     return rows.map(toOrderDoc);
   }
 
-  async addOrder(orderDto: OrderDto, session: ShopSession, lang: string): Promise<OrderOutcome> {
+  async addOrder(orderDto: OrderDto, session: ShopSession, lang: string, userId: string | null): Promise<OrderOutcome> {
     // Throws without a cart; callers turn that into 422 (current behavior)
     const cartForLang = await this.priceCart(session.cart!, lang);
-    const newOrder = await this.insertOrder(this.createOrder(orderDto, cartForLang, 'PAYMENT_ON_DELIVERY', currencyForLang(lang)));
+    const newOrder = await this.insertOrder(this.createOrder(orderDto, cartForLang, 'PAYMENT_ON_DELIVERY', currencyForLang(lang), userId));
     await this.notifyOrder(newOrder, cartForLang, lang);
 
     return { error: '', result: newOrder };
@@ -117,8 +117,8 @@ export class OrdersService {
     return row ? toOrderDoc(row) : null;
   }
 
-  private createOrder = (orderDto: OrderRequest, cart: CartModel, type: string, currency: string) => {
-    const { addresses, email, userId, cardId, notes } = orderDto;
+  private createOrder = (orderDto: OrderRequest, cart: CartModel, type: string, currency: string, userId: string | null) => {
+    const { addresses, email, cardId, notes } = orderDto;
     const orderId = newOrderId();
     const date = Date.now();
     const addUser = userId ? { _user: userId } : {};
